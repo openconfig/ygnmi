@@ -1,3 +1,17 @@
+// Copyright 2022 Google Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package ygnmi
 
 import (
@@ -18,7 +32,8 @@ import (
 	closer "github.com/openconfig/gocloser"
 )
 
-// subscribe create a gNMI SubscribeClient. Specifying subPaths is optional, if unset will subscribe to the path at n.
+// subscribe create a gNMI SubscribeClient for the given query.
+//nolint:deadcode // TODO(DanG100) remove this once this func is used
 func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.SubscriptionList_Mode) (_ gpb.GNMI_SubscribeClient, rerr error) {
 	path, _, errs := ygot.ResolvePath(q.pathStruct())
 	if len(errs) > 0 {
@@ -68,6 +83,7 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 // the data is returned as-is and the second return value is true. If Delete paths are present in
 // the update, they are appended to the given data before the Update values. If deletesExpected
 // is false, however, any deletes received will cause an error.
+//nolint:deadcode // TODO(DanG100) remove this once this func is used
 func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bool) ([]*DataPoint, bool, error) {
 	res, err := sub.Recv()
 	if err != nil {
@@ -88,7 +104,9 @@ func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bo
 				return nil, err
 			}
 			// Record the deprecated Element field for clearer compliance error messages.
+			//lint:ignore SA1019 ignore deprecated check
 			if elements := append(append([]string{}, n.GetPrefix().GetElement()...), p.GetElement()...); len(elements) > 0 {
+				//lint:ignore SA1019 ignore deprecated check
 				j.Element = elements
 			}
 			// Use the target only for the subscription but exclude from the datapoint construction.
@@ -105,7 +123,7 @@ func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bo
 			if err != nil {
 				return data, false, err
 			}
-			log.V(2).Infof("Constructed datapoint for delete: %s", dp)
+			log.V(2).Infof("Constructed datapoint for delete: %v", dp)
 			data = append(data, dp)
 		}
 		for _, u := range n.GetUpdate() {
@@ -120,7 +138,7 @@ func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bo
 			if err != nil {
 				return data, false, err
 			}
-			log.V(2).Infof("Constructed datapoint for update: %s", dp)
+			log.V(2).Infof("Constructed datapoint for update: %v", dp)
 			data = append(data, dp)
 		}
 		return data, false, nil
@@ -138,6 +156,7 @@ func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bo
 
 // receiveAll receives data until the context deadline is reached, or when in
 // ONCE mode, a sync response is received.
+//nolint:deadcode // TODO(DanG100) remove this once this func is used
 func receiveAll(sub gpb.GNMI_SubscribeClient, deletesExpected bool, mode gpb.SubscriptionList_Mode) (data []*DataPoint, err error) {
 	for {
 		var sync bool

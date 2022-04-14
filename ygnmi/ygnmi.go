@@ -76,20 +76,32 @@ func (v *Value[T]) IsPresent() bool {
 	return v.present
 }
 
-func NewClient(c gpb.GNMIClient, opts ...Option) (*Client, error) {
-	return &Client{
+// NewClient creates a new client with specified options.
+func NewClient(c gpb.GNMIClient, opts ...ClientOption) (*Client, error) {
+	yc := &Client{
 		gnmiC: c,
-	}, nil
+	}
+	for _, opt := range opts {
+		if err := opt(yc); err != nil {
+			return nil, err
+		}
+	}
+	return yc, nil
+
 }
 
-type Option func(d *Client)
+// ClientOption is a custom to option to pass in the creation of a Client.
+type ClientOption func(d *Client) error
 
-func WithTarget(t string) Option {
-	return func(d *Client) {
-		d.target = t
+// WithTarget sets a persistent target add to gpb.Path for all requests made with this client.
+func WithTarget(t string) ClientOption {
+	return func(c *Client) error {
+		c.target = t
+		return nil
 	}
 }
 
+// Client is used to perform gNMI requests.
 type Client struct {
 	gnmiC  gpb.GNMIClient
 	target string
