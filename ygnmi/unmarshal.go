@@ -100,6 +100,7 @@ func (c *ComplianceErrors) String() string {
 // NOTE: The datapoints are applied in order as they are in the input slice,
 // *NOT* in order of their timestamps. As such, in order to correctly support
 // Collect calls, the input data must be sorted in order of timestamps.
+//lint:ignore U1000 TODO(DanG100) remove this once this func is used
 func unmarshalToValue[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.ValidatedGoStruct) (*Value[T], error) {
 	queryPath, _, errs := ygot.ResolvePath(q.pathStruct())
 	if len(errs) > 0 {
@@ -187,6 +188,7 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 			var pathErr error
 			dpPathStr := pathToString(dp.Path)
 			switch {
+			//lint:ignore SA1019 ignore deprecated check
 			case len(dp.Path.Elem) == 0 && len(dp.Path.Element) > 0:
 				pathErr = fmt.Errorf("datapoint path uses deprecated and unsupported Element field: %s", prototext.Format(dp.Path))
 			default:

@@ -1104,7 +1104,7 @@ func TestUnmarshal(t *testing.T) {
 		inLeaf                bool
 		inPreferShadowPath    bool
 		wantUnmarshalledData  []*DataPoint
-		wantStruct            ygot.GoStruct
+		wantStruct            ygot.ValidatedGoStruct
 		wantErrSubstr         string
 		wantPathErrSubstr     *TelemetryError
 		wantTypeErrSubstr     *TelemetryError
