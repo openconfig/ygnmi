@@ -307,7 +307,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 	}
 	for name, p := range packages {
 		err := writeHeader(yangFiles, includePaths, name, cg, p)
-		util.AppendErr(errs, err)
+		errs = util.AppendErr(errs, err)
 	}
 	genCode.Structs = structSnippets
 
