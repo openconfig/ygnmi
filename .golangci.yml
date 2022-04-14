@@ -1,0 +1,8 @@
+run:
+  timeout: 1m
+  skip-dirs:
+    - pathgen/testdata
+
+linters:
+  enable:
+    - gofmt
