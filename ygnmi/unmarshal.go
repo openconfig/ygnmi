@@ -32,12 +32,13 @@ import (
 
 // DataPoint is a value of a gNMI path at a particular time.
 type DataPoint struct {
+	// Path of the received value.
 	Path *gpb.Path
-	// value of the data; nil means delete
+	// Value of the data; nil means delete.
 	Value *gpb.TypedValue
-	// time the value was updated on the device
+	// Timestamp is the time at which the value was updated on the device.
 	Timestamp time.Time
-	// time the update was received by the test
+	// RecvTimestamp is the time the update was received.
 	RecvTimestamp time.Time
 	// Sync indicates whether the received datapoint was gNMI sync response.
 	Sync bool
@@ -115,6 +116,7 @@ func (c *ComplianceErrors) String() string {
 // *NOT* in order of their timestamps. As such, in order to correctly support
 // Collect calls, the input data must be sorted in order of timestamps.
 //lint:ignore U1000 TODO(DanG100) remove this once this func is used
+//nolint:deadcode // see above
 func unmarshalToValue[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.ValidatedGoStruct) (*Value[T], error) {
 	queryPath, _, errs := ygot.ResolvePath(q.pathStruct())
 	if len(errs) > 0 {
@@ -151,7 +153,7 @@ func unmarshalToValue[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.Val
 	}
 	ret.Path = path
 
-	ret.SetVal(q.validate(goStruct))
+	ret.SetVal(q.extract(goStruct))
 	return ret, nil
 }
 
