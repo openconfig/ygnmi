@@ -75,3 +75,22 @@ func (v *Value[T]) Val() (T, bool) {
 func (v *Value[T]) IsPresent() bool {
 	return v.present
 }
+
+func NewClient(c gpb.GNMIClient, opts ...Option) (*Client, error) {
+	return &Client{
+		gnmiC: c,
+	}, nil
+}
+
+type Option func(d *Client)
+
+func WithTarget(t string) Option {
+	return func(d *Client) {
+		d.target = t
+	}
+}
+
+type Client struct {
+	gnmiC  gpb.GNMIClient
+	target string
+}
