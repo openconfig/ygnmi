@@ -36,6 +36,7 @@ type AnyQuery[T any] interface {
 	schema() *ytypes.Schema
 }
 
+// Value contains a value received from a gNMI request and its metadata.
 type Value[T any] struct {
 	val              T
 	present          bool
@@ -45,14 +46,18 @@ type Value[T any] struct {
 	ComplianceErrors *ComplianceErrors // ComplianceErrors contains the compliance errors encountered from an Unmarshal operation.
 }
 
+// SetVal sets the value and marks it present.
 func (v *Value[T]) SetVal(val T) {
 	v.val = val
 	v.present = true
 }
 
+// Val returns the val and whether it is present.
 func (v *Value[T]) Val() (T, bool) {
 	return v.val, v.present
 }
+
+// IsPresent returns whether the value is present.
 func (v *Value[T]) IsPresent() bool {
 	return v.present
 }
