@@ -29,15 +29,17 @@ import (
 type AnyQuery[T any] interface {
 	// pathStruct returns to path struct for this query.
 	pathStruct() ygot.PathStruct
-	// fieldname returns the name of YANG field schema entry.
+	// fieldname returns the name of YANG directory schema entry.
+	// For leaves, this is the parent entry.
 	fieldName() string
 	// goStruct returns the struct that query should be unmarshalled into.
 	// For leaves, this is the parent.
 	goStruct() ygot.ValidatedGoStruct
 	// extract is used for leaves to return the field from the parent GoStruct.
+	// For non-leaves, this casts the GoStruct to the concrete type.
 	extract(ygot.ValidatedGoStruct) T
-	// reverseShadowPaths controls whether to unmarshal config or state leaves.
-	reverseShadowPaths() bool
+	// isState returns if the path for this query is a state node.
+	isState() bool
 	// isLeaf returns if the path for this query is a leaf.
 	isLeaf() bool
 	// schema returns the root schema used for unmarshalling.

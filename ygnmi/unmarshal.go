@@ -107,7 +107,7 @@ func (c *ComplianceErrors) String() string {
 	return b.String()
 }
 
-// unmarshalToValue is a wrapper to ytypes.SetNode() and ygot.Validate() that
+// unmarshalAndExtract is a wrapper to ytypes.SetNode() and ygot.Validate() that
 // unmarshals a given []*DataPoint to its field given an input query and
 // verifies that all data conform to the schema. Any errors due to
 // the unmarshal operations above are returned in a *ComplianceErrors for the
@@ -116,7 +116,7 @@ func (c *ComplianceErrors) String() string {
 // *NOT* in order of their timestamps. As such, in order to correctly support
 // Collect calls, the input data must be sorted in order of timestamps.
 //nolint:deadcode // TODO(DanG100) remove this once this func is used
-func unmarshalToValue[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.ValidatedGoStruct) (*Value[T], error) {
+func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.ValidatedGoStruct) (*Value[T], error) {
 	queryPath, _, errs := ygot.ResolvePath(q.pathStruct())
 	if len(errs) > 0 {
 		l := &errlist.List{}
@@ -131,7 +131,7 @@ func unmarshalToValue[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.Val
 		return ret, nil
 	}
 
-	unmarshalledData, complianceErrs, err := unmarshal(data, q.schema().SchemaTree[q.fieldName()], goStruct, queryPath, q.schema(), q.isLeaf(), q.reverseShadowPaths())
+	unmarshalledData, complianceErrs, err := unmarshal(data, q.schema().SchemaTree[q.fieldName()], goStruct, queryPath, q.schema(), q.isLeaf(), q.isState())
 	ret.ComplianceErrors = complianceErrs
 	if err != nil {
 		return ret, err
