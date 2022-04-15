@@ -16,6 +16,8 @@
 package ygnmi
 
 import (
+	"context"
+	"fmt"
 	"time"
 
 	"github.com/openconfig/ygot/ygot"
@@ -44,6 +46,12 @@ type AnyQuery[T any] interface {
 	isLeaf() bool
 	// schema returns the root schema used for unmarshalling.
 	schema() *ytypes.Schema
+}
+
+type SingletonQuery[T any] interface {
+	AnyQuery[T]
+	// isNonWildcard prevents this interface from being used in wildcard funcs.
+	isNonWildcard()
 }
 
 // Value contains a value received from a gNMI request and its metadata.
@@ -104,4 +112,32 @@ func NewClient(c gpb.GNMIClient, opts ...ClientOption) (*Client, error) {
 		}
 	}
 	return yc, nil
+}
+
+// Lookup fetches the value at the query with a ONCE subscription.
+func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (*Value[T], error) {
+	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_ONCE)
+	if err != nil {
+		return nil, fmt.Errorf("failed to subscribe to path: %w", err)
+	}
+	data, err := receiveAll(sub, false, gpb.SubscriptionList_ONCE)
+	if err != nil {
+		return nil, fmt.Errorf("failed to receive to data: %w", err)
+	}
+	val, err := unmarshalAndExtract[T](data, q, q.goStruct())
+	if err != nil {
+		return val, fmt.Errorf("failed to unmarshal data: %w", err)
+	}
+	return val, nil
+}
+
+// Get fetches the value at the query with a ONCE subscription.
+// It returns an error if there is no value at the path.
+func Get[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (T, error) {
+	val, err := Lookup(ctx, c, q)
+	v, ok := val.Val()
+	if !ok {
+		return v, fmt.Errorf("no value received; lookup err: %v", err)
+	}
+	return v, err
 }

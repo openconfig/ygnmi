@@ -33,7 +33,6 @@ import (
 )
 
 // subscribe create a gNMI SubscribeClient for the given query.
-//nolint:deadcode // TODO(DanG100) remove this once this func is used
 func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.SubscriptionList_Mode) (_ gpb.GNMI_SubscribeClient, rerr error) {
 	path, _, errs := ygot.ResolvePath(q.pathStruct())
 	if len(errs) > 0 {
@@ -155,8 +154,6 @@ func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bo
 }
 
 // receiveAll receives data until the context deadline is reached, or when in
-// ONCE mode, a sync response is received.
-//nolint:deadcode // TODO(DanG100) remove this once this func is used
 func receiveAll(sub gpb.GNMI_SubscribeClient, deletesExpected bool, mode gpb.SubscriptionList_Mode) (data []*DataPoint, err error) {
 	for {
 		var sync bool
