@@ -82,7 +82,7 @@ type Client struct {
 	target string
 }
 
-// ClientOption is a custom to option to pass in the creation of a Client.
+// ClientOption configures a client with custom options.
 type ClientOption func(d *Client) error
 
 // WithTarget sets the target of the gpb.Path for all requests made with this client.
