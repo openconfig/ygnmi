@@ -23,6 +23,7 @@ import (
 	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygot/ytypes"
 
+	log "github.com/golang/glog"
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
 )
 
@@ -127,6 +128,12 @@ func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (*Value[
 	val, err := unmarshalAndExtract[T](data, q, q.goStruct())
 	if err != nil {
 		return val, fmt.Errorf("failed to unmarshal data: %w", err)
+	}
+	if val.ComplianceErrors != nil {
+		if q.isLeaf() {
+			return val, fmt.Errorf("noncompliant data encountered while unmarshalling leaf: %v", val.ComplianceErrors)
+		}
+		log.V(0).Infof("noncompliant data encountered while unmarshalling: %v", val.ComplianceErrors)
 	}
 	return val, nil
 }

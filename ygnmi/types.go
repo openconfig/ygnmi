@@ -5,7 +5,9 @@ import (
 	"github.com/openconfig/ygot/ytypes"
 )
 
-type LeafQuery[T any] struct {
+// LeafSingletonQuery is implementation of SingletonQuery interface for leaf nodes.
+// Note: Do not use this type directly, instead use the generated Path API.
+type LeafSingletonQuery[T any] struct {
 	parentDir  string
 	state      bool
 	ps         ygot.PathStruct
@@ -14,32 +16,32 @@ type LeafQuery[T any] struct {
 	yschema    *ytypes.Schema
 }
 
-func (lq *LeafQuery[T]) extract(gs ygot.ValidatedGoStruct) T {
+func (lq *LeafSingletonQuery[T]) extract(gs ygot.ValidatedGoStruct) T {
 	return lq.extractFn(gs)
 }
 
-func (lq *LeafQuery[T]) fieldName() string {
+func (lq *LeafSingletonQuery[T]) fieldName() string {
 	return lq.parentDir
 }
 
-func (lq *LeafQuery[T]) goStruct() ygot.ValidatedGoStruct {
+func (lq *LeafSingletonQuery[T]) goStruct() ygot.ValidatedGoStruct {
 	return lq.goStructFn()
 }
 
-func (lq *LeafQuery[T]) isLeaf() bool {
+func (lq *LeafSingletonQuery[T]) isLeaf() bool {
 	return true
 }
 
-func (lq *LeafQuery[T]) isState() bool {
+func (lq *LeafSingletonQuery[T]) isState() bool {
 	return lq.state
 }
 
-func (lq *LeafQuery[T]) pathStruct() ygot.PathStruct {
+func (lq *LeafSingletonQuery[T]) pathStruct() ygot.PathStruct {
 	return lq.ps
 }
 
-func (lq *LeafQuery[T]) schema() *ytypes.Schema {
+func (lq *LeafSingletonQuery[T]) schema() *ytypes.Schema {
 	return lq.yschema
 }
 
-func (lq *LeafQuery[T]) isNonWildcard() {}
+func (lq *LeafSingletonQuery[T]) isNonWildcard() {}

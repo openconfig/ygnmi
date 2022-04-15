@@ -31,7 +31,6 @@ import (
 
 func TestUnmarshal(t *testing.T) {
 	schemaStruct := schema.GetSchemaStruct()
-
 	superContainerSchema := schemaStruct().RootSchema().Dir["super-container"]
 
 	passingTests := []struct {
