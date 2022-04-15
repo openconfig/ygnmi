@@ -150,7 +150,7 @@ func TestUnmarshal(t *testing.T) {
 			},
 			Timestamp: time.Unix(2, 2),
 		}},
-		wantStruct: &schema.LeafContainerStruct{UnionLeaf: &schema.UnionLeafType_String{"aaaa"}},
+		wantStruct: &schema.LeafContainerStruct{UnionLeaf: &schema.UnionLeafType_String{String: "aaaa"}},
 	}, {
 		name: "delete union",
 		inData: []*DataPoint{{
@@ -159,7 +159,7 @@ func TestUnmarshal(t *testing.T) {
 		}},
 		inQueryPath:    schema.GNMIPath(t, "super-container/leaf-container-struct/union-leaf"),
 		inStructSchema: superContainerSchema.Dir["leaf-container-struct"],
-		inStruct:       &schema.LeafContainerStruct{UnionLeaf: &schema.UnionLeafType_String{"forty two"}},
+		inStruct:       &schema.LeafContainerStruct{UnionLeaf: &schema.UnionLeafType_String{String: "forty two"}},
 		inLeaf:         true,
 		wantUnmarshalledData: []*DataPoint{{
 			Path:      schema.GNMIPath(t, "super-container/leaf-container-struct/union-leaf"),
@@ -394,7 +394,7 @@ func TestUnmarshal(t *testing.T) {
 		wantStruct: &schema.LeafContainerStruct{
 			Uint64Leaf:          ygot.Uint64(100),
 			EnumLeaf:            schema.EnumType(100),
-			UnionLeaf:           &schema.UnionLeafType_Uint32{100},
+			UnionLeaf:           &schema.UnionLeafType_Uint32{Uint32: 100},
 			UnionLeaf2:          schema.EnumType(100),
 			UnionLeafSingleType: []string{"aa", "bb"},
 		},
@@ -423,7 +423,7 @@ func TestUnmarshal(t *testing.T) {
 			Timestamp: time.Unix(10, 10),
 		}},
 		wantStruct: &schema.LeafContainerStruct{
-			UnionLeaf: &schema.UnionLeafType_Uint32{100},
+			UnionLeaf: &schema.UnionLeafType_Uint32{Uint32: 100},
 		},
 	}, {
 		name:           "empty datapoint slice",
