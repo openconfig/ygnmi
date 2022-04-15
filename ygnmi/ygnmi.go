@@ -75,3 +75,33 @@ func (v *Value[T]) Val() (T, bool) {
 func (v *Value[T]) IsPresent() bool {
 	return v.present
 }
+
+// Client is used to perform gNMI requests.
+type Client struct {
+	gnmiC  gpb.GNMIClient
+	target string
+}
+
+// ClientOption configures a client with custom options.
+type ClientOption func(d *Client) error
+
+// WithTarget sets the target of the gpb.Path for all requests made with this client.
+func WithTarget(t string) ClientOption {
+	return func(c *Client) error {
+		c.target = t
+		return nil
+	}
+}
+
+// NewClient creates a new client with specified options.
+func NewClient(c gpb.GNMIClient, opts ...ClientOption) (*Client, error) {
+	yc := &Client{
+		gnmiC: c,
+	}
+	for _, opt := range opts {
+		if err := opt(yc); err != nil {
+			return nil, err
+		}
+	}
+	return yc, nil
+}
