@@ -137,14 +137,3 @@ func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (*Value[
 	}
 	return val, nil
 }
-
-// Get fetches the value at the query with a ONCE subscription.
-// It returns an error if there is no value at the path.
-func Get[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (T, error) {
-	val, err := Lookup(ctx, c, q)
-	v, ok := val.Val()
-	if !ok {
-		return v, fmt.Errorf("no value received; lookup err: %v", err)
-	}
-	return v, err
-}
