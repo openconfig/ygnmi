@@ -456,6 +456,50 @@ func TestLookupNonLeaf(t *testing.T) {
 			}
 		})
 	}
+func TestWatch(t *testing.T) {
+	fakeGNMI, c := getClient(t)
+	leafPath := schema.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
+	q := &LeafSingletonQuery[uint64]{
+		parentDir:  "leaf-container-struct",
+		state:      false,
+		ps:         ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
+		extractFn:  func(vgs ygot.ValidatedGoStruct) uint64 { return *(vgs.(*schema.LeafContainerStruct)).Uint64Leaf },
+		goStructFn: func() ygot.ValidatedGoStruct { return new(schema.LeafContainerStruct) },
+		yschema:    schema.GetSchemaStruct()(),
+	}
+
+	tests := []struct {
+		desc                 string
+		stub                 func(s *fakegnmi.Stubber)
+		wantSubscriptionPath *gpb.Path
+		wantLastVal          *Value[uint64]
+		wantVals             []*Value[uint64]
+		wantErr              string
+	}{{}}
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			w, err := Watch[uint64](context.Background(), c, q, 100*time.Millisecond, func(v *Value[uint64]) bool {
+				if len(tt.wantVals) == 0 {
+					t.Fatalf("Predicate expected no more values but got: %+v", v)
+				}
+				if diff := cmp.Diff(tt.wantVals[0], v, cmp.AllowUnexported(Value[uint64]{}), protocmp.Transform()); diff != "" {
+					t.Errorf("Predicate got unexpected input (-want,+got):\n %s\nComplianceErrors:\n%v", diff, v.ComplianceErrors)
+				}
+				tt.wantVals = tt.wantVals[1:]
+				val, present := v.Val()
+				return present && val > 10
+			})
+			if len(tt.wantVals) > 0 {
+				t.Fatalf("Predicate received too few values, remaining: %+v", tt.wantVals)
+			}
+			if err != nil {
+				t.Fatalf("Watch() returned unexpected error: %v", err)
+			}
+			val, status, err := w.Await()
+		})
+	}
+
 }
 
 // checks that the received time is just before now

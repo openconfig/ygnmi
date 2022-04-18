@@ -179,3 +179,50 @@ func receiveAll(sub gpb.GNMI_SubscribeClient, deletesExpected bool, mode gpb.Sub
 	}
 	return data, nil
 }
+
+// receiveStream receives gNMI notifications and stream to chan.
+// If the query is a leaf, each datapoint will be sent the chan individually.
+// If the query is a non-leaf, all the datapoints from a SubscriptionResponse are bundled.
+func receiveStream[T any](sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-chan []*DataPoint, <-chan error) {
+	dataCh := make(chan []*DataPoint)
+	errCh := make(chan error)
+
+	go func() {
+		defer close(dataCh)
+		defer close(errCh)
+
+		var recvData []*DataPoint
+		var hasSynced bool
+		var sync bool
+		var err error
+		for {
+			recvData, sync, err = receive(sub, recvData, true)
+			if err != nil {
+				errCh <- errors.Wrap(err, "error receiving gNMI response")
+				return
+			}
+			firstSync := !hasSynced && (sync || query.isLeaf())
+			hasSynced = hasSynced || sync || query.isLeaf()
+			// Skip conversion and predicate until first sync for non-leaves.
+			if !hasSynced {
+				continue
+			}
+			var datas [][]*DataPoint
+			if query.isLeaf() {
+				for _, datum := range recvData {
+					// Only add a sync datapoint on the first sync, if there are no other values.
+					if (len(recvData) == 1 && firstSync) || !datum.Sync {
+						datas = append(datas, []*DataPoint{datum})
+					}
+				}
+			} else {
+				datas = [][]*DataPoint{recvData}
+			}
+			for _, data := range datas {
+				dataCh <- data
+			}
+			recvData = nil
+		}
+	}()
+	return dataCh, errCh
+}

@@ -22,9 +22,13 @@ import (
 
 	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygot/ytypes"
+	"github.com/pkg/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	log "github.com/golang/glog"
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
+	closer "github.com/openconfig/gocloser"
 )
 
 // AnyQuery is a generic gNMI query for wildcard or non-wildcard state or config paths.
@@ -136,4 +140,63 @@ func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (*Value[
 		log.V(0).Infof("noncompliant data encountered while unmarshalling: %v", val.ComplianceErrors)
 	}
 	return val, nil
+}
+
+// Watcher represents an ongoing watch of telemetry values.
+type Watcher[T any] struct {
+	errCh    chan error
+	lastVal  *Value[T]
+	cancelFn func()
+}
+
+// Await waits for the watch to finish and returns the last received value
+// and a boolean indicating whether the predicate evaluated to true.
+func (w *Watcher[T]) Await() (*Value[T], bool, error) {
+	err := <-w.errCh
+	if err != nil {
+		if st, ok := status.FromError(errors.Cause(err)); ok && st.Code() == codes.DeadlineExceeded {
+			return w.lastVal, false, nil
+		}
+		return nil, false, err
+
+	}
+	return w.lastVal, true, nil
+}
+
+// Watch starts an asynchronous observation of the values with a STREAM subscription, evaluating each observed value with the specified predicate.
+// The subscription completes when either the predicate is true or the specified duration elapses.
+// Calling Await on the returned Watcher waits for the subscription to complete.
+// It returns the last observed value and a boolean that indicates whether that value satisfies the predicate.
+func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], dur time.Duration, pred func(*Value[T]) bool) (_ *Watcher[T], rerr error) {
+	ctx, cancelFn := context.WithTimeout(ctx, dur)
+	defer closer.CloseVoidOnErr(&rerr, cancelFn)
+
+	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM)
+	if err != nil {
+		return nil, err
+	}
+	w := &Watcher[T]{
+		errCh:    make(chan error),
+		cancelFn: cancelFn,
+	}
+	dataCh, errCh := receiveStream[T](sub, q)
+	go func() {
+		defer close(w.errCh)
+		gs := q.goStruct()
+		for {
+			select {
+			case data := <-dataCh:
+				val, err := unmarshalAndExtract[T](data, q, gs)
+				if err != nil {
+					w.errCh <- err
+				}
+				w.lastVal = val
+			case err := <-errCh:
+				w.errCh <- err
+				return
+			}
+		}
+	}()
+
+	return w, nil
 }
