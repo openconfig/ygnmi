@@ -154,6 +154,7 @@ func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bo
 }
 
 // receiveAll receives data until the context deadline is reached, or when in
+// ONCE mode, a sync response is received.
 func receiveAll(sub gpb.GNMI_SubscribeClient, deletesExpected bool, mode gpb.SubscriptionList_Mode) (data []*DataPoint, err error) {
 	for {
 		var sync bool

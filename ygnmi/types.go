@@ -1,6 +1,8 @@
 package ygnmi
 
 import (
+	"reflect"
+
 	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygot/ytypes"
 )
@@ -51,3 +53,47 @@ func (lq *LeafSingletonQuery[T]) schema() *ytypes.Schema {
 }
 
 func (lq *LeafSingletonQuery[T]) isNonWildcard() {}
+
+// LeafSingletonQuery is implementation of SingletonQuery interface for non-leaf nodes.
+// Note: Do not use this type directly, instead use the generated Path API.
+type NonLeafSingletonQuery[T ygot.ValidatedGoStruct] struct {
+	dir     string
+	state   bool
+	ps      ygot.PathStruct
+	yschema *ytypes.Schema
+}
+
+func (lq *NonLeafSingletonQuery[T]) extract(gs ygot.ValidatedGoStruct) T {
+	return gs.(T)
+}
+
+func (lq *NonLeafSingletonQuery[T]) fieldName() string {
+	return lq.dir
+}
+
+func (lq *NonLeafSingletonQuery[T]) goStruct() ygot.ValidatedGoStruct {
+	// Get the underlying type of T (which is a pointer), deference it to get the base type.
+	// Create a new instance of the base type and return it as a ValidatedGoStruct.
+	var noop T
+	val := reflect.ValueOf(noop)
+	gs := reflect.New(val.Type().Elem())
+	return gs.Interface().(ygot.ValidatedGoStruct)
+}
+
+func (lq *NonLeafSingletonQuery[T]) isLeaf() bool {
+	return false
+}
+
+func (lq *NonLeafSingletonQuery[T]) isState() bool {
+	return lq.state
+}
+
+func (lq *NonLeafSingletonQuery[T]) pathStruct() ygot.PathStruct {
+	return lq.ps
+}
+
+func (lq *NonLeafSingletonQuery[T]) schema() *ytypes.Schema {
+	return lq.yschema
+}
+
+func (lq *NonLeafSingletonQuery[T]) isNonWildcard() {}

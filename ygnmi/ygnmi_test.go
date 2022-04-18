@@ -38,7 +38,7 @@ func TestLookup(t *testing.T) {
 	leafPath := testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
 	lq := &LeafSingletonQuery[uint64]{
 		parentDir:  "leaf-container-struct",
-		state:      true,
+		state:      false,
 		ps:         ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
 		extractFn:  func(vgs ygot.ValidatedGoStruct) uint64 { return *(vgs.(*testutil.LeafContainerStruct)).Uint64Leaf },
 		goStructFn: func() ygot.ValidatedGoStruct { return new(testutil.LeafContainerStruct) },
@@ -245,6 +245,208 @@ func TestLookup(t *testing.T) {
 			tt.wantVal.RecvTimestamp = got.RecvTimestamp
 
 			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(Value[uint64]{}), protocmp.Transform()); diff != "" {
+				t.Errorf("Lookup(ctx, c, %v) returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", tt.inQuery, diff, got.ComplianceErrors)
+			}
+		})
+	}
+}
+
+func TestLookupNonLeaf(t *testing.T) {
+	fakeGNMI, c := getClient(t)
+	rootPath := schema.GNMIPath(t, "super-container/leaf-container-struct")
+	intPath := schema.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
+	enumPath := schema.GNMIPath(t, "super-container/leaf-container-struct/enum-leaf")
+
+	intStatePath := schema.GNMIPath(t, "super-container/leaf-container-struct/state/uint64-leaf")
+	q := &NonLeafSingletonQuery[*schema.LeafContainerStruct]{
+		dir:     "leaf-container-struct",
+		state:   false,
+		ps:      ygot.NewNodePath([]string{"super-container", "leaf-container-struct"}, nil, ygot.NewDeviceRootBase("")),
+		yschema: schema.GetSchemaStruct()(),
+	}
+
+	tests := []struct {
+		desc                 string
+		stub                 func(s *fakegnmi.Stubber)
+		inQuery              SingletonQuery[*schema.LeafContainerStruct]
+		inState              bool
+		wantSubscriptionPath *gpb.Path
+		wantVal              *Value[*schema.LeafContainerStruct]
+		wantErr              string
+	}{{
+		desc:    "success one update",
+		inQuery: q,
+		stub: func(s *fakegnmi.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: intPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_UintVal{UintVal: 10}},
+				}},
+			}).Sync()
+		},
+		wantSubscriptionPath: rootPath,
+		wantVal: &Value[*schema.LeafContainerStruct]{
+			val: &schema.LeafContainerStruct{
+				Uint64Leaf: ygot.Uint64(10),
+			},
+			present:   true,
+			Path:      rootPath,
+			Timestamp: time.Unix(0, 100),
+		},
+	}, {
+		desc:    "success one update ignore shadow path",
+		inQuery: q,
+		stub: func(s *fakegnmi.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: intPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_UintVal{UintVal: 10}},
+				}, {
+					Path: intStatePath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_UintVal{UintVal: 12}},
+				}},
+			}).Sync()
+		},
+		wantSubscriptionPath: rootPath,
+		wantVal: &Value[*schema.LeafContainerStruct]{
+			val: &schema.LeafContainerStruct{
+				Uint64Leaf: ygot.Uint64(10),
+			},
+			present:   true,
+			Path:      rootPath,
+			Timestamp: time.Unix(0, 100),
+		},
+	}, {
+		desc:    "success state true one update",
+		inQuery: q,
+		stub: func(s *fakegnmi.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: intStatePath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_UintVal{UintVal: 12}},
+				}},
+			}).Sync()
+		},
+		inState:              true,
+		wantSubscriptionPath: rootPath,
+		wantVal: &Value[*schema.LeafContainerStruct]{
+			val: &schema.LeafContainerStruct{
+				Uint64Leaf: ygot.Uint64(12),
+			},
+			present:   true,
+			Path:      rootPath,
+			Timestamp: time.Unix(0, 100),
+		},
+	}, {
+		desc:    "success state true ignore non-state",
+		inQuery: q,
+		stub: func(s *fakegnmi.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: intStatePath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_UintVal{UintVal: 12}},
+				}, {
+					Path: intPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_UintVal{UintVal: 10}},
+				}},
+			}).Sync()
+		},
+		inState:              true,
+		wantSubscriptionPath: rootPath,
+		wantVal: &Value[*schema.LeafContainerStruct]{
+			val: &schema.LeafContainerStruct{
+				Uint64Leaf: ygot.Uint64(12),
+			},
+			present:   true,
+			Path:      rootPath,
+			Timestamp: time.Unix(0, 100),
+		},
+	}, {
+		desc:    "success multiple updates",
+		inQuery: q,
+		stub: func(s *fakegnmi.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: enumPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "E_VALUE_FORTY_THREE"}},
+				}, {
+					Path: intPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_UintVal{UintVal: 10}},
+				}},
+			}).Sync()
+		},
+		wantSubscriptionPath: rootPath,
+		wantVal: &Value[*schema.LeafContainerStruct]{
+			val: &schema.LeafContainerStruct{
+				Uint64Leaf: ygot.Uint64(10),
+				EnumLeaf:   43,
+			},
+			present:   true,
+			Path:      rootPath,
+			Timestamp: time.Unix(0, 100),
+		},
+	}, {
+		desc:    "success - multiple notifications",
+		inQuery: q,
+		stub: func(s *fakegnmi.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: enumPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "E_VALUE_FORTY_THREE"}},
+				}},
+			}).Notification(&gpb.Notification{
+				Timestamp: 102,
+				Update: []*gpb.Update{{
+					Path: intPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_UintVal{UintVal: 10}},
+				}},
+			}).Sync()
+		},
+		wantSubscriptionPath: rootPath,
+		wantVal: &Value[*schema.LeafContainerStruct]{
+			val: &schema.LeafContainerStruct{
+				Uint64Leaf: ygot.Uint64(10),
+				EnumLeaf:   43,
+			},
+			present:   true,
+			Path:      rootPath,
+			Timestamp: time.Unix(0, 102),
+		},
+	}, {
+		desc:    "success no values",
+		inQuery: q,
+		stub: func(s *fakegnmi.Stubber) {
+			s.Sync()
+		},
+		wantSubscriptionPath: rootPath,
+		wantVal: &Value[*schema.LeafContainerStruct]{
+			Path: rootPath,
+		},
+	}}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			q.state = tt.inState
+
+			got, err := Lookup(context.Background(), c, tt.inQuery)
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Lookup(ctx, c, %v) returned unexpected diff: %s", tt.inQuery, diff)
+			}
+			if err != nil {
+				return
+			}
+			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
+			checkJustReceived(t, got.RecvTimestamp)
+			tt.wantVal.RecvTimestamp = got.RecvTimestamp
+
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(Value[*schema.LeafContainerStruct]{}), protocmp.Transform()); diff != "" {
 				t.Errorf("Lookup(ctx, c, %v) returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", tt.inQuery, diff, got.ComplianceErrors)
 			}
 		})

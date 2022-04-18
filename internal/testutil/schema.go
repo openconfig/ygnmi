@@ -101,7 +101,7 @@ func (*SuperContainer) ΛBelongingModule() string                     { return "
 func (*SuperContainer) ΛEnumTypeMap() map[string][]reflect.Type      { return nil }
 
 type LeafContainerStruct struct {
-	Uint64Leaf          *uint64       `path:"uint64-leaf"`
+	Uint64Leaf          *uint64       `path:"uint64-leaf" shadow-path:"state/uint64-leaf"`
 	EnumLeaf            EnumType      `path:"enum-leaf"`
 	UnionLeaf           UnionLeafType `path:"union-leaf"`
 	UnionLeaf2          EnumType      `path:"union-leaf2"`
@@ -299,6 +299,18 @@ func GetSchemaStruct() func() *ytypes.Schema {
 						Name: "leaf-container-struct",
 						Kind: yang.DirectoryEntry,
 						Dir: map[string]*yang.Entry{
+							"state": {
+								Name: "state",
+								Kind: yang.DirectoryEntry,
+								Dir: map[string]*yang.Entry{
+									"uint64-leaf": {
+										Kind: yang.LeafEntry,
+										Type: &yang.YangType{
+											Kind: yang.Yuint64,
+										},
+									},
+								},
+							},
 							"uint64-leaf": {
 								Name: "uint64-leaf",
 								Kind: yang.LeafEntry,
