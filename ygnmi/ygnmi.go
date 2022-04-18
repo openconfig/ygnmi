@@ -34,7 +34,7 @@ type AnyQuery[T any] interface {
 	pathStruct() ygot.PathStruct
 	// fieldname returns the name of YANG directory schema entry.
 	// For leaves, this is the parent entry.
-	fieldName() string
+	dirName() string
 	// goStruct returns the struct that query should be unmarshalled into.
 	// For leaves, this is the parent.
 	goStruct() ygot.ValidatedGoStruct
@@ -115,7 +115,7 @@ func NewClient(c gpb.GNMIClient, opts ...ClientOption) (*Client, error) {
 	return yc, nil
 }
 
-// Lookup fetches the value at the query with a ONCE subscription.
+// Lookup fetches the value of a SingletonQuery with a ONCE subscription.
 func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (*Value[T], error) {
 	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_ONCE)
 	if err != nil {

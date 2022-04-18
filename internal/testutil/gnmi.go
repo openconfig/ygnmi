@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package fakegnmi implements a fake GNMI server with the ability to stub responses.
-package fakegnmi
+// Package testutil implements a fake GNMI server with the ability to stub responses and fake schema.
+package testutil
 
 import (
 	"context"

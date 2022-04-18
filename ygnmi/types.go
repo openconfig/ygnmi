@@ -8,19 +8,25 @@ import (
 // LeafSingletonQuery is implementation of SingletonQuery interface for leaf nodes.
 // Note: Do not use this type directly, instead use the generated Path API.
 type LeafSingletonQuery[T any] struct {
-	parentDir  string
-	state      bool
-	ps         ygot.PathStruct
-	extractFn  func(ygot.ValidatedGoStruct) T
+	// parent is name of the YANG directory which contains this leaf.
+	parentDir string
+	// state controls if state or config values should be unmarshalled.
+	state bool
+	// ps contains the path of the query.
+	ps ygot.PathStruct
+	// extractFn gets the leaf node from the parent GoStruct.
+	extractFn func(ygot.ValidatedGoStruct) T
+	// goStructFn initializes a new GoStruct for the given path.
 	goStructFn func() ygot.ValidatedGoStruct
-	yschema    *ytypes.Schema
+	// yschema is parsed YANG schema to use when unmarshalling data.
+	yschema *ytypes.Schema
 }
 
 func (lq *LeafSingletonQuery[T]) extract(gs ygot.ValidatedGoStruct) T {
 	return lq.extractFn(gs)
 }
 
-func (lq *LeafSingletonQuery[T]) fieldName() string {
+func (lq *LeafSingletonQuery[T]) dirName() string {
 	return lq.parentDir
 }
 

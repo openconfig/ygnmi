@@ -8,18 +8,17 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/openconfig/gnmi/errdiff"
-	"github.com/openconfig/ygnmi/testing/fakegnmi"
-	"github.com/openconfig/ygnmi/testing/schema"
-	"github.com/openconfig/ygot/testutil"
+	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygot"
 	"google.golang.org/protobuf/testing/protocmp"
 
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
+	ygottestutil "github.com/openconfig/ygot/testutil"
 )
 
-func getClient(t testing.TB) (*fakegnmi.FakeGNMI, *Client) {
-	fakeGNMI, err := fakegnmi.Start(0)
+func getClient(t testing.TB) (*testutil.FakeGNMI, *Client) {
+	fakeGNMI, err := testutil.Start(0)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -36,19 +35,19 @@ func getClient(t testing.TB) (*fakegnmi.FakeGNMI, *Client) {
 
 func TestLookup(t *testing.T) {
 	fakeGNMI, c := getClient(t)
-	leafPath := schema.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
+	leafPath := testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
 	lq := &LeafSingletonQuery[uint64]{
 		parentDir:  "leaf-container-struct",
 		state:      true,
 		ps:         ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
-		extractFn:  func(vgs ygot.ValidatedGoStruct) uint64 { return *(vgs.(*schema.LeafContainerStruct)).Uint64Leaf },
-		goStructFn: func() ygot.ValidatedGoStruct { return new(schema.LeafContainerStruct) },
-		yschema:    schema.GetSchemaStruct()(),
+		extractFn:  func(vgs ygot.ValidatedGoStruct) uint64 { return *(vgs.(*testutil.LeafContainerStruct)).Uint64Leaf },
+		goStructFn: func() ygot.ValidatedGoStruct { return new(testutil.LeafContainerStruct) },
+		yschema:    testutil.GetSchemaStruct()(),
 	}
 
 	leaftests := []struct {
 		desc                 string
-		stub                 func(s *fakegnmi.Stubber)
+		stub                 func(s *testutil.Stubber)
 		inQuery              SingletonQuery[uint64]
 		wantSubscriptionPath *gpb.Path
 		wantVal              *Value[uint64]
@@ -56,7 +55,7 @@ func TestLookup(t *testing.T) {
 	}{{
 		desc:    "success update and sync",
 		inQuery: lq,
-		stub: func(s *fakegnmi.Stubber) {
+		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -75,7 +74,7 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "success update and no sync",
 		inQuery: lq,
-		stub: func(s *fakegnmi.Stubber) {
+		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -94,12 +93,12 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "success with prefix",
 		inQuery: lq,
-		stub: func(s *fakegnmi.Stubber) {
+		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
-				Prefix:    schema.GNMIPath(t, "super-container"),
+				Prefix:    testutil.GNMIPath(t, "super-container"),
 				Update: []*gpb.Update{{
-					Path: schema.GNMIPath(t, "leaf-container-struct/uint64-leaf"),
+					Path: testutil.GNMIPath(t, "leaf-container-struct/uint64-leaf"),
 					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 10}},
 				}},
 			}).Sync()
@@ -114,14 +113,14 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "success multiple notifs and first no value",
 		inQuery: lq,
-		stub: func(s *fakegnmi.Stubber) {
+		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Update: []*gpb.Update{},
 			}).Notification(&gpb.Notification{
 				Timestamp: 100,
-				Prefix:    schema.GNMIPath(t, "super-container"),
+				Prefix:    testutil.GNMIPath(t, "super-container"),
 				Update: []*gpb.Update{{
-					Path: schema.GNMIPath(t, "leaf-container-struct/uint64-leaf"),
+					Path: testutil.GNMIPath(t, "leaf-container-struct/uint64-leaf"),
 					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 10}},
 				}},
 			}).Sync()
@@ -136,7 +135,7 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "success no value",
 		inQuery: lq,
-		stub: func(s *fakegnmi.Stubber) {
+		stub: func(s *testutil.Stubber) {
 			s.Sync()
 		},
 		wantSubscriptionPath: leafPath,
@@ -147,7 +146,7 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "error multiple values",
 		inQuery: lq,
-		stub: func(s *fakegnmi.Stubber) {
+		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -166,7 +165,7 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "error deprecated path",
 		inQuery: lq,
-		stub: func(s *fakegnmi.Stubber) {
+		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 101,
 				Update: []*gpb.Update{{
@@ -181,11 +180,11 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "error last path element wrong",
 		inQuery: lq,
-		stub: func(s *fakegnmi.Stubber) {
+		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 101,
 				Update: []*gpb.Update{{
-					Path: schema.GNMIPath(t, "super-container/leaf-container-struct/enum-leaf"),
+					Path: testutil.GNMIPath(t, "super-container/leaf-container-struct/enum-leaf"),
 					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "E_VALUE_FORTY_THREE"}},
 				}},
 			}).Sync()
@@ -194,11 +193,11 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "error non existant path",
 		inQuery: lq,
-		stub: func(s *fakegnmi.Stubber) {
+		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 101,
 				Update: []*gpb.Update{{
-					Path: schema.GNMIPath(t, "super-container/leaf-container-struct/does-not-exist"),
+					Path: testutil.GNMIPath(t, "super-container/leaf-container-struct/does-not-exist"),
 					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
 				}},
 			}).Sync()
@@ -207,7 +206,7 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "error nil update",
 		inQuery: lq,
-		stub: func(s *fakegnmi.Stubber) {
+		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 101,
 				Update: []*gpb.Update{{
@@ -220,7 +219,7 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "error wrong type",
 		inQuery: lq,
-		stub: func(s *fakegnmi.Stubber) {
+		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 101,
 				Update: []*gpb.Update{{
@@ -260,7 +259,7 @@ func checkJustReceived(t *testing.T, recvTime time.Time) {
 }
 
 // verifySubscriptionPathsSent verifies the paths of the sent subscription requests is the same as wantPaths.
-func verifySubscriptionPathsSent(t *testing.T, fakeGNMI *fakegnmi.FakeGNMI, wantPaths ...*gpb.Path) {
+func verifySubscriptionPathsSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, wantPaths ...*gpb.Path) {
 	t.Helper()
 	requests := fakeGNMI.Requests()
 	if len(requests) != 1 {
@@ -278,7 +277,7 @@ func verifySubscriptionPathsSent(t *testing.T, fakeGNMI *fakegnmi.FakeGNMI, want
 		got.Target = ""
 		gotPaths = append(gotPaths, got)
 	}
-	if diff := cmp.Diff(wantPaths, gotPaths, protocmp.Transform(), cmpopts.SortSlices(testutil.PathLess)); diff != "" {
+	if diff := cmp.Diff(wantPaths, gotPaths, protocmp.Transform(), cmpopts.SortSlices(ygottestutil.PathLess)); diff != "" {
 		t.Errorf("subscription paths (-want, +got):\n%s", diff)
 	}
 }
