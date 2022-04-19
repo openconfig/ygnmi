@@ -256,26 +256,17 @@ func TestLookupNonLeaf(t *testing.T) {
 	rootPath := testutil.GNMIPath(t, "super-container/leaf-container-struct")
 	intPath := testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
 	enumPath := testutil.GNMIPath(t, "super-container/leaf-container-struct/enum-leaf")
-
 	intStatePath := testutil.GNMIPath(t, "super-container/leaf-container-struct/state/uint64-leaf")
-	q := &NonLeafSingletonQuery[*testutil.LeafContainerStruct]{
-		dir:     "leaf-container-struct",
-		state:   false,
-		ps:      ygot.NewNodePath([]string{"super-container", "leaf-container-struct"}, nil, ygot.NewDeviceRootBase("")),
-		yschema: testutil.GetSchemaStruct()(),
-	}
 
 	tests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
-		inQuery              SingletonQuery[*testutil.LeafContainerStruct]
 		inState              bool
 		wantSubscriptionPath *gpb.Path
 		wantVal              *Value[*testutil.LeafContainerStruct]
 		wantErr              string
 	}{{
-		desc:    "success one update",
-		inQuery: q,
+		desc: "success one update and state false",
 		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
@@ -295,32 +286,7 @@ func TestLookupNonLeaf(t *testing.T) {
 			Timestamp: time.Unix(0, 100),
 		},
 	}, {
-		desc:    "success one update ignore shadow path",
-		inQuery: q,
-		stub: func(s *testutil.Stubber) {
-			s.Notification(&gpb.Notification{
-				Timestamp: 100,
-				Update: []*gpb.Update{{
-					Path: intPath,
-					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_UintVal{UintVal: 10}},
-				}, {
-					Path: intStatePath,
-					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_UintVal{UintVal: 12}},
-				}},
-			}).Sync()
-		},
-		wantSubscriptionPath: rootPath,
-		wantVal: &Value[*testutil.LeafContainerStruct]{
-			val: &testutil.LeafContainerStruct{
-				Uint64Leaf: ygot.Uint64(10),
-			},
-			present:   true,
-			Path:      rootPath,
-			Timestamp: time.Unix(0, 100),
-		},
-	}, {
-		desc:    "success state true one update",
-		inQuery: q,
+		desc: "success one update and state true",
 		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
@@ -341,21 +307,18 @@ func TestLookupNonLeaf(t *testing.T) {
 			Timestamp: time.Unix(0, 100),
 		},
 	}, {
-		desc:    "success state true ignore non-state",
-		inQuery: q,
+		desc: "success one update with prefix",
 		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
+				Prefix:    testutil.GNMIPath(t, "super-container"),
 				Update: []*gpb.Update{{
-					Path: intStatePath,
+					Path: testutil.GNMIPath(t, "leaf-container-struct/uint64-leaf"),
 					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_UintVal{UintVal: 12}},
-				}, {
-					Path: intPath,
-					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_UintVal{UintVal: 10}},
 				}},
 			}).Sync()
 		},
-		inState:              true,
+		inState:              false,
 		wantSubscriptionPath: rootPath,
 		wantVal: &Value[*testutil.LeafContainerStruct]{
 			val: &testutil.LeafContainerStruct{
@@ -366,8 +329,46 @@ func TestLookupNonLeaf(t *testing.T) {
 			Timestamp: time.Unix(0, 100),
 		},
 	}, {
-		desc:    "success multiple updates",
-		inQuery: q,
+		desc: "success ignore state update when state false",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: intStatePath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_UintVal{UintVal: 10}},
+				}},
+			}).Sync()
+		},
+		wantSubscriptionPath: rootPath,
+		wantVal: &Value[*testutil.LeafContainerStruct]{
+			// TODO(DanG100): fix the check to correctly mark this as not present.
+			present:   true,
+			val:       &testutil.LeafContainerStruct{},
+			Path:      rootPath,
+			Timestamp: time.Unix(0, 100),
+		},
+	}, {
+		desc: "success ignore non-state update when state true",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: intPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_UintVal{UintVal: 10}},
+				}},
+			}).Sync()
+		},
+		inState:              true,
+		wantSubscriptionPath: rootPath,
+		wantVal: &Value[*testutil.LeafContainerStruct]{
+			// TODO(DanG100): fix the check to correctly mark this as not present.
+			present:   true,
+			val:       &testutil.LeafContainerStruct{},
+			Path:      rootPath,
+			Timestamp: time.Unix(0, 100),
+		},
+	}, {
+		desc: "success multiple updates in single notification",
 		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
@@ -391,8 +392,7 @@ func TestLookupNonLeaf(t *testing.T) {
 			Timestamp: time.Unix(0, 100),
 		},
 	}, {
-		desc:    "success - multiple notifications",
-		inQuery: q,
+		desc: "success multiple notifications",
 		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
@@ -419,8 +419,7 @@ func TestLookupNonLeaf(t *testing.T) {
 			Timestamp: time.Unix(0, 102),
 		},
 	}, {
-		desc:    "success no values",
-		inQuery: q,
+		desc: "success no values",
 		stub: func(s *testutil.Stubber) {
 			s.Sync()
 		},
@@ -433,11 +432,16 @@ func TestLookupNonLeaf(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			q.state = tt.inState
+			q := &NonLeafSingletonQuery[*testutil.LeafContainerStruct]{
+				dir:     "leaf-container-struct",
+				ps:      ygot.NewNodePath([]string{"super-container", "leaf-container-struct"}, nil, ygot.NewDeviceRootBase("")),
+				yschema: testutil.GetSchemaStruct()(),
+				state:   tt.inState,
+			}
 
-			got, err := Lookup(context.Background(), c, tt.inQuery)
+			got, err := Lookup[*testutil.LeafContainerStruct](context.Background(), c, q)
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
-				t.Fatalf("Lookup(ctx, c, %v) returned unexpected diff: %s", tt.inQuery, diff)
+				t.Fatalf("Lookup(ctx, c, %v) returned unexpected diff: %s", q, diff)
 			}
 			if err != nil {
 				return
@@ -447,7 +451,7 @@ func TestLookupNonLeaf(t *testing.T) {
 			tt.wantVal.RecvTimestamp = got.RecvTimestamp
 
 			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(Value[*testutil.LeafContainerStruct]{}), protocmp.Transform()); diff != "" {
-				t.Errorf("Lookup(ctx, c, %v) returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", tt.inQuery, diff, got.ComplianceErrors)
+				t.Errorf("Lookup(ctx, c, %v) returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", q, diff, got.ComplianceErrors)
 			}
 		})
 	}

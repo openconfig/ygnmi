@@ -85,11 +85,6 @@ func (v *Value[T]) IsPresent() bool {
 	return v.present
 }
 
-// GetComplianceErrors returns the schema compliance errors encountered while unmarshalling and validating the received data.
-func (v *Value[T]) GetComplianceErrors() *ComplianceErrors {
-	return v.ComplianceErrors
-}
-
 // Client is used to perform gNMI requests.
 type Client struct {
 	gnmiC  gpb.GNMIClient
