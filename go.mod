@@ -15,8 +15,10 @@ require (
 )
 
 require (
+	github.com/cenkalti/backoff/v4 v4.1.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
+	github.com/openconfig/grpctunnel v0.0.0-20210610163803-fde4a9dc048d // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/net v0.0.0-20210410081132-afb366fc7cd1 // indirect
 	golang.org/x/sys v0.0.0-20210330210617-4fbd30eecc44 // indirect

@@ -16,11 +16,14 @@
 package ygnmi
 
 import (
+	"context"
+	"fmt"
 	"time"
 
 	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygot/ytypes"
 
+	log "github.com/golang/glog"
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
 )
 
@@ -31,7 +34,7 @@ type AnyQuery[T any] interface {
 	pathStruct() ygot.PathStruct
 	// fieldname returns the name of YANG directory schema entry.
 	// For leaves, this is the parent entry.
-	fieldName() string
+	dirName() string
 	// goStruct returns the struct that query should be unmarshalled into.
 	// For leaves, this is the parent.
 	goStruct() ygot.ValidatedGoStruct
@@ -44,6 +47,12 @@ type AnyQuery[T any] interface {
 	isLeaf() bool
 	// schema returns the root schema used for unmarshalling.
 	schema() *ytypes.Schema
+}
+
+type SingletonQuery[T any] interface {
+	AnyQuery[T]
+	// isNonWildcard prevents this interface from being used in wildcard funcs.
+	isNonWildcard()
 }
 
 // Value contains a value received from a gNMI request and its metadata.
@@ -104,4 +113,27 @@ func NewClient(c gpb.GNMIClient, opts ...ClientOption) (*Client, error) {
 		}
 	}
 	return yc, nil
+}
+
+// Lookup fetches the value of a SingletonQuery with a ONCE subscription.
+func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (*Value[T], error) {
+	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_ONCE)
+	if err != nil {
+		return nil, fmt.Errorf("failed to subscribe to path: %w", err)
+	}
+	data, err := receiveAll(sub, false, gpb.SubscriptionList_ONCE)
+	if err != nil {
+		return nil, fmt.Errorf("failed to receive to data: %w", err)
+	}
+	val, err := unmarshalAndExtract[T](data, q, q.goStruct())
+	if err != nil {
+		return val, fmt.Errorf("failed to unmarshal data: %w", err)
+	}
+	if val.ComplianceErrors != nil {
+		if q.isLeaf() {
+			return val, fmt.Errorf("noncompliant data encountered while unmarshalling leaf: %v", val.ComplianceErrors)
+		}
+		log.V(0).Infof("noncompliant data encountered while unmarshalling: %v", val.ComplianceErrors)
+	}
+	return val, nil
 }

@@ -131,7 +131,7 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 		return ret, nil
 	}
 
-	unmarshalledData, complianceErrs, err := unmarshal(data, q.schema().SchemaTree[q.fieldName()], goStruct, queryPath, q.schema(), q.isLeaf(), q.isState())
+	unmarshalledData, complianceErrs, err := unmarshal(data, q.schema().SchemaTree[q.dirName()], goStruct, queryPath, q.schema(), q.isLeaf(), q.isState())
 	ret.ComplianceErrors = complianceErrs
 	if err != nil {
 		return ret, err
