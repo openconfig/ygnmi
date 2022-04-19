@@ -18,6 +18,7 @@ package ygnmi
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/openconfig/ygot/ygot"
@@ -75,6 +76,9 @@ type Value[T any] struct {
 
 // SetVal sets the value and marks it present.
 func (v *Value[T]) SetVal(val T) {
+	if reflect.ValueOf(val).IsZero() {
+		return
+	}
 	v.val = val
 	v.present = true
 }
@@ -144,9 +148,10 @@ func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (*Value[
 
 // Watcher represents an ongoing watch of telemetry values.
 type Watcher[T any] struct {
-	errCh    chan error
-	lastVal  *Value[T]
-	cancelFn func()
+	errCh      chan error
+	lastVal    *Value[T]
+	predStatus bool
+	cancelFn   func()
 }
 
 // Await waits for the watch to finish and returns the last received value
@@ -158,9 +163,8 @@ func (w *Watcher[T]) Await() (*Value[T], bool, error) {
 			return w.lastVal, false, nil
 		}
 		return nil, false, err
-
 	}
-	return w.lastVal, true, nil
+	return w.lastVal, w.predStatus, nil
 }
 
 // Watch starts an asynchronous observation of the values with a STREAM subscription, evaluating each observed value with the specified predicate.
@@ -189,8 +193,12 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], dur time.
 				val, err := unmarshalAndExtract[T](data, q, gs)
 				if err != nil {
 					w.errCh <- err
+					return
 				}
 				w.lastVal = val
+				if w.predStatus = pred(val); w.predStatus {
+					return
+				}
 			case err := <-errCh:
 				w.errCh <- err
 				return

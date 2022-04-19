@@ -458,45 +458,187 @@ func TestLookupNonLeaf(t *testing.T) {
 	}
 func TestWatch(t *testing.T) {
 	fakeGNMI, c := getClient(t)
-	leafPath := schema.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
+	path := testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
 	q := &LeafSingletonQuery[uint64]{
-		parentDir:  "leaf-container-struct",
-		state:      false,
-		ps:         ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
-		extractFn:  func(vgs ygot.ValidatedGoStruct) uint64 { return *(vgs.(*schema.LeafContainerStruct)).Uint64Leaf },
-		goStructFn: func() ygot.ValidatedGoStruct { return new(schema.LeafContainerStruct) },
-		yschema:    schema.GetSchemaStruct()(),
+		parentDir: "leaf-container-struct",
+		state:     false,
+		ps:        ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
+		extractFn: func(vgs ygot.ValidatedGoStruct) uint64 {
+			lcs := vgs.(*testutil.LeafContainerStruct)
+			if lcs.Uint64Leaf == nil {
+				return 0
+			}
+			return *lcs.Uint64Leaf
+		},
+		goStructFn: func() ygot.ValidatedGoStruct { return new(testutil.LeafContainerStruct) },
+		yschema:    testutil.GetSchemaStruct()(),
 	}
 
+	startTime := time.Now()
 	tests := []struct {
 		desc                 string
-		stub                 func(s *fakegnmi.Stubber)
+		stub                 func(s *testutil.Stubber)
 		wantSubscriptionPath *gpb.Path
 		wantLastVal          *Value[uint64]
 		wantVals             []*Value[uint64]
+		wantStatus           bool
 		wantErr              string
-	}{{}}
+	}{{
+		desc: "single notif and pred true",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 12}},
+				}},
+			}).Sync()
+		},
+		wantVals: []*Value[uint64]{{
+			present:   true,
+			val:       12,
+			Timestamp: startTime,
+			Path:      path,
+		}},
+		wantSubscriptionPath: path,
+		wantStatus:           true,
+		wantLastVal: &Value[uint64]{
+			present:   true,
+			val:       12,
+			Timestamp: startTime,
+			Path:      path,
+		},
+	}, {
+		desc: "single notif and pred false",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 9}},
+				}},
+			}).Sync()
+		},
+		wantVals: []*Value[uint64]{{
+			present:   true,
+			val:       9,
+			Timestamp: startTime,
+			Path:      path,
+		}},
+		wantSubscriptionPath: path,
+		wantStatus:           false,
+		wantLastVal: &Value[uint64]{
+			present:   true,
+			val:       9,
+			Timestamp: startTime,
+			Path:      path,
+		},
+	}, {
+		desc: "multiple notif and pred true",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 8}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+				Update: []*gpb.Update{{
+					Path: path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 11}},
+				}},
+			})
+		},
+		wantVals: []*Value[uint64]{{
+			present:   true,
+			val:       8,
+			Timestamp: startTime,
+			Path:      path,
+		}, {
+			present:   true,
+			val:       11,
+			Timestamp: startTime.Add(time.Millisecond),
+			Path:      path,
+		}},
+		wantSubscriptionPath: path,
+		wantStatus:           true,
+		wantLastVal: &Value[uint64]{
+			present:   true,
+			val:       11,
+			Timestamp: startTime.Add(time.Millisecond),
+			Path:      path,
+		},
+	}, {
+		desc: "multiple notif with deletes",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 8}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+				Delete:    []*gpb.Path{path},
+			})
+		},
+		wantVals: []*Value[uint64]{{
+			present:   true,
+			val:       8,
+			Timestamp: startTime,
+			Path:      path,
+		}, {
+			present:   false,
+			Timestamp: startTime.Add(time.Millisecond),
+			Path:      path,
+		}},
+		wantSubscriptionPath: path,
+		wantStatus:           false,
+		wantLastVal: &Value[uint64]{
+			Timestamp: startTime.Add(time.Millisecond),
+			Path:      path,
+		},
+	}}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			w, err := Watch[uint64](context.Background(), c, q, 100*time.Millisecond, func(v *Value[uint64]) bool {
+			w, err := Watch[uint64](context.Background(), c, q, 10*time.Second, func(v *Value[uint64]) bool {
 				if len(tt.wantVals) == 0 {
 					t.Fatalf("Predicate expected no more values but got: %+v", v)
 				}
-				if diff := cmp.Diff(tt.wantVals[0], v, cmp.AllowUnexported(Value[uint64]{}), protocmp.Transform()); diff != "" {
+				if diff := cmp.Diff(tt.wantVals[0], v, cmpopts.IgnoreFields(Value[uint64]{}, "RecvTimestamp"), cmp.AllowUnexported(Value[uint64]{}), protocmp.Transform()); diff != "" {
 					t.Errorf("Predicate got unexpected input (-want,+got):\n %s\nComplianceErrors:\n%v", diff, v.ComplianceErrors)
 				}
 				tt.wantVals = tt.wantVals[1:]
 				val, present := v.Val()
 				return present && val > 10
 			})
-			if len(tt.wantVals) > 0 {
-				t.Fatalf("Predicate received too few values, remaining: %+v", tt.wantVals)
-			}
 			if err != nil {
 				t.Fatalf("Watch() returned unexpected error: %v", err)
 			}
 			val, status, err := w.Await()
+			if len(tt.wantVals) > 0 {
+				t.Errorf("Predicate received too few values, remaining: %+v", tt.wantVals)
+			}
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Await() returned unexpected diff: %s", diff)
+			}
+			if err != nil {
+				return
+			}
+			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
+			if val != nil {
+				checkJustReceived(t, val.RecvTimestamp)
+				tt.wantLastVal.RecvTimestamp = val.RecvTimestamp
+			}
+
+			if tt.wantStatus != status {
+				t.Errorf("Await() returned unexpected status got: %v, want %v", status, tt.wantStatus)
+			}
+			if diff := cmp.Diff(tt.wantLastVal, val, cmp.AllowUnexported(Value[uint64]{}), protocmp.Transform()); diff != "" {
+				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
+			}
 		})
 	}
 

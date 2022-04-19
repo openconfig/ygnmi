@@ -198,6 +198,11 @@ func receiveStream[T any](sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-ch
 		for {
 			recvData, sync, err = receive(sub, recvData, true)
 			if err != nil {
+
+				if errors.Is(err, io.EOF) {
+					errCh <- nil
+					return
+				}
 				errCh <- errors.Wrap(err, "error receiving gNMI response")
 				return
 			}
