@@ -54,7 +54,7 @@ func (lq *LeafSingletonQuery[T]) schema() *ytypes.Schema {
 
 func (lq *LeafSingletonQuery[T]) isNonWildcard() {}
 
-// LeafSingletonQuery is implementation of SingletonQuery interface for non-leaf nodes.
+// NonLeafSingletonQuery is implementation of SingletonQuery interface for non-leaf nodes.
 // Note: Do not use this type directly, instead use the generated Path API.
 type NonLeafSingletonQuery[T ygot.ValidatedGoStruct] struct {
 	dir     string
@@ -67,7 +67,7 @@ func (lq *NonLeafSingletonQuery[T]) extract(gs ygot.ValidatedGoStruct) T {
 	return gs.(T)
 }
 
-func (lq *NonLeafSingletonQuery[T]) fieldName() string {
+func (lq *NonLeafSingletonQuery[T]) dirName() string {
 	return lq.dir
 }
 

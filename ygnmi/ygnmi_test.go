@@ -253,30 +253,30 @@ func TestLookup(t *testing.T) {
 
 func TestLookupNonLeaf(t *testing.T) {
 	fakeGNMI, c := getClient(t)
-	rootPath := schema.GNMIPath(t, "super-container/leaf-container-struct")
-	intPath := schema.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
-	enumPath := schema.GNMIPath(t, "super-container/leaf-container-struct/enum-leaf")
+	rootPath := testutil.GNMIPath(t, "super-container/leaf-container-struct")
+	intPath := testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
+	enumPath := testutil.GNMIPath(t, "super-container/leaf-container-struct/enum-leaf")
 
-	intStatePath := schema.GNMIPath(t, "super-container/leaf-container-struct/state/uint64-leaf")
-	q := &NonLeafSingletonQuery[*schema.LeafContainerStruct]{
+	intStatePath := testutil.GNMIPath(t, "super-container/leaf-container-struct/state/uint64-leaf")
+	q := &NonLeafSingletonQuery[*testutil.LeafContainerStruct]{
 		dir:     "leaf-container-struct",
 		state:   false,
 		ps:      ygot.NewNodePath([]string{"super-container", "leaf-container-struct"}, nil, ygot.NewDeviceRootBase("")),
-		yschema: schema.GetSchemaStruct()(),
+		yschema: testutil.GetSchemaStruct()(),
 	}
 
 	tests := []struct {
 		desc                 string
-		stub                 func(s *fakegnmi.Stubber)
-		inQuery              SingletonQuery[*schema.LeafContainerStruct]
+		stub                 func(s *testutil.Stubber)
+		inQuery              SingletonQuery[*testutil.LeafContainerStruct]
 		inState              bool
 		wantSubscriptionPath *gpb.Path
-		wantVal              *Value[*schema.LeafContainerStruct]
+		wantVal              *Value[*testutil.LeafContainerStruct]
 		wantErr              string
 	}{{
 		desc:    "success one update",
 		inQuery: q,
-		stub: func(s *fakegnmi.Stubber) {
+		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -286,8 +286,8 @@ func TestLookupNonLeaf(t *testing.T) {
 			}).Sync()
 		},
 		wantSubscriptionPath: rootPath,
-		wantVal: &Value[*schema.LeafContainerStruct]{
-			val: &schema.LeafContainerStruct{
+		wantVal: &Value[*testutil.LeafContainerStruct]{
+			val: &testutil.LeafContainerStruct{
 				Uint64Leaf: ygot.Uint64(10),
 			},
 			present:   true,
@@ -297,7 +297,7 @@ func TestLookupNonLeaf(t *testing.T) {
 	}, {
 		desc:    "success one update ignore shadow path",
 		inQuery: q,
-		stub: func(s *fakegnmi.Stubber) {
+		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -310,8 +310,8 @@ func TestLookupNonLeaf(t *testing.T) {
 			}).Sync()
 		},
 		wantSubscriptionPath: rootPath,
-		wantVal: &Value[*schema.LeafContainerStruct]{
-			val: &schema.LeafContainerStruct{
+		wantVal: &Value[*testutil.LeafContainerStruct]{
+			val: &testutil.LeafContainerStruct{
 				Uint64Leaf: ygot.Uint64(10),
 			},
 			present:   true,
@@ -321,7 +321,7 @@ func TestLookupNonLeaf(t *testing.T) {
 	}, {
 		desc:    "success state true one update",
 		inQuery: q,
-		stub: func(s *fakegnmi.Stubber) {
+		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -332,8 +332,8 @@ func TestLookupNonLeaf(t *testing.T) {
 		},
 		inState:              true,
 		wantSubscriptionPath: rootPath,
-		wantVal: &Value[*schema.LeafContainerStruct]{
-			val: &schema.LeafContainerStruct{
+		wantVal: &Value[*testutil.LeafContainerStruct]{
+			val: &testutil.LeafContainerStruct{
 				Uint64Leaf: ygot.Uint64(12),
 			},
 			present:   true,
@@ -343,7 +343,7 @@ func TestLookupNonLeaf(t *testing.T) {
 	}, {
 		desc:    "success state true ignore non-state",
 		inQuery: q,
-		stub: func(s *fakegnmi.Stubber) {
+		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -357,8 +357,8 @@ func TestLookupNonLeaf(t *testing.T) {
 		},
 		inState:              true,
 		wantSubscriptionPath: rootPath,
-		wantVal: &Value[*schema.LeafContainerStruct]{
-			val: &schema.LeafContainerStruct{
+		wantVal: &Value[*testutil.LeafContainerStruct]{
+			val: &testutil.LeafContainerStruct{
 				Uint64Leaf: ygot.Uint64(12),
 			},
 			present:   true,
@@ -368,7 +368,7 @@ func TestLookupNonLeaf(t *testing.T) {
 	}, {
 		desc:    "success multiple updates",
 		inQuery: q,
-		stub: func(s *fakegnmi.Stubber) {
+		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -381,8 +381,8 @@ func TestLookupNonLeaf(t *testing.T) {
 			}).Sync()
 		},
 		wantSubscriptionPath: rootPath,
-		wantVal: &Value[*schema.LeafContainerStruct]{
-			val: &schema.LeafContainerStruct{
+		wantVal: &Value[*testutil.LeafContainerStruct]{
+			val: &testutil.LeafContainerStruct{
 				Uint64Leaf: ygot.Uint64(10),
 				EnumLeaf:   43,
 			},
@@ -393,7 +393,7 @@ func TestLookupNonLeaf(t *testing.T) {
 	}, {
 		desc:    "success - multiple notifications",
 		inQuery: q,
-		stub: func(s *fakegnmi.Stubber) {
+		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -409,8 +409,8 @@ func TestLookupNonLeaf(t *testing.T) {
 			}).Sync()
 		},
 		wantSubscriptionPath: rootPath,
-		wantVal: &Value[*schema.LeafContainerStruct]{
-			val: &schema.LeafContainerStruct{
+		wantVal: &Value[*testutil.LeafContainerStruct]{
+			val: &testutil.LeafContainerStruct{
 				Uint64Leaf: ygot.Uint64(10),
 				EnumLeaf:   43,
 			},
@@ -421,11 +421,11 @@ func TestLookupNonLeaf(t *testing.T) {
 	}, {
 		desc:    "success no values",
 		inQuery: q,
-		stub: func(s *fakegnmi.Stubber) {
+		stub: func(s *testutil.Stubber) {
 			s.Sync()
 		},
 		wantSubscriptionPath: rootPath,
-		wantVal: &Value[*schema.LeafContainerStruct]{
+		wantVal: &Value[*testutil.LeafContainerStruct]{
 			Path: rootPath,
 		},
 	}}
@@ -446,7 +446,7 @@ func TestLookupNonLeaf(t *testing.T) {
 			checkJustReceived(t, got.RecvTimestamp)
 			tt.wantVal.RecvTimestamp = got.RecvTimestamp
 
-			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(Value[*schema.LeafContainerStruct]{}), protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(Value[*testutil.LeafContainerStruct]{}), protocmp.Transform()); diff != "" {
 				t.Errorf("Lookup(ctx, c, %v) returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", tt.inQuery, diff, got.ComplianceErrors)
 			}
 		})
