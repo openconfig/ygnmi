@@ -603,7 +603,7 @@ func TestWatch(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			w, err := Watch[uint64](context.Background(), c, q, 10*time.Second, func(v *Value[uint64]) bool {
+			w, err := Watch[uint64](context.Background(), c, q, 1*time.Second, func(v *Value[uint64]) bool {
 				if len(tt.wantVals) == 0 {
 					t.Fatalf("Predicate expected no more values but got: %+v", v)
 				}
@@ -641,7 +641,6 @@ func TestWatch(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 // checks that the received time is just before now

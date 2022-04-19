@@ -167,6 +167,11 @@ func (w *Watcher[T]) Await() (*Value[T], bool, error) {
 	return w.lastVal, w.predStatus, nil
 }
 
+// Cancel immediately stops the watch.
+func (w *Watcher[T]) Cancel() {
+	w.cancelFn()
+}
+
 // Watch starts an asynchronous observation of the values with a STREAM subscription, evaluating each observed value with the specified predicate.
 // The subscription completes when either the predicate is true or the specified duration elapses.
 // Calling Await on the returned Watcher waits for the subscription to complete.
@@ -205,6 +210,5 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], dur time.
 			}
 		}
 	}()
-
 	return w, nil
 }
