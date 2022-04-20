@@ -1,6 +1,8 @@
 package ygnmi
 
 import (
+	"reflect"
+
 	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygot/ytypes"
 )
@@ -22,32 +24,92 @@ type LeafSingletonQuery[T any] struct {
 	yschema *ytypes.Schema
 }
 
+// extract takes the parent GoStruct and returns the correct child field from it.
 func (lq *LeafSingletonQuery[T]) extract(gs ygot.ValidatedGoStruct) T {
 	return lq.extractFn(gs)
 }
 
+// dirName returns the YANG schema name of the parent GoStruct.
 func (lq *LeafSingletonQuery[T]) dirName() string {
 	return lq.parentDir
 }
 
+// goStruct returns the parent struct of the leaf node.
 func (lq *LeafSingletonQuery[T]) goStruct() ygot.ValidatedGoStruct {
 	return lq.goStructFn()
 }
 
+// isLeaf returns true, as this Query type is only for leaves.
 func (lq *LeafSingletonQuery[T]) isLeaf() bool {
 	return true
 }
 
+// isState returns if the Query is for a state or config path.
 func (lq *LeafSingletonQuery[T]) isState() bool {
 	return lq.state
 }
 
+// pathStruct returns the path struct containing the path for the Query.
 func (lq *LeafSingletonQuery[T]) pathStruct() ygot.PathStruct {
 	return lq.ps
 }
 
+// schema returns the schema used for unmarshalling.
 func (lq *LeafSingletonQuery[T]) schema() *ytypes.Schema {
 	return lq.yschema
 }
 
+// isNonWildcard prevents this struct from being used in LookupAll, etc.
 func (lq *LeafSingletonQuery[T]) isNonWildcard() {}
+
+// NonLeafSingletonQuery is implementation of SingletonQuery interface for non-leaf nodes.
+// Note: Do not use this type directly, instead use the generated Path API.
+type NonLeafSingletonQuery[T ygot.ValidatedGoStruct] struct {
+	dir     string
+	state   bool
+	ps      ygot.PathStruct
+	yschema *ytypes.Schema
+}
+
+// extract casts the input GoStruct to the concrete type for the query.
+// As non-leaves structs are always GoStructs, a simple cast is sufficient.
+func (lq *NonLeafSingletonQuery[T]) extract(gs ygot.ValidatedGoStruct) T {
+	return gs.(T)
+}
+
+// dirName returns the YANG schema directory name, used to unmarshal values.
+func (lq *NonLeafSingletonQuery[T]) dirName() string {
+	return lq.dir
+}
+
+// goStruct returns new initialized GoStruct, gNMI notifications can be unmarshalled into this struct.
+func (lq *NonLeafSingletonQuery[T]) goStruct() ygot.ValidatedGoStruct {
+	// Get the underlying type of T (which is a pointer), deference it to get the base type.
+	// Create a new instance of the base type and return it as a ValidatedGoStruct.
+	var t T
+	gs := reflect.New(reflect.TypeOf(t).Elem())
+	return gs.Interface().(ygot.ValidatedGoStruct)
+}
+
+// isLeaf returns false, as this Query type is only for non-leaves.
+func (lq *NonLeafSingletonQuery[T]) isLeaf() bool {
+	return false
+}
+
+// isState returns if the Query is for a state or config path.
+func (lq *NonLeafSingletonQuery[T]) isState() bool {
+	return lq.state
+}
+
+// pathStruct returns the path struct containing the path for the Query.
+func (lq *NonLeafSingletonQuery[T]) pathStruct() ygot.PathStruct {
+	return lq.ps
+}
+
+// schema returns the schema used for unmarshalling.
+func (lq *NonLeafSingletonQuery[T]) schema() *ytypes.Schema {
+	return lq.yschema
+}
+
+// isNonWildcard prevents this struct from being used in LookupAll, etc.
+func (lq *NonLeafSingletonQuery[T]) isNonWildcard() {}
