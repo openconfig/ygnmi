@@ -459,7 +459,7 @@ func TestLookupNonLeaf(t *testing.T) {
 }
 
 func TestWatch(t *testing.T) {
-	fakeGNMI, c := getClient(t)
+	fakeGNMI, client := getClient(t)
 	path := testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
 	q := &LeafSingletonQuery[uint64]{
 		parentDir: "leaf-container-struct",
@@ -605,23 +605,24 @@ func TestWatch(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			w, err := Watch[uint64](context.Background(), c, q, 1*time.Second, func(v *Value[uint64]) bool {
-				if len(tt.wantVals) == 0 {
-					t.Fatalf("Predicate expected no more values but got: %+v", v)
+			i := 0
+			w, err := Watch[uint64](context.Background(), client, q, 1*time.Second, func(v *Value[uint64]) bool {
+				if i > len(tt.wantVals) {
+					t.Fatalf("Predicate(%d) expected no more values but got: %+v", i, v)
 				}
-				if diff := cmp.Diff(tt.wantVals[0], v, cmpopts.IgnoreFields(Value[uint64]{}, "RecvTimestamp"), cmp.AllowUnexported(Value[uint64]{}), protocmp.Transform()); diff != "" {
-					t.Errorf("Predicate got unexpected input (-want,+got):\n %s\nComplianceErrors:\n%v", diff, v.ComplianceErrors)
+				if diff := cmp.Diff(tt.wantVals[i], v, cmpopts.IgnoreFields(Value[uint64]{}, "RecvTimestamp"), cmp.AllowUnexported(Value[uint64]{}), protocmp.Transform()); diff != "" {
+					t.Errorf("Predicate(%d) got unexpected input (-want,+got):\n %s\nComplianceErrors:\n%v", i, diff, v.ComplianceErrors)
 				}
-				tt.wantVals = tt.wantVals[1:]
 				val, present := v.Val()
+				i++
 				return present && val > 10
 			})
 			if err != nil {
 				t.Fatalf("Watch() returned unexpected error: %v", err)
 			}
 			val, status, err := w.Await()
-			if len(tt.wantVals) > 0 {
-				t.Errorf("Predicate received too few values, remaining: %+v", tt.wantVals)
+			if i < len(tt.wantVals) {
+				t.Errorf("Predicate received too few values: got %d, want %d", i, len(tt.wantVals))
 			}
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
 				t.Fatalf("Await() returned unexpected diff: %s", diff)
@@ -643,6 +644,32 @@ func TestWatch(t *testing.T) {
 			}
 		})
 	}
+	t.Run("multiple awaits", func(t *testing.T) {
+		fakeGNMI.Stub().Sync()
+		w, err := Watch[uint64](context.Background(), client, q, time.Second, func(v *Value[uint64]) bool { return true })
+		if err != nil {
+			t.Fatal(err)
+		}
+		want := &Value[uint64]{
+			Path: path,
+		}
+		wantStatus := true
+		val, status, err := w.Await()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if wantStatus != status {
+			t.Errorf("Await() returned unexpected status got: %v, want %v", status, wantStatus)
+		}
+		if diff := cmp.Diff(want, val, cmp.AllowUnexported(Value[uint64]{}), protocmp.Transform()); diff != "" {
+			t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
+		}
+		_, _, err = w.Await()
+		if d := errdiff.Check(err, "Await already called: watch channel closed"); d != "" {
+			t.Fatalf("Await() returned unexpected diff: %s", d)
+		}
+
+	})
 }
 
 // checks that the received time is just before now

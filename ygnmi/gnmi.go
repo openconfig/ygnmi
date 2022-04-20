@@ -180,7 +180,8 @@ func receiveAll(sub gpb.GNMI_SubscribeClient, deletesExpected bool, mode gpb.Sub
 	return data, nil
 }
 
-// receiveStream receives gNMI notifications and stream to chan.
+// receiveStream receives an async stream of gNMI notifications and sends them to a chan.
+// Note: this does not imply that mode is gpb.SubscriptionList_STREAM (though it usually is).
 // If the query is a leaf, each datapoint will be sent the chan individually.
 // If the query is a non-leaf, all the datapoints from a SubscriptionResponse are bundled.
 func receiveStream[T any](sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-chan []*DataPoint, <-chan error) {

@@ -154,7 +154,10 @@ type Watcher[T any] struct {
 // Await waits for the watch to finish and returns the last received value
 // and a boolean indicating whether the predicate evaluated to true.
 func (w *Watcher[T]) Await() (*Value[T], bool, error) {
-	err := <-w.errCh
+	err, ok := <-w.errCh
+	if !ok {
+		return nil, false, fmt.Errorf("Await already called: watch channel closed")
+	}
 	if err != nil {
 		if st, ok := status.FromError(errors.Cause(err)); ok && st.Code() == codes.DeadlineExceeded {
 			return w.lastVal, false, nil
@@ -201,6 +204,7 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], dur time.
 				}
 				w.lastVal = val
 				if w.predStatus = pred(val); w.predStatus {
+					w.errCh <- nil
 					return
 				}
 			case err := <-errCh:
