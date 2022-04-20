@@ -428,6 +428,7 @@ func TestLookupNonLeaf(t *testing.T) {
 			Path: rootPath,
 		},
 	}}
+	// Failing tests cases are covered by the TestLookup() as these tests test the same func.
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
