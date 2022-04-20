@@ -54,10 +54,18 @@ type AnyQuery[T any] interface {
 	schema() *ytypes.Schema
 }
 
+// SingletonQuery is a non-wildcard gNMI query.
 type SingletonQuery[T any] interface {
 	AnyQuery[T]
 	// isNonWildcard prevents this interface from being used in wildcard funcs.
 	isNonWildcard()
+}
+
+// WildcardQuery is a wildcard gNMI query.
+type WildcardQuery[T any] interface {
+	AnyQuery[T]
+	// isWildcard prevents this interface from being used in non-wildcard funcs.
+	isWildcard()
 }
 
 // Value contains a value received from a gNMI request and its metadata.
@@ -215,4 +223,40 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], dur time.
 		}
 	}()
 	return w, nil
+}
+
+// Lookup fetches the values of a WildcardQuery with a ONCE subscription.
+// It returns an empty list if no values are present at the path.
+func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]*Value[T], error) {
+	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_ONCE)
+	if err != nil {
+		return nil, fmt.Errorf("failed to subscribe to path: %w", err)
+	}
+	data, err := receiveAll(sub, false, gpb.SubscriptionList_ONCE)
+	if err != nil {
+		return nil, fmt.Errorf("failed to receive to data: %w", err)
+	}
+	p, _, errs := ygot.ResolvePath(q.pathStruct())
+	if err := errsToErr(errs); err != nil {
+		return nil, fmt.Errorf("failed to resolve path: %w", err)
+	}
+
+	datapointGroups, sortedPrefixes, err := bundleDatapoints(data, len(p.Elem))
+	if err != nil {
+		return nil, fmt.Errorf("failed to bundle datapoints: %w", err)
+	}
+	var vals []*Value[T]
+	for _, prefix := range sortedPrefixes {
+		goStruct := q.goStruct()
+		v, err := unmarshalAndExtract[T](datapointGroups[prefix], q, goStruct)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal data: %w", err)
+		}
+		if v.ComplianceErrors != nil {
+			log.V(0).Infof("noncompliant data encountered while unmarshalling: %v", v.ComplianceErrors)
+			continue
+		}
+		vals = append(vals, v)
+	}
+	return vals, nil
 }

@@ -397,6 +397,7 @@ func GetSchemaStruct() func() *ytypes.Schema {
 				"Device":                rootSchema,
 				"super-container":       rootSchema.Dir["super-container"],
 				"leaf-container-struct": rootSchema.Dir["super-container"].Dir["leaf-container-struct"],
+				"Model_SingleKey":       rootSchema.Dir["super-container"].Dir["model"].Dir["a"].Dir["single-key"],
 			},
 			Unmarshal: unmarshalFunc,
 		}
