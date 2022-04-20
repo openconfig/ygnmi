@@ -214,7 +214,7 @@ func receiveStream[T any](sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-ch
 			var datas [][]*DataPoint
 			if query.isLeaf() {
 				for _, datum := range recvData {
-					// Only add a sync datapoint on the first sync, if there are no other values.
+					// Add all datapoints except sync datapoints after the first sync.
 					if (len(recvData) == 1 && firstSync) || !datum.Sync {
 						datas = append(datas, []*DataPoint{datum})
 					}

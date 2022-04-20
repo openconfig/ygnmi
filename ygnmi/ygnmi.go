@@ -76,11 +76,8 @@ type Value[T any] struct {
 
 // SetVal sets the value and marks it present.
 func (v *Value[T]) SetVal(val T) {
-	if reflect.ValueOf(val).IsZero() {
-		return
-	}
+	v.present = !reflect.ValueOf(val).IsZero()
 	v.val = val
-	v.present = true
 }
 
 // Val returns the val and whether it is present.
@@ -178,6 +175,7 @@ func (w *Watcher[T]) Cancel() {
 // It returns the last observed value and a boolean that indicates whether that value satisfies the predicate.
 func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], dur time.Duration, pred func(*Value[T]) bool) (_ *Watcher[T], rerr error) {
 	ctx, cancelFn := context.WithTimeout(ctx, dur)
+	// Cancel the context immediately, if subscribe returns an error.
 	defer closer.CloseVoidOnErr(&rerr, cancelFn)
 
 	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM)
@@ -191,6 +189,7 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], dur time.
 	dataCh, errCh := receiveStream[T](sub, q)
 	go func() {
 		defer close(w.errCh)
+		// Create an intially empty GoStruct, into which all received datapoints will be unmarshalled.
 		gs := q.goStruct()
 		for {
 			select {
