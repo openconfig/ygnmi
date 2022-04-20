@@ -242,3 +242,46 @@ func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]*Va
 	}
 	return vals, nil
 }
+
+// WatchAll starts an asynchronous observation of the values with a STREAM subscription, evaluating each observed value with the specified predicate.
+// The subscription completes when either the predicate is true or the specified duration elapses.
+// Calling Await on the returned Watcher waits for the subscription to complete.
+// It returns the last observed value and a boolean that indicates whether that value satisfies the predicate.
+func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], dur time.Duration, pred func(*Value[T]) bool) (_ *Watcher[T], rerr error) {
+	ctx, cancelFn := context.WithTimeout(ctx, dur)
+	// Cancel the context immediately, if subscribe returns an error.
+	defer closer.CloseVoidOnErr(&rerr, cancelFn)
+
+	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM)
+	if err != nil {
+		return nil, err
+	}
+	w := &Watcher[T]{
+		errCh:    make(chan error),
+		cancelFn: cancelFn,
+	}
+	dataCh, errCh := receiveStream[T](sub, q)
+	go func() {
+		defer close(w.errCh)
+		// Create an intially empty GoStruct, into which all received datapoints will be unmarshalled.
+		gs := q.goStruct()
+		for {
+			select {
+			case data := <-dataCh:
+				val, err := unmarshalAndExtract[T](data, q, gs)
+				if err != nil {
+					w.errCh <- err
+					return
+				}
+				w.lastVal = val
+				if w.predStatus = pred(val); w.predStatus {
+					return
+				}
+			case err := <-errCh:
+				w.errCh <- err
+				return
+			}
+		}
+	}()
+	return w, nil
+}
