@@ -456,6 +456,8 @@ func TestLookupNonLeaf(t *testing.T) {
 			}
 		})
 	}
+}
+
 func TestWatch(t *testing.T) {
 	fakeGNMI, c := getClient(t)
 	path := testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
