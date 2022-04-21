@@ -490,9 +490,7 @@ func TestWatch(t *testing.T) {
 		wantSubscriptionPath *gpb.Path
 		wantLastVal          *Value[uint64]
 		wantVals             []*Value[uint64]
-		wantStatus           bool
-		wantWatchErr         string
-		wantAwaitErr         string
+		wantErr              string
 	}{{
 		desc: "single notif and pred true",
 		stub: func(s *testutil.Stubber) {
@@ -512,7 +510,6 @@ func TestWatch(t *testing.T) {
 			Path:      path,
 		}},
 		wantSubscriptionPath: path,
-		wantStatus:           true,
 		wantLastVal: &Value[uint64]{
 			present:   true,
 			val:       12,
@@ -520,7 +517,7 @@ func TestWatch(t *testing.T) {
 			Path:      path,
 		},
 	}, {
-		desc: "single notif and pred false",
+		desc: "single notif and pred false error EOF",
 		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
@@ -538,13 +535,13 @@ func TestWatch(t *testing.T) {
 			Path:      path,
 		}},
 		wantSubscriptionPath: path,
-		wantStatus:           false,
 		wantLastVal: &Value[uint64]{
 			present:   true,
 			val:       9,
 			Timestamp: startTime,
 			Path:      path,
 		},
+		wantErr: "error receiving gNMI response: EOF",
 	}, {
 		desc: "multiple notif and pred true",
 		stub: func(s *testutil.Stubber) {
@@ -575,7 +572,6 @@ func TestWatch(t *testing.T) {
 			Path:      path,
 		}},
 		wantSubscriptionPath: path,
-		wantStatus:           true,
 		wantLastVal: &Value[uint64]{
 			present:   true,
 			val:       11,
@@ -608,24 +604,25 @@ func TestWatch(t *testing.T) {
 			Path:      path,
 		}},
 		wantSubscriptionPath: path,
-		wantStatus:           false,
 		wantLastVal: &Value[uint64]{
 			Timestamp: startTime.Add(time.Millisecond),
 			Path:      path,
 		},
+		wantErr: "EOF",
 	}, {
 		desc: "negative duration",
 		stub: func(s *testutil.Stubber) {
 			s.Sync()
 		},
-		dur:          -1 * time.Second,
-		wantWatchErr: "context deadline exceeded",
+		dur:     -1 * time.Second,
+		wantErr: "context deadline exceeded",
 	}}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
 			i := 0
-			w, err := Watch[uint64](context.Background(), client, q, tt.dur, func(v *Value[uint64]) bool {
+			ctx, _ := context.WithTimeout(context.Background(), tt.dur)
+			w := Watch[uint64](ctx, client, q, func(v *Value[uint64]) bool {
 				if i > len(tt.wantVals) {
 					t.Fatalf("Predicate(%d) expected no more values but got: %+v", i, v)
 				}
@@ -636,54 +633,239 @@ func TestWatch(t *testing.T) {
 				i++
 				return present && val > 10
 			})
-			if diff := errdiff.Substring(err, tt.wantWatchErr); diff != "" {
-				t.Fatalf("Watch() returned unexpected diff: %s", diff)
+			val, err := w.Await()
+			if i < len(tt.wantVals) {
+				t.Errorf("Predicate received too few values: got %d, want %d", i, len(tt.wantVals))
+			}
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Await() returned unexpected diff: %s", diff)
+			}
+			if val != nil {
+				checkJustReceived(t, val.RecvTimestamp)
+				tt.wantLastVal.RecvTimestamp = val.RecvTimestamp
+			}
+			if diff := cmp.Diff(tt.wantLastVal, val, cmp.AllowUnexported(Value[uint64]{}), protocmp.Transform()); diff != "" {
+				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
+			}
+		})
+	}
+
+	t.Run("multiple awaits", func(t *testing.T) {
+		fakeGNMI.Stub().Sync()
+		w := Watch[uint64](context.Background(), client, q, func(v *Value[uint64]) bool { return true })
+		want := &Value[uint64]{
+			Path: path,
+		}
+		val, err := w.Await()
+		if err != nil {
+			t.Fatalf("Await() got unexpected error: %v", err)
+		}
+		if diff := cmp.Diff(want, val, cmp.AllowUnexported(Value[uint64]{}), protocmp.Transform()); diff != "" {
+			t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
+		}
+		_, err = w.Await()
+		if d := errdiff.Check(err, "Await already called and Watcher is closed"); d != "" {
+			t.Fatalf("Await() returned unexpected diff: %s", d)
+		}
+	})
+
+	rootPath := testutil.GNMIPath(t, "super-container/leaf-container-struct")
+	intPath := testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
+	enumPath := testutil.GNMIPath(t, "super-container/leaf-container-struct/enum-leaf")
+	startTime = time.Now()
+	nonLeafQuery := &NonLeafSingletonQuery[*testutil.LeafContainerStruct]{
+		nonLeafBaseQuery: nonLeafBaseQuery[*testutil.LeafContainerStruct]{
+			dir:     "leaf-container-struct",
+			ps:      ygot.NewNodePath([]string{"super-container", "leaf-container-struct"}, nil, ygot.NewDeviceRootBase("")),
+			yschema: testutil.GetSchemaStruct()(),
+		},
+	}
+
+	nonLeafTests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		wantSubscriptionPath *gpb.Path
+		wantLastVal          *Value[*testutil.LeafContainerStruct]
+		wantVals             []*Value[*testutil.LeafContainerStruct]
+		wantErr              string
+	}{{
+		desc: "single notif and pred false",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: intPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 9}},
+				}},
+			}).Sync()
+		},
+		wantVals: []*Value[*testutil.LeafContainerStruct]{{
+			present:   true,
+			val:       &testutil.LeafContainerStruct{Uint64Leaf: ygot.Uint64(9)},
+			Timestamp: startTime,
+			Path:      rootPath,
+		}},
+		wantErr:              "EOF",
+		wantSubscriptionPath: rootPath,
+		wantLastVal: &Value[*testutil.LeafContainerStruct]{
+			present:   true,
+			val:       &testutil.LeafContainerStruct{Uint64Leaf: ygot.Uint64(9)},
+			Timestamp: startTime,
+			Path:      rootPath,
+		},
+	}, {
+		desc: "multiple notif and pred true",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: intPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 11}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+				Update: []*gpb.Update{{
+					Path: enumPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "E_VALUE_FORTY_THREE"}},
+				}},
+			})
+		},
+		wantVals: []*Value[*testutil.LeafContainerStruct]{{
+			present:   true,
+			val:       &testutil.LeafContainerStruct{Uint64Leaf: ygot.Uint64(11)},
+			Timestamp: startTime,
+			Path:      rootPath,
+		}, {
+			present: true,
+			val: &testutil.LeafContainerStruct{
+				Uint64Leaf: ygot.Uint64(11),
+				EnumLeaf:   43,
+			},
+			Timestamp: startTime.Add(time.Millisecond),
+			Path:      rootPath,
+		}},
+		wantSubscriptionPath: rootPath,
+		wantLastVal: &Value[*testutil.LeafContainerStruct]{
+			present: true,
+			val: &testutil.LeafContainerStruct{
+				Uint64Leaf: ygot.Uint64(11),
+				EnumLeaf:   43,
+			},
+			Timestamp: startTime.Add(time.Millisecond),
+			Path:      rootPath,
+		},
+	}, {
+		desc: "multiple notif before sync",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: intPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 11}},
+				}},
+			}).Notification(&gpb.Notification{
+				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+				Update: []*gpb.Update{{
+					Path: enumPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "E_VALUE_FORTY_THREE"}},
+				}},
+			}).Sync()
+		},
+		wantVals: []*Value[*testutil.LeafContainerStruct]{{
+			present: true,
+			val: &testutil.LeafContainerStruct{
+				Uint64Leaf: ygot.Uint64(11),
+				EnumLeaf:   43,
+			},
+			Timestamp: startTime.Add(time.Millisecond),
+			Path:      rootPath,
+		}},
+		wantSubscriptionPath: rootPath,
+		wantLastVal: &Value[*testutil.LeafContainerStruct]{
+			present: true,
+			val: &testutil.LeafContainerStruct{
+				Uint64Leaf: ygot.Uint64(11),
+				EnumLeaf:   43,
+			},
+			Timestamp: startTime.Add(time.Millisecond),
+			Path:      rootPath,
+		},
+	}, {
+		desc: "delete leaf in container",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: intPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 8}},
+				}, {
+					Path: enumPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "E_VALUE_FORTY_THREE"}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+				Delete:    []*gpb.Path{intPath},
+			})
+		},
+		wantVals: []*Value[*testutil.LeafContainerStruct]{{
+			present: true,
+			val: &testutil.LeafContainerStruct{
+				Uint64Leaf: ygot.Uint64(8),
+				EnumLeaf:   43,
+			},
+			Timestamp: startTime,
+			Path:      rootPath,
+		}, {
+			present: true,
+			val: &testutil.LeafContainerStruct{
+				EnumLeaf: 43,
+			},
+			Timestamp: startTime.Add(time.Millisecond),
+			Path:      rootPath,
+		}},
+		wantSubscriptionPath: rootPath,
+		wantErr:              "EOF",
+		wantLastVal: &Value[*testutil.LeafContainerStruct]{
+			present: true,
+			val: &testutil.LeafContainerStruct{
+				EnumLeaf: 43,
+			},
+			Timestamp: startTime.Add(time.Millisecond),
+			Path:      rootPath,
+		},
+	}}
+
+	for _, tt := range nonLeafTests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			w := Watch[*testutil.LeafContainerStruct](context.Background(), client, nonLeafQuery, func(v *Value[*testutil.LeafContainerStruct]) bool {
+				if len(tt.wantVals) == 0 {
+					t.Fatalf("Predicate expected no more values but got: %+v", v)
+				}
+				if diff := cmp.Diff(tt.wantVals[0], v, cmpopts.IgnoreFields(Value[*testutil.LeafContainerStruct]{}, "RecvTimestamp"), cmp.AllowUnexported(Value[*testutil.LeafContainerStruct]{}), protocmp.Transform()); diff != "" {
+					t.Errorf("Predicate got unexpected input (-want,+got):\n %s\nComplianceErrors:\n%v", diff, v.ComplianceErrors)
+				}
+				tt.wantVals = tt.wantVals[1:]
+				val, present := v.Val()
+				return present && val.Uint64Leaf != nil && *val.Uint64Leaf > 10 && val.EnumLeaf == 43
+			})
+			val, err := w.Await()
+			if len(tt.wantVals) > 0 {
+				t.Errorf("Predicate received too few values, remaining: %+v", tt.wantVals)
+			}
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Await() returned unexpected diff: %s", diff)
 			}
 			if err != nil {
 				return
 			}
-			val, status, err := w.Await()
-			if i < len(tt.wantVals) {
-				t.Errorf("Predicate received too few values: got %d, want %d", i, len(tt.wantVals))
+			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
+			if val != nil {
+				checkJustReceived(t, val.RecvTimestamp)
+				tt.wantLastVal.RecvTimestamp = val.RecvTimestamp
 			}
-			if diff := errdiff.Substring(err, tt.wantWatchErr); diff != "" {
-				t.Fatalf("Await() returned unexpected diff: %s", diff)
-				if val != nil {
-					checkJustReceived(t, val.RecvTimestamp)
-					tt.wantLastVal.RecvTimestamp = val.RecvTimestamp
-				}
-
-				if tt.wantStatus != status {
-					t.Errorf("Await() returned unexpected status got: %v, want %v", status, tt.wantStatus)
-				}
-				if diff := cmp.Diff(tt.wantLastVal, val, cmp.AllowUnexported(Value[uint64]{}), protocmp.Transform()); diff != "" {
-					t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
-				}
-			}
-		})
-		t.Run("multiple awaits", func(t *testing.T) {
-			fakeGNMI.Stub().Sync()
-			w, err := Watch[uint64](context.Background(), client, q, time.Second, func(v *Value[uint64]) bool { return true })
-			if err != nil {
-				t.Fatalf("Watch() got unexpected error: %v", err)
-			}
-			want := &Value[uint64]{
-				Path: path,
-			}
-			wantStatus := true
-			val, status, err := w.Await()
-			if err != nil {
-				t.Fatalf("Await() got unexpected error: %v", err)
-			}
-			if wantStatus != status {
-				t.Errorf("Await() returned unexpected status got: %v, want %v", status, wantStatus)
-			}
-			if diff := cmp.Diff(want, val, cmp.AllowUnexported(Value[uint64]{}), protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantLastVal, val, cmp.AllowUnexported(Value[*testutil.LeafContainerStruct]{}), protocmp.Transform()); diff != "" {
 				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
-			}
-			_, _, err = w.Await()
-			if d := errdiff.Check(err, "Await already called and Watcher is closed"); d != "" {
-				t.Fatalf("Await() returned unexpected diff: %s", d)
 			}
 		})
 	}
@@ -954,250 +1136,6 @@ func TestLookupAll(t *testing.T) {
 			}
 			if diff := cmp.Diff(tt.wantVals, got, cmp.AllowUnexported(Value[*testutil.Model_SingleKey]{}), cmpopts.IgnoreFields(Value[*testutil.Model_SingleKey]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
 				t.Errorf("LookupAll() returned unexpected diff (-want,+got):\n%s", diff)
-			}
-		})
-	}
-}
-
-func TestWatchNonLeaf(t *testing.T) {
-	fakeGNMI, c := getClient(t)
-	rootPath := testutil.GNMIPath(t, "super-container/leaf-container-struct")
-	intPath := testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
-	enumPath := testutil.GNMIPath(t, "super-container/leaf-container-struct/enum-leaf")
-	startTime := time.Now()
-	q := &NonLeafSingletonQuery[*testutil.LeafContainerStruct]{
-		dir:     "leaf-container-struct",
-		ps:      ygot.NewNodePath([]string{"super-container", "leaf-container-struct"}, nil, ygot.NewDeviceRootBase("")),
-		yschema: testutil.GetSchemaStruct()(),
-	}
-
-	tests := []struct {
-		desc                 string
-		stub                 func(s *testutil.Stubber)
-		wantSubscriptionPath *gpb.Path
-		wantLastVal          *Value[*testutil.LeafContainerStruct]
-		wantVals             []*Value[*testutil.LeafContainerStruct]
-		wantStatus           bool
-		wantErr              string
-	}{{
-		desc: "single notif and pred false",
-		stub: func(s *testutil.Stubber) {
-			s.Notification(&gpb.Notification{
-				Timestamp: startTime.UnixNano(),
-				Update: []*gpb.Update{{
-					Path: intPath,
-					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 9}},
-				}},
-			}).Sync()
-		},
-		wantVals: []*Value[*testutil.LeafContainerStruct]{{
-			present:   true,
-			val:       &testutil.LeafContainerStruct{Uint64Leaf: ygot.Uint64(9)},
-			Timestamp: startTime,
-			Path:      rootPath,
-		}},
-		wantSubscriptionPath: rootPath,
-		wantStatus:           false,
-		wantLastVal: &Value[*testutil.LeafContainerStruct]{
-			present:   true,
-			val:       &testutil.LeafContainerStruct{Uint64Leaf: ygot.Uint64(9)},
-			Timestamp: startTime,
-			Path:      rootPath,
-		},
-	}, {
-		desc: "multiple notif and pred true",
-		stub: func(s *testutil.Stubber) {
-			s.Notification(&gpb.Notification{
-				Timestamp: startTime.UnixNano(),
-				Update: []*gpb.Update{{
-					Path: intPath,
-					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 11}},
-				}},
-			}).Sync().Notification(&gpb.Notification{
-				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
-				Update: []*gpb.Update{{
-					Path: enumPath,
-					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "E_VALUE_FORTY_THREE"}},
-				}},
-			})
-		},
-		wantVals: []*Value[*testutil.LeafContainerStruct]{{
-			present:   true,
-			val:       &testutil.LeafContainerStruct{Uint64Leaf: ygot.Uint64(11)},
-			Timestamp: startTime,
-			Path:      rootPath,
-		}, {
-			present: true,
-			val: &testutil.LeafContainerStruct{
-				Uint64Leaf: ygot.Uint64(11),
-				EnumLeaf:   43,
-			},
-			Timestamp: startTime.Add(time.Millisecond),
-			Path:      rootPath,
-		}},
-		wantSubscriptionPath: rootPath,
-		wantStatus:           true,
-		wantLastVal: &Value[*testutil.LeafContainerStruct]{
-			present: true,
-			val: &testutil.LeafContainerStruct{
-				Uint64Leaf: ygot.Uint64(11),
-				EnumLeaf:   43,
-			},
-			Timestamp: startTime.Add(time.Millisecond),
-			Path:      rootPath,
-		},
-	}, {
-		desc: "multiple notif before sync",
-		stub: func(s *testutil.Stubber) {
-			s.Notification(&gpb.Notification{
-				Timestamp: startTime.UnixNano(),
-				Update: []*gpb.Update{{
-					Path: intPath,
-					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 11}},
-				}},
-			}).Notification(&gpb.Notification{
-				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
-				Update: []*gpb.Update{{
-					Path: enumPath,
-					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "E_VALUE_FORTY_THREE"}},
-				}},
-			}).Sync()
-		},
-		wantVals: []*Value[*testutil.LeafContainerStruct]{{
-			present: true,
-			val: &testutil.LeafContainerStruct{
-				Uint64Leaf: ygot.Uint64(11),
-				EnumLeaf:   43,
-			},
-			Timestamp: startTime.Add(time.Millisecond),
-			Path:      rootPath,
-		}},
-		wantSubscriptionPath: rootPath,
-		wantStatus:           true,
-		wantLastVal: &Value[*testutil.LeafContainerStruct]{
-			present: true,
-			val: &testutil.LeafContainerStruct{
-				Uint64Leaf: ygot.Uint64(11),
-				EnumLeaf:   43,
-			},
-			Timestamp: startTime.Add(time.Millisecond),
-			Path:      rootPath,
-		},
-	}, {
-		desc: "delete entire container",
-		stub: func(s *testutil.Stubber) {
-			s.Notification(&gpb.Notification{
-				Timestamp: startTime.UnixNano(),
-				Update: []*gpb.Update{{
-					Path: intPath,
-					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 8}},
-				}},
-			}).Sync().Notification(&gpb.Notification{
-				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
-				Delete:    []*gpb.Path{rootPath},
-			})
-		},
-		wantVals: []*Value[*testutil.LeafContainerStruct]{{
-			present: true,
-			val: &testutil.LeafContainerStruct{
-				Uint64Leaf: ygot.Uint64(8),
-			},
-			Timestamp: startTime,
-			Path:      rootPath,
-		}, {
-			present:   false,
-			Timestamp: startTime.Add(time.Millisecond),
-			Path:      rootPath,
-		}},
-		wantSubscriptionPath: rootPath,
-		wantStatus:           false,
-		wantLastVal: &Value[*testutil.LeafContainerStruct]{
-			Timestamp: startTime.Add(time.Millisecond),
-			Path:      rootPath,
-		},
-	}, {
-		desc: "delete leaf in container",
-		stub: func(s *testutil.Stubber) {
-			s.Notification(&gpb.Notification{
-				Timestamp: startTime.UnixNano(),
-				Update: []*gpb.Update{{
-					Path: intPath,
-					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 8}},
-				}, {
-					Path: enumPath,
-					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "E_VALUE_FORTY_THREE"}},
-				}},
-			}).Sync().Notification(&gpb.Notification{
-				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
-				Delete:    []*gpb.Path{intPath},
-			})
-		},
-		wantVals: []*Value[*testutil.LeafContainerStruct]{{
-			present: true,
-			val: &testutil.LeafContainerStruct{
-				Uint64Leaf: ygot.Uint64(8),
-				EnumLeaf:   43,
-			},
-			Timestamp: startTime,
-			Path:      rootPath,
-		}, {
-			present: true,
-			val: &testutil.LeafContainerStruct{
-				EnumLeaf: 43,
-			},
-			Timestamp: startTime.Add(time.Millisecond),
-			Path:      rootPath,
-		}},
-		wantSubscriptionPath: rootPath,
-		wantStatus:           false,
-		wantLastVal: &Value[*testutil.LeafContainerStruct]{
-			present: true,
-			val: &testutil.LeafContainerStruct{
-				EnumLeaf: 43,
-			},
-			Timestamp: startTime.Add(time.Millisecond),
-			Path:      rootPath,
-		},
-	}}
-
-	for _, tt := range tests {
-		t.Run(tt.desc, func(t *testing.T) {
-			tt.stub(fakeGNMI.Stub())
-			w, err := Watch[*testutil.LeafContainerStruct](context.Background(), c, q, 100*time.Second, func(v *Value[*testutil.LeafContainerStruct]) bool {
-				if len(tt.wantVals) == 0 {
-					t.Fatalf("Predicate expected no more values but got: %+v", v)
-				}
-				if diff := cmp.Diff(tt.wantVals[0], v, cmpopts.IgnoreFields(Value[*testutil.LeafContainerStruct]{}, "RecvTimestamp"), cmp.AllowUnexported(Value[*testutil.LeafContainerStruct]{}), protocmp.Transform()); diff != "" {
-					t.Errorf("Predicate got unexpected input (-want,+got):\n %s\nComplianceErrors:\n%v", diff, v.ComplianceErrors)
-				}
-				tt.wantVals = tt.wantVals[1:]
-				val, present := v.Val()
-				return present && val.Uint64Leaf != nil && *val.Uint64Leaf > 10 && val.EnumLeaf == 43
-			})
-			if err != nil {
-				t.Fatalf("Watch() returned unexpected error: %v", err)
-			}
-			val, status, err := w.Await()
-			if len(tt.wantVals) > 0 {
-				t.Errorf("Predicate received too few values, remaining: %+v", tt.wantVals)
-			}
-			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
-				t.Fatalf("Await() returned unexpected diff: %s", diff)
-			}
-			if err != nil {
-				return
-			}
-			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
-			if val != nil {
-				checkJustReceived(t, val.RecvTimestamp)
-				tt.wantLastVal.RecvTimestamp = val.RecvTimestamp
-			}
-
-			if tt.wantStatus != status {
-				t.Errorf("Await() returned unexpected status got: %v, want %v", status, tt.wantStatus)
-			}
-			if diff := cmp.Diff(tt.wantLastVal, val, cmp.AllowUnexported(Value[*testutil.LeafContainerStruct]{}), protocmp.Transform()); diff != "" {
-				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
 			}
 		})
 	}
