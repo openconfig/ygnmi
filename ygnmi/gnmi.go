@@ -16,6 +16,7 @@ package ygnmi
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"time"
 
@@ -203,7 +204,7 @@ func receiveStream[T any](sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-ch
 					errCh <- nil
 					return
 				}
-				errCh <- errors.Wrap(err, "error receiving gNMI response")
+				errCh <- fmt.Errorf("error receiving gNMI response: %w", err)
 				return
 			}
 			firstSync := !hasSynced && (sync || query.isLeaf())
