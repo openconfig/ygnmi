@@ -480,11 +480,13 @@ func TestWatch(t *testing.T) {
 	tests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
+		dur                  time.Duration
 		wantSubscriptionPath *gpb.Path
 		wantLastVal          *Value[uint64]
 		wantVals             []*Value[uint64]
 		wantStatus           bool
-		wantErr              string
+		wantWatchErr         string
+		wantAwaitErr         string
 	}{{
 		desc: "single notif and pred true",
 		stub: func(s *testutil.Stubber) {
@@ -496,6 +498,7 @@ func TestWatch(t *testing.T) {
 				}},
 			}).Sync()
 		},
+		dur: time.Second,
 		wantVals: []*Value[uint64]{{
 			present:   true,
 			val:       12,
@@ -521,6 +524,7 @@ func TestWatch(t *testing.T) {
 				}},
 			}).Sync()
 		},
+		dur: time.Second,
 		wantVals: []*Value[uint64]{{
 			present:   true,
 			val:       9,
@@ -552,6 +556,7 @@ func TestWatch(t *testing.T) {
 				}},
 			})
 		},
+		dur: time.Second,
 		wantVals: []*Value[uint64]{{
 			present:   true,
 			val:       8,
@@ -585,6 +590,7 @@ func TestWatch(t *testing.T) {
 				Delete:    []*gpb.Path{path},
 			})
 		},
+		dur: time.Second,
 		wantVals: []*Value[uint64]{{
 			present:   true,
 			val:       8,
@@ -601,12 +607,19 @@ func TestWatch(t *testing.T) {
 			Timestamp: startTime.Add(time.Millisecond),
 			Path:      path,
 		},
+	}, {
+		desc: "negative duration",
+		stub: func(s *testutil.Stubber) {
+			s.Sync()
+		},
+		dur:          -1 * time.Second,
+		wantWatchErr: "context deadline exceeded",
 	}}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
 			i := 0
-			w, err := Watch[uint64](context.Background(), client, q, time.Second, func(v *Value[uint64]) bool {
+			w, err := Watch[uint64](context.Background(), client, q, tt.dur, func(v *Value[uint64]) bool {
 				if i > len(tt.wantVals) {
 					t.Fatalf("Predicate(%d) expected no more values but got: %+v", i, v)
 				}
@@ -617,14 +630,17 @@ func TestWatch(t *testing.T) {
 				i++
 				return present && val > 10
 			})
+			if diff := errdiff.Substring(err, tt.wantWatchErr); diff != "" {
+				t.Fatalf("Watch() returned unexpected diff: %s", diff)
+			}
 			if err != nil {
-				t.Fatalf("Watch() returned unexpected error: %v", err)
+				return
 			}
 			val, status, err := w.Await()
 			if i < len(tt.wantVals) {
 				t.Errorf("Predicate received too few values: got %d, want %d", i, len(tt.wantVals))
 			}
-			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+			if diff := errdiff.Substring(err, tt.wantWatchErr); diff != "" {
 				t.Fatalf("Await() returned unexpected diff: %s", diff)
 			}
 			if err != nil {
@@ -665,10 +681,9 @@ func TestWatch(t *testing.T) {
 			t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
 		}
 		_, _, err = w.Await()
-		if d := errdiff.Check(err, "Await already called: watch channel closed"); d != "" {
+		if d := errdiff.Check(err, "Await already called and Watcher is closed"); d != "" {
 			t.Fatalf("Await() returned unexpected diff: %s", d)
 		}
-
 	})
 }
 
