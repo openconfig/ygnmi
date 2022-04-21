@@ -10,22 +10,22 @@ import (
 // LeafSingletonQuery is implementation of SingletonQuery interface for leaf nodes.
 // Note: Do not use this type directly, instead use the generated Path API.
 type LeafSingletonQuery[T any] struct {
-	leafbaseQuery[T]
+	leafBaseQuery[T]
 }
 
-// isNonWildcard prevents this struct from being used in LookupAll, etc.
+// isNonWildcard prevents this struct from being used where a wildcard path is expected.
 func (lq *LeafSingletonQuery[T]) isNonWildcard() {}
 
 // LeafSingletonQuery is implementation of SingletonQuery interface for leaf nodes.
 // Note: Do not use this type directly, instead use the generated Path API.
 type LeafWildcardQuery[T any] struct {
-	leafbaseQuery[T]
+	leafBaseQuery[T]
 }
 
-// isWildcard prevents this struct from being used in Lookup, etc.
+// isWildcard prevents this struct from being used where a non wildcard path is expected.
 func (lq *LeafWildcardQuery[T]) isWildcard() {}
 
-type leafbaseQuery[T any] struct {
+type leafBaseQuery[T any] struct {
 	// parent is name of the YANG directory which contains this leaf.
 	parentDir string
 	// state controls if state or config values should be unmarshalled.
@@ -41,37 +41,37 @@ type leafbaseQuery[T any] struct {
 }
 
 // extract takes the parent GoStruct and returns the correct child field from it.
-func (lq *leafbaseQuery[T]) extract(gs ygot.ValidatedGoStruct) T {
+func (lq *leafBaseQuery[T]) extract(gs ygot.ValidatedGoStruct) T {
 	return lq.extractFn(gs)
 }
 
 // dirName returns the YANG schema name of the parent GoStruct.
-func (lq *leafbaseQuery[T]) dirName() string {
+func (lq *leafBaseQuery[T]) dirName() string {
 	return lq.parentDir
 }
 
 // goStruct returns the parent struct of the leaf node.
-func (lq *leafbaseQuery[T]) goStruct() ygot.ValidatedGoStruct {
+func (lq *leafBaseQuery[T]) goStruct() ygot.ValidatedGoStruct {
 	return lq.goStructFn()
 }
 
 // isLeaf returns true, as this Query type is only for leaves.
-func (lq *leafbaseQuery[T]) isLeaf() bool {
+func (lq *leafBaseQuery[T]) isLeaf() bool {
 	return true
 }
 
 // isState returns if the Query is for a state or config path.
-func (lq *leafbaseQuery[T]) isState() bool {
+func (lq *leafBaseQuery[T]) isState() bool {
 	return lq.state
 }
 
 // pathStruct returns the path struct containing the path for the Query.
-func (lq *leafbaseQuery[T]) pathStruct() ygot.PathStruct {
+func (lq *leafBaseQuery[T]) pathStruct() ygot.PathStruct {
 	return lq.ps
 }
 
 // schema returns the schema used for unmarshalling.
-func (lq *leafbaseQuery[T]) schema() *ytypes.Schema {
+func (lq *leafBaseQuery[T]) schema() *ytypes.Schema {
 	return lq.yschema
 }
 
@@ -81,7 +81,7 @@ type NonLeafSingletonQuery[T ygot.ValidatedGoStruct] struct {
 	nonLeafBaseQuery[T]
 }
 
-// isNonWildcard prevents this struct from being used in LookupAll, etc.
+// isNonWildcard prevents this struct from being used where a wildcard path is expected.
 func (lq *NonLeafSingletonQuery[T]) isNonWildcard() {}
 
 // NonLeafSingletonQuery is implementation of SingletonQuery interface for non-leaf nodes.
@@ -90,7 +90,7 @@ type NonLeafWildcardQuery[T ygot.ValidatedGoStruct] struct {
 	nonLeafBaseQuery[T]
 }
 
-// isNonWildcard prevents this struct from being used in Lookup, etc.
+// isNonWildcard prevents this struct from being used where a non-wildcard path is expected.
 func (lq *NonLeafWildcardQuery[T]) isWildcard() {}
 
 type nonLeafBaseQuery[T ygot.ValidatedGoStruct] struct {

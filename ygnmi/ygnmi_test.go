@@ -37,7 +37,7 @@ func TestLookup(t *testing.T) {
 	fakeGNMI, c := getClient(t)
 	leafPath := testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
 	lq := &LeafSingletonQuery[uint64]{
-		leafbaseQuery: leafbaseQuery[uint64]{
+		leafBaseQuery: leafBaseQuery[uint64]{
 			parentDir:  "leaf-container-struct",
 			state:      false,
 			ps:         ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
@@ -698,7 +698,7 @@ func TestLookupAll(t *testing.T) {
 		ygot.NewNodePath([]string{"super-container", "model", "a", "single-key"}, map[string]interface{}{"key": "*"}, ygot.NewDeviceRootBase("")),
 	)
 	lq := &LeafWildcardQuery[int64]{
-		leafbaseQuery: leafbaseQuery[int64]{
+		leafBaseQuery: leafBaseQuery[int64]{
 			parentDir:  "Model_SingleKey",
 			state:      true,
 			ps:         leafPS,
