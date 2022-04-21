@@ -18,13 +18,18 @@ package ygnmi
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygot/ytypes"
+	"github.com/pkg/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	log "github.com/golang/glog"
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
+	closer "github.com/openconfig/gocloser"
 )
 
 // AnyQuery is a generic gNMI query for wildcard or non-wildcard state or config paths.
@@ -71,8 +76,8 @@ type Value[T any] struct {
 
 // SetVal sets the value and marks it present.
 func (v *Value[T]) SetVal(val T) {
+	v.present = !reflect.ValueOf(val).IsZero()
 	v.val = val
-	v.present = true
 }
 
 // Val returns the val and whether it is present.
@@ -136,4 +141,78 @@ func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (*Value[
 		log.V(0).Infof("noncompliant data encountered while unmarshalling: %v", val.ComplianceErrors)
 	}
 	return val, nil
+}
+
+// Watcher represents an ongoing watch of telemetry values.
+type Watcher[T any] struct {
+	errCh      chan error
+	lastVal    *Value[T]
+	predStatus bool
+	cancelFn   func()
+}
+
+// Await waits for the watch to finish and returns the last received value
+// and a boolean indicating whether the predicate evaluated to true.
+// When Await returns the watcher is closed, and Await may not be called again.
+func (w *Watcher[T]) Await() (*Value[T], bool, error) {
+	err, ok := <-w.errCh
+	if !ok {
+		return nil, false, fmt.Errorf("Await already called and Watcher is closed")
+	}
+	if err != nil {
+		if st, ok := status.FromError(errors.Cause(err)); ok && st.Code() == codes.DeadlineExceeded {
+			return w.lastVal, false, nil
+		}
+		return nil, false, err
+	}
+	return w.lastVal, w.predStatus, nil
+}
+
+// Cancel immediately stops the watch.
+func (w *Watcher[T]) Cancel() {
+	w.cancelFn()
+}
+
+// Watch starts an asynchronous observation of the values with a STREAM subscription, evaluating each observed value with the specified predicate.
+// The subscription completes when either the predicate is true or the specified duration elapses.
+// Calling Await on the returned Watcher waits for the subscription to complete.
+// It returns the last observed value and a boolean that indicates whether that value satisfies the predicate.
+func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], dur time.Duration, pred func(*Value[T]) bool) (_ *Watcher[T], rerr error) {
+	ctx, cancelFn := context.WithTimeout(ctx, dur)
+	// Cancel the context immediately, if subscribe returns an error.
+	defer closer.CloseVoidOnErr(&rerr, cancelFn)
+
+	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM)
+	if err != nil {
+		return nil, err
+	}
+	w := &Watcher[T]{
+		errCh:    make(chan error),
+		cancelFn: cancelFn,
+	}
+	dataCh, errCh := receiveStream[T](sub, q)
+	go func() {
+		defer close(w.errCh)
+		// Create an intially empty GoStruct, into which all received datapoints will be unmarshalled.
+		gs := q.goStruct()
+		for {
+			select {
+			case data := <-dataCh:
+				val, err := unmarshalAndExtract[T](data, q, gs)
+				if err != nil {
+					w.errCh <- err
+					return
+				}
+				w.lastVal = val
+				if w.predStatus = pred(val); w.predStatus {
+					w.errCh <- nil
+					return
+				}
+			case err := <-errCh:
+				w.errCh <- err
+				return
+			}
+		}
+	}()
+	return w, nil
 }

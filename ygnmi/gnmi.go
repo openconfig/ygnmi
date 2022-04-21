@@ -16,6 +16,7 @@ package ygnmi
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"time"
 
@@ -178,4 +179,56 @@ func receiveAll(sub gpb.GNMI_SubscribeClient, deletesExpected bool, mode gpb.Sub
 		}
 	}
 	return data, nil
+}
+
+// receiveStream receives an async stream of gNMI notifications and sends them to a chan.
+// Note: this does not imply that mode is gpb.SubscriptionList_STREAM (though it usually is).
+// If the query is a leaf, each datapoint will be sent the chan individually.
+// If the query is a non-leaf, all the datapoints from a SubscriptionResponse are bundled.
+func receiveStream[T any](sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-chan []*DataPoint, <-chan error) {
+	dataCh := make(chan []*DataPoint)
+	errCh := make(chan error)
+
+	go func() {
+		defer close(dataCh)
+		defer close(errCh)
+
+		var recvData []*DataPoint
+		var hasSynced bool
+		var sync bool
+		var err error
+		for {
+			recvData, sync, err = receive(sub, recvData, true)
+			if err != nil {
+				if errors.Is(err, io.EOF) {
+					errCh <- nil
+					return
+				}
+				errCh <- fmt.Errorf("error receiving gNMI response: %w", err)
+				return
+			}
+			firstSync := !hasSynced && (sync || query.isLeaf())
+			hasSynced = hasSynced || sync || query.isLeaf()
+			// Skip conversion and predicate until first sync for non-leaves.
+			if !hasSynced {
+				continue
+			}
+			var datas [][]*DataPoint
+			if query.isLeaf() {
+				for _, datum := range recvData {
+					// Add all datapoints except sync datapoints after the first sync.
+					if (len(recvData) == 1 && firstSync) || !datum.Sync {
+						datas = append(datas, []*DataPoint{datum})
+					}
+				}
+			} else {
+				datas = [][]*DataPoint{recvData}
+			}
+			for _, data := range datas {
+				dataCh <- data
+			}
+			recvData = nil
+		}
+	}()
+	return dataCh, errCh
 }
