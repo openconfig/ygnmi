@@ -153,10 +153,11 @@ type Watcher[T any] struct {
 
 // Await waits for the watch to finish and returns the last received value
 // and a boolean indicating whether the predicate evaluated to true.
+// When Await returns the watcher is closed, and Await may not be called again.
 func (w *Watcher[T]) Await() (*Value[T], bool, error) {
 	err, ok := <-w.errCh
 	if !ok {
-		return nil, false, fmt.Errorf("Await already called: watch channel closed")
+		return nil, false, fmt.Errorf("Await already called and Watcher is closed")
 	}
 	if err != nil {
 		if st, ok := status.FromError(errors.Cause(err)); ok && st.Code() == codes.DeadlineExceeded {

@@ -606,7 +606,7 @@ func TestWatch(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
 			i := 0
-			w, err := Watch[uint64](context.Background(), client, q, 1*time.Second, func(v *Value[uint64]) bool {
+			w, err := Watch[uint64](context.Background(), client, q, time.Second, func(v *Value[uint64]) bool {
 				if i > len(tt.wantVals) {
 					t.Fatalf("Predicate(%d) expected no more values but got: %+v", i, v)
 				}
@@ -648,7 +648,7 @@ func TestWatch(t *testing.T) {
 		fakeGNMI.Stub().Sync()
 		w, err := Watch[uint64](context.Background(), client, q, time.Second, func(v *Value[uint64]) bool { return true })
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("Watch() got unexpected error: %v", err)
 		}
 		want := &Value[uint64]{
 			Path: path,
@@ -656,7 +656,7 @@ func TestWatch(t *testing.T) {
 		wantStatus := true
 		val, status, err := w.Await()
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("Await() got unexpected error: %v", err)
 		}
 		if wantStatus != status {
 			t.Errorf("Await() returned unexpected status got: %v, want %v", status, wantStatus)
