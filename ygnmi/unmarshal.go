@@ -16,6 +16,7 @@ package ygnmi
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -118,10 +119,8 @@ func (c *ComplianceErrors) String() string {
 //nolint:deadcode // TODO(DanG100) remove this once this func is used
 func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.ValidatedGoStruct) (*Value[T], error) {
 	queryPath, _, errs := ygot.ResolvePath(q.pathStruct())
-	if len(errs) > 0 {
-		l := &errlist.List{}
-		l.Add(errs...)
-		return nil, l.Err()
+	if err := errsToErr(errs); err != nil {
+		return nil, err
 	}
 
 	ret := &Value[T]{
@@ -293,4 +292,38 @@ func pathToString(path *gpb.Path) string {
 		pathStr = fmt.Sprint(path)
 	}
 	return pathStr
+}
+
+func bundleDatapoints(datapoints []*DataPoint, prefixLen int) (map[string][]*DataPoint, []string, error) {
+	groups := map[string][]*DataPoint{}
+
+	for _, dp := range datapoints {
+		if dp.Sync { // Sync datapoints don't have a path, so ignore them.
+			continue
+		}
+		elems := dp.Path.GetElem()
+		if len(elems) < prefixLen {
+			groups["/"] = append(groups["/"], dp)
+			continue
+		}
+		prefixPath, err := ygot.PathToString(&gpb.Path{Elem: elems[:prefixLen]})
+		if err != nil {
+			return nil, nil, err
+		}
+		groups[prefixPath] = append(groups[prefixPath], dp)
+	}
+
+	var prefixes []string
+	for prefix := range groups {
+		prefixes = append(prefixes, prefix)
+	}
+	sort.Strings(prefixes)
+
+	return groups, prefixes, nil
+}
+
+func errsToErr(errs []error) error {
+	l := &errlist.List{}
+	l.Add(errs...)
+	return l.Err()
 }

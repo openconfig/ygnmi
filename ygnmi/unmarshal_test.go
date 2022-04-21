@@ -1056,3 +1056,174 @@ func TestLatestTimestamp(t *testing.T) {
 		})
 	}
 }
+
+func TestBundleDatapoints(t *testing.T) {
+	tests := []struct {
+		desc         string
+		inDatapoints []*DataPoint
+		inPrefixLen  int
+		want         map[string][]*DataPoint
+		wantPrefixes []string
+		wantErr      bool
+	}{{
+		desc: "leaf-paths",
+		inDatapoints: []*DataPoint{{
+			Path:  testutil.GNMIPath(t, "alpha[key=un]/bravo/leaf0"),
+			Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 100}},
+		}, {
+			Path:  testutil.GNMIPath(t, "alpha[key=deux]/bravo/leaf0"),
+			Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 200}},
+		}, {
+			Path:  testutil.GNMIPath(t, "alpha[key=un]/bravo/leaf0/leaf-under-leaf"),
+			Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 300}},
+		}},
+		inPrefixLen: 3,
+		want: map[string][]*DataPoint{
+			"/alpha[key=un]/bravo/leaf0": {{
+				Path:  testutil.GNMIPath(t, "alpha[key=un]/bravo/leaf0"),
+				Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 100}},
+			}, {
+				Path:  testutil.GNMIPath(t, "alpha[key=un]/bravo/leaf0/leaf-under-leaf"),
+				Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 300}},
+			}},
+			"/alpha[key=deux]/bravo/leaf0": {{
+				Path:  testutil.GNMIPath(t, "alpha[key=deux]/bravo/leaf0"),
+				Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 200}},
+			}},
+		},
+		wantPrefixes: []string{
+			"/alpha[key=deux]/bravo/leaf0",
+			"/alpha[key=un]/bravo/leaf0",
+		},
+	}, {
+		desc: "non-leaf-paths",
+		inDatapoints: []*DataPoint{{
+			Path:  testutil.GNMIPath(t, "alpha/bravo[key=un]/leaf0"),
+			Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 100}},
+		}, {
+			Path:  testutil.GNMIPath(t, "alpha/bravo[key=deux]/leaf2"),
+			Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 300}},
+		}, {
+			Path:  testutil.GNMIPath(t, "alpha/bravo[key=trois]/leaf3"),
+			Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 400}},
+		}, {
+			Path:  testutil.GNMIPath(t, "alpha/bravo[key=trois]/leaf4"),
+			Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 500}},
+		}, {
+			// duplicate path
+			Path:  testutil.GNMIPath(t, "alpha/bravo[key=trois]/leaf3"),
+			Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 1000}},
+		}, {
+			Path:  testutil.GNMIPath(t, "alpha/bravo[key=deux]/foo/leaf5"),
+			Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 600}},
+		}, {
+			Path:  testutil.GNMIPath(t, "alpha/bravo[key=un]/foo/bar/leaf6"),
+			Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 700}},
+		}},
+		inPrefixLen: 2,
+		want: map[string][]*DataPoint{
+			"/alpha/bravo[key=un]": {{
+				Path:  testutil.GNMIPath(t, "alpha/bravo[key=un]/leaf0"),
+				Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 100}},
+			}, {
+				Path:  testutil.GNMIPath(t, "alpha/bravo[key=un]/foo/bar/leaf6"),
+				Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 700}},
+			}},
+			"/alpha/bravo[key=deux]": {{
+				Path:  testutil.GNMIPath(t, "alpha/bravo[key=deux]/leaf2"),
+				Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 300}},
+			}, {
+				Path:  testutil.GNMIPath(t, "alpha/bravo[key=deux]/foo/leaf5"),
+				Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 600}},
+			}},
+			"/alpha/bravo[key=trois]": {{
+				Path:  testutil.GNMIPath(t, "alpha/bravo[key=trois]/leaf3"),
+				Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 400}},
+			}, {
+				Path:  testutil.GNMIPath(t, "alpha/bravo[key=trois]/leaf4"),
+				Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 500}},
+			}, {
+				Path:  testutil.GNMIPath(t, "alpha/bravo[key=trois]/leaf3"),
+				Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 1000}},
+			}},
+		},
+		wantPrefixes: []string{
+			"/alpha/bravo[key=deux]",
+			"/alpha/bravo[key=trois]",
+			"/alpha/bravo[key=un]",
+		},
+	}, {
+		desc: "path-shorter-than-prefixLen",
+		inDatapoints: []*DataPoint{{
+			Path:  testutil.GNMIPath(t, "alpha/"),
+			Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 10}},
+		}, {
+			Path:  testutil.GNMIPath(t, "alpha/bravo[key=un]/leaf0"),
+			Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 100}},
+		}, {
+			Path:  testutil.GNMIPath(t, "alpha/bravo[key=deux]/leaf2"),
+			Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 300}},
+		}, {
+			Path:  testutil.GNMIPath(t, "alpha/bravo[key=trois]/leaf3"),
+			Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 400}},
+		}, {
+			Path:  testutil.GNMIPath(t, "alpha/bravo[key=trois]/leaf4"),
+			Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 500}},
+		}, {
+			Path:  testutil.GNMIPath(t, "alpha/bravo[key=deux]/foo/leaf5"),
+			Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 600}},
+		}, {
+			Path:  testutil.GNMIPath(t, "alpha/bravo[key=un]/foo/bar/leaf6"),
+			Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 700}},
+		}},
+		inPrefixLen: 2,
+		want: map[string][]*DataPoint{
+			"/": {{
+				Path:  testutil.GNMIPath(t, "alpha/"),
+				Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 10}},
+			}},
+			"/alpha/bravo[key=un]": {{
+				Path:  testutil.GNMIPath(t, "alpha/bravo[key=un]/leaf0"),
+				Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 100}},
+			}, {
+				Path:  testutil.GNMIPath(t, "alpha/bravo[key=un]/foo/bar/leaf6"),
+				Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 700}},
+			}},
+			"/alpha/bravo[key=deux]": {{
+				Path:  testutil.GNMIPath(t, "alpha/bravo[key=deux]/leaf2"),
+				Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 300}},
+			}, {
+				Path:  testutil.GNMIPath(t, "alpha/bravo[key=deux]/foo/leaf5"),
+				Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 600}},
+			}},
+			"/alpha/bravo[key=trois]": {{
+				Path:  testutil.GNMIPath(t, "alpha/bravo[key=trois]/leaf3"),
+				Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 400}},
+			}, {
+				Path:  testutil.GNMIPath(t, "alpha/bravo[key=trois]/leaf4"),
+				Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 500}},
+			}},
+		},
+		wantPrefixes: []string{
+			"/",
+			"/alpha/bravo[key=deux]",
+			"/alpha/bravo[key=trois]",
+			"/alpha/bravo[key=un]",
+		},
+	}}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			got, gotPrefixes, err := bundleDatapoints(tt.inDatapoints, tt.inPrefixLen)
+			if gotErr := err != nil; gotErr != tt.wantErr {
+				t.Errorf("Got error: %v, want error: %v", err, tt.wantErr)
+			}
+			if diff := cmp.Diff(got, tt.want, protocmp.Transform()); diff != "" {
+				t.Errorf("Datapoint groups (-got, +want):\n%s", diff)
+			}
+			if diff := cmp.Diff(gotPrefixes, tt.wantPrefixes); diff != "" {
+				t.Errorf("Prefixes (-got, +want):\n%s", diff)
+			}
+		})
+	}
+}

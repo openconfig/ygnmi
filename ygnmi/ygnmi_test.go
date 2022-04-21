@@ -37,12 +37,14 @@ func TestLookup(t *testing.T) {
 	fakeGNMI, c := getClient(t)
 	leafPath := testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
 	lq := &LeafSingletonQuery[uint64]{
-		parentDir:  "leaf-container-struct",
-		state:      false,
-		ps:         ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
-		extractFn:  func(vgs ygot.ValidatedGoStruct) uint64 { return *(vgs.(*testutil.LeafContainerStruct)).Uint64Leaf },
-		goStructFn: func() ygot.ValidatedGoStruct { return new(testutil.LeafContainerStruct) },
-		yschema:    testutil.GetSchemaStruct()(),
+		leafBaseQuery: leafBaseQuery[uint64]{
+			parentDir:  "leaf-container-struct",
+			state:      false,
+			ps:         ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
+			extractFn:  func(vgs ygot.ValidatedGoStruct) uint64 { return *(vgs.(*testutil.LeafContainerStruct)).Uint64Leaf },
+			goStructFn: func() ygot.ValidatedGoStruct { return new(testutil.LeafContainerStruct) },
+			yschema:    testutil.GetSchemaStruct()(),
+		},
 	}
 
 	leaftests := []struct {
@@ -434,10 +436,12 @@ func TestLookupNonLeaf(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
 			q := &NonLeafSingletonQuery[*testutil.LeafContainerStruct]{
-				dir:     "leaf-container-struct",
-				ps:      ygot.NewNodePath([]string{"super-container", "leaf-container-struct"}, nil, ygot.NewDeviceRootBase("")),
-				yschema: testutil.GetSchemaStruct()(),
-				state:   tt.inState,
+				nonLeafBaseQuery[*testutil.LeafContainerStruct]{
+					dir:     "leaf-container-struct",
+					ps:      ygot.NewNodePath([]string{"super-container", "leaf-container-struct"}, nil, ygot.NewDeviceRootBase("")),
+					yschema: testutil.GetSchemaStruct()(),
+					state:   tt.inState,
+				},
 			}
 
 			got, err := Lookup[*testutil.LeafContainerStruct](context.Background(), c, q)
@@ -462,18 +466,20 @@ func TestWatch(t *testing.T) {
 	fakeGNMI, client := getClient(t)
 	path := testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
 	q := &LeafSingletonQuery[uint64]{
-		parentDir: "leaf-container-struct",
-		state:     false,
-		ps:        ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
-		extractFn: func(vgs ygot.ValidatedGoStruct) uint64 {
-			lcs := vgs.(*testutil.LeafContainerStruct)
-			if lcs.Uint64Leaf == nil {
-				return 0
-			}
-			return *lcs.Uint64Leaf
+		leafBaseQuery: leafBaseQuery[uint64]{
+			parentDir: "leaf-container-struct",
+			state:     false,
+			ps:        ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
+			extractFn: func(vgs ygot.ValidatedGoStruct) uint64 {
+				lcs := vgs.(*testutil.LeafContainerStruct)
+				if lcs.Uint64Leaf == nil {
+					return 0
+				}
+				return *lcs.Uint64Leaf
+			},
+			goStructFn: func() ygot.ValidatedGoStruct { return new(testutil.LeafContainerStruct) },
+			yschema:    testutil.GetSchemaStruct()(),
 		},
-		goStructFn: func() ygot.ValidatedGoStruct { return new(testutil.LeafContainerStruct) },
-		yschema:    testutil.GetSchemaStruct()(),
 	}
 
 	startTime := time.Now()
@@ -642,49 +648,315 @@ func TestWatch(t *testing.T) {
 			}
 			if diff := errdiff.Substring(err, tt.wantWatchErr); diff != "" {
 				t.Fatalf("Await() returned unexpected diff: %s", diff)
+				if val != nil {
+					checkJustReceived(t, val.RecvTimestamp)
+					tt.wantLastVal.RecvTimestamp = val.RecvTimestamp
+				}
+
+				if tt.wantStatus != status {
+					t.Errorf("Await() returned unexpected status got: %v, want %v", status, tt.wantStatus)
+				}
+				if diff := cmp.Diff(tt.wantLastVal, val, cmp.AllowUnexported(Value[uint64]{}), protocmp.Transform()); diff != "" {
+					t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
+				}
+			}
+		})
+		t.Run("multiple awaits", func(t *testing.T) {
+			fakeGNMI.Stub().Sync()
+			w, err := Watch[uint64](context.Background(), client, q, time.Second, func(v *Value[uint64]) bool { return true })
+			if err != nil {
+				t.Fatalf("Watch() got unexpected error: %v", err)
+			}
+			want := &Value[uint64]{
+				Path: path,
+			}
+			wantStatus := true
+			val, status, err := w.Await()
+			if err != nil {
+				t.Fatalf("Await() got unexpected error: %v", err)
+			}
+			if wantStatus != status {
+				t.Errorf("Await() returned unexpected status got: %v, want %v", status, wantStatus)
+			}
+			if diff := cmp.Diff(want, val, cmp.AllowUnexported(Value[uint64]{}), protocmp.Transform()); diff != "" {
+				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
+			}
+			_, _, err = w.Await()
+			if d := errdiff.Check(err, "Await already called and Watcher is closed"); d != "" {
+				t.Fatalf("Await() returned unexpected diff: %s", d)
+			}
+		})
+	}
+}
+
+func TestLookupAll(t *testing.T) {
+	fakeGNMI, c := getClient(t)
+	leafPath := testutil.GNMIPath(t, "super-container/model/a/single-key[key=*]/state/value")
+	leafPS := ygot.NewNodePath(
+		[]string{"state", "value"},
+		nil,
+		ygot.NewNodePath([]string{"super-container", "model", "a", "single-key"}, map[string]interface{}{"key": "*"}, ygot.NewDeviceRootBase("")),
+	)
+	lq := &LeafWildcardQuery[int64]{
+		leafBaseQuery: leafBaseQuery[int64]{
+			parentDir:  "Model_SingleKey",
+			state:      true,
+			ps:         leafPS,
+			extractFn:  func(vgs ygot.ValidatedGoStruct) int64 { return *((vgs.(*testutil.Model_SingleKey)).Value) },
+			goStructFn: func() ygot.ValidatedGoStruct { return new(testutil.Model_SingleKey) },
+			yschema:    testutil.GetSchemaStruct()(),
+		},
+	}
+	leaftests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		wantSubscriptionPath *gpb.Path
+		wantVals             []*Value[int64]
+		wantErr              string
+	}{{
+		desc: "success one value",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: testutil.GNMIPath(t, "super-container/model/a/single-key[key=10]/state/value"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 10}},
+				}},
+			}).Sync()
+		},
+		wantVals: []*Value[int64]{{
+			Path:      testutil.GNMIPath(t, "super-container/model/a/single-key[key=10]/state/value"),
+			val:       10,
+			present:   true,
+			Timestamp: time.Unix(0, 100),
+		}},
+		wantSubscriptionPath: leafPath,
+	}, {
+		desc: "success no values",
+		stub: func(s *testutil.Stubber) {
+			s.Sync()
+		},
+		wantVals:             nil,
+		wantSubscriptionPath: leafPath,
+	}, {
+		desc: "success multiples value in same notification",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: testutil.GNMIPath(t, "super-container/model/a/single-key[key=10]/state/value"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 10}},
+				}, {
+					Path: testutil.GNMIPath(t, "super-container/model/a/single-key[key=11]/state/value"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 11}},
+				}},
+			}).Sync()
+		},
+		wantVals: []*Value[int64]{{
+			Path:      testutil.GNMIPath(t, "super-container/model/a/single-key[key=10]/state/value"),
+			val:       10,
+			present:   true,
+			Timestamp: time.Unix(0, 100),
+		}, {
+			Path:      testutil.GNMIPath(t, "super-container/model/a/single-key[key=11]/state/value"),
+			val:       11,
+			present:   true,
+			Timestamp: time.Unix(0, 100),
+		}},
+		wantSubscriptionPath: leafPath,
+	}, {
+		desc: "success multiples value in different notifications",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: testutil.GNMIPath(t, "super-container/model/a/single-key[key=10]/state/value"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 10}},
+				}},
+			}).Notification(&gpb.Notification{
+				Timestamp: 101,
+				Update: []*gpb.Update{{
+					Path: testutil.GNMIPath(t, "super-container/model/a/single-key[key=11]/state/value"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 11}},
+				}},
+			}).Sync()
+		},
+		wantVals: []*Value[int64]{{
+			Path:      testutil.GNMIPath(t, "super-container/model/a/single-key[key=10]/state/value"),
+			val:       10,
+			present:   true,
+			Timestamp: time.Unix(0, 100),
+		}, {
+			Path:      testutil.GNMIPath(t, "super-container/model/a/single-key[key=11]/state/value"),
+			val:       11,
+			present:   true,
+			Timestamp: time.Unix(0, 101),
+		}},
+		wantSubscriptionPath: leafPath,
+	}, {
+		desc: "success ignore mismatched paths",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: testutil.GNMIPath(t, "super-container/model/a/single-key[key=11]/config/value"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 11}},
+				}},
+			}).Sync()
+		},
+		wantVals:             nil,
+		wantSubscriptionPath: leafPath,
+	}, {
+		desc: "success ignore mismatched types",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: testutil.GNMIPath(t, "super-container/model/a/single-key[key=11]/state/value"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: ""}},
+				}},
+			}).Sync()
+		},
+		wantVals:             nil,
+		wantSubscriptionPath: leafPath,
+	}, {
+		desc: "error nil update val",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: testutil.GNMIPath(t, "super-container/model/a/single-key[key=11]/state/value"),
+					Val:  nil,
+				}},
+			}).Sync()
+		},
+		wantErr:              "failed to receive to data",
+		wantSubscriptionPath: leafPath,
+	}}
+	for _, tt := range leaftests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			got, err := LookupAll[int64](context.Background(), c, lq)
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("LookupAll(ctx, c, %v) returned unexpected diff: %s", lq, diff)
 			}
 			if err != nil {
 				return
 			}
 			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
-			if val != nil {
+			for _, val := range got {
 				checkJustReceived(t, val.RecvTimestamp)
-				tt.wantLastVal.RecvTimestamp = val.RecvTimestamp
 			}
-
-			if tt.wantStatus != status {
-				t.Errorf("Await() returned unexpected status got: %v, want %v", status, tt.wantStatus)
-			}
-			if diff := cmp.Diff(tt.wantLastVal, val, cmp.AllowUnexported(Value[uint64]{}), protocmp.Transform()); diff != "" {
-				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
+			if diff := cmp.Diff(tt.wantVals, got, cmp.AllowUnexported(Value[int64]{}), cmpopts.IgnoreFields(Value[int64]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
+				t.Errorf("LookupAll() returned unexpected diff (-want,+got):\n%s", diff)
 			}
 		})
 	}
-	t.Run("multiple awaits", func(t *testing.T) {
-		fakeGNMI.Stub().Sync()
-		w, err := Watch[uint64](context.Background(), client, q, time.Second, func(v *Value[uint64]) bool { return true })
-		if err != nil {
-			t.Fatalf("Watch() got unexpected error: %v", err)
-		}
-		want := &Value[uint64]{
-			Path: path,
-		}
-		wantStatus := true
-		val, status, err := w.Await()
-		if err != nil {
-			t.Fatalf("Await() got unexpected error: %v", err)
-		}
-		if wantStatus != status {
-			t.Errorf("Await() returned unexpected status got: %v, want %v", status, wantStatus)
-		}
-		if diff := cmp.Diff(want, val, cmp.AllowUnexported(Value[uint64]{}), protocmp.Transform()); diff != "" {
-			t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
-		}
-		_, _, err = w.Await()
-		if d := errdiff.Check(err, "Await already called and Watcher is closed"); d != "" {
-			t.Fatalf("Await() returned unexpected diff: %s", d)
-		}
-	})
+
+	nonLeafPath := testutil.GNMIPath(t, "super-container/model/a/single-key[key=*]")
+	nonLeafPS := ygot.NewNodePath([]string{"super-container", "model", "a", "single-key"}, map[string]interface{}{"key": "*"}, ygot.NewDeviceRootBase(""))
+	nonLeafQ := &NonLeafWildcardQuery[*testutil.Model_SingleKey]{
+		nonLeafBaseQuery: nonLeafBaseQuery[*testutil.Model_SingleKey]{
+			dir:     "Model_SingleKey",
+			state:   true,
+			ps:      nonLeafPS,
+			yschema: testutil.GetSchemaStruct()(),
+		},
+	}
+	nonLeaftests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		wantSubscriptionPath *gpb.Path
+		wantVals             []*Value[*testutil.Model_SingleKey]
+		wantErr              string
+	}{{
+		desc: "non-leaf one value",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: testutil.GNMIPath(t, "super-container/model/a/single-key[key=10]/state/value"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 10}},
+				}},
+			}).Sync()
+		},
+		wantVals: []*Value[*testutil.Model_SingleKey]{{
+			Path: testutil.GNMIPath(t, "super-container/model/a/single-key[key=10]"),
+			val: &testutil.Model_SingleKey{
+				Value: ygot.Int64(10),
+			},
+			present:   true,
+			Timestamp: time.Unix(0, 100),
+		}},
+		wantSubscriptionPath: nonLeafPath,
+	}, {
+		desc: "non-leaf multiple values",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: testutil.GNMIPath(t, "super-container/model/a/single-key[key=10]/state/value"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 100}},
+				}, {
+					Path: testutil.GNMIPath(t, "super-container/model/a/single-key[key=11]/state/value"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 101}},
+				}, {
+					Path: testutil.GNMIPath(t, "super-container/model/a/single-key[key=10]/state/key"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 10}},
+				}},
+			}).Notification(&gpb.Notification{
+				Timestamp: 101,
+				Update: []*gpb.Update{{
+					Path: testutil.GNMIPath(t, "super-container/model/a/single-key[key=11]/state/key"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 11}},
+				}},
+			}).Sync()
+		},
+		wantVals: []*Value[*testutil.Model_SingleKey]{{
+			Path: testutil.GNMIPath(t, "super-container/model/a/single-key[key=10]"),
+			val: &testutil.Model_SingleKey{
+				Value: ygot.Int64(100),
+				Key:   ygot.Int32(10),
+			},
+			present:   true,
+			Timestamp: time.Unix(0, 100),
+		}, {
+			Path: testutil.GNMIPath(t, "super-container/model/a/single-key[key=11]"),
+			val: &testutil.Model_SingleKey{
+				Value: ygot.Int64(101),
+				Key:   ygot.Int32(11),
+			},
+			present:   true,
+			Timestamp: time.Unix(0, 101),
+		}},
+		wantSubscriptionPath: nonLeafPath,
+	}, {
+		desc: "no values",
+		stub: func(s *testutil.Stubber) {
+			s.Sync()
+		},
+		wantVals:             nil,
+		wantSubscriptionPath: nonLeafPath,
+	}}
+	for _, tt := range nonLeaftests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			got, err := LookupAll[*testutil.Model_SingleKey](context.Background(), c, nonLeafQ)
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("LookupAll(ctx, c, %v) returned unexpected diff: %s", nonLeafQ, diff)
+			}
+			if err != nil {
+				return
+			}
+			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
+			for _, val := range got {
+				checkJustReceived(t, val.RecvTimestamp)
+			}
+			if diff := cmp.Diff(tt.wantVals, got, cmp.AllowUnexported(Value[*testutil.Model_SingleKey]{}), cmpopts.IgnoreFields(Value[*testutil.Model_SingleKey]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
+				t.Errorf("LookupAll() returned unexpected diff (-want,+got):\n%s", diff)
+			}
+		})
+	}
 }
 
 // checks that the received time is just before now
