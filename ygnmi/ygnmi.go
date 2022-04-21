@@ -244,29 +244,26 @@ func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]*Va
 }
 
 // WatchAll starts an asynchronous observation of the values with a STREAM subscription, evaluating each observed value with the specified predicate.
-// The subscription completes when either the predicate is true or the specified duration elapses.
+// The subscription completes when either the predicate is true or the context is canceled.
 // Calling Await on the returned Watcher waits for the subscription to complete.
 // It returns the last observed value and a boolean that indicates whether that value satisfies the predicate.
-func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], dur time.Duration, pred func(*Value[T]) bool) (_ *Watcher[T], rerr error) {
-	ctx, cancelFn := context.WithTimeout(ctx, dur)
-	// Cancel the context immediately, if subscribe returns an error.
-	defer closer.CloseVoidOnErr(&rerr, cancelFn)
+func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred func(*Value[T]) bool) *Watcher[T] {
+	w := &Watcher[T]{
+		errCh: make(chan error, 1),
+	}
 	path, _, errs := ygot.ResolvePath(q.pathStruct())
 	if err := errsToErr(errs); err != nil {
-		return nil, err
+		w.errCh <- err
+		return w
 	}
-
 	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM)
 	if err != nil {
-		return nil, err
+		w.errCh <- err
+		return w
 	}
-	w := &Watcher[T]{
-		errCh:    make(chan error),
-		cancelFn: cancelFn,
-	}
+
 	dataCh, errCh := receiveStream[T](sub, q)
 	go func() {
-		defer close(w.errCh)
 		// Create a map intially empty GoStruct, into which all received datapoints will be unmarshalled based on their path prefixes.
 		structs := map[string]ygot.ValidatedGoStruct{}
 		for {
@@ -291,6 +288,7 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], dur tim
 					}
 					w.lastVal = val
 					if w.predStatus = pred(val); w.predStatus {
+						w.errCh <- nil
 						return
 					}
 				}
@@ -300,5 +298,5 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], dur tim
 			}
 		}
 	}()
-	return w, nil
+	return w
 }
