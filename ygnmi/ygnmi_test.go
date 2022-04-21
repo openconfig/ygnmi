@@ -621,7 +621,8 @@ func TestWatch(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
 			i := 0
-			ctx, _ := context.WithTimeout(context.Background(), tt.dur)
+			ctx, cancel := context.WithTimeout(context.Background(), tt.dur)
+			defer cancel()
 			w := Watch[uint64](ctx, client, q, func(v *Value[uint64]) bool {
 				if i > len(tt.wantVals) {
 					t.Fatalf("Predicate(%d) expected no more values but got: %+v", i, v)
