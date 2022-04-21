@@ -466,7 +466,7 @@ func TestWatch(t *testing.T) {
 	fakeGNMI, client := getClient(t)
 	path := testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
 	q := &LeafSingletonQuery[uint64]{
-		leafbaseQuery: leafbaseQuery[uint64]{
+		leafBaseQuery: leafBaseQuery[uint64]{
 			parentDir: "leaf-container-struct",
 			state:     false,
 			ps:        ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
