@@ -251,6 +251,10 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], dur tim
 	ctx, cancelFn := context.WithTimeout(ctx, dur)
 	// Cancel the context immediately, if subscribe returns an error.
 	defer closer.CloseVoidOnErr(&rerr, cancelFn)
+	path, _, errs := ygot.ResolvePath(q.pathStruct())
+	if err := errsToErr(errs); err != nil {
+		return nil, err
+	}
 
 	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM)
 	if err != nil {
@@ -263,19 +267,32 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], dur tim
 	dataCh, errCh := receiveStream[T](sub, q)
 	go func() {
 		defer close(w.errCh)
-		// Create an intially empty GoStruct, into which all received datapoints will be unmarshalled.
-		gs := q.goStruct()
+		// Create a map intially empty GoStruct, into which all received datapoints will be unmarshalled based on their path prefixes.
+		structs := map[string]ygot.ValidatedGoStruct{}
 		for {
 			select {
 			case data := <-dataCh:
-				val, err := unmarshalAndExtract[T](data, q, gs)
+				datapointGroups, sortedPrefixes, err := bundleDatapoints(data, len(path.Elem))
 				if err != nil {
 					w.errCh <- err
 					return
 				}
-				w.lastVal = val
-				if w.predStatus = pred(val); w.predStatus {
-					return
+				for _, pre := range sortedPrefixes {
+					if len(datapointGroups[pre]) == 0 {
+						continue
+					}
+					if _, ok := structs[pre]; !ok {
+						structs[pre] = q.goStruct()
+					}
+					val, err := unmarshalAndExtract[T](data, q, structs[pre])
+					if err != nil {
+						w.errCh <- err
+						return
+					}
+					w.lastVal = val
+					if w.predStatus = pred(val); w.predStatus {
+						return
+					}
 				}
 			case err := <-errCh:
 				w.errCh <- err
