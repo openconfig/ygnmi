@@ -1323,6 +1323,9 @@ func TestWatchAll(t *testing.T) {
 	}
 
 	nonLeafPath := testutil.GNMIPath(t, "super-container/model/a/single-key[key=*]")
+	nonLeafKey10Path := testutil.GNMIPath(t, "super-container/model/a/single-key[key=10]")
+	nonLeafKey11Path := testutil.GNMIPath(t, "super-container/model/a/single-key[key=11]")
+
 	nonLeafPS := ygot.NewNodePath([]string{"super-container", "model", "a", "single-key"}, map[string]interface{}{"key": "*"}, ygot.NewDeviceRootBase(""))
 	nonLeafQ := &NonLeafWildcardQuery[*testutil.Model_SingleKey]{
 		nonLeafBaseQuery: nonLeafBaseQuery[*testutil.Model_SingleKey]{
@@ -1341,7 +1344,7 @@ func TestWatchAll(t *testing.T) {
 		wantVals             []*Value[*testutil.Model_SingleKey]
 		wantErr              string
 	}{{
-		desc: "predicate not true",
+		desc: "non-leaf predicate not true",
 		dur:  time.Second,
 		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
@@ -1355,19 +1358,19 @@ func TestWatchAll(t *testing.T) {
 		wantSubscriptionPath: nonLeafPath,
 		wantVals: []*Value[*testutil.Model_SingleKey]{{
 			Timestamp: startTime,
-			Path:      key10Path,
-
-			present: true,
+			Path:      nonLeafKey10Path,
+			val:       &testutil.Model_SingleKey{Value: ygot.Int64(100)},
+			present:   true,
 		}},
 		wantLastVal: &Value[*testutil.Model_SingleKey]{
 			Timestamp: startTime,
-			Path:      key10Path,
-
-			present: true,
+			Path:      nonLeafKey10Path,
+			val:       &testutil.Model_SingleKey{Value: ygot.Int64(100)},
+			present:   true,
 		},
 		wantErr: "EOF",
 	}, {
-		desc: "predicate becomes true",
+		desc: "non-leaf predicate becomes true",
 		dur:  time.Second,
 		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
@@ -1387,20 +1390,20 @@ func TestWatchAll(t *testing.T) {
 		wantSubscriptionPath: nonLeafPath,
 		wantVals: []*Value[*testutil.Model_SingleKey]{{
 			Timestamp: startTime,
-			Path:      key10Path,
-
-			present: true,
+			Path:      nonLeafKey10Path,
+			val:       &testutil.Model_SingleKey{Value: ygot.Int64(100)},
+			present:   true,
 		}, {
 			Timestamp: startTime.Add(time.Millisecond),
-			Path:      key11Path,
-
-			present: true,
+			Path:      nonLeafKey11Path,
+			val:       &testutil.Model_SingleKey{Value: ygot.Int64(101)},
+			present:   true,
 		}},
 		wantLastVal: &Value[*testutil.Model_SingleKey]{
 			Timestamp: startTime.Add(time.Millisecond),
-			Path:      key11Path,
-
-			present: true,
+			Path:      nonLeafKey11Path,
+			val:       &testutil.Model_SingleKey{Value: ygot.Int64(101)},
+			present:   true,
 		},
 	}}
 	for _, tt := range nonLeafTests {
@@ -1419,8 +1422,8 @@ func TestWatchAll(t *testing.T) {
 					t.Errorf("Predicate(%d) got unexpected input (-want,+got):\n %s\nComplianceErrors:\n%v", i, diff, v.ComplianceErrors)
 				}
 				val, present := v.Val()
-				key10Cond = key10Cond || (present && proto.Equal(v.Path, key10Path) && *val.Value == 100)
-				key11Cond = key11Cond || (present && proto.Equal(v.Path, key11Path) && *val.Value == 101)
+				key10Cond = key10Cond || (present && proto.Equal(v.Path, nonLeafKey10Path) && *val.Value == 100)
+				key11Cond = key11Cond || (present && proto.Equal(v.Path, nonLeafKey11Path) && *val.Value == 101)
 				i++
 				return key10Cond && key11Cond
 			})
