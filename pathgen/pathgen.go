@@ -65,6 +65,8 @@ const (
 	// NOTE: This cannot be "", as the builder method name would conflict
 	// with the child constructor method for the keys.
 	BuilderKeyPrefix = "With"
+	//defaultYgnmiPath is the import path for the ygnmi library
+	defaultYgnmiPath = "github.com/openconfig/ygnmi/ygmni"
 )
 
 // NewDefaultConfig creates a GenConfig with default configuration.
@@ -78,6 +80,7 @@ func NewDefaultConfig(schemaStructPkgPath string) *GenConfig {
 		GoImports: GoImports{
 			SchemaStructPkgPath: schemaStructPkgPath,
 			YgotImportPath:      genutil.GoDefaultYgotImportPath,
+			YgnmiImportPath:     defaultYgnmiPath,
 		},
 		FakeRootName:     defaultFakeRootName,
 		PathStructSuffix: defaultPathStructSuffix,
@@ -315,7 +318,9 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 		if es != nil {
 			errs = util.AppendErrs(errs, es)
 		}
-		structSnippet[0].ExtraGeneration = extraPerDir[directoryName].String()
+		if builder, ok := extraPerDir[directoryName]; ok {
+			structSnippet[0].ExtraGeneration = builder.String()
+		}
 
 		structSnippets = append(structSnippets, structSnippet...)
 	}
