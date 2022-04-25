@@ -954,7 +954,6 @@ func TestGeneratePathCode(t *testing.T) {
 				cg.GenerateWildcardPaths = tt.inGenerateWildcardPaths
 				cg.SimplifyWildcardPaths = tt.inSimplifyWildcardPaths
 				cg.PackageName = "ocstructs"
-				cg.ExtraGenerators = []Generator{GNMIGenerator}
 
 				gotCode, gotNodeDataMap, err := cg.GeneratePathCode(tt.inFiles, tt.inIncludePaths)
 				if err != nil && !tt.wantErr {
@@ -1417,6 +1416,9 @@ func getSchemaAndDirs() (*yang.Entry, map[string]*ygen.Directory, map[string]map
 				"leaf":      schema.Dir["container-with-config"].Dir["state"].Dir["leaf"],
 				"leaflist":  schema.Dir["container-with-config"].Dir["state"].Dir["leaflist"],
 				"leaflist2": schema.Dir["container-with-config"].Dir["state"].Dir["leaflist2"],
+			},
+			ShadowedFields: map[string]*yang.Entry{
+				"leaf": schema.Dir["container-with-config"].Dir["config"].Dir["leaf"],
 			},
 			Path:  []string{"", "root-module", "container-with-config"},
 			Entry: schema.Dir["container-with-config"],

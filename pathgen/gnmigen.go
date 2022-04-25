@@ -31,62 +31,73 @@ type gnmiStruct struct {
 	RelPathList             string
 	IsState                 bool
 	MethodName              string
+	IsScalar                bool
 }
 
-// gnmiGenerator is a extra Generator for PathStructs that generates gNMI helpers.
-func gnmiGenerator(psName string, node *NodeData) (string, error) {
-	// TODO(DanG100): non-leaves
-	if !node.IsLeaf {
-		return "", nil
-	}
-
-	relPath, err := ygen.FindSchemaPath(node.Directory, node.FieldName, false)
-	if err != nil {
-		return "", err
-	}
-
+// GNMIGenerator is a extra Generator for PathStructs that generates gNMI helpers.
+func GNMIGenerator(pathStructName string, dir *ygen.Directory, node *NodeData) (string, error) {
 	tmplStruct := gnmiStruct{
-		PathStructName:          psName,
+		PathStructName:          pathStructName,
 		GoTypeName:              node.GoTypeName,
 		GoStructTypeName:        node.SubsumingGoStructName,
 		PathBaseTypeName:        ygot.PathBaseTypeName,
 		GoFieldName:             node.GoFieldName,
 		SchemaStructPkgAccessor: "oc.",
-		RelPathList:             `"` + strings.Join(relPath, `", "`) + `"`,
 		IsState:                 true,
 		MethodName:              "State",
-	}
-	var b strings.Builder
-	if err = goGNMILeafTemplate.Execute(&b, tmplStruct); err != nil {
-		return "", err
-	}
-	if _, ok := node.Directory.ShadowedFields[node.FieldName]; !ok {
-		return b.String(), nil
-	}
-	tmplStruct.IsState = false
-	tmplStruct.MethodName = "Config"
-	if err = goGNMILeafTemplate.Execute(&b, tmplStruct); err != nil {
-		return "", err
+		IsScalar:                node.IsScalarField,
 	}
 
+	tmpl := goGNMINonLeafTemplate
+	if node.IsLeaf {
+		relPath, err := ygen.FindSchemaPath(dir, node.YANGFieldName, false)
+		if err != nil {
+			return "", err
+		}
+		tmpl = goGNMILeafTemplate
+		tmplStruct.RelPathList = `"` + strings.Join(relPath, `", "`) + `"`
+	}
+
+	var b strings.Builder
+	if err := tmpl.Execute(&b, tmplStruct); err != nil {
+		return "", err
+	}
 	return b.String(), nil
 }
 
 var (
 	goGNMILeafTemplate = mustTemplate("leaf-gnmi", `
-	func (n * {{ .PathStructName }}) {{ .MethodName }}() ygnmi.SingletonQuery[ {{ .SchemaStructPkgAccessor }}{{ .GoTypeName }} ] {
-		return &ygnmi.NewLeafSingletonQuery[ {{ .SchemaStructPkgAccessor }}{{ .GoTypeName }} ](
-			"{{ .GoStructTypeName }}",
-			{{ .IsState }},
-			ygot.New{{ .PathBaseTypeName }}(
-				[]string{ {{- .RelStatePathList -}} },
-				nil,
-				n.parent
-			),
-			func(gs ygot.ValidatedGoStruct) {{ .GoTypeName }} { return gs.(*{{ .GoStructTypeName }}).{{ .GoFieldName }} ) },
-			func() ygot.ValidatedGoStruct { return new({{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}) },
-			{{ .SchemaStructPkgAccessor }}Schema,
-		)
-	}
-	`)
+func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.SingletonQuery[{{ .GoTypeName }}] {
+	return &ygnmi.NewLeafSingletonQuery[{{ .GoTypeName }}](
+		"{{ .GoStructTypeName }}",
+		{{ .IsState }},
+		ygot.New{{ .PathBaseTypeName }}(
+			[]string{ {{- .RelPathList -}} },
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) {{ .GoTypeName }} { 
+			ret := gs.(*{{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}).{{ .GoFieldName }}
+			{{- if .IsScalar }}
+			return *ret
+			{{- else }}
+			return ret
+			{{- end}}
+		},
+		func() ygot.ValidatedGoStruct { return new({{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}) },
+		{{ .SchemaStructPkgAccessor }}GetSchema(),
+	)
+}
+`)
+
+	goGNMINonLeafTemplate = mustTemplate("non-leaf-gnmi", `
+func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.SingletonQuery[*{{ .GoStructTypeName }}] {
+	return &ygnmi.NewLeafSingletonQuery[*{{ .GoStructTypeName }}](
+		"{{ .GoStructTypeName }}",
+		{{ .IsState }},
+		n,
+		{{ .SchemaStructPkgAccessor }}GetSchema(),
+	)
+}
+`)
 )

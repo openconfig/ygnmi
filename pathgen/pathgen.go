@@ -85,6 +85,8 @@ func NewDefaultConfig(schemaStructPkgPath string) *GenConfig {
 	}
 }
 
+type Generator func(string, *ygen.Directory, *NodeData) (string, error)
+
 // GenConfig stores code generation configuration.
 type GenConfig struct {
 	// PackageName is the name that should be used for the generating package.
@@ -187,7 +189,7 @@ type GenConfig struct {
 	PackageSuffix string
 	// UnifiedPathStructs controls whether to generate both config and states in the same package.
 	UnifiedPathStructs bool
-	// ExtraGenerators allow extra pluggable code generation (for example gNMI).
+	// ExtraGenerators
 	ExtraGenerators []Generator
 }
 
@@ -200,10 +202,10 @@ type GoImports struct {
 	// YgotImportPath specifies the path to the ygot library that should be used
 	// in the generated code.
 	YgotImportPath string
+	// YgnmiImportPath is the import path to the ygnmi library that should be used
+	// in the generated code.
+	YgnmiImportPath string
 }
-
-// Generators are extra
-type Generator func(string, *NodeData) (string, error)
 
 // GeneratePathCode takes a slice of strings containing the path to a set of YANG
 // files which contain YANG modules, and a second slice of strings which
@@ -278,20 +280,21 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 		errs = util.AppendErrs(errs, es)
 	}
 
+	// Run any extra generators, grouped by directory.
 	extraPerDir := map[string]*strings.Builder{}
 	for _, psName := range GetOrderedNodeDataNames(nodeDataMap) {
-		if _, ok := extraPerDir[nodeDataMap[psName].Directory.Name]; !ok {
-			extraPerDir[nodeDataMap[psName].Directory.Name] = &strings.Builder{}
+		if _, ok := extraPerDir[nodeDataMap[psName].DirectoryName]; !ok {
+			extraPerDir[nodeDataMap[psName].DirectoryName] = &strings.Builder{}
 		}
 		for _, gen := range cg.ExtraGenerators {
-			extra, err := gen(psName, nodeDataMap[psName])
+			extra, err := gen(psName, dirNameMap[nodeDataMap[psName].DirectoryName], nodeDataMap[psName])
 			if err != nil {
 				errs = util.AppendErr(errs, err)
 			}
-			if _, ok := extraPerDir[nodeDataMap[psName].Directory.Name]; !ok {
-				extraPerDir[nodeDataMap[psName].Directory.Name] = &strings.Builder{}
+			if _, ok := extraPerDir[nodeDataMap[psName].DirectoryName]; !ok {
+				extraPerDir[nodeDataMap[psName].DirectoryName] = &strings.Builder{}
 			}
-			extraPerDir[nodeDataMap[psName].Directory.Name].WriteString(extra)
+			extraPerDir[nodeDataMap[psName].DirectoryName].WriteString(extra)
 		}
 	}
 
@@ -312,10 +315,8 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 		if es != nil {
 			errs = util.AppendErrs(errs, es)
 		}
-		// not all directory generate types, ignore those that don't.
-		if extraPerDir[directory.Name] != nil {
-			structSnippet[0].ExtraGeneration = extraPerDir[directory.Name].String()
-		}
+		structSnippet[0].ExtraGeneration = extraPerDir[directoryName].String()
+
 		structSnippets = append(structSnippets, structSnippet...)
 	}
 
@@ -463,6 +464,7 @@ func (g GoPathStructCodeSnippet) String() string {
 	for _, method := range []string{g.StructBase, g.ChildConstructors} {
 		genutil.WriteIfNotEmpty(&b, method)
 	}
+	genutil.WriteIfNotEmpty(&b, g.ExtraGeneration)
 	return b.String()
 }
 
@@ -505,9 +507,10 @@ type NodeData struct {
 	YANGPath string
 	// GoPathPackageName is the Go package name containing the generated PathStruct for the schema node.
 	GoPathPackageName string
-	// Directory contains info about the directory for this node.
-	Directory *ygen.Directory
-	FieldName string
+	// YANGFieldName is the name of the field entry for this node, only set for leaves.
+	YANGFieldName string
+	// Directory is the name of the directory used to create this node.
+	DirectoryName string
 }
 
 // GetOrderedNodeDataNames returns the alphabetically-sorted slice of keys
@@ -549,6 +552,7 @@ import (
 	{{ .SchemaStructPkgAlias }} "{{ .SchemaStructPkgPath }}"
 	{{- end }}
 	"{{ .YgotImportPath }}"
+	"{{ .YgnmiImportPath }}"
 {{- range $import := .ExtraImports }}
 	"{{ $import }}"
 {{- end }}
@@ -702,7 +706,7 @@ func getNodeDataMap(directories map[string]*ygen.Directory, leafTypeMap map[stri
 				YANGTypeName:          "",
 				YANGPath:              "/",
 				GoPathPackageName:     goPackageName(dir.Entry, splitByModule, trimOCPackage, packageName, packageSuffix),
-				Directory:             dir,
+				DirectoryName:         dir.Name,
 			}
 		}
 
@@ -766,8 +770,8 @@ func getNodeDataMap(directories map[string]*ygen.Directory, leafTypeMap map[stri
 				YANGTypeName:          yangTypeName,
 				YANGPath:              field.Path(),
 				GoPathPackageName:     goPackageName(field, splitByModule, trimOCPackage, packageName, packageSuffix),
-				Directory:             dir,
-				FieldName:             fieldName,
+				YANGFieldName:         fieldName,
+				DirectoryName:         dir.Name,
 			}
 		}
 	}

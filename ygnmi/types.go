@@ -7,6 +7,7 @@ import (
 	"github.com/openconfig/ygot/ytypes"
 )
 
+// NewLeafSingletonQuery creates a new LeafSingletonQuery object.
 func NewLeafSingletonQuery[T any](parentDir string, state bool, ps ygot.PathStruct, extractFn func(ygot.ValidatedGoStruct) T, goStructFn func() ygot.ValidatedGoStruct, schema *ytypes.Schema) *LeafSingletonQuery[T] {
 	return &LeafSingletonQuery[T]{
 		leafBaseQuery: leafBaseQuery[T]{
@@ -16,6 +17,18 @@ func NewLeafSingletonQuery[T any](parentDir string, state bool, ps ygot.PathStru
 			extractFn:  extractFn,
 			goStructFn: goStructFn,
 			yschema:    schema,
+		},
+	}
+}
+
+// NewNonLeafSingletonQuery creates a new NonLeafSingletonQuery object.
+func NewNonLeafSingletonQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps ygot.PathStruct, extractFn func(ygot.ValidatedGoStruct) T, goStructFn func() ygot.ValidatedGoStruct, schema *ytypes.Schema) *NonLeafSingletonQuery[T] {
+	return &NonLeafSingletonQuery[T]{
+		nonLeafBaseQuery: nonLeafBaseQuery[T]{
+			dir:     dir,
+			state:   state,
+			ps:      ps,
+			yschema: schema,
 		},
 	}
 }
