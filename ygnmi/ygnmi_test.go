@@ -1283,6 +1283,21 @@ func TestWatchAll(t *testing.T) {
 		wantSubscriptionPath: leafQueryPath,
 		wantLastVal:          nil,
 		wantErr:              "invalid nil Val in update",
+	}, {
+		desc: "subscribe fails",
+		dur:  -1 * time.Second,
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: key10Path,
+					Val:  nil,
+				}},
+			}).Sync()
+		},
+		wantSubscriptionPath: leafQueryPath,
+		wantLastVal:          nil,
+		wantErr:              "gNMI failed to Subscribe",
 	}}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
