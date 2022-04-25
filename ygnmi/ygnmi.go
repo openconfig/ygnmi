@@ -167,7 +167,7 @@ func (w *Watcher[T]) Await() (*Value[T], error) {
 }
 
 // Watch starts an asynchronous observation of the values with a STREAM subscription, evaluating each observed value with the specified predicate.
-// The subscription completes when either the predicate is true or the context is cancelled.
+// The subscription completes when either the predicate is true or the context is canceled.
 // Calling Await on the returned Watcher waits for the subscription to complete.
 // It returns the last observed value and a boolean that indicates whether that value satisfies the predicate.
 func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func(*Value[T]) bool) *Watcher[T] {
