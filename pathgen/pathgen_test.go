@@ -954,6 +954,7 @@ func TestGeneratePathCode(t *testing.T) {
 				cg.GenerateWildcardPaths = tt.inGenerateWildcardPaths
 				cg.SimplifyWildcardPaths = tt.inSimplifyWildcardPaths
 				cg.PackageName = "ocstructs"
+				cg.ExtraGenerators = []Generator{GNMIGenerator}
 
 				gotCode, gotNodeDataMap, err := cg.GeneratePathCode(tt.inFiles, tt.inIncludePaths)
 				if err != nil && !tt.wantErr {
@@ -2238,6 +2239,7 @@ func TestGenerateDirectorySnippet(t *testing.T) {
 		inSplitByModule           bool
 		inPackageName             string
 		inPackageSuffix           string
+		inUnifiedPath             bool
 		// want may be omitted to skip testing.
 		want []GoPathStructCodeSnippet
 		// wantNoWildcard may be omitted to skip testing.
@@ -2405,6 +2407,138 @@ func (n *ContainerWithConfig) Leaflist2() *ContainerWithConfig_Leaflist2 {
 			map[string]interface{}{},
 			n,
 		),
+	}
+}
+`,
+		}},
+	}, {
+		name:            "unified-container-with-config",
+		inDirectory:     directories["/root-module/container-with-config"],
+		inPackageName:   "device",
+		inPackageSuffix: "path",
+		inUnifiedPath:   true,
+		want: []GoPathStructCodeSnippet{{
+			PathStructName: "ContainerWithConfig",
+			Package:        "device",
+			StructBase: `
+// ContainerWithConfig represents the /root-module/container-with-config YANG schema element.
+type ContainerWithConfig struct {
+	*ygot.NodePath
+}
+
+// ContainerWithConfigAny represents the wildcard version of the /root-module/container-with-config YANG schema element.
+type ContainerWithConfigAny struct {
+	*ygot.NodePath
+}
+
+// ContainerWithConfig_Leaf represents the /root-module/container-with-config/state/leaf YANG schema element.
+type ContainerWithConfig_Leaf struct {
+	parent ygot.PathStruct
+}
+
+// ContainerWithConfig_LeafAny represents the wildcard version of the /root-module/container-with-config/state/leaf YANG schema element.
+type ContainerWithConfig_LeafAny struct {
+	parent ygot.PathStruct
+}
+
+// ContainerWithConfig_Leaflist represents the /root-module/container-with-config/state/leaflist YANG schema element.
+type ContainerWithConfig_Leaflist struct {
+	parent ygot.PathStruct
+}
+
+// ContainerWithConfig_LeaflistAny represents the wildcard version of the /root-module/container-with-config/state/leaflist YANG schema element.
+type ContainerWithConfig_LeaflistAny struct {
+	parent ygot.PathStruct
+}
+
+// ContainerWithConfig_Leaflist2 represents the /root-module/container-with-config/state/leaflist2 YANG schema element.
+type ContainerWithConfig_Leaflist2 struct {
+	parent ygot.PathStruct
+}
+
+// ContainerWithConfig_Leaflist2Any represents the wildcard version of the /root-module/container-with-config/state/leaflist2 YANG schema element.
+type ContainerWithConfig_Leaflist2Any struct {
+	parent ygot.PathStruct
+}
+`,
+			ChildConstructors: `
+func (n *ContainerWithConfig) Leaf() *ContainerWithConfig_Leaf {
+	return &ContainerWithConfig_Leaf{
+		parent: n,
+	}
+}
+
+func (n *ContainerWithConfigAny) Leaf() *ContainerWithConfig_LeafAny {
+	return &ContainerWithConfig_LeafAny{
+		parent: n,
+	}
+}
+
+func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
+	return &ContainerWithConfig_Leaflist{
+		parent: n,
+	}
+}
+
+func (n *ContainerWithConfigAny) Leaflist() *ContainerWithConfig_LeaflistAny {
+	return &ContainerWithConfig_LeaflistAny{
+		parent: n,
+	}
+}
+
+func (n *ContainerWithConfig) Leaflist2() *ContainerWithConfig_Leaflist2 {
+	return &ContainerWithConfig_Leaflist2{
+		parent: n,
+	}
+}
+
+func (n *ContainerWithConfigAny) Leaflist2() *ContainerWithConfig_Leaflist2Any {
+	return &ContainerWithConfig_Leaflist2Any{
+		parent: n,
+	}
+}
+`,
+		}},
+		wantNoWildcard: []GoPathStructCodeSnippet{{
+			PathStructName: "ContainerWithConfig",
+			Package:        "device",
+			StructBase: `
+// ContainerWithConfig represents the /root-module/container-with-config YANG schema element.
+type ContainerWithConfig struct {
+	*ygot.NodePath
+}
+
+// ContainerWithConfig_Leaf represents the /root-module/container-with-config/state/leaf YANG schema element.
+type ContainerWithConfig_Leaf struct {
+	parent ygot.PathStruct
+}
+
+// ContainerWithConfig_Leaflist represents the /root-module/container-with-config/state/leaflist YANG schema element.
+type ContainerWithConfig_Leaflist struct {
+	parent ygot.PathStruct
+}
+
+// ContainerWithConfig_Leaflist2 represents the /root-module/container-with-config/state/leaflist2 YANG schema element.
+type ContainerWithConfig_Leaflist2 struct {
+	parent ygot.PathStruct
+}
+`,
+			ChildConstructors: `
+func (n *ContainerWithConfig) Leaf() *ContainerWithConfig_Leaf {
+	return &ContainerWithConfig_Leaf{
+		parent: n,
+	}
+}
+
+func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
+	return &ContainerWithConfig_Leaflist{
+		parent: n,
+	}
+}
+
+func (n *ContainerWithConfig) Leaflist2() *ContainerWithConfig_Leaflist2 {
+	return &ContainerWithConfig_Leaflist2{
+		parent: n,
 	}
 }
 `,
@@ -2722,7 +2856,7 @@ func (n *ListWithStatePathAny) WithKey(Key float64) *ListWithStatePathAny {
 	for _, tt := range tests {
 		if tt.want != nil {
 			t.Run(tt.name, func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, "oc.", tt.inPathStructSuffix, tt.inListBuilderKeyThreshold, true, false, tt.inSplitByModule, false, tt.inPackageName, tt.inPackageSuffix)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, "oc.", tt.inPathStructSuffix, tt.inListBuilderKeyThreshold, true, false, tt.inSplitByModule, false, tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}
@@ -2738,7 +2872,7 @@ func (n *ListWithStatePathAny) WithKey(Key float64) *ListWithStatePathAny {
 
 		if tt.wantNoWildcard != nil {
 			t.Run(tt.name+" no wildcard", func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, "oc.", tt.inPathStructSuffix, tt.inListBuilderKeyThreshold, false, false, tt.inSplitByModule, false, tt.inPackageName, tt.inPackageSuffix)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, "oc.", tt.inPathStructSuffix, tt.inListBuilderKeyThreshold, false, false, tt.inSplitByModule, false, tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}
@@ -2907,6 +3041,7 @@ func TestGenerateChildConstructor(t *testing.T) {
 		inPathStructSuffix        string
 		inGenerateWildcardPaths   bool
 		inSimplifyWildcardPaths   bool
+		inUnifiedPaths            bool
 		inChildAccessor           string
 		testMethodDocComment      bool
 		wantMethod                string
@@ -2957,6 +3092,28 @@ func (n *ContainerPathAny) Leaf() *Container_LeafPathAny {
 			map[string]interface{}{},
 			n,
 		),
+	}
+}
+`,
+	}, {
+		name:                    "unified container leaf method",
+		inDirectory:             directories["/root-module/container"],
+		inDirectories:           directories,
+		inFieldName:             "leaf",
+		inUniqueFieldName:       "Leaf",
+		inPathStructSuffix:      "Path",
+		inUnifiedPaths:          true,
+		inGenerateWildcardPaths: true,
+		wantMethod: `
+func (n *ContainerPath) Leaf() *Container_LeafPath {
+	return &Container_LeafPath{
+		parent: n,
+	}
+}
+
+func (n *ContainerPathAny) Leaf() *Container_LeafPathAny {
+	return &Container_LeafPathAny{
+		parent: n,
 	}
 }
 `,
@@ -3263,7 +3420,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootModule_List_UnionKey_Union) *
 		t.Run(tt.name, func(t *testing.T) {
 			var methodBuf strings.Builder
 			var builderBuf strings.Builder
-			if errs := generateChildConstructors(&methodBuf, &builderBuf, tt.inDirectory, tt.inFieldName, tt.inUniqueFieldName, tt.inDirectories, "oc.", tt.inPathStructSuffix, tt.inListBuilderKeyThreshold, tt.inGenerateWildcardPaths, tt.inSimplifyWildcardPaths, tt.inChildAccessor); errs != nil {
+			if errs := generateChildConstructors(&methodBuf, &builderBuf, tt.inDirectory, tt.inFieldName, tt.inUniqueFieldName, tt.inDirectories, "oc.", tt.inPathStructSuffix, tt.inListBuilderKeyThreshold, tt.inGenerateWildcardPaths, tt.inSimplifyWildcardPaths, tt.inChildAccessor, tt.inUnifiedPaths); errs != nil {
 				t.Fatal(errs)
 			}
 

@@ -7,6 +7,19 @@ import (
 	"github.com/openconfig/ygot/ytypes"
 )
 
+func NewLeafSingletonQuery[T any](parentDir string, state bool, ps ygot.PathStruct, extractFn func(ygot.ValidatedGoStruct) T, goStructFn func() ygot.ValidatedGoStruct, schema *ytypes.Schema) *LeafSingletonQuery[T] {
+	return &LeafSingletonQuery[T]{
+		leafBaseQuery: leafBaseQuery[T]{
+			parentDir:  parentDir,
+			state:      state,
+			ps:         ps,
+			extractFn:  extractFn,
+			goStructFn: goStructFn,
+			yschema:    schema,
+		},
+	}
+}
+
 // LeafSingletonQuery is implementation of SingletonQuery interface for leaf nodes.
 // Note: Do not use this type directly, instead use the generated Path API.
 type LeafSingletonQuery[T any] struct {
