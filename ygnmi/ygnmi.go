@@ -23,13 +23,9 @@ import (
 
 	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygot/ytypes"
-	"github.com/pkg/errors"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	log "github.com/golang/glog"
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
-	closer "github.com/openconfig/gocloser"
 )
 
 // AnyQuery is a generic gNMI query for wildcard or non-wildcard state or config paths.
@@ -156,51 +152,37 @@ type Watcher[T any] struct {
 	errCh      chan error
 	lastVal    *Value[T]
 	predStatus bool
-	cancelFn   func()
 }
 
 // Await waits for the watch to finish and returns the last received value
 // and a boolean indicating whether the predicate evaluated to true.
 // When Await returns the watcher is closed, and Await may not be called again.
-func (w *Watcher[T]) Await() (*Value[T], bool, error) {
+func (w *Watcher[T]) Await() (*Value[T], error) {
 	err, ok := <-w.errCh
 	if !ok {
-		return nil, false, fmt.Errorf("Await already called and Watcher is closed")
+		return nil, fmt.Errorf("Await already called and Watcher is closed")
 	}
-	if err != nil {
-		if st, ok := status.FromError(errors.Cause(err)); ok && st.Code() == codes.DeadlineExceeded {
-			return w.lastVal, false, nil
-		}
-		return nil, false, err
-	}
-	return w.lastVal, w.predStatus, nil
-}
-
-// Cancel immediately stops the watch.
-func (w *Watcher[T]) Cancel() {
-	w.cancelFn()
+	close(w.errCh)
+	return w.lastVal, err
 }
 
 // Watch starts an asynchronous observation of the values with a STREAM subscription, evaluating each observed value with the specified predicate.
-// The subscription completes when either the predicate is true or the specified duration elapses.
+// The subscription completes when either the predicate is true or the context is canceled.
 // Calling Await on the returned Watcher waits for the subscription to complete.
 // It returns the last observed value and a boolean that indicates whether that value satisfies the predicate.
-func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], dur time.Duration, pred func(*Value[T]) bool) (_ *Watcher[T], rerr error) {
-	ctx, cancelFn := context.WithTimeout(ctx, dur)
-	// Cancel the context immediately, if subscribe returns an error.
-	defer closer.CloseVoidOnErr(&rerr, cancelFn)
+func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func(*Value[T]) bool) *Watcher[T] {
+	w := &Watcher[T]{
+		errCh: make(chan error, 1),
+	}
 
 	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM)
 	if err != nil {
-		return nil, err
+		w.errCh <- err
+		return w
 	}
-	w := &Watcher[T]{
-		errCh:    make(chan error),
-		cancelFn: cancelFn,
-	}
+
 	dataCh, errCh := receiveStream[T](sub, q)
 	go func() {
-		defer close(w.errCh)
 		// Create an intially empty GoStruct, into which all received datapoints will be unmarshalled.
 		gs := q.goStruct()
 		for {
@@ -222,7 +204,7 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], dur time.
 			}
 		}
 	}()
-	return w, nil
+	return w
 }
 
 // Lookup fetches the values of a WildcardQuery with a ONCE subscription.

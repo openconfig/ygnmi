@@ -23,7 +23,6 @@ import (
 	"github.com/openconfig/gnmi/errlist"
 	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygot"
-	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/prototext"
@@ -44,7 +43,7 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 
 	sub, err := c.gnmiC.Subscribe(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "gNMI failed to Subscribe")
+		return nil, fmt.Errorf("gNMI failed to Subscribe: %w", err)
 	}
 	defer closer.Close(&rerr, sub.CloseSend, "error closing gNMI send stream")
 
@@ -71,7 +70,7 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 
 	log.V(1).Info(prototext.Format(sr))
 	if err := sub.Send(sr); err != nil {
-		return nil, errors.Wrapf(err, "gNMI failed to Send(%+v)", sr)
+		return nil, fmt.Errorf("gNMI failed to Send(%+v): %w", sr, err)
 	}
 
 	return sub, nil
@@ -95,7 +94,7 @@ func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bo
 	case *gpb.SubscribeResponse_Update:
 		n := v.Update
 		if !deletesExpected && len(n.Delete) != 0 {
-			return data, false, errors.Errorf("unexpected delete updates: %v", n.Delete)
+			return data, false, fmt.Errorf("unexpected delete updates: %v", n.Delete)
 		}
 		ts := time.Unix(0, n.GetTimestamp())
 		newDataPoint := func(p *gpb.Path, val *gpb.TypedValue) (*DataPoint, error) {
@@ -128,10 +127,10 @@ func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bo
 		}
 		for _, u := range n.GetUpdate() {
 			if u.Path == nil {
-				return data, false, errors.Errorf("invalid nil path in update: %v", u)
+				return data, false, fmt.Errorf("invalid nil path in update: %v", u)
 			}
 			if u.Val == nil {
-				return data, false, errors.Errorf("invalid nil Val in update: %v", u)
+				return data, false, fmt.Errorf("invalid nil Val in update: %v", u)
 			}
 			log.V(2).Infof("Received gNMI Update value %s at path: %s", prototext.Format(u.Val), prototext.Format(u.Path))
 			dp, err := newDataPoint(u.Path, u.Val)
@@ -150,7 +149,7 @@ func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bo
 		})
 		return data, true, nil
 	default:
-		return data, false, errors.Errorf("unexpected response: %v (%T)", v, v)
+		return data, false, fmt.Errorf("unexpected response: %v (%T)", v, v)
 	}
 }
 
@@ -172,7 +171,7 @@ func receiveAll(sub gpb.GNMI_SubscribeClient, deletesExpected bool, mode gpb.Sub
 			if st, ok := status.FromError(err); ok && st.Code() == codes.DeadlineExceeded {
 				break
 			}
-			return nil, errors.Wrapf(err, "error receiving gNMI response")
+			return nil, fmt.Errorf("error receiving gNMI response: %w", err)
 		}
 		if mode == gpb.SubscriptionList_ONCE && sync {
 			break
@@ -200,10 +199,6 @@ func receiveStream[T any](sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-ch
 		for {
 			recvData, sync, err = receive(sub, recvData, true)
 			if err != nil {
-				if errors.Is(err, io.EOF) {
-					errCh <- nil
-					return
-				}
 				errCh <- fmt.Errorf("error receiving gNMI response: %w", err)
 				return
 			}
