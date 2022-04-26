@@ -125,7 +125,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[E_Child_Three] {
 		},
 		want: `
 func (n *Container) State() ygnmi.SingletonQuery[*Container] {
-	return &ygnmi.NewLeafSingletonQuery[*Container](
+	return &ygnmi.NewNonLeafSingletonQuery[*Container](
 		"Container",
 		true,
 		n,

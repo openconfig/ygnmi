@@ -34,7 +34,7 @@ type gnmiStruct struct {
 	IsScalar                bool
 }
 
-// GNMIGenerator is a extra Generator for PathStructs that generates gNMI helpers.
+// GNMIGenerator is a plugin generator for generating ygnmi query objects
 func GNMIGenerator(pathStructName string, dir *ygen.Directory, node *NodeData) (string, error) {
 	tmplStruct := gnmiStruct{
 		PathStructName:          pathStructName,
@@ -92,7 +92,7 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.SingletonQuery[{{ .GoT
 
 	goGNMINonLeafTemplate = mustTemplate("non-leaf-gnmi", `
 func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.SingletonQuery[*{{ .GoStructTypeName }}] {
-	return &ygnmi.NewLeafSingletonQuery[*{{ .GoStructTypeName }}](
+	return &ygnmi.NewNonLeafSingletonQuery[*{{ .GoStructTypeName }}](
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
 		n,
