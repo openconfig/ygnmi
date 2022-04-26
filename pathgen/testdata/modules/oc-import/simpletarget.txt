@@ -12,6 +12,7 @@ package openconfigsimpletargetpath
 
 import (
 	"github.com/openconfig/ygot/ygot"
+	"github.com/openconfig/ygnmi/ygmni"
 )
 
 // NativePath represents the /openconfig-simple-target/native YANG schema element.

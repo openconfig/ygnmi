@@ -12,6 +12,7 @@ package openconfigimportpath
 
 import (
 	"github.com/openconfig/ygot/ygot"
+	"github.com/openconfig/ygnmi/ygmni"
 )
 
 // ChildPath represents the /openconfig-import/child YANG schema element.

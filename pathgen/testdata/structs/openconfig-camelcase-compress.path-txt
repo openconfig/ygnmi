@@ -12,6 +12,7 @@ package ocstructs
 
 import (
 	"github.com/openconfig/ygot/ygot"
+	"github.com/openconfig/ygnmi/ygmni"
 )
 
 // BGPPath represents the /openconfig-camelcase/bgp YANG schema element.
