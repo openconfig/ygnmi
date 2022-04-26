@@ -65,7 +65,7 @@ const (
 	// NOTE: This cannot be "", as the builder method name would conflict
 	// with the child constructor method for the keys.
 	BuilderKeyPrefix = "With"
-	//defaultYgnmiPath is the import path for the ygnmi library
+	// defaultYgnmiPath is the import path for the ygnmi library.
 	defaultYgnmiPath = "github.com/openconfig/ygnmi/ygmni"
 )
 
@@ -190,9 +190,9 @@ type GenConfig struct {
 	BaseImportPath string
 	// PackageString is the string to apppend to the generated Go package names.
 	PackageSuffix string
-	// UnifiedPathStructs controls whether to generate both config and states in the same package.
-	UnifiedPathStructs bool
-	// ExtraGenerators
+	// UnifyPathStructs controls whether to generate both config and states in the same package.
+	UnifyPathStructs bool
+	// ExtraGenerators are custom funcs that are used to extend the path struct generation.
 	ExtraGenerators []Generator
 }
 
@@ -314,7 +314,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 		if cg.GenerateWildcardPaths {
 			listBuilderKeyThreshold = cg.ListBuilderKeyThreshold
 		}
-		structSnippet, es := generateDirectorySnippet(directory, directories, schemaStructPkgAccessor, cg.PathStructSuffix, listBuilderKeyThreshold, cg.GenerateWildcardPaths, cg.SimplifyWildcardPaths, cg.SplitByModule, cg.TrimOCPackage, cg.PackageName, cg.PackageSuffix, cg.UnifiedPathStructs)
+		structSnippet, es := generateDirectorySnippet(directory, directories, schemaStructPkgAccessor, cg.PathStructSuffix, listBuilderKeyThreshold, cg.GenerateWildcardPaths, cg.SimplifyWildcardPaths, cg.SplitByModule, cg.TrimOCPackage, cg.PackageName, cg.PackageSuffix, cg.UnifyPathStructs)
 		if es != nil {
 			errs = util.AppendErrs(errs, es)
 		}
@@ -604,8 +604,8 @@ type {{ .TypeName }}{{ .WildcardSuffix }} struct {
 }
 {{- end }}
 `)
-	// goUnifiedLeafPathStructTemplate is similar to goPathStructTemplate execpt
-	// leaves are not PathStruct instead they have Config and State methods
+	// goUnifiedLeafPathStructTemplate is similar to goPathStructTemplate except
+	// leaves are not PathStructs; instead they have Config and State methods
 	// that return path structs.
 	goUnifiedLeafPathStructTemplate = mustTemplate("leaf-struct", `
 // {{ .TypeName }} represents the {{ .YANGPath }} YANG schema element.
