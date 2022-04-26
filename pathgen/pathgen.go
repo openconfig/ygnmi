@@ -646,7 +646,7 @@ func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{
 }
 `)
 
-	// goPathChildConstructorTemplate generates the child constructor method
+	// goUnifiedLeafPathChildConstructorTemplate generates the child constructor method
 	// for a generated struct by returning an instantiation of the child's
 	// path struct object. In the unified model, leaves are not path structs
 	// because with path compression, a leaf path may be a state or config path.

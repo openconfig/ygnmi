@@ -44,7 +44,7 @@ func GNMIGenerator(pathStructName string, dir *ygen.Directory, node *NodeData) (
 		GoFieldName:             node.GoFieldName,
 		SchemaStructPkgAccessor: "oc.",
 		IsState:                 true,
-		MethodName:              "State",
+		MethodName:              "State", // TODO(DanG100): add config generation
 		IsScalar:                node.IsScalarField,
 	}
 
