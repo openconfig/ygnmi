@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"strings"
 	"time"
 
 	"github.com/openconfig/gnmi/errlist"
@@ -226,4 +227,114 @@ func receiveStream[T any](sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-ch
 		}
 	}()
 	return dataCh, errCh
+}
+
+// set configures the target at the query path.
+func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val interface{}, op setOperation) (*gpb.SetResponse, *gpb.Path, error) {
+	path, _, errs := ygot.ResolvePath(q.pathStruct())
+	if err := errsToErr(errs); err != nil {
+		return nil, nil, err
+	}
+	settableVal := val
+	if val != nil && q.isLeaf() && q.isScalar() {
+		settableVal = &val
+	}
+
+	req := &gpb.SetRequest{}
+	if err := populateSetRequest(req, path, settableVal, op); err != nil {
+		return nil, nil, err
+	}
+	req.Prefix = &gpb.Path{
+		Target: c.target,
+	}
+	log.V(1).Info(prettySetRequest(req))
+	resp, err := c.gnmiC.Set(ctx, req)
+	log.V(1).Infof("SetResponse:\n%s", prototext.Format(resp))
+
+	return resp, path, err
+}
+
+// setOperation is an enum representing the different kinds of SetRequest
+// operations available.
+type setOperation int
+
+const (
+	// deletePath represents a SetRequest delete.
+	deletePath setOperation = iota
+	// replacePath represents a SetRequest replace.
+	replacePath
+	// updatePath represents a SetRequest update.
+	updatePath
+)
+
+// populateSetRequest fills a SetResponse for a val and operation type.
+func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op setOperation) error {
+	if req == nil {
+		return fmt.Errorf("cannot populate a nil SetRequest")
+	}
+
+	switch op {
+	case deletePath:
+		req.Delete = append(req.Delete, path)
+	case replacePath, updatePath:
+		// Since the GoStructs are generated using preferOperationalState, we
+		// need to turn on preferShadowPath to prefer marshalling config paths.
+		js, err := ygot.Marshal7951(val, ygot.JSONIndent("  "), &ygot.RFC7951JSONConfig{AppendModuleName: true, PreferShadowPath: true})
+		if err != nil {
+			return fmt.Errorf("could not encode value into JSON format: %w", err)
+		}
+		update := &gpb.Update{
+			Path: path,
+			Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: js}},
+		}
+		switch op {
+		case replacePath:
+			req.Replace = append(req.Replace, update)
+		case updatePath:
+			req.Update = append(req.Update, update)
+		}
+	}
+
+	return nil
+}
+
+// prettySetRequest returns a string version of a gNMI SetRequest for human
+// consumption and ignores errors. Note that the output is subject to change.
+// See documentation for prototext.Format.
+func prettySetRequest(setRequest *gpb.SetRequest) string {
+	var buf strings.Builder
+	fmt.Fprintf(&buf, "SetRequest:\n%s\n", prototext.Format(setRequest))
+
+	writePath := func(path *gpb.Path) {
+		pathStr, err := ygot.PathToString(path)
+		if err != nil {
+			pathStr = prototext.Format(path)
+		}
+		fmt.Fprintf(&buf, "%s\n", pathStr)
+	}
+
+	writeVal := func(val *gpb.TypedValue) {
+		switch v := val.Value.(type) {
+		case *gpb.TypedValue_JsonIetfVal:
+			fmt.Fprintf(&buf, "%s\n", v.JsonIetfVal)
+		default:
+			fmt.Fprintf(&buf, "%s\n", prototext.Format(val))
+		}
+	}
+
+	for i, path := range setRequest.Delete {
+		fmt.Fprintf(&buf, "-------delete path #%d------\n", i)
+		writePath(path)
+	}
+	for i, update := range setRequest.Replace {
+		fmt.Fprintf(&buf, "-------replace path/value pair #%d------\n", i)
+		writePath(update.Path)
+		writeVal(update.Val)
+	}
+	for i, update := range setRequest.Update {
+		fmt.Fprintf(&buf, "-------update path/value pair #%d------\n", i)
+		writePath(update.Path)
+		writeVal(update.Val)
+	}
+	return buf.String()
 }

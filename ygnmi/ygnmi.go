@@ -46,6 +46,8 @@ type AnyQuery[T any] interface {
 	isState() bool
 	// isLeaf returns if the path for this query is a leaf.
 	isLeaf() bool
+	// isScalar returns if the path for this query is a pointer in the parent GoStruct.
+	isScalar() bool
 	// schema returns the root schema used for unmarshalling.
 	schema() *ytypes.Schema
 }
@@ -62,6 +64,15 @@ type WildcardQuery[T any] interface {
 	AnyQuery[T]
 	// isWildcard prevents this interface from being used in non-wildcard funcs.
 	isWildcard()
+}
+
+// ConfigQuery is a non-wildcard config gNMI query.
+type ConfigQuery[T any] interface {
+	AnyQuery[T]
+	// isConfig() allows this interface to be use in config funcs.
+	isConfig()
+	// isNonWildcard prevents this interface from being used in wildcard funcs.
+	isNonWildcard()
 }
 
 // Value contains a value received from a gNMI request and its metadata.
@@ -207,7 +218,7 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func
 	return w
 }
 
-// Lookup fetches the values of a WildcardQuery with a ONCE subscription.
+// LookupAll fetches the values of a WildcardQuery with a ONCE subscription.
 // It returns an empty list if no values are present at the path.
 func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]*Value[T], error) {
 	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_ONCE)
@@ -299,4 +310,31 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 		}
 	}()
 	return w
+}
+
+// Update updates the configuration at the given query path with the val.
+func Update[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T) (*gpb.SetResponse, error) {
+	resp, path, err := set(ctx, c, q, val, updatePath)
+	if err != nil {
+		return resp, fmt.Errorf("Update(t) at path %s: %w", path, err)
+	}
+	return resp, nil
+}
+
+// Replace replaces the configuration at the given query path with the val.
+func Replace[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T) (*gpb.SetResponse, error) {
+	resp, path, err := set(ctx, c, q, val, replacePath)
+	if err != nil {
+		return resp, fmt.Errorf("Replace(t) at path %s: %w", path, err)
+	}
+	return resp, nil
+}
+
+// Delete deletes the configuration at the given query path.
+func Delete[T any](ctx context.Context, c *Client, q ConfigQuery[T]) (*gpb.SetResponse, error) {
+	resp, path, err := set(ctx, c, q, nil, deletePath)
+	if err != nil {
+		return resp, fmt.Errorf("Delete(t) at path %s: %w", path, err)
+	}
+	return resp, nil
 }

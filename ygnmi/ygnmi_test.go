@@ -2,6 +2,7 @@ package ygnmi
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygot"
+	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 
@@ -1488,5 +1490,390 @@ func verifySubscriptionPathsSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, want
 	}
 	if diff := cmp.Diff(wantPaths, gotPaths, protocmp.Transform(), cmpopts.SortSlices(ygottestutil.PathLess)); diff != "" {
 		t.Errorf("subscription paths (-want, +got):\n%s", diff)
+	}
+}
+
+type fakeGNMISetClient struct {
+	gpb.GNMIClient
+	Responses    []*gpb.SetResponse
+	Requests     []*gpb.SetRequest
+	ResponseErrs []error
+	i            int
+}
+
+func (f *fakeGNMISetClient) Reset() {
+	f.Requests = nil
+	f.Responses = nil
+	f.ResponseErrs = nil
+	f.i = 0
+}
+
+func (f *fakeGNMISetClient) AddResponse(resp *gpb.SetResponse, err error) *fakeGNMISetClient {
+	f.Responses = append(f.Responses, resp)
+	f.ResponseErrs = append(f.ResponseErrs, err)
+	return f
+}
+
+func (f *fakeGNMISetClient) Set(_ context.Context, req *gpb.SetRequest, opts ...grpc.CallOption) (*gpb.SetResponse, error) {
+	defer func() { f.i++ }()
+	f.Requests = append(f.Requests, req)
+	return f.Responses[f.i], f.ResponseErrs[f.i]
+}
+
+func TestUpdate(t *testing.T) {
+	setClient := &fakeGNMISetClient{}
+	client := &Client{
+		gnmiC:  setClient,
+		target: "dut",
+	}
+	tests := []struct {
+		desc        string
+		stub        func(*fakeGNMISetClient)
+		op          func(*Client) (*gpb.SetResponse, error)
+		wantErr     string
+		wantRequest *gpb.SetRequest
+		inResponse  *gpb.SetResponse
+		inErr       error
+	}{{
+		desc: "scalar leaf",
+		op: func(c *Client) (*gpb.SetResponse, error) {
+			q := &LeafConfigQuery[uint64]{
+				leafBaseQuery: leafBaseQuery[uint64]{
+					state:  false,
+					scalar: true,
+					ps:     ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
+				},
+			}
+			return Update[uint64](context.Background(), c, q, 10)
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("\"10\"")}},
+			}},
+		},
+		inResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "non scalar leaf",
+		op: func(c *Client) (*gpb.SetResponse, error) {
+			q := &LeafConfigQuery[testutil.EnumType]{
+				leafBaseQuery: leafBaseQuery[testutil.EnumType]{
+					state:  false,
+					scalar: false,
+					ps:     ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "enum-leaf"}, nil, ygot.NewDeviceRootBase("")),
+				},
+			}
+			return Update[testutil.EnumType](context.Background(), c, q, testutil.EnumType(43))
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "super-container/leaf-container-struct/enum-leaf"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("\"E_VALUE_FORTY_THREE\"")}},
+			}},
+		},
+		inResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "non leaf",
+		op: func(c *Client) (*gpb.SetResponse, error) {
+			q := &NonLeafConfigQuery[*testutil.LeafContainerStruct]{
+				nonLeafBaseQuery: nonLeafBaseQuery[*testutil.LeafContainerStruct]{
+					state: false,
+					ps:    ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "enum-leaf"}, nil, ygot.NewDeviceRootBase("")),
+				},
+			}
+			return Update[*testutil.LeafContainerStruct](context.Background(), c, q, &testutil.LeafContainerStruct{Uint64Leaf: ygot.Uint64(10)})
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "super-container/leaf-container-struct/enum-leaf"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("{\n  \"state\": {\n    \"uint64-leaf\": \"10\"\n  }\n}")}},
+			}},
+		},
+		inResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "server error",
+		op: func(c *Client) (*gpb.SetResponse, error) {
+			q := &LeafConfigQuery[uint64]{
+				leafBaseQuery: leafBaseQuery[uint64]{
+					state:  false,
+					scalar: true,
+					ps:     ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
+				},
+			}
+			return Update[uint64](context.Background(), c, q, 10)
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"10"`)}},
+			}},
+		},
+		inErr:   fmt.Errorf("fake"),
+		wantErr: "fake",
+	}}
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			setClient.Reset()
+			setClient.AddResponse(tt.inResponse, tt.inErr)
+
+			got, err := tt.op(client)
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Update() returned unexpected diff: %s", diff)
+			}
+			if err != nil {
+				return
+			}
+			if diff := cmp.Diff(tt.wantRequest, setClient.Requests[0], protocmp.Transform()); diff != "" {
+				t.Errorf("Update() sent unexpected request (-want,+got):\n%s", diff)
+			}
+			if diff := cmp.Diff(tt.inResponse, got, protocmp.Transform()); diff != "" {
+				t.Errorf("Update() returned unexpected value (-want,+got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestReplace(t *testing.T) {
+	setClient := &fakeGNMISetClient{}
+	client := &Client{
+		gnmiC:  setClient,
+		target: "dut",
+	}
+	tests := []struct {
+		desc        string
+		stub        func(*fakeGNMISetClient)
+		op          func(*Client) (*gpb.SetResponse, error)
+		wantErr     string
+		wantRequest *gpb.SetRequest
+		inResponse  *gpb.SetResponse
+		inErr       error
+	}{{
+		desc: "scalar leaf",
+		op: func(c *Client) (*gpb.SetResponse, error) {
+			q := &LeafConfigQuery[uint64]{
+				leafBaseQuery: leafBaseQuery[uint64]{
+					state:  false,
+					scalar: true,
+					ps:     ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
+				},
+			}
+			return Replace[uint64](context.Background(), c, q, 10)
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Replace: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("\"10\"")}},
+			}},
+		},
+		inResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "non scalar leaf",
+		op: func(c *Client) (*gpb.SetResponse, error) {
+			q := &LeafConfigQuery[testutil.EnumType]{
+				leafBaseQuery: leafBaseQuery[testutil.EnumType]{
+					state:  false,
+					scalar: false,
+					ps:     ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "enum-leaf"}, nil, ygot.NewDeviceRootBase("")),
+				},
+			}
+			return Replace[testutil.EnumType](context.Background(), c, q, testutil.EnumType(43))
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Replace: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "super-container/leaf-container-struct/enum-leaf"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("\"E_VALUE_FORTY_THREE\"")}},
+			}},
+		},
+		inResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "non leaf",
+		op: func(c *Client) (*gpb.SetResponse, error) {
+			q := &NonLeafConfigQuery[*testutil.LeafContainerStruct]{
+				nonLeafBaseQuery: nonLeafBaseQuery[*testutil.LeafContainerStruct]{
+					state: false,
+					ps:    ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "enum-leaf"}, nil, ygot.NewDeviceRootBase("")),
+				},
+			}
+			return Replace[*testutil.LeafContainerStruct](context.Background(), c, q, &testutil.LeafContainerStruct{Uint64Leaf: ygot.Uint64(10)})
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Replace: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "super-container/leaf-container-struct/enum-leaf"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("{\n  \"state\": {\n    \"uint64-leaf\": \"10\"\n  }\n}")}},
+			}},
+		},
+		inResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "server error",
+		op: func(c *Client) (*gpb.SetResponse, error) {
+			q := &LeafConfigQuery[uint64]{
+				leafBaseQuery: leafBaseQuery[uint64]{
+					state:  false,
+					scalar: true,
+					ps:     ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
+				},
+			}
+			return Replace[uint64](context.Background(), c, q, 10)
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Replace: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"10"`)}},
+			}},
+		},
+		inErr:   fmt.Errorf("fake"),
+		wantErr: "fake",
+	}}
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			setClient.Reset()
+			setClient.AddResponse(tt.inResponse, tt.inErr)
+
+			got, err := tt.op(client)
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Replace() returned unexpected diff: %s", diff)
+			}
+			if err != nil {
+				return
+			}
+			if diff := cmp.Diff(tt.wantRequest, setClient.Requests[0], protocmp.Transform()); diff != "" {
+				t.Errorf("Replace() sent unexpected request (-want,+got):\n%s", diff)
+			}
+			if diff := cmp.Diff(tt.inResponse, got, protocmp.Transform()); diff != "" {
+				t.Errorf("Replace() returned unexpected value (-want,+got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestDelete(t *testing.T) {
+	setClient := &fakeGNMISetClient{}
+	client := &Client{
+		gnmiC:  setClient,
+		target: "dut",
+	}
+	tests := []struct {
+		desc        string
+		stub        func(*fakeGNMISetClient)
+		op          func(*Client) (*gpb.SetResponse, error)
+		wantErr     string
+		wantRequest *gpb.SetRequest
+		inResponse  *gpb.SetResponse
+		inErr       error
+	}{{
+		desc: "success",
+		op: func(c *Client) (*gpb.SetResponse, error) {
+			q := &LeafConfigQuery[uint64]{
+				leafBaseQuery: leafBaseQuery[uint64]{
+					state:  false,
+					scalar: true,
+					ps:     ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
+				},
+			}
+			return Delete[uint64](context.Background(), c, q)
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Delete: []*gpb.Path{
+				testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf"),
+			},
+		},
+		inResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "server error",
+		op: func(c *Client) (*gpb.SetResponse, error) {
+			q := &LeafConfigQuery[uint64]{
+				leafBaseQuery: leafBaseQuery[uint64]{
+					state:  false,
+					scalar: true,
+					ps:     ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
+				},
+			}
+			return Delete[uint64](context.Background(), c, q)
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Delete: []*gpb.Path{
+				testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf"),
+			},
+		},
+		inErr:   fmt.Errorf("fake"),
+		wantErr: "fake",
+	}}
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			setClient.Reset()
+			setClient.AddResponse(tt.inResponse, tt.inErr)
+
+			got, err := tt.op(client)
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Delete() returned unexpected diff: %s", diff)
+			}
+			if err != nil {
+				return
+			}
+			if diff := cmp.Diff(tt.wantRequest, setClient.Requests[0], protocmp.Transform()); diff != "" {
+				t.Errorf("Delete() sent unexpected request (-want,+got):\n%s", diff)
+			}
+			if diff := cmp.Diff(tt.inResponse, got, protocmp.Transform()); diff != "" {
+				t.Errorf("Delete() returned unexpected value (-want,+got):\n%s", diff)
+			}
+		})
 	}
 }

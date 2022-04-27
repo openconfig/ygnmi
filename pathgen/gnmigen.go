@@ -71,6 +71,7 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.SingletonQuery[{{ .GoT
 	return &ygnmi.NewLeafSingletonQuery[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
+		{{ .IsScalar }},
 		ygot.New{{ .PathBaseTypeName }}(
 			[]string{ {{- .RelPathList -}} },
 			nil,
