@@ -1495,10 +1495,14 @@ func verifySubscriptionPathsSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, want
 
 type fakeGNMISetClient struct {
 	gpb.GNMIClient
-	Responses    []*gpb.SetResponse
-	Requests     []*gpb.SetRequest
+	// Responses are the gNMI responses to return from calls to Set.
+	Responses []*gpb.SetResponse
+	// Requests received by the client are stored in the slice.
+	Requests []*gpb.SetRequest
+	// ResponseErrs are the errors to return from calls to Set.
 	ResponseErrs []error
-	i            int
+	// i is index current index of the response and error to return.
+	i int
 }
 
 func (f *fakeGNMISetClient) Reset() {
@@ -1527,13 +1531,12 @@ func TestUpdate(t *testing.T) {
 		target: "dut",
 	}
 	tests := []struct {
-		desc        string
-		stub        func(*fakeGNMISetClient)
-		op          func(*Client) (*gpb.SetResponse, error)
-		wantErr     string
-		wantRequest *gpb.SetRequest
-		inResponse  *gpb.SetResponse
-		inErr       error
+		desc         string
+		op           func(*Client) (*gpb.SetResponse, error)
+		wantErr      string
+		wantRequest  *gpb.SetRequest
+		stubResponse *gpb.SetResponse
+		stubErr      error
 	}{{
 		desc: "scalar leaf",
 		op: func(c *Client) (*gpb.SetResponse, error) {
@@ -1555,7 +1558,7 @@ func TestUpdate(t *testing.T) {
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("\"10\"")}},
 			}},
 		},
-		inResponse: &gpb.SetResponse{
+		stubResponse: &gpb.SetResponse{
 			Prefix: &gpb.Path{
 				Target: "dut",
 			},
@@ -1581,7 +1584,7 @@ func TestUpdate(t *testing.T) {
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("\"E_VALUE_FORTY_THREE\"")}},
 			}},
 		},
-		inResponse: &gpb.SetResponse{
+		stubResponse: &gpb.SetResponse{
 			Prefix: &gpb.Path{
 				Target: "dut",
 			},
@@ -1606,7 +1609,7 @@ func TestUpdate(t *testing.T) {
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("{\n  \"state\": {\n    \"uint64-leaf\": \"10\"\n  }\n}")}},
 			}},
 		},
-		inResponse: &gpb.SetResponse{
+		stubResponse: &gpb.SetResponse{
 			Prefix: &gpb.Path{
 				Target: "dut",
 			},
@@ -1632,13 +1635,13 @@ func TestUpdate(t *testing.T) {
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"10"`)}},
 			}},
 		},
-		inErr:   fmt.Errorf("fake"),
+		stubErr: fmt.Errorf("fake"),
 		wantErr: "fake",
 	}}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			setClient.Reset()
-			setClient.AddResponse(tt.inResponse, tt.inErr)
+			setClient.AddResponse(tt.stubResponse, tt.stubErr)
 
 			got, err := tt.op(client)
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
@@ -1650,7 +1653,7 @@ func TestUpdate(t *testing.T) {
 			if diff := cmp.Diff(tt.wantRequest, setClient.Requests[0], protocmp.Transform()); diff != "" {
 				t.Errorf("Update() sent unexpected request (-want,+got):\n%s", diff)
 			}
-			if diff := cmp.Diff(tt.inResponse, got, protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.stubResponse, got, protocmp.Transform()); diff != "" {
 				t.Errorf("Update() returned unexpected value (-want,+got):\n%s", diff)
 			}
 		})
@@ -1664,13 +1667,12 @@ func TestReplace(t *testing.T) {
 		target: "dut",
 	}
 	tests := []struct {
-		desc        string
-		stub        func(*fakeGNMISetClient)
-		op          func(*Client) (*gpb.SetResponse, error)
-		wantErr     string
-		wantRequest *gpb.SetRequest
-		inResponse  *gpb.SetResponse
-		inErr       error
+		desc         string
+		op           func(*Client) (*gpb.SetResponse, error)
+		wantErr      string
+		wantRequest  *gpb.SetRequest
+		stubResponse *gpb.SetResponse
+		stubErr      error
 	}{{
 		desc: "scalar leaf",
 		op: func(c *Client) (*gpb.SetResponse, error) {
@@ -1692,7 +1694,7 @@ func TestReplace(t *testing.T) {
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("\"10\"")}},
 			}},
 		},
-		inResponse: &gpb.SetResponse{
+		stubResponse: &gpb.SetResponse{
 			Prefix: &gpb.Path{
 				Target: "dut",
 			},
@@ -1718,7 +1720,7 @@ func TestReplace(t *testing.T) {
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("\"E_VALUE_FORTY_THREE\"")}},
 			}},
 		},
-		inResponse: &gpb.SetResponse{
+		stubResponse: &gpb.SetResponse{
 			Prefix: &gpb.Path{
 				Target: "dut",
 			},
@@ -1743,7 +1745,7 @@ func TestReplace(t *testing.T) {
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("{\n  \"state\": {\n    \"uint64-leaf\": \"10\"\n  }\n}")}},
 			}},
 		},
-		inResponse: &gpb.SetResponse{
+		stubResponse: &gpb.SetResponse{
 			Prefix: &gpb.Path{
 				Target: "dut",
 			},
@@ -1769,13 +1771,13 @@ func TestReplace(t *testing.T) {
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"10"`)}},
 			}},
 		},
-		inErr:   fmt.Errorf("fake"),
+		stubErr: fmt.Errorf("fake"),
 		wantErr: "fake",
 	}}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			setClient.Reset()
-			setClient.AddResponse(tt.inResponse, tt.inErr)
+			setClient.AddResponse(tt.stubResponse, tt.stubErr)
 
 			got, err := tt.op(client)
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
@@ -1787,7 +1789,7 @@ func TestReplace(t *testing.T) {
 			if diff := cmp.Diff(tt.wantRequest, setClient.Requests[0], protocmp.Transform()); diff != "" {
 				t.Errorf("Replace() sent unexpected request (-want,+got):\n%s", diff)
 			}
-			if diff := cmp.Diff(tt.inResponse, got, protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.stubResponse, got, protocmp.Transform()); diff != "" {
 				t.Errorf("Replace() returned unexpected value (-want,+got):\n%s", diff)
 			}
 		})
@@ -1801,13 +1803,12 @@ func TestDelete(t *testing.T) {
 		target: "dut",
 	}
 	tests := []struct {
-		desc        string
-		stub        func(*fakeGNMISetClient)
-		op          func(*Client) (*gpb.SetResponse, error)
-		wantErr     string
-		wantRequest *gpb.SetRequest
-		inResponse  *gpb.SetResponse
-		inErr       error
+		desc         string
+		op           func(*Client) (*gpb.SetResponse, error)
+		wantErr      string
+		wantRequest  *gpb.SetRequest
+		stubResponse *gpb.SetResponse
+		stubErr      error
 	}{{
 		desc: "success",
 		op: func(c *Client) (*gpb.SetResponse, error) {
@@ -1828,7 +1829,7 @@ func TestDelete(t *testing.T) {
 				testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf"),
 			},
 		},
-		inResponse: &gpb.SetResponse{
+		stubResponse: &gpb.SetResponse{
 			Prefix: &gpb.Path{
 				Target: "dut",
 			},
@@ -1853,13 +1854,13 @@ func TestDelete(t *testing.T) {
 				testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf"),
 			},
 		},
-		inErr:   fmt.Errorf("fake"),
+		stubErr: fmt.Errorf("fake"),
 		wantErr: "fake",
 	}}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			setClient.Reset()
-			setClient.AddResponse(tt.inResponse, tt.inErr)
+			setClient.AddResponse(tt.stubResponse, tt.stubErr)
 
 			got, err := tt.op(client)
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
@@ -1871,7 +1872,7 @@ func TestDelete(t *testing.T) {
 			if diff := cmp.Diff(tt.wantRequest, setClient.Requests[0], protocmp.Transform()); diff != "" {
 				t.Errorf("Delete() sent unexpected request (-want,+got):\n%s", diff)
 			}
-			if diff := cmp.Diff(tt.inResponse, got, protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.stubResponse, got, protocmp.Transform()); diff != "" {
 				t.Errorf("Delete() returned unexpected value (-want,+got):\n%s", diff)
 			}
 		})

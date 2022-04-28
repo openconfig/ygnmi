@@ -46,7 +46,7 @@ type AnyQuery[T any] interface {
 	isState() bool
 	// isLeaf returns if the path for this query is a leaf.
 	isLeaf() bool
-	// isScalar returns if the path for this query is a pointer in the parent GoStruct.
+	// isScalar returns whether the type (T) for this path is a pointer field (*T) in the parent GoStruct.
 	isScalar() bool
 	// schema returns the root schema used for unmarshalling.
 	schema() *ytypes.Schema
@@ -332,7 +332,8 @@ func Replace[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T) (*g
 
 // Delete deletes the configuration at the given query path.
 func Delete[T any](ctx context.Context, c *Client, q ConfigQuery[T]) (*gpb.SetResponse, error) {
-	resp, path, err := set(ctx, c, q, nil, deletePath)
+	var t T
+	resp, path, err := set(ctx, c, q, t, deletePath)
 	if err != nil {
 		return resp, fmt.Errorf("Delete(t) at path %s: %w", path, err)
 	}

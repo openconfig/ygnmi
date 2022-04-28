@@ -65,7 +65,7 @@ type leafBaseQuery[T any] struct {
 	goStructFn func() ygot.ValidatedGoStruct
 	// yschema is parsed YANG schema to use when unmarshalling data.
 	yschema *ytypes.Schema
-	// is the leaf a scalar value.
+	// scalar is whether the type (T) for this path is a pointer field (*T) in the parent GoStruct.
 	scalar bool
 }
 
@@ -104,7 +104,7 @@ func (lq *leafBaseQuery[T]) schema() *ytypes.Schema {
 	return lq.yschema
 }
 
-// schema returns the schema used for unmarshalling.
+// isScalar returns whether the type (T) for this path is a pointer field (*T) in the parent GoStruct.
 func (lq *leafBaseQuery[T]) isScalar() bool {
 	return lq.scalar
 }
@@ -159,7 +159,7 @@ func (lq *nonLeafBaseQuery[T]) isLeaf() bool {
 	return false
 }
 
-// isScalar returns false, as this Query type is only for non-leaves.
+// isScalar returns false, as non-leafs are always non-scalar objects.
 func (lq *nonLeafBaseQuery[T]) isScalar() bool {
 	return false
 }
@@ -185,20 +185,20 @@ type LeafConfigQuery[T any] struct {
 	leafBaseQuery[T]
 }
 
-// isConfig allows this struct from being used where a config path is expected.
+// isConfig allows this struct to be used where a config path is expected.
 func (lq *LeafConfigQuery[T]) isConfig() {}
 
-// isNonWildcard prevents this struct from being used where a non-wildcard path is expected.
+// isNonWildcard prevents this struct from being used where a wildcard path is expected.
 func (lq *LeafConfigQuery[T]) isNonWildcard() {}
 
-// LeafConfigQuery is implementation of ConfigQuery interface for leaf nodes.
+// NonLeafConfigQuery is implementation of ConfigQuery interface for non-leaf nodes.
 // Note: Do not use this type directly, instead use the generated Path API.
 type NonLeafConfigQuery[T ygot.ValidatedGoStruct] struct {
 	nonLeafBaseQuery[T]
 }
 
-// isConfig allows this struct from being used where a config path is expected.
+// isConfig allows this struct to be being used where a config path is expected.
 func (nlq *NonLeafConfigQuery[T]) isConfig() {}
 
-// isNonWildcard prevents this struct from being used where a non-wildcard path is expected.
+// isNonWildcard prevents this struct from being used where a wildcard path is expected.
 func (nlq *NonLeafConfigQuery[T]) isNonWildcard() {}

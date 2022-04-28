@@ -230,18 +230,20 @@ func receiveStream[T any](sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-ch
 }
 
 // set configures the target at the query path.
-func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val interface{}, op setOperation) (*gpb.SetResponse, *gpb.Path, error) {
+func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, op setOperation) (*gpb.SetResponse, *gpb.Path, error) {
 	path, _, errs := ygot.ResolvePath(q.pathStruct())
 	if err := errsToErr(errs); err != nil {
 		return nil, nil, err
 	}
-	settableVal := val
-	if val != nil && q.isLeaf() && q.isScalar() {
-		settableVal = &val
-	}
 
 	req := &gpb.SetRequest{}
-	if err := populateSetRequest(req, path, settableVal, op); err != nil {
+	var err error
+	if q.isLeaf() && q.isScalar() {
+		err = populateSetRequest(req, path, &val, op)
+	} else {
+		err = populateSetRequest(req, path, val, op)
+	}
+	if err != nil {
 		return nil, nil, err
 	}
 	req.Prefix = &gpb.Path{
