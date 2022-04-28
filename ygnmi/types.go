@@ -42,7 +42,7 @@ type LeafSingletonQuery[T any] struct {
 // isNonWildcard prevents this struct from being used where a wildcard path is expected.
 func (lq *LeafSingletonQuery[T]) isNonWildcard() {}
 
-// LeafSingletonQuery is implementation of SingletonQuery interface for leaf nodes.
+// LeafWildcardQuery is implementation of SingletonQuery interface for leaf nodes.
 // Note: Do not use this type directly, instead use the generated Path API.
 type LeafWildcardQuery[T any] struct {
 	leafBaseQuery[T]
@@ -110,7 +110,7 @@ type NonLeafSingletonQuery[T ygot.ValidatedGoStruct] struct {
 // isNonWildcard prevents this struct from being used where a wildcard path is expected.
 func (lq *NonLeafSingletonQuery[T]) isNonWildcard() {}
 
-// NonLeafSingletonQuery is implementation of SingletonQuery interface for non-leaf nodes.
+// NonLeafWildcardQuery is implementation of SingletonQuery interface for non-leaf nodes.
 // Note: Do not use this type directly, instead use the generated Path API.
 type NonLeafWildcardQuery[T ygot.ValidatedGoStruct] struct {
 	nonLeafBaseQuery[T]

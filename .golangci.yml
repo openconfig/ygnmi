@@ -6,3 +6,14 @@ run:
 linters:
   enable:
     - gofmt
+    - revive
+    - goimports
+
+issues:
+  exclude:
+    - receiver-naming # This appears to broken with generics.
+  exclude-use-default: false
+  exclude-rules:
+    # Exclude naming complaints from schema.
+    - path: internal/testutil
+      linters: revive
