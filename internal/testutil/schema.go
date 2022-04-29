@@ -33,8 +33,8 @@ func (EnumType) ΛMap() map[string]map[int64]ygot.EnumDefinition {
 
 func (EnumType) IsYANGGoEnum() {}
 
-func (EnumType) String() string {
-	return ""
+func (e EnumType) String() string {
+	return ygot.EnumLogString(e, int64(e), "EnumType")
 }
 
 // EnumType2 is used as an enum type in various tests in the ytypes package.
