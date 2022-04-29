@@ -8,12 +8,13 @@ import (
 )
 
 // NewLeafSingletonQuery creates a new LeafSingletonQuery object.
-func NewLeafSingletonQuery[T any](parentDir string, state bool, ps ygot.PathStruct, extractFn func(ygot.ValidatedGoStruct) T, goStructFn func() ygot.ValidatedGoStruct, schema *ytypes.Schema) *LeafSingletonQuery[T] {
+func NewLeafSingletonQuery[T any](parentDir string, state, scalar bool, ps ygot.PathStruct, extractFn func(ygot.ValidatedGoStruct) T, goStructFn func() ygot.ValidatedGoStruct, schema *ytypes.Schema) *LeafSingletonQuery[T] {
 	return &LeafSingletonQuery[T]{
 		leafBaseQuery: leafBaseQuery[T]{
 			parentDir:  parentDir,
 			state:      state,
 			ps:         ps,
+			scalar:     scalar,
 			extractFn:  extractFn,
 			goStructFn: goStructFn,
 			yschema:    schema,
@@ -64,6 +65,8 @@ type leafBaseQuery[T any] struct {
 	goStructFn func() ygot.ValidatedGoStruct
 	// yschema is parsed YANG schema to use when unmarshalling data.
 	yschema *ytypes.Schema
+	// scalar is whether the type (T) for this path is a pointer field (*T) in the parent GoStruct.
+	scalar bool
 }
 
 // extract takes the parent GoStruct and returns the correct child field from it.
@@ -99,6 +102,11 @@ func (lq *leafBaseQuery[T]) pathStruct() ygot.PathStruct {
 // schema returns the schema used for unmarshalling.
 func (lq *leafBaseQuery[T]) schema() *ytypes.Schema {
 	return lq.yschema
+}
+
+// isScalar returns whether the type (T) for this path is a pointer field (*T) in the parent GoStruct.
+func (lq *leafBaseQuery[T]) isScalar() bool {
+	return lq.scalar
 }
 
 // NonLeafSingletonQuery is implementation of SingletonQuery interface for non-leaf nodes.
@@ -151,6 +159,11 @@ func (lq *nonLeafBaseQuery[T]) isLeaf() bool {
 	return false
 }
 
+// isScalar returns false, as non-leafs are always non-scalar objects.
+func (lq *nonLeafBaseQuery[T]) isScalar() bool {
+	return false
+}
+
 // isState returns if the Query is for a state or config path.
 func (lq *nonLeafBaseQuery[T]) isState() bool {
 	return lq.state
@@ -165,3 +178,27 @@ func (lq *nonLeafBaseQuery[T]) pathStruct() ygot.PathStruct {
 func (lq *nonLeafBaseQuery[T]) schema() *ytypes.Schema {
 	return lq.yschema
 }
+
+// LeafConfigQuery is implementation of ConfigQuery interface for leaf nodes.
+// Note: Do not use this type directly, instead use the generated Path API.
+type LeafConfigQuery[T any] struct {
+	leafBaseQuery[T]
+}
+
+// isConfig restricts this struct to be used only where a config path is expected.
+func (lq *LeafConfigQuery[T]) isConfig() {}
+
+// isNonWildcard restricts this struct to be used only where a singleton path is expected.
+func (lq *LeafConfigQuery[T]) isNonWildcard() {}
+
+// NonLeafConfigQuery is implementation of ConfigQuery interface for non-leaf nodes.
+// Note: Do not use this type directly, instead use the generated Path API.
+type NonLeafConfigQuery[T ygot.ValidatedGoStruct] struct {
+	nonLeafBaseQuery[T]
+}
+
+// isConfig restricts this struct to be used only where a config path is expected.
+func (nlq *NonLeafConfigQuery[T]) isConfig() {}
+
+// isNonWildcard restricts this struct to be used only where a singleton path is expected.
+func (nlq *NonLeafConfigQuery[T]) isNonWildcard() {}

@@ -60,6 +60,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 	return &ygnmi.NewLeafSingletonQuery[int32](
 		"Container",
 		true,
+		true,
 		ygot.NewNodePath(
 			[]string{"leaf"},
 			nil,
@@ -94,6 +95,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[E_Child_Three] {
 	return &ygnmi.NewLeafSingletonQuery[E_Child_Three](
 		"Container",
 		true,
+		false,
 		ygot.NewNodePath(
 			[]string{"leaf"},
 			nil,
