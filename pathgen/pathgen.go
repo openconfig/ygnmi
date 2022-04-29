@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package ypathgen contains a library to generate gNMI paths from a YANG model.
+// Package pathgen contains a library to generate gNMI paths from a YANG model.
 // The ygen library is used to parse YANG and obtain intermediate and some final
 // information. The output always assumes the OpenConfig-specific conventions
 // for a compressed schema.
@@ -88,6 +88,7 @@ func NewDefaultConfig(schemaStructPkgPath string) *GenConfig {
 	}
 }
 
+// Generator is func to returns extra generated code for a given node.
 type Generator func(string, *ygen.Directory, *NodeData) (string, error)
 
 // GenConfig stores code generation configuration.

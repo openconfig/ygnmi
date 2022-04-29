@@ -207,7 +207,7 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func
 	return w
 }
 
-// Lookup fetches the values of a WildcardQuery with a ONCE subscription.
+// LookupAll fetches the values of a WildcardQuery with a ONCE subscription.
 // It returns an empty list if no values are present at the path.
 func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]*Value[T], error) {
 	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_ONCE)

@@ -26,7 +26,7 @@ import (
 )
 
 // The device ID used throughout this test file.
-const deviceId = "dev"
+const deviceID = "dev"
 
 // verifyPath checks the given path against expected.
 func verifyPath(t *testing.T, p ygot.PathStruct, wantPathStr string) {
@@ -40,7 +40,7 @@ func verifyPath(t *testing.T, p ygot.PathStruct, wantPathStr string) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	wantPath.Target = deviceId
+	wantPath.Target = deviceID
 
 	if diff := cmp.Diff(wantPath, gotPath, cmp.Comparer(proto.Equal)); diff != "" {
 		t.Fatalf("verifyPath returned diff (-want +got):\n%s", diff)
@@ -85,7 +85,7 @@ func verifyTypesEqual(t *testing.T, target ygot.PathStruct, wild ygot.PathStruct
 }
 
 func TestCustomData(t *testing.T) {
-	root := oc.DeviceRoot(deviceId)
+	root := oc.DeviceRoot(deviceID)
 	p := root.WithName("foo").Interface("eth1").Ethernet().PortSpeed()
 	verifyPath(t, p, "/interfaces/interface[name=eth1]/ethernet/config/port-speed")
 
@@ -97,7 +97,7 @@ func TestCustomData(t *testing.T) {
 
 // This test shows ways to reduce typing when creating similar paths.
 func TestManualShortcuts(t *testing.T) {
-	root := oc.DeviceRoot(deviceId)
+	root := oc.DeviceRoot(deviceID)
 	preemptDelay := func(intf string, subintf uint32, ip string) ygot.PathStruct {
 		return root.Interface(intf).Subinterface(subintf).Ipv6().Address(ip).VrrpGroup(1).PreemptDelay()
 	}
@@ -231,7 +231,7 @@ func TestPathCreation(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			verifyPath(t, tt.makePath(oc.DeviceRoot(deviceId)), tt.wantPath)
+			verifyPath(t, tt.makePath(oc.DeviceRoot(deviceID)), tt.wantPath)
 		})
 	}
 }
@@ -393,7 +393,7 @@ func TestWildcardPathCreation(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			device := oc.DeviceRoot(deviceId)
+			device := oc.DeviceRoot(deviceID)
 
 			target := tt.makePath(device)
 			verifyPath(t, target, tt.wantPath)
