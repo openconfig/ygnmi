@@ -237,15 +237,14 @@ func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, op setO
 	}
 
 	req := &gpb.SetRequest{}
-	var err error
+	var setVal interface{} = val
 	if q.isLeaf() && q.isScalar() {
-		err = populateSetRequest(req, path, &val, op)
-	} else {
-		err = populateSetRequest(req, path, val, op)
+		setVal = &val
 	}
-	if err != nil {
+	if err := populateSetRequest(req, path, setVal, op); err != nil {
 		return nil, nil, err
 	}
+
 	req.Prefix = &gpb.Path{
 		Target: c.target,
 	}
@@ -261,11 +260,8 @@ func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, op setO
 type setOperation int
 
 const (
-	// deletePath represents a SetRequest delete.
 	deletePath setOperation = iota
-	// replacePath represents a SetRequest replace.
 	replacePath
-	// updatePath represents a SetRequest update.
 	updatePath
 )
 
@@ -289,12 +285,13 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op
 			Path: path,
 			Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: js}},
 		}
-		switch op {
-		case replacePath:
+		if op == replacePath {
 			req.Replace = append(req.Replace, update)
-		case updatePath:
+		} else {
 			req.Update = append(req.Update, update)
 		}
+	default:
+		return fmt.Errorf("unknown set operation: %v", op)
 	}
 
 	return nil

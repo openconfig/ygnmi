@@ -185,10 +185,10 @@ type LeafConfigQuery[T any] struct {
 	leafBaseQuery[T]
 }
 
-// isConfig allows this struct to be used where a config path is expected.
+// isConfig restricts this struct to be used only where a config path is expected.
 func (lq *LeafConfigQuery[T]) isConfig() {}
 
-// isNonWildcard prevents this struct from being used where a wildcard path is expected.
+// isNonWildcard restricts this struct to be used only where a singleton path is expected.
 func (lq *LeafConfigQuery[T]) isNonWildcard() {}
 
 // NonLeafConfigQuery is implementation of ConfigQuery interface for non-leaf nodes.
@@ -197,8 +197,8 @@ type NonLeafConfigQuery[T ygot.ValidatedGoStruct] struct {
 	nonLeafBaseQuery[T]
 }
 
-// isConfig allows this struct to be being used where a config path is expected.
+// isConfig restricts this struct to be used only where a config path is expected.
 func (nlq *NonLeafConfigQuery[T]) isConfig() {}
 
-// isNonWildcard prevents this struct from being used where a wildcard path is expected.
+// isNonWildcard restricts this struct to be used only where a singleton path is expected.
 func (nlq *NonLeafConfigQuery[T]) isNonWildcard() {}
