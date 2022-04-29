@@ -17,6 +17,8 @@ package pathgen
 import (
 	"strings"
 
+	"github.com/openconfig/goyang/pkg/yang"
+	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygen"
 	"github.com/openconfig/ygot/ygot"
 )
@@ -32,6 +34,18 @@ type gnmiStruct struct {
 	IsState                 bool
 	MethodName              string
 	IsScalar                bool
+}
+
+func generateConfigFunc(entry *yang.Entry) bool {
+	if util.IsConfig(entry) {
+		return true
+	}
+	for _, child := range entry.Dir {
+		if generateConfigFunc(child) {
+			return true
+		}
+	}
+	return false
 }
 
 // GNMIGenerator is a plugin generator for generating ygnmi query objects
@@ -59,6 +73,23 @@ func GNMIGenerator(pathStructName string, dir *ygen.Directory, node *NodeData) (
 	}
 
 	var b strings.Builder
+	if err := tmpl.Execute(&b, tmplStruct); err != nil {
+		return "", err
+	}
+
+	if !generateConfigFunc(dir.Entry) {
+		return b.String(), nil
+	}
+
+	tmplStruct.MethodName = "Config"
+	tmplStruct.IsState = false
+	if node.IsLeaf {
+		relPath, err := ygen.FindShadowSchemaPath(dir, node.YANGFieldName, false)
+		if err != nil {
+			return "", err
+		}
+		tmplStruct.RelPathList = `"` + strings.Join(relPath, `", "`) + `"`
+	}
 	if err := tmpl.Execute(&b, tmplStruct); err != nil {
 		return "", err
 	}
