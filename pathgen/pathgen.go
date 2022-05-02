@@ -67,6 +67,8 @@ const (
 	BuilderKeyPrefix = "With"
 	// defaultYgnmiPath is the import path for the ygnmi library.
 	defaultYgnmiPath = "github.com/openconfig/ygnmi/ygmni"
+	// defaultYtypesPath is the import path for the ytypes library.
+	defaultYtypesPath = "github.com/openconfig/ygot/ytypes"
 )
 
 // NewDefaultConfig creates a GenConfig with default configuration.
@@ -81,6 +83,7 @@ func NewDefaultConfig(schemaStructPkgPath string) *GenConfig {
 			SchemaStructPkgPath: schemaStructPkgPath,
 			YgotImportPath:      genutil.GoDefaultYgotImportPath,
 			YgnmiImportPath:     defaultYgnmiPath,
+			YtypesImportPath:    defaultYtypesPath,
 		},
 		FakeRootName:     defaultFakeRootName,
 		PathStructSuffix: defaultPathStructSuffix,
@@ -206,6 +209,9 @@ type GoImports struct {
 	// YgotImportPath specifies the path to the ygot library that should be used
 	// in the generated code.
 	YgotImportPath string
+	// YtypesImportPath specifies the path to the ytypes library that should be used
+	// in the generated code.
+	YtypesImportPath string
 	// YgnmiImportPath is the import path to the ygnmi library that should be used
 	// in the generated code.
 	YgnmiImportPath string
@@ -559,6 +565,7 @@ import (
 	{{- end }}
 	"{{ .YgotImportPath }}"
 	"{{ .YgnmiImportPath }}"
+	"{{ .YtypesImportPath }}"
 {{- range $import := .ExtraImports }}
 	"{{ $import }}"
 {{- end }}

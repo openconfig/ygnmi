@@ -16,6 +16,7 @@ var (
 	schemaStructPath string
 	ygotImportPath   string
 	ygnmiImportPath  string
+	ytypesImportPath string
 	baseImportPath   string
 	packageName      string
 	paths            []string
@@ -35,6 +36,7 @@ func New() *cobra.Command {
 	generator.Flags().StringVar(&schemaStructPath, "schema_struct_path", "", "The Go import path for the schema structs package.")
 	generator.Flags().StringVar(&ygotImportPath, "ygot_path", "github.com/openconfig/ygot/ygot", "The import path to use for ygot.")
 	generator.Flags().StringVar(&ygnmiImportPath, "ygnmi_path", "github.com/openconfig/ygnmi/ygnmi", "The import path to use for ygot.")
+	generator.Flags().StringVar(&ytypesImportPath, "ytypes_path", "github.com/openconfig/ygot/ytypes", "The import path to use for ytypes.")
 	generator.Flags().StringVar(&baseImportPath, "base_import_path", "", "Base import path used to concatenate with module package relative paths for path struct imports.")
 	generator.Flags().StringSliceVar(&paths, "path", nil, "Comma separated list of paths to be recursively searched for included modules or submodules within the defined YANG modules.")
 	generator.Flags().StringVar(&outputDir, "output_dir", "", "The directory that the generated Go code should be written to. This directory is the base of the generated module packages.")
@@ -50,6 +52,7 @@ func generate(cmd *cobra.Command, args []string) error {
 			SchemaStructPkgPath: schemaStructPath,
 			YgotImportPath:      ygotImportPath,
 			YgnmiImportPath:     ygnmiImportPath,
+			YtypesImportPath:    ytypesImportPath,
 		},
 		PreferOperationalState:               true,
 		ExcludeState:                         false,

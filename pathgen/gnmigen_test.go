@@ -57,7 +57,7 @@ func TestGNMIGenerator(t *testing.T) {
 		},
 		want: `
 func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
-	return &ygnmi.NewLeafSingletonQuery[int32](
+	return ygnmi.NewLeafSingletonQuery[int32](
 		"Container",
 		true,
 		true,
@@ -76,7 +76,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 }
 
 func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
-	return &ygnmi.NewLeafWildcardQuery[int32](
+	return ygnmi.NewLeafWildcardQuery[int32](
 		"Container",
 		true,
 		true,
@@ -111,7 +111,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 		},
 		want: `
 func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
-	return &ygnmi.NewLeafSingletonQuery[int32](
+	return ygnmi.NewLeafSingletonQuery[int32](
 		"Container",
 		true,
 		true,
@@ -130,7 +130,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 }
 
 func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
-	return &ygnmi.NewLeafWildcardQuery[int32](
+	return ygnmi.NewLeafWildcardQuery[int32](
 		"Container",
 		true,
 		true,
@@ -149,7 +149,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 }
 
 func (n *Container_Leaf) Config() ygnmi.ConfigQuery[int32] {
-	return &ygnmi.NewLeafConfigQuery[int32](
+	return ygnmi.NewLeafConfigQuery[int32](
 		"Container",
 		false,
 		true,
@@ -168,7 +168,7 @@ func (n *Container_Leaf) Config() ygnmi.ConfigQuery[int32] {
 }
 
 func (n *Container_LeafAny) Config() ygnmi.WildcardQuery[int32] {
-	return &ygnmi.NewLeafWildcardQuery[int32](
+	return ygnmi.NewLeafWildcardQuery[int32](
 		"Container",
 		false,
 		true,
@@ -203,7 +203,7 @@ func (n *Container_LeafAny) Config() ygnmi.WildcardQuery[int32] {
 		},
 		want: `
 func (n *Container_Leaf) State() ygnmi.SingletonQuery[E_Child_Three] {
-	return &ygnmi.NewLeafSingletonQuery[E_Child_Three](
+	return ygnmi.NewLeafSingletonQuery[E_Child_Three](
 		"Container",
 		true,
 		false,
@@ -222,7 +222,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[E_Child_Three] {
 }
 
 func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
-	return &ygnmi.NewLeafWildcardQuery[E_Child_Three](
+	return ygnmi.NewLeafWildcardQuery[E_Child_Three](
 		"Container",
 		true,
 		false,
@@ -257,7 +257,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
 		},
 		want: `
 func (n *Root) State() ygnmi.SingletonQuery[*Root] {
-	return &ygnmi.NewNonLeafSingletonQuery[*Root](
+	return ygnmi.NewNonLeafSingletonQuery[*Root](
 		"Root",
 		true,
 		n,
@@ -266,7 +266,7 @@ func (n *Root) State() ygnmi.SingletonQuery[*Root] {
 }
 
 func (n *Root) Config() ygnmi.ConfigQuery[*Root] {
-	return &ygnmi.NewNonLeafConfigQuery[*Root](
+	return ygnmi.NewNonLeafConfigQuery[*Root](
 		"Root",
 		false,
 		n,
