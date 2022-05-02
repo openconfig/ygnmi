@@ -71,7 +71,11 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 			return *ret
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
-		oc.GetSchema(),
+		&ytypes.Schema{
+			Root:       &oc.Device{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
 	)
 }
 
@@ -90,7 +94,11 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 			return *ret
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
-		oc.GetSchema(),
+		&ytypes.Schema{
+			Root:       &oc.Device{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
 	)
 }
 `,
@@ -125,7 +133,11 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 			return *ret
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
-		oc.GetSchema(),
+		&ytypes.Schema{
+			Root:       &oc.Device{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
 	)
 }
 
@@ -144,7 +156,11 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 			return *ret
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
-		oc.GetSchema(),
+		&ytypes.Schema{
+			Root:       &oc.Device{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
 	)
 }
 
@@ -163,7 +179,11 @@ func (n *Container_Leaf) Config() ygnmi.ConfigQuery[int32] {
 			return *ret
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
-		oc.GetSchema(),
+		&ytypes.Schema{
+			Root:       &oc.Device{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
 	)
 }
 
@@ -182,7 +202,11 @@ func (n *Container_LeafAny) Config() ygnmi.WildcardQuery[int32] {
 			return *ret
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
-		oc.GetSchema(),
+		&ytypes.Schema{
+			Root:       &oc.Device{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
 	)
 }
 `,
@@ -217,7 +241,11 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[E_Child_Three] {
 			return ret
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
-		oc.GetSchema(),
+		&ytypes.Schema{
+			Root:       &oc.Device{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
 	)
 }
 
@@ -236,7 +264,11 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
 			return ret
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
-		oc.GetSchema(),
+		&ytypes.Schema{
+			Root:       &oc.Device{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
 	)
 }
 `,
@@ -245,7 +277,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
 		dir:            dirs["/root"],
 		pathStructName: "Root",
 		node: &NodeData{
-			GoTypeName:            "Root",
+			GoTypeName:            "*Root",
 			LocalGoTypeName:       "Root",
 			GoFieldName:           "",
 			YANGFieldName:         "",
@@ -261,7 +293,11 @@ func (n *Root) State() ygnmi.SingletonQuery[*Root] {
 		"Root",
 		true,
 		n,
-		oc.GetSchema(),
+		&ytypes.Schema{
+			Root:       &oc.Device{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
 	)
 }
 
@@ -270,7 +306,11 @@ func (n *Root) Config() ygnmi.ConfigQuery[*Root] {
 		"Root",
 		false,
 		n,
-		oc.GetSchema(),
+		&ytypes.Schema{
+			Root:       &oc.Device{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
 	)
 }
 `,

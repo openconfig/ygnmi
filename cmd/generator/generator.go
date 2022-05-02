@@ -18,7 +18,6 @@ var (
 	ygnmiImportPath  string
 	ytypesImportPath string
 	baseImportPath   string
-	packageName      string
 	paths            []string
 	outputDir        string
 )
@@ -29,8 +28,6 @@ func New() *cobra.Command {
 		Use:   "generator",
 		RunE:  generate,
 		Short: "Generates Go code for gNMI from a YANG schema.",
-		Long: `
-		`,
 	}
 
 	generator.Flags().StringVar(&schemaStructPath, "schema_struct_path", "", "The Go import path for the schema structs package.")

@@ -1,3 +1,5 @@
+.PHONY: test integration_test clean
+
 build:
 	go build -v ./...
 
