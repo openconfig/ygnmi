@@ -34,14 +34,68 @@ func NewNonLeafSingletonQuery[T ygot.ValidatedGoStruct](dir string, state bool, 
 	}
 }
 
+// NewLeafConfigQuery creates a new NewLeafConfigQuery object.
+func NewLeafConfigQuery[T any](parentDir string, state, scalar bool, ps ygot.PathStruct, extractFn func(ygot.ValidatedGoStruct) T, goStructFn func() ygot.ValidatedGoStruct, schema *ytypes.Schema) *LeafConfigQuery[T] {
+	return &LeafConfigQuery[T]{
+		leafBaseQuery: leafBaseQuery[T]{
+			parentDir:  parentDir,
+			state:      state,
+			ps:         ps,
+			scalar:     scalar,
+			extractFn:  extractFn,
+			goStructFn: goStructFn,
+			yschema:    schema,
+		},
+	}
+}
+
+// NewNonLeafConfigQuery creates a new NewNonLeafConfigQuery object.
+func NewNonLeafConfigQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps ygot.PathStruct, extractFn func(ygot.ValidatedGoStruct) T, goStructFn func() ygot.ValidatedGoStruct, schema *ytypes.Schema) *NonLeafConfigQuery[T] {
+	return &NonLeafConfigQuery[T]{
+		nonLeafBaseQuery: nonLeafBaseQuery[T]{
+			dir:     dir,
+			state:   state,
+			ps:      ps,
+			yschema: schema,
+		},
+	}
+}
+
+// NewLeafWildcardQuery creates a new NewLeafWildcardQuery object.
+func NewLeafWildcardQuery[T any](parentDir string, state, scalar bool, ps ygot.PathStruct, extractFn func(ygot.ValidatedGoStruct) T, goStructFn func() ygot.ValidatedGoStruct, schema *ytypes.Schema) *LeafWildcardQuery[T] {
+	return &LeafWildcardQuery[T]{
+		leafBaseQuery: leafBaseQuery[T]{
+			parentDir:  parentDir,
+			state:      state,
+			ps:         ps,
+			scalar:     scalar,
+			extractFn:  extractFn,
+			goStructFn: goStructFn,
+			yschema:    schema,
+		},
+	}
+}
+
+// NewNonLeafWildcardQuery creates a new NewNonLeafWildcardQuery object.
+func NewNonLeafWildcardQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps ygot.PathStruct, extractFn func(ygot.ValidatedGoStruct) T, goStructFn func() ygot.ValidatedGoStruct, schema *ytypes.Schema) *NonLeafWildcardQuery[T] {
+	return &NonLeafWildcardQuery[T]{
+		nonLeafBaseQuery: nonLeafBaseQuery[T]{
+			dir:     dir,
+			state:   state,
+			ps:      ps,
+			yschema: schema,
+		},
+	}
+}
+
 // LeafSingletonQuery is implementation of SingletonQuery interface for leaf nodes.
 // Note: Do not use this type directly, instead use the generated Path API.
 type LeafSingletonQuery[T any] struct {
 	leafBaseQuery[T]
 }
 
-// isNonWildcard prevents this struct from being used where a wildcard path is expected.
-func (lq *LeafSingletonQuery[T]) isNonWildcard() {}
+// isSingleton prevents this struct from being used where a wildcard path is expected.
+func (lq *LeafSingletonQuery[T]) isSingleton() {}
 
 // LeafWildcardQuery is implementation of SingletonQuery interface for leaf nodes.
 // Note: Do not use this type directly, instead use the generated Path API.
@@ -115,8 +169,8 @@ type NonLeafSingletonQuery[T ygot.ValidatedGoStruct] struct {
 	nonLeafBaseQuery[T]
 }
 
-// isNonWildcard prevents this struct from being used where a wildcard path is expected.
-func (lq *NonLeafSingletonQuery[T]) isNonWildcard() {}
+// isSingleton prevents this struct from being used where a wildcard path is expected.
+func (lq *NonLeafSingletonQuery[T]) isSingleton() {}
 
 // NonLeafWildcardQuery is implementation of SingletonQuery interface for non-leaf nodes.
 // Note: Do not use this type directly, instead use the generated Path API.
@@ -188,8 +242,8 @@ type LeafConfigQuery[T any] struct {
 // isConfig restricts this struct to be used only where a config path is expected.
 func (lq *LeafConfigQuery[T]) isConfig() {}
 
-// isNonWildcard restricts this struct to be used only where a singleton path is expected.
-func (lq *LeafConfigQuery[T]) isNonWildcard() {}
+// isSingleton restricts this struct to be used only where a singleton path is expected.
+func (lq *LeafConfigQuery[T]) isSingleton() {}
 
 // NonLeafConfigQuery is implementation of ConfigQuery interface for non-leaf nodes.
 // Note: Do not use this type directly, instead use the generated Path API.
@@ -200,5 +254,5 @@ type NonLeafConfigQuery[T ygot.ValidatedGoStruct] struct {
 // isConfig restricts this struct to be used only where a config path is expected.
 func (nlq *NonLeafConfigQuery[T]) isConfig() {}
 
-// isNonWildcard restricts this struct to be used only where a singleton path is expected.
-func (nlq *NonLeafConfigQuery[T]) isNonWildcard() {}
+// isSingleton restricts this struct to be used only where a singleton path is expected.
+func (nlq *NonLeafConfigQuery[T]) isSingleton() {}

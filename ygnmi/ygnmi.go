@@ -55,14 +55,14 @@ type AnyQuery[T any] interface {
 // SingletonQuery is a non-wildcard gNMI query.
 type SingletonQuery[T any] interface {
 	AnyQuery[T]
-	// isNonWildcard prevents this interface from being used in wildcard funcs.
-	isNonWildcard()
+	// isSingleton restricts this interface to be used only where a singleton path is expected.
+	isSingleton()
 }
 
 // WildcardQuery is a wildcard gNMI query.
 type WildcardQuery[T any] interface {
 	AnyQuery[T]
-	// isWildcard prevents this interface from being used in non-wildcard funcs.
+	// isWildcard restricts this interface to be used only where a wildcard path is expected.
 	isWildcard()
 }
 
@@ -71,8 +71,8 @@ type ConfigQuery[T any] interface {
 	AnyQuery[T]
 	// isConfig() allows this interface to be use in config funcs.
 	isConfig()
-	// isNonWildcard prevents this interface from being used in wildcard funcs.
-	isNonWildcard()
+	// isSingleton restricts this interface to be used only where a singleton path is expected.
+	isSingleton()
 }
 
 // Value contains a value received from a gNMI request and its metadata.

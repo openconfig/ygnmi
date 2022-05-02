@@ -100,7 +100,7 @@ func TestGeneratePathCode(t *testing.T) {
 				HasDefault:            false,
 				YANGPath:              "/openconfig-simple/parent",
 				GoPathPackageName:     "ocstructs",
-				DirectoryName:         "Device",
+				DirectoryName:         "Parent",
 				YANGFieldName:         "parent",
 			},
 			"Parent_ChildPath": {
@@ -113,7 +113,7 @@ func TestGeneratePathCode(t *testing.T) {
 				HasDefault:            false,
 				YANGPath:              "/openconfig-simple/parent/child",
 				GoPathPackageName:     "ocstructs",
-				DirectoryName:         "Parent",
+				DirectoryName:         "Parent_Child",
 				YANGFieldName:         "child",
 			},
 			"Parent_Child_FourPath": {
@@ -182,7 +182,7 @@ func TestGeneratePathCode(t *testing.T) {
 				HasDefault:            false,
 				YANGPath:              "/openconfig-simple/remote-container",
 				GoPathPackageName:     "ocstructs",
-				DirectoryName:         "Device",
+				DirectoryName:         "RemoteContainer",
 				YANGFieldName:         "remote-container",
 			},
 			"RemoteContainer_ALeafPath": {
@@ -226,7 +226,7 @@ func TestGeneratePathCode(t *testing.T) {
 				IsScalarField:         false,
 				HasDefault:            false,
 				GoPathPackageName:     "ocstructs",
-				DirectoryName:         "Device",
+				DirectoryName:         "Parent",
 				YANGFieldName:         "parent",
 			},
 			"Parent_ChildPath": {
