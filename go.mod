@@ -8,7 +8,7 @@ require (
 	github.com/openconfig/gnmi v0.0.0-20220131173555-39aa74195f0d
 	github.com/openconfig/gocloser v0.0.0-20220310182203-c6c950ed3b0b
 	github.com/openconfig/goyang v1.0.0
-	github.com/openconfig/ygot v0.17.0
+	github.com/openconfig/ygot v0.18.0
 	github.com/pkg/errors v0.9.1
 	google.golang.org/grpc v1.45.0
 	google.golang.org/protobuf v1.28.0
