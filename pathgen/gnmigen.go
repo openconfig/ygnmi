@@ -17,7 +17,6 @@ package pathgen
 import (
 	"strings"
 
-	"github.com/openconfig/goyang/pkg/yang"
 	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygen"
 	"github.com/openconfig/ygot/ygot"
@@ -40,7 +39,8 @@ type gnmiStruct struct {
 	WildcardSuffix          string
 }
 
-// GNMIGenerator is a plugin generator for generating ygnmi query objects
+// GNMIGenerator is a plugin generator for generating ygnmi query objects.
+// Note: GNMIGenerator requires that PreferOperationalState be true when generating PathStructs.
 func GNMIGenerator(pathStructName string, dir *ygen.Directory, node *NodeData) (string, error) {
 	tmplStruct := gnmiStruct{
 		PathStructName:          pathStructName,
@@ -54,7 +54,7 @@ func GNMIGenerator(pathStructName string, dir *ygen.Directory, node *NodeData) (
 		SingletonTypeName:       "SingletonQuery",
 		WildcardTypeName:        "WildcardQuery",
 		IsScalar:                node.IsScalarField,
-		GenerateWildcard:        true,
+		GenerateWildcard:        node.YANGPath != "/", // Do not generate wildcard for the fake root.
 		WildcardSuffix:          WildcardSuffix,
 	}
 
@@ -66,11 +66,6 @@ func GNMIGenerator(pathStructName string, dir *ygen.Directory, node *NodeData) (
 		}
 		tmpl = goGNMILeafTemplate
 		tmplStruct.RelPathList = `"` + strings.Join(relPath, `", "`) + `"`
-	}
-
-	// Do not generate wildcard for the fake root.
-	if node.YANGPath == "/" {
-		tmplStruct.GenerateWildcard = false
 	}
 
 	var b strings.Builder
@@ -106,19 +101,7 @@ func generateConfigFunc(dir *ygen.Directory, node *NodeData) bool {
 		_, ok := dir.ShadowedFields[node.YANGFieldName]
 		return ok
 	}
-	return hasConfigDescendants(dir.Entry)
-}
-
-func hasConfigDescendants(entry *yang.Entry) bool {
-	if util.IsConfig(entry) {
-		return true
-	}
-	for _, child := range entry.Dir {
-		if hasConfigDescendants(child) {
-			return true
-		}
-	}
-	return false
+	return util.IsConfig(dir.Entry)
 }
 
 var (
