@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-generator \
+go run github.com/openconfig/ygot/generator \
   -generate_structs \
   -generate_path_structs=false \
   -exclude_state=false \

@@ -3,6 +3,11 @@ build:
 
 test:
 	go test -v ./...
+	go test -race -v ./...
+
+integration_test:
+	go generate ./...
+	go build ./test
 
 clean:
 	rm -rf test/device
