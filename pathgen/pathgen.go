@@ -515,7 +515,7 @@ type NodeData struct {
 	GoPathPackageName string
 	// YANGFieldName is the name of the field entry for this node, only set for leaves.
 	YANGFieldName string
-	// Directory is the name of the directory used to create this node.
+	// Directory is the name of the directory used to create this node. For leaves, it's the parent directory.
 	DirectoryName string
 }
 
@@ -777,8 +777,10 @@ func getNodeDataMap(directories map[string]*ygen.Directory, leafTypeMap map[stri
 				YANGTypeName:          yangTypeName,
 				YANGPath:              field.Path(),
 				GoPathPackageName:     goPackageName(field, splitByModule, trimOCPackage, packageName, packageSuffix),
-				YANGFieldName:         fieldName,
-				DirectoryName:         dir.Name,
+				DirectoryName:         subsumingGoStructName,
+			}
+			if isLeaf {
+				nodeDataMap[pathStructName].YANGFieldName = fieldName
 			}
 		}
 	}
