@@ -515,7 +515,7 @@ type NodeData struct {
 	GoPathPackageName string
 	// YANGFieldName is the name of the field entry for this node, only set for leaves.
 	YANGFieldName string
-	// Directory is the name of the directory used to create this node. For leaves, its the parent directory.
+	// Directory is the name of the directory used to create this node. For leaves, it's the parent directory.
 	DirectoryName string
 }
 

@@ -281,7 +281,6 @@ func (n *Root) Config() ygnmi.ConfigQuery[*Root] {
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
 				t.Fatalf("GNMIGenerator(%q, %v, %v) returned unexpected error diff: %s", tt.pathStructName, tt.dir, tt.node, diff)
 			}
-			t.Log(got)
 			if err != nil {
 				return
 			}
