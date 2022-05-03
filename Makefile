@@ -3,9 +3,9 @@
 build:
 	go build -v ./...
 
+# TODO: Add race tests for specific packages with concurrency.
 test:
 	go test -v ./...
-	go test -race -v ./...
 
 integration_test:
 	test/gen.sh

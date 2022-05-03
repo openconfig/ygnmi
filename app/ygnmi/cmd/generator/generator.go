@@ -37,6 +37,7 @@ var (
 )
 
 // New returns a new generator command.
+//nolint:errcheck
 func New() *cobra.Command {
 	generator := &cobra.Command{
 		Use:   "generator",
