@@ -8,7 +8,7 @@ test:
 	go test -race -v ./...
 
 integration_test:
-	go generate ./...
+	test/gen.sh
 	go build ./test
 
 clean:

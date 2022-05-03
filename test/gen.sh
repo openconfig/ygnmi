@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+cd "$(dirname "$0")"
+
 go run github.com/openconfig/ygot/generator \
   -generate_structs \
   -generate_path_structs=false \
