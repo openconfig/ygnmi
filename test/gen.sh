@@ -43,9 +43,8 @@ go run github.com/openconfig/ygot/generator \
 
 mkdir -p device
 
-go run ../cmd/ygnmi generator \
+go run ../app/ygnmi generator \
   --output_dir=device \
   --base_import_path=github.com/openconfig/ygnmi/test/device \
   --schema_struct_path=github.com/openconfig/ygnmi/test \
   ../pathgen/testdata/yang/openconfig-simple.yang 
-  

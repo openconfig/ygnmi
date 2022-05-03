@@ -42,23 +42,31 @@ func New() *cobra.Command {
 		Use:   "generator",
 		RunE:  generate,
 		Short: "Generates Go code for gNMI from a YANG schema.",
+		Args:  cobra.MinimumNArgs(1),
 	}
 
 	generator.Flags().StringVar(&schemaStructPath, "schema_struct_path", "", "The Go import path for the schema structs package.")
 	generator.Flags().StringVar(&ygotImportPath, "ygot_path", "github.com/openconfig/ygot/ygot", "The import path to use for ygot.")
-	generator.Flags().StringVar(&ygnmiImportPath, "ygnmi_path", "github.com/openconfig/ygnmi/ygnmi", "The import path to use for ygot.")
+	generator.Flags().StringVar(&ygnmiImportPath, "ygnmi_path", "github.com/openconfig/ygnmi/ygnmi", "The import path to use for ygnmi.")
 	generator.Flags().StringVar(&ytypesImportPath, "ytypes_path", "github.com/openconfig/ygot/ytypes", "The import path to use for ytypes.")
-	generator.Flags().StringVar(&baseImportPath, "base_import_path", "", "Base import path used to concatenate with module package relative paths for path struct imports.")
-	generator.Flags().StringSliceVar(&paths, "path", nil, "Comma separated list of paths to be recursively searched for included modules or submodules within the defined YANG modules.")
+	generator.Flags().StringVar(&baseImportPath, "base_import_path", "", "This needs to be the import path of the output_dir.")
+	generator.Flags().StringSliceVar(&paths, "path", nil, "Comma-separated list of paths to be recursively searched for included modules or submodules within the defined YANG modules.")
 	generator.Flags().StringVar(&outputDir, "output_dir", "", "The directory that the generated Go code should be written to. This directory is the base of the generated module packages.")
+
+	generator.MarkFlagRequired("schema_struct_path")
+	generator.MarkFlagRequired("base_import_path")
+	generator.MarkFlagRequired("output_dir")
 
 	return generator
 }
 
+const (
+	packageName = "device"
+)
+
 func generate(cmd *cobra.Command, args []string) error {
-	// Perform the code generation.
 	pcg := pathgen.GenConfig{
-		PackageName: "device",
+		PackageName: packageName,
 		GoImports: pathgen.GoImports{
 			SchemaStructPkgPath: schemaStructPath,
 			YgotImportPath:      ygotImportPath,
@@ -103,8 +111,7 @@ func generate(cmd *cobra.Command, args []string) error {
 			}
 			path = filepath.Join(outputDir, packageName, fmt.Sprintf("%s.go", packageName))
 		}
-		err := ioutil.WriteFile(path, []byte(code.String()), 0644)
-		if err != nil {
+		if err := ioutil.WriteFile(path, []byte(code.String()), 0644); err != nil {
 			return err
 		}
 	}

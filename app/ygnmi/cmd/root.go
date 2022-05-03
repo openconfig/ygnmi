@@ -12,23 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package cmd
 
 import (
-	"log"
-
-	"github.com/openconfig/ygnmi/cmd/generator"
+	"github.com/openconfig/ygnmi/app/ygnmi/cmd/generator"
 	"github.com/spf13/cobra"
 )
 
-func main() {
+// New creates a new root command.
+func New() *cobra.Command {
 	root := &cobra.Command{
 		Use: "ygnmi",
 	}
 	root.AddCommand(generator.New())
-
-	err := root.Execute()
-	if err != nil {
-		log.Fatal(err)
-	}
+	return root
 }
