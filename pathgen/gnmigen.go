@@ -46,6 +46,7 @@ const (
 
 // GNMIGenerator is a plugin generator for generating ygnmi query objects.
 // Note: GNMIGenerator requires that PreferOperationalState be true when generating PathStructs.
+// TODO(DanG100): pass schema from parent to child.
 func GNMIGenerator(pathStructName string, dir *ygen.Directory, node *NodeData) (string, error) {
 	tmplStruct := gnmiStruct{
 		PathStructName:          pathStructName,
