@@ -13,6 +13,7 @@ package ocstructs
 import (
 	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygnmi/ygmni"
+	"github.com/openconfig/ygot/ytypes"
 )
 
 // ChoiceCaseAnonymousCasePath represents the /choice-case-example/choice-case-anonymous-case YANG schema element.

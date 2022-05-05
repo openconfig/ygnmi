@@ -13,6 +13,7 @@ package ocstructs
 import (
 	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygnmi/ygmni"
+	"github.com/openconfig/ygot/ytypes"
 )
 
 // AListPath represents the /enum-module/a-lists/a-list YANG schema element.

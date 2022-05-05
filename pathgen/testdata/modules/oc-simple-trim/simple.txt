@@ -13,6 +13,7 @@ package simplepath
 import (
 	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygnmi/ygmni"
+	"github.com/openconfig/ygot/ytypes"
 )
 
 // ParentPath represents the /openconfig-simple/parent YANG schema element.

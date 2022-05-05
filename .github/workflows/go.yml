@@ -24,10 +24,10 @@ jobs:
       id: go
 
     - name: Build
-      run: go build -v ./...
+      run: make build
 
     - name: Test
-      run: go test -v ./...
+      run: make test
       
-    - name: Test Race
-      run:  go test -race -v ./...
+    - name: Integration Tests
+      run: make integration_test

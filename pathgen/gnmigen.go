@@ -37,10 +37,16 @@ type gnmiStruct struct {
 	GenerateWildcard        bool
 	WildcardTypeName        string
 	WildcardSuffix          string
+	FakeRootName            string
 }
+
+const (
+	fakeRootName = "Device"
+)
 
 // GNMIGenerator is a plugin generator for generating ygnmi query objects.
 // Note: GNMIGenerator requires that PreferOperationalState be true when generating PathStructs.
+// TODO(DanG100): pass schema from parent to child.
 func GNMIGenerator(pathStructName string, dir *ygen.Directory, node *NodeData) (string, error) {
 	tmplStruct := gnmiStruct{
 		PathStructName:          pathStructName,
@@ -56,6 +62,7 @@ func GNMIGenerator(pathStructName string, dir *ygen.Directory, node *NodeData) (
 		IsScalar:                node.IsScalarField,
 		GenerateWildcard:        node.YANGPath != "/", // Do not generate wildcard for the fake root.
 		WildcardSuffix:          WildcardSuffix,
+		FakeRootName:            fakeRootName,
 	}
 
 	tmpl := goGNMINonLeafTemplate
@@ -107,7 +114,7 @@ func generateConfigFunc(dir *ygen.Directory, node *NodeData) bool {
 var (
 	goGNMILeafTemplate = mustTemplate("leaf-gnmi", `
 func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
-	return &ygnmi.NewLeaf{{ .SingletonTypeName }}[{{ .GoTypeName }}](
+	return ygnmi.NewLeaf{{ .SingletonTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
 		{{ .IsScalar }},
@@ -125,14 +132,18 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 			{{- end}}
 		},
 		func() ygot.ValidatedGoStruct { return new({{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}) },
-		{{ .SchemaStructPkgAccessor }}GetSchema(),
+		&ytypes.Schema{
+			Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
+			SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
+			Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
+		},
 	)
 }
 
 {{- if .GenerateWildcard }}
 
 func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{{ .WildcardTypeName }}[{{ .GoTypeName }}] {
-	return &ygnmi.NewLeaf{{ .WildcardTypeName }}[{{ .GoTypeName }}](
+	return ygnmi.NewLeaf{{ .WildcardTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
 		{{ .IsScalar }},
@@ -150,30 +161,42 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 			{{- end}}
 		},
 		func() ygot.ValidatedGoStruct { return new({{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}) },
-		{{ .SchemaStructPkgAccessor }}GetSchema(),
+		&ytypes.Schema{
+			Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
+			SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
+			Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
+		},
 	)
 }
 {{- end }}
 `)
 
 	goGNMINonLeafTemplate = mustTemplate("non-leaf-gnmi", `
-func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName }}[*{{ .GoStructTypeName }}] {
-	return &ygnmi.NewNonLeaf{{ .SingletonTypeName }}[*{{ .GoStructTypeName }}](
+func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
+	return ygnmi.NewNonLeaf{{ .SingletonTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
 		n,
-		{{ .SchemaStructPkgAccessor }}GetSchema(),
+		&ytypes.Schema{
+			Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
+			SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
+			Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
+		},
 	)
 }
 
 {{- if .GenerateWildcard }}
 
-func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{{ .WildcardTypeName }}[*{{ .GoStructTypeName }}] {
-	return &ygnmi.NewNonLeaf{{ .WildcardTypeName }}[*{{ .GoStructTypeName }}](
+func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{{ .WildcardTypeName }}[{{ .GoTypeName }}] {
+	return ygnmi.NewNonLeaf{{ .WildcardTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
 		n,
-		{{ .SchemaStructPkgAccessor }}GetSchema(),
+		&ytypes.Schema{
+			Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
+			SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
+			Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
+		},
 	)
 }
 {{- end }}

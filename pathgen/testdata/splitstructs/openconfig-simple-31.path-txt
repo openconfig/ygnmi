@@ -13,6 +13,7 @@ package ocstructs
 import (
 	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygnmi/ygmni"
+	"github.com/openconfig/ygot/ytypes"
 )
 
 // Parent_ChildPath represents the /openconfig-simple/parent/child YANG schema element.

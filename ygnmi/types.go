@@ -23,7 +23,7 @@ func NewLeafSingletonQuery[T any](parentDir string, state, scalar bool, ps ygot.
 }
 
 // NewNonLeafSingletonQuery creates a new NonLeafSingletonQuery object.
-func NewNonLeafSingletonQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps ygot.PathStruct, extractFn func(ygot.ValidatedGoStruct) T, goStructFn func() ygot.ValidatedGoStruct, schema *ytypes.Schema) *NonLeafSingletonQuery[T] {
+func NewNonLeafSingletonQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps ygot.PathStruct, schema *ytypes.Schema) *NonLeafSingletonQuery[T] {
 	return &NonLeafSingletonQuery[T]{
 		nonLeafBaseQuery: nonLeafBaseQuery[T]{
 			dir:     dir,
@@ -50,7 +50,7 @@ func NewLeafConfigQuery[T any](parentDir string, state, scalar bool, ps ygot.Pat
 }
 
 // NewNonLeafConfigQuery creates a new NewNonLeafConfigQuery object.
-func NewNonLeafConfigQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps ygot.PathStruct, extractFn func(ygot.ValidatedGoStruct) T, goStructFn func() ygot.ValidatedGoStruct, schema *ytypes.Schema) *NonLeafConfigQuery[T] {
+func NewNonLeafConfigQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps ygot.PathStruct, schema *ytypes.Schema) *NonLeafConfigQuery[T] {
 	return &NonLeafConfigQuery[T]{
 		nonLeafBaseQuery: nonLeafBaseQuery[T]{
 			dir:     dir,
@@ -77,7 +77,7 @@ func NewLeafWildcardQuery[T any](parentDir string, state, scalar bool, ps ygot.P
 }
 
 // NewNonLeafWildcardQuery creates a new NewNonLeafWildcardQuery object.
-func NewNonLeafWildcardQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps ygot.PathStruct, extractFn func(ygot.ValidatedGoStruct) T, goStructFn func() ygot.ValidatedGoStruct, schema *ytypes.Schema) *NonLeafWildcardQuery[T] {
+func NewNonLeafWildcardQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps ygot.PathStruct, schema *ytypes.Schema) *NonLeafWildcardQuery[T] {
 	return &NonLeafWildcardQuery[T]{
 		nonLeafBaseQuery: nonLeafBaseQuery[T]{
 			dir:     dir,
