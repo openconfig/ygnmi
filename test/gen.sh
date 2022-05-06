@@ -51,4 +51,4 @@ go run ../app/ygnmi generator \
   --schema_struct_path=github.com/openconfig/ygnmi/test \
   ../pathgen/testdata/yang/openconfig-simple.yang 
 
-goimports
+goimports -w .
