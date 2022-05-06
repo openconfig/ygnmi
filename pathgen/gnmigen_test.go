@@ -66,9 +66,9 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 			nil,
 			n.parent,
 		),
-		func(gs ygot.ValidatedGoStruct) int32 { 
+		func(gs ygot.ValidatedGoStruct) (int32, bool) { 
 			ret := gs.(*oc.Container).Leaf
-			return *ret
+			return *ret, !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
@@ -89,9 +89,9 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 			nil,
 			n.parent,
 		),
-		func(gs ygot.ValidatedGoStruct) int32 { 
+		func(gs ygot.ValidatedGoStruct) (int32, bool) { 
 			ret := gs.(*oc.Container).Leaf
-			return *ret
+			return *ret, !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
@@ -128,9 +128,9 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 			nil,
 			n.parent,
 		),
-		func(gs ygot.ValidatedGoStruct) int32 { 
+		func(gs ygot.ValidatedGoStruct) (int32, bool) { 
 			ret := gs.(*oc.Container).Leaf
-			return *ret
+			return *ret, !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
@@ -151,9 +151,9 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 			nil,
 			n.parent,
 		),
-		func(gs ygot.ValidatedGoStruct) int32 { 
+		func(gs ygot.ValidatedGoStruct) (int32, bool) { 
 			ret := gs.(*oc.Container).Leaf
-			return *ret
+			return *ret, !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
@@ -174,9 +174,9 @@ func (n *Container_Leaf) Config() ygnmi.ConfigQuery[int32] {
 			nil,
 			n.parent,
 		),
-		func(gs ygot.ValidatedGoStruct) int32 { 
+		func(gs ygot.ValidatedGoStruct) (int32, bool) { 
 			ret := gs.(*oc.Container).Leaf
-			return *ret
+			return *ret, !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
@@ -197,9 +197,9 @@ func (n *Container_LeafAny) Config() ygnmi.WildcardQuery[int32] {
 			nil,
 			n.parent,
 		),
-		func(gs ygot.ValidatedGoStruct) int32 { 
+		func(gs ygot.ValidatedGoStruct) (int32, bool) { 
 			ret := gs.(*oc.Container).Leaf
-			return *ret
+			return *ret, !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
@@ -236,9 +236,9 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[E_Child_Three] {
 			nil,
 			n.parent,
 		),
-		func(gs ygot.ValidatedGoStruct) E_Child_Three { 
+		func(gs ygot.ValidatedGoStruct) (E_Child_Three, bool) { 
 			ret := gs.(*oc.Container).Leaf
-			return ret
+			return ret, !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
@@ -259,9 +259,9 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
 			nil,
 			n.parent,
 		),
-		func(gs ygot.ValidatedGoStruct) E_Child_Three { 
+		func(gs ygot.ValidatedGoStruct) (E_Child_Three, bool) { 
 			ret := gs.(*oc.Container).Leaf
-			return ret
+			return ret, !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
