@@ -53,7 +53,7 @@ const (
 // Note: GNMIGenerator requires that PreferOperationalState be true when generating PathStructs.
 // TODO(DanG100): pass schema from parent to child.
 func GNMIGenerator(pathStructName string, dir *ygen.Directory, node *NodeData) (string, error) {
-	tmplStruct := gnmiStruct{
+	tmplStruct := &gnmiStruct{
 		PathStructName:          pathStructName,
 		GoTypeName:              node.GoTypeName,
 		GoStructTypeName:        node.SubsumingGoStructName,
@@ -72,23 +72,10 @@ func GNMIGenerator(pathStructName string, dir *ygen.Directory, node *NodeData) (
 
 	tmpl := goGNMINonLeafTemplate
 	if node.IsLeaf {
-		relPath, err := ygen.FindSchemaPath(dir, node.YANGFieldName, false)
-		if err != nil {
+		tmpl = goGNMILeafTemplate
+		if err := populateTmplForLeaf(dir, node.YANGFieldName, false, tmplStruct); err != nil {
 			return "", err
 		}
-		tmpl = goGNMILeafTemplate
-		tmplStruct.RelPathList = `"` + strings.Join(relPath, `", "`) + `"`
-
-		field := dir.Fields[node.YANGFieldName]
-		tmplStruct.AbsPath = util.SchemaTreePathNoModule(field)
-		tmplStruct.RelPath = strings.Join(relPath, `/`)
-		tmplStruct.InstantiatingModuleName = util.SchemaTreeRoot(field).Name
-		if field.Node != nil {
-			if definingModule := yang.RootNode(field.Node); definingModule != nil {
-				tmplStruct.DefiningModuleName = definingModule.Name
-			}
-		}
-
 	}
 
 	var b strings.Builder
@@ -104,25 +91,39 @@ func GNMIGenerator(pathStructName string, dir *ygen.Directory, node *NodeData) (
 	tmplStruct.SingletonTypeName = "ConfigQuery"
 	tmplStruct.IsState = false
 	if node.IsLeaf {
-		relPath, err := ygen.FindShadowSchemaPath(dir, node.YANGFieldName, false)
-		if err != nil {
+		if err := populateTmplForLeaf(dir, node.YANGFieldName, true, tmplStruct); err != nil {
 			return "", err
-		}
-		tmplStruct.RelPathList = `"` + strings.Join(relPath, `", "`) + `"`
-		field := dir.ShadowedFields[node.YANGFieldName]
-		tmplStruct.AbsPath = util.SchemaTreePathNoModule(field)
-		tmplStruct.RelPath = strings.Join(relPath, `/`)
-		tmplStruct.InstantiatingModuleName = util.SchemaTreeRoot(field).Name
-		if field.Node != nil {
-			if definingModule := yang.RootNode(field.Node); definingModule != nil {
-				tmplStruct.DefiningModuleName = definingModule.Name
-			}
 		}
 	}
 	if err := tmpl.Execute(&b, tmplStruct); err != nil {
 		return "", err
 	}
 	return b.String(), nil
+}
+
+// populateTmplForLeaf adds leaf specific fields to the gnmiStruct template.
+func populateTmplForLeaf(dir *ygen.Directory, fieldName string, shadow bool, tmplStruct *gnmiStruct) error {
+	schemaPathFn := ygen.FindSchemaPath
+	field := dir.Fields[fieldName]
+	if shadow {
+		schemaPathFn = ygen.FindShadowSchemaPath
+		field = dir.ShadowedFields[fieldName]
+	}
+
+	relPath, err := schemaPathFn(dir, fieldName, false)
+	if err != nil {
+		return err
+	}
+	tmplStruct.RelPathList = `"` + strings.Join(relPath, `", "`) + `"`
+	tmplStruct.AbsPath = util.SchemaTreePathNoModule(field)
+	tmplStruct.RelPath = strings.Join(relPath, `/`)
+	tmplStruct.InstantiatingModuleName = util.SchemaTreeRoot(field).Name
+	if field.Node != nil {
+		if definingModule := yang.RootNode(field.Node); definingModule != nil {
+			tmplStruct.DefiningModuleName = definingModule.Name
+		}
+	}
+	return nil
 }
 
 // generateConfig determines if a node should have a .Config() method.
@@ -157,7 +158,11 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 		func(gs ygot.ValidatedGoStruct) ({{ .GoTypeName }}, bool) { 
 			ret := gs.(*{{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}).{{ .GoFieldName }}
 			{{- if .IsScalar }}
-			return *ret, !reflect.ValueOf(ret).IsZero()
+			if ret == nil {
+				var zero {{ .GoTypeName }}
+				return zero, false
+			}
+			return *ret, false
 			{{- else }}
 			return ret, !reflect.ValueOf(ret).IsZero()
 			{{- end}}
@@ -192,7 +197,11 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 		func(gs ygot.ValidatedGoStruct) ({{ .GoTypeName }}, bool) { 
 			ret := gs.(*{{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}).{{ .GoFieldName }}
 			{{- if .IsScalar }}
-			return *ret, !reflect.ValueOf(ret).IsZero()
+			if ret == nil {
+				var zero {{ .GoTypeName }}
+				return zero, false
+			}
+			return *ret, false
 			{{- else }}
 			return ret, !reflect.ValueOf(ret).IsZero()
 			{{- end}}

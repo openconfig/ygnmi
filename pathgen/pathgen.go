@@ -660,8 +660,8 @@ func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{
 	// path struct object. In the unified model, leaves are not path structs
 	// because with path compression, a leaf path may be a state or config path.
 	goUnifiedLeafPathChildConstructorTemplate = mustTemplate("unifiedchildConstructor", `
-// {{ .MethodName }} ({{ .YANGNodeType }}): {{ .YANGDescription }}
-// Note: this struct is not a real YANG path. Use .Config() or .State() to get config or state path for this leaf.
+// {{ .MethodName }} corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
 func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{ .ChildPkgAccessor }}{{ .TypeName }} {
 	return &{{ .ChildPkgAccessor }}{{ .TypeName }}{
 		parent: n,
