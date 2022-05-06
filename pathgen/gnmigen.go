@@ -123,12 +123,12 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 			nil,
 			n.parent,
 		),
-		func(gs ygot.ValidatedGoStruct) {{ .GoTypeName }} { 
+		func(gs ygot.ValidatedGoStruct) ({{ .GoTypeName }}, bool) { 
 			ret := gs.(*{{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}).{{ .GoFieldName }}
 			{{- if .IsScalar }}
-			return *ret
+			return *ret, !reflect.ValueOf(ret).IsZero()
 			{{- else }}
-			return ret
+			return ret, !reflect.ValueOf(ret).IsZero()
 			{{- end}}
 		},
 		func() ygot.ValidatedGoStruct { return new({{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}) },
@@ -152,12 +152,12 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 			nil,
 			n.parent,
 		),
-		func(gs ygot.ValidatedGoStruct) {{ .GoTypeName }} { 
+		func(gs ygot.ValidatedGoStruct) ({{ .GoTypeName }}, bool) { 
 			ret := gs.(*{{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}).{{ .GoFieldName }}
 			{{- if .IsScalar }}
-			return *ret
+			return *ret, !reflect.ValueOf(ret).IsZero()
 			{{- else }}
-			return ret
+			return ret, !reflect.ValueOf(ret).IsZero()
 			{{- end}}
 		},
 		func() ygot.ValidatedGoStruct { return new({{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}) },

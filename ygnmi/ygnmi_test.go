@@ -41,10 +41,12 @@ func TestLookup(t *testing.T) {
 	leafPath := testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
 	lq := &LeafSingletonQuery[uint64]{
 		leafBaseQuery: leafBaseQuery[uint64]{
-			parentDir:  "leaf-container-struct",
-			state:      false,
-			ps:         ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
-			extractFn:  func(vgs ygot.ValidatedGoStruct) uint64 { return *(vgs.(*testutil.LeafContainerStruct)).Uint64Leaf },
+			parentDir: "leaf-container-struct",
+			state:     false,
+			ps:        ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
+			extractFn: func(vgs ygot.ValidatedGoStruct) (uint64, bool) {
+				return *(vgs.(*testutil.LeafContainerStruct)).Uint64Leaf, true
+			},
 			goStructFn: func() ygot.ValidatedGoStruct { return new(testutil.LeafContainerStruct) },
 			yschema:    testutil.GetSchemaStruct()(),
 		},
@@ -473,12 +475,12 @@ func TestWatch(t *testing.T) {
 			parentDir: "leaf-container-struct",
 			state:     false,
 			ps:        ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
-			extractFn: func(vgs ygot.ValidatedGoStruct) uint64 {
+			extractFn: func(vgs ygot.ValidatedGoStruct) (uint64, bool) {
 				lcs := vgs.(*testutil.LeafContainerStruct)
 				if lcs.Uint64Leaf == nil {
-					return 0
+					return 0, false
 				}
-				return *lcs.Uint64Leaf
+				return *lcs.Uint64Leaf, true
 			},
 			goStructFn: func() ygot.ValidatedGoStruct { return new(testutil.LeafContainerStruct) },
 			yschema:    testutil.GetSchemaStruct()(),
@@ -885,10 +887,12 @@ func TestLookupAll(t *testing.T) {
 	)
 	lq := &LeafWildcardQuery[int64]{
 		leafBaseQuery: leafBaseQuery[int64]{
-			parentDir:  "Model_SingleKey",
-			state:      true,
-			ps:         leafPS,
-			extractFn:  func(vgs ygot.ValidatedGoStruct) int64 { return *((vgs.(*testutil.Model_SingleKey)).Value) },
+			parentDir: "Model_SingleKey",
+			state:     true,
+			ps:        leafPS,
+			extractFn: func(vgs ygot.ValidatedGoStruct) (int64, bool) {
+				return *((vgs.(*testutil.Model_SingleKey)).Value), true
+			},
 			goStructFn: func() ygot.ValidatedGoStruct { return new(testutil.Model_SingleKey) },
 			yschema:    testutil.GetSchemaStruct()(),
 		},
@@ -1159,10 +1163,12 @@ func TestWatchAll(t *testing.T) {
 	)
 	lq := &LeafWildcardQuery[int64]{
 		leafBaseQuery: leafBaseQuery[int64]{
-			parentDir:  "Model_SingleKey",
-			state:      true,
-			ps:         leafPS,
-			extractFn:  func(vgs ygot.ValidatedGoStruct) int64 { return *((vgs.(*testutil.Model_SingleKey)).Value) },
+			parentDir: "Model_SingleKey",
+			state:     true,
+			ps:        leafPS,
+			extractFn: func(vgs ygot.ValidatedGoStruct) (int64, bool) {
+				return *((vgs.(*testutil.Model_SingleKey)).Value), true
+			},
 			goStructFn: func() ygot.ValidatedGoStruct { return new(testutil.Model_SingleKey) },
 			yschema:    testutil.GetSchemaStruct()(),
 		},

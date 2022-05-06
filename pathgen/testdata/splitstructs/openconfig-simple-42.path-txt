@@ -11,6 +11,7 @@ Imported modules were sourced from:
 package ocstructs
 
 import (
+	"reflect"
 	oc "github.com/openconfig/ygot/ypathgen/testdata/exampleoc"
 	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygnmi/ygmni"

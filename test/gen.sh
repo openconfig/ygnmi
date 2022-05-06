@@ -50,3 +50,5 @@ go run ../app/ygnmi generator \
   --base_import_path=github.com/openconfig/ygnmi/test/device \
   --schema_struct_path=github.com/openconfig/ygnmi/test \
   ../pathgen/testdata/yang/openconfig-simple.yang 
+
+goimports

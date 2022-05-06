@@ -560,6 +560,7 @@ Imported modules were sourced from:
 package {{ .PackageName }}
 
 import (
+	"reflect"
 	{{- if .SchemaStructPkgPath }}
 	{{ .SchemaStructPkgAlias }} "{{ .SchemaStructPkgPath }}"
 	{{- end }}
