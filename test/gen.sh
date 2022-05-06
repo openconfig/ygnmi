@@ -41,7 +41,8 @@ go run github.com/openconfig/ygot/generator \
   -generate_leaf_getters \
   -generate_populate_defaults \
   -path=../pathgen/testdata/yang \
-  ../pathgen/testdata/yang/openconfig-simple.yang
+  ../pathgen/testdata/yang/openconfig-simple.yang \
+  ../pathgen/testdata/yang/openconfig-withlist.yang
 
 mkdir -p device
 
@@ -49,6 +50,7 @@ go run ../app/ygnmi generator \
   --output_dir=device \
   --base_import_path=github.com/openconfig/ygnmi/test/device \
   --schema_struct_path=github.com/openconfig/ygnmi/test \
-  ../pathgen/testdata/yang/openconfig-simple.yang 
+  ../pathgen/testdata/yang/openconfig-simple.yang \
+  ../pathgen/testdata/yang/openconfig-withlist.yang
 
 goimports -w .
