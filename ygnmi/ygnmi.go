@@ -18,7 +18,6 @@ package ygnmi
 import (
 	"context"
 	"fmt"
-	"reflect"
 	"time"
 
 	"github.com/openconfig/ygot/ygot"
@@ -41,7 +40,7 @@ type AnyQuery[T any] interface {
 	goStruct() ygot.ValidatedGoStruct
 	// extract is used for leaves to return the field from the parent GoStruct.
 	// For non-leaves, this casts the GoStruct to the concrete type.
-	extract(ygot.ValidatedGoStruct) T
+	extract(ygot.ValidatedGoStruct) (T, bool)
 	// isState returns if the path for this query is a state node.
 	isState() bool
 	// isLeaf returns if the path for this query is a leaf.
@@ -91,7 +90,7 @@ type Value[T any] struct {
 
 // SetVal sets the value and marks it present.
 func (v *Value[T]) SetVal(val T) {
-	v.present = !reflect.ValueOf(val).IsZero()
+	v.present = true
 	v.val = val
 }
 

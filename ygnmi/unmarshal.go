@@ -150,8 +150,9 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 		ret.RecvTimestamp = unmarshalledData[0].RecvTimestamp
 	}
 	ret.Path = path
-
-	ret.SetVal(q.extract(goStruct))
+	if val, ok := q.extract(goStruct); ok {
+		ret.SetVal(val)
+	}
 	return ret, nil
 }
 

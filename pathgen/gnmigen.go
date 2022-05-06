@@ -17,6 +17,7 @@ package pathgen
 import (
 	"strings"
 
+	"github.com/openconfig/goyang/pkg/yang"
 	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygen"
 	"github.com/openconfig/ygot/ygot"
@@ -38,6 +39,10 @@ type gnmiStruct struct {
 	WildcardTypeName        string
 	WildcardSuffix          string
 	FakeRootName            string
+	AbsPath                 string
+	RelPath                 string
+	DefiningModuleName      string
+	InstantiatingModuleName string
 }
 
 const (
@@ -48,7 +53,7 @@ const (
 // Note: GNMIGenerator requires that PreferOperationalState be true when generating PathStructs.
 // TODO(DanG100): pass schema from parent to child.
 func GNMIGenerator(pathStructName string, dir *ygen.Directory, node *NodeData) (string, error) {
-	tmplStruct := gnmiStruct{
+	tmplStruct := &gnmiStruct{
 		PathStructName:          pathStructName,
 		GoTypeName:              node.GoTypeName,
 		GoStructTypeName:        node.SubsumingGoStructName,
@@ -67,12 +72,10 @@ func GNMIGenerator(pathStructName string, dir *ygen.Directory, node *NodeData) (
 
 	tmpl := goGNMINonLeafTemplate
 	if node.IsLeaf {
-		relPath, err := ygen.FindSchemaPath(dir, node.YANGFieldName, false)
-		if err != nil {
+		tmpl = goGNMILeafTemplate
+		if err := populateTmplForLeaf(dir, node.YANGFieldName, false, tmplStruct); err != nil {
 			return "", err
 		}
-		tmpl = goGNMILeafTemplate
-		tmplStruct.RelPathList = `"` + strings.Join(relPath, `", "`) + `"`
 	}
 
 	var b strings.Builder
@@ -88,16 +91,39 @@ func GNMIGenerator(pathStructName string, dir *ygen.Directory, node *NodeData) (
 	tmplStruct.SingletonTypeName = "ConfigQuery"
 	tmplStruct.IsState = false
 	if node.IsLeaf {
-		relPath, err := ygen.FindShadowSchemaPath(dir, node.YANGFieldName, false)
-		if err != nil {
+		if err := populateTmplForLeaf(dir, node.YANGFieldName, true, tmplStruct); err != nil {
 			return "", err
 		}
-		tmplStruct.RelPathList = `"` + strings.Join(relPath, `", "`) + `"`
 	}
 	if err := tmpl.Execute(&b, tmplStruct); err != nil {
 		return "", err
 	}
 	return b.String(), nil
+}
+
+// populateTmplForLeaf adds leaf specific fields to the gnmiStruct template.
+func populateTmplForLeaf(dir *ygen.Directory, fieldName string, shadow bool, tmplStruct *gnmiStruct) error {
+	schemaPathFn := ygen.FindSchemaPath
+	field := dir.Fields[fieldName]
+	if shadow {
+		schemaPathFn = ygen.FindShadowSchemaPath
+		field = dir.ShadowedFields[fieldName]
+	}
+
+	relPath, err := schemaPathFn(dir, fieldName, false)
+	if err != nil {
+		return err
+	}
+	tmplStruct.RelPathList = `"` + strings.Join(relPath, `", "`) + `"`
+	tmplStruct.AbsPath = util.SchemaTreePathNoModule(field)
+	tmplStruct.RelPath = strings.Join(relPath, `/`)
+	tmplStruct.InstantiatingModuleName = util.SchemaTreeRoot(field).Name
+	if field.Node != nil {
+		if definingModule := yang.RootNode(field.Node); definingModule != nil {
+			tmplStruct.DefiningModuleName = definingModule.Name
+		}
+	}
+	return nil
 }
 
 // generateConfig determines if a node should have a .Config() method.
@@ -113,6 +139,12 @@ func generateConfigFunc(dir *ygen.Directory, node *NodeData) bool {
 
 var (
 	goGNMILeafTemplate = mustTemplate("leaf-gnmi", `
+// {{ .MethodName }} returns a Query that can be used in gNMI operations.
+// ----------------------------------------
+// Defining module: "{{ .DefiningModuleName }}"
+// Instantiating module: "{{ .InstantiatingModuleName }}"
+// Path from parent: "{{ .RelPath }}"
+// Path from root: "{{ .AbsPath }}"
 func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
 	return ygnmi.NewLeaf{{ .SingletonTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
@@ -123,12 +155,16 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 			nil,
 			n.parent,
 		),
-		func(gs ygot.ValidatedGoStruct) {{ .GoTypeName }} { 
+		func(gs ygot.ValidatedGoStruct) ({{ .GoTypeName }}, bool) { 
 			ret := gs.(*{{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}).{{ .GoFieldName }}
 			{{- if .IsScalar }}
-			return *ret
+			if ret == nil {
+				var zero {{ .GoTypeName }}
+				return zero, false
+			}
+			return *ret, false
 			{{- else }}
-			return ret
+			return ret, !reflect.ValueOf(ret).IsZero()
 			{{- end}}
 		},
 		func() ygot.ValidatedGoStruct { return new({{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}) },
@@ -142,6 +178,12 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 
 {{- if .GenerateWildcard }}
 
+// {{ .MethodName }} returns a Query that can be used in gNMI operations.
+// ----------------------------------------
+// Defining module: "{{ .DefiningModuleName }}"
+// Instantiating module: "{{ .InstantiatingModuleName }}"
+// Path from parent: "{{ .RelPath }}"
+// Path from root: "{{ .AbsPath }}"
 func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{{ .WildcardTypeName }}[{{ .GoTypeName }}] {
 	return ygnmi.NewLeaf{{ .WildcardTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
@@ -152,12 +194,16 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 			nil,
 			n.parent,
 		),
-		func(gs ygot.ValidatedGoStruct) {{ .GoTypeName }} { 
+		func(gs ygot.ValidatedGoStruct) ({{ .GoTypeName }}, bool) { 
 			ret := gs.(*{{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}).{{ .GoFieldName }}
 			{{- if .IsScalar }}
-			return *ret
+			if ret == nil {
+				var zero {{ .GoTypeName }}
+				return zero, false
+			}
+			return *ret, false
 			{{- else }}
-			return ret
+			return ret, !reflect.ValueOf(ret).IsZero()
 			{{- end}}
 		},
 		func() ygot.ValidatedGoStruct { return new({{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}) },
@@ -172,6 +218,7 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 `)
 
 	goGNMINonLeafTemplate = mustTemplate("non-leaf-gnmi", `
+// {{ .MethodName }} returns a Query that can be used in gNMI operations.
 func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
 	return ygnmi.NewNonLeaf{{ .SingletonTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
@@ -187,6 +234,7 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 
 {{- if .GenerateWildcard }}
 
+// {{ .MethodName }} returns a Query that can be used in gNMI operations.
 func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{{ .WildcardTypeName }}[{{ .GoTypeName }}] {
 	return ygnmi.NewNonLeaf{{ .WildcardTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",

@@ -560,6 +560,7 @@ Imported modules were sourced from:
 package {{ .PackageName }}
 
 import (
+	"reflect"
 	{{- if .SchemaStructPkgPath }}
 	{{ .SchemaStructPkgAlias }} "{{ .SchemaStructPkgPath }}"
 	{{- end }}
@@ -659,15 +660,8 @@ func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{
 	// path struct object. In the unified model, leaves are not path structs
 	// because with path compression, a leaf path may be a state or config path.
 	goUnifiedLeafPathChildConstructorTemplate = mustTemplate("unifiedchildConstructor", `
-// {{ .MethodName }} ({{ .YANGNodeType }}): {{ .YANGDescription }}
-// ----------------------------------------
-// Defining module: "{{ .DefiningModuleName }}"
-// Instantiating module: "{{ .InstantiatingModuleName }}"
-// Path from parent: "{{ .RelPath }}"
-// Path from root: "{{ .AbsPath }}"
-{{- range $paramDocStr := .KeyParamDocStrs }}
-// {{ $paramDocStr }}
-{{- end }}
+// {{ .MethodName }} corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
 func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{ .ChildPkgAccessor }}{{ .TypeName }} {
 	return &{{ .ChildPkgAccessor }}{{ .TypeName }}{
 		parent: n,
