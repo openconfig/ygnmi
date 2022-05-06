@@ -661,14 +661,7 @@ func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{
 	// because with path compression, a leaf path may be a state or config path.
 	goUnifiedLeafPathChildConstructorTemplate = mustTemplate("unifiedchildConstructor", `
 // {{ .MethodName }} ({{ .YANGNodeType }}): {{ .YANGDescription }}
-// ----------------------------------------
-// Defining module: "{{ .DefiningModuleName }}"
-// Instantiating module: "{{ .InstantiatingModuleName }}"
-// Path from parent: "{{ .RelPath }}"
-// Path from root: "{{ .AbsPath }}"
-{{- range $paramDocStr := .KeyParamDocStrs }}
-// {{ $paramDocStr }}
-{{- end }}
+// Note: this struct is not a real YANG path. Use .Config() or .State() to get config or state path for this leaf.
 func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{ .ChildPkgAccessor }}{{ .TypeName }} {
 	return &{{ .ChildPkgAccessor }}{{ .TypeName }}{
 		parent: n,
