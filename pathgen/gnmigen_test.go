@@ -78,7 +78,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 				var zero int32
 				return zero, false
 			}
-			return *ret, false
+			return *ret, true
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
@@ -111,7 +111,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 				var zero int32
 				return zero, false
 			}
-			return *ret, false
+			return *ret, true
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
@@ -160,7 +160,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 				var zero int32
 				return zero, false
 			}
-			return *ret, false
+			return *ret, true
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
@@ -193,7 +193,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 				var zero int32
 				return zero, false
 			}
-			return *ret, false
+			return *ret, true
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
@@ -226,7 +226,7 @@ func (n *Container_Leaf) Config() ygnmi.ConfigQuery[int32] {
 				var zero int32
 				return zero, false
 			}
-			return *ret, false
+			return *ret, true
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
@@ -259,7 +259,7 @@ func (n *Container_LeafAny) Config() ygnmi.WildcardQuery[int32] {
 				var zero int32
 				return zero, false
 			}
-			return *ret, false
+			return *ret, true
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
