@@ -1,6 +1,7 @@
 run:
   timeout: 5m
   skip-dirs:
+    - pathgen/testdata
     - exampleoc
 
 linters:
@@ -9,7 +10,13 @@ linters:
     - revive
     - goimports
 
+linters-settings:
+  revive:
+    confidence: 0.8
+
 issues:
+  exclude:
+    - receiver-naming # This appears to broken with generics.
   exclude-use-default: false
   exclude-rules:
     # Exclude naming complaints from schema.

@@ -203,7 +203,7 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 			var pathErr error
 			dpPathStr := pathToString(dp.Path)
 			switch {
-			//lint:ignore SA1019 ignore deprecated check
+			//nolint:staticcheck // ignore deprecated check
 			case len(dp.Path.Elem) == 0 && len(dp.Path.Element) > 0:
 				pathErr = fmt.Errorf("datapoint path uses deprecated and unsupported Element field: %s", prototext.Format(dp.Path))
 			default:

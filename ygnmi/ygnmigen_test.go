@@ -237,7 +237,7 @@ func getClient(t testing.TB) (*testutil.FakeGNMI, *ygnmi.Client) {
 
 // checks that the received time is just before now
 func checkJustReceived(t *testing.T, recvTime time.Time) {
-	if diffSecs := time.Now().Sub(recvTime).Seconds(); diffSecs <= 0 && diffSecs > 1 {
+	if diffSecs := time.Since(recvTime).Seconds(); diffSecs <= 0 && diffSecs > 1 {
 		t.Errorf("received time is too far (%v seconds) away from now", diffSecs)
 	}
 }
