@@ -89,9 +89,10 @@ type Value[T any] struct {
 }
 
 // SetVal sets the value and marks it present.
-func (v *Value[T]) SetVal(val T) {
+func (v *Value[T]) SetVal(val T) *Value[T] {
 	v.present = true
 	v.val = val
+	return v
 }
 
 // Val returns the val and whether it is present.
