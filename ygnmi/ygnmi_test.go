@@ -1,7 +1,8 @@
-package ygnmi_test
+package ygnmi
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -9,16 +10,17 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/openconfig/gnmi/errdiff"
 	"github.com/openconfig/ygnmi/internal/testutil"
-	"github.com/openconfig/ygnmi/test/device"
-	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/util"
+	"github.com/openconfig/ygot/ygot"
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
 	ygottestutil "github.com/openconfig/ygot/testutil"
 )
 
-func getClient(t testing.TB) (*testutil.FakeGNMI, *ygnmi.Client) {
+func getClient(t testing.TB) (*testutil.FakeGNMI, *Client) {
 	fakeGNMI, err := testutil.Start(0)
 	if err != nil {
 		t.Fatal(err)
@@ -27,7 +29,7 @@ func getClient(t testing.TB) (*testutil.FakeGNMI, *ygnmi.Client) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	c, err := ygnmi.NewClient(gnmiClient)
+	c, err := NewClient(gnmiClient)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -36,27 +38,26 @@ func getClient(t testing.TB) (*testutil.FakeGNMI, *ygnmi.Client) {
 
 func TestLookup(t *testing.T) {
 	fakeGNMI, c := getClient(t)
-	leafPath := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
-	lq := device.DeviceRoot("").RemoteContainer().ALeaf().State()
-	// lq := &LeafSingletonQuery[uint64]{
-	// 	leafBaseQuery: leafBaseQuery[uint64]{
-	// 		parentDir: "leaf-container-struct",
-	// 		state:     false,
-	// 		ps:        ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
-	// 		extractFn: func(vgs ygot.ValidatedGoStruct) (uint64, bool) {
-	// 			return *(vgs.(*testutil.LeafContainerStruct)).Uint64Leaf, true
-	// 		},
-	// 		goStructFn: func() ygot.ValidatedGoStruct { return new(testutil.LeafContainerStruct) },
-	// 		yschema:    testutil.GetSchemaStruct()(),
-	// 	},
-	// }
+	leafPath := testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf")
+	lq := &LeafSingletonQuery[uint64]{
+		leafBaseQuery: leafBaseQuery[uint64]{
+			parentDir: "leaf-container-struct",
+			state:     true,
+			ps:        ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
+			extractFn: func(vgs ygot.ValidatedGoStruct) (uint64, bool) {
+				return *(vgs.(*testutil.LeafContainerStruct)).Uint64Leaf, true
+			},
+			goStructFn: func() ygot.ValidatedGoStruct { return new(testutil.LeafContainerStruct) },
+			yschema:    testutil.GetSchemaStruct()(),
+		},
+	}
 
 	leaftests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
-		inQuery              ygnmi.SingletonQuery[string]
+		inQuery              SingletonQuery[uint64]
 		wantSubscriptionPath *gpb.Path
-		wantVal              *ygnmi.Value[string]
+		wantVal              *Value[uint64]
 		wantErr              string
 	}{{
 		desc:    "success update and sync",
@@ -71,10 +72,12 @@ func TestLookup(t *testing.T) {
 			}).Sync()
 		},
 		wantSubscriptionPath: leafPath,
-		wantVal: (&ygnmi.Value[string]{
+		wantVal: &Value[uint64]{
+			val:       10,
+			present:   true,
 			Path:      leafPath,
 			Timestamp: time.Unix(0, 100),
-		}).SetVal("foo"),
+		},
 	}, {
 		desc:    "success update and no sync",
 		inQuery: lq,
@@ -88,10 +91,12 @@ func TestLookup(t *testing.T) {
 			})
 		},
 		wantSubscriptionPath: leafPath,
-		wantVal: (&ygnmi.Value[string]{
+		wantVal: &Value[uint64]{
+			val:       10,
+			present:   true,
 			Path:      leafPath,
 			Timestamp: time.Unix(0, 100),
-		}).SetVal("foo"),
+		},
 	}, {
 		desc:    "success with prefix",
 		inQuery: lq,
@@ -106,7 +111,9 @@ func TestLookup(t *testing.T) {
 			}).Sync()
 		},
 		wantSubscriptionPath: leafPath,
-		wantVal: &ygnmi.Value[string]{
+		wantVal: &Value[uint64]{
+			val:       10,
+			present:   true,
 			Path:      leafPath,
 			Timestamp: time.Unix(0, 100),
 		},
@@ -126,10 +133,12 @@ func TestLookup(t *testing.T) {
 			}).Sync()
 		},
 		wantSubscriptionPath: leafPath,
-		wantVal: (&ygnmi.Value[string]{
+		wantVal: &Value[uint64]{
+			val:       10,
+			present:   true,
 			Path:      leafPath,
 			Timestamp: time.Unix(0, 100),
-		}).SetVal("foo"),
+		},
 	}, {
 		desc:    "success no value",
 		inQuery: lq,
@@ -137,10 +146,10 @@ func TestLookup(t *testing.T) {
 			s.Sync()
 		},
 		wantSubscriptionPath: leafPath,
-		wantVal: (&ygnmi.Value[string]{
-			Path:      leafPath,
-			Timestamp: time.Unix(0, 100),
-		}),
+		wantVal: &Value[uint64]{
+			present: false,
+			Path:    leafPath,
+		},
 	}, {
 		desc:    "error multiple values",
 		inQuery: lq,
@@ -231,7 +240,7 @@ func TestLookup(t *testing.T) {
 	for _, tt := range leaftests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			got, err := ygnmi.Lookup(context.Background(), c, tt.inQuery)
+			got, err := Lookup(context.Background(), c, tt.inQuery)
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
 				t.Fatalf("Lookup(ctx, c, %v) returned unexpected diff: %s", tt.inQuery, diff)
 			}
@@ -242,14 +251,12 @@ func TestLookup(t *testing.T) {
 			checkJustReceived(t, got.RecvTimestamp)
 			tt.wantVal.RecvTimestamp = got.RecvTimestamp
 
-			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[string]{}), protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(Value[uint64]{}), protocmp.Transform()); diff != "" {
 				t.Errorf("Lookup(ctx, c, %v) returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", tt.inQuery, diff, got.ComplianceErrors)
 			}
 		})
 	}
 }
-
-/*
 
 func TestLookupNonLeaf(t *testing.T) {
 	fakeGNMI, c := getClient(t)
@@ -276,6 +283,7 @@ func TestLookupNonLeaf(t *testing.T) {
 				}},
 			}).Sync()
 		},
+		inState:              true,
 		wantSubscriptionPath: rootPath,
 		wantVal: &Value[*testutil.LeafContainerStruct]{
 			val: &testutil.LeafContainerStruct{
@@ -296,7 +304,7 @@ func TestLookupNonLeaf(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		inState:              true,
+		inState:              false,
 		wantSubscriptionPath: rootPath,
 		wantVal: &Value[*testutil.LeafContainerStruct]{
 			val: &testutil.LeafContainerStruct{
@@ -318,7 +326,7 @@ func TestLookupNonLeaf(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		inState:              false,
+		inState:              true,
 		wantSubscriptionPath: rootPath,
 		wantVal: &Value[*testutil.LeafContainerStruct]{
 			val: &testutil.LeafContainerStruct{
@@ -339,6 +347,7 @@ func TestLookupNonLeaf(t *testing.T) {
 				}},
 			}).Sync()
 		},
+		inState:              true,
 		wantSubscriptionPath: rootPath,
 		wantVal: &Value[*testutil.LeafContainerStruct]{
 			// TODO(DanG100): fix the check to correctly mark this as not present.
@@ -358,7 +367,7 @@ func TestLookupNonLeaf(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		inState:              true,
+		inState:              false,
 		wantSubscriptionPath: rootPath,
 		wantVal: &Value[*testutil.LeafContainerStruct]{
 			// TODO(DanG100): fix the check to correctly mark this as not present.
@@ -381,6 +390,7 @@ func TestLookupNonLeaf(t *testing.T) {
 				}},
 			}).Sync()
 		},
+		inState:              true,
 		wantSubscriptionPath: rootPath,
 		wantVal: &Value[*testutil.LeafContainerStruct]{
 			val: &testutil.LeafContainerStruct{
@@ -408,6 +418,7 @@ func TestLookupNonLeaf(t *testing.T) {
 				}},
 			}).Sync()
 		},
+		inState:              true,
 		wantSubscriptionPath: rootPath,
 		wantVal: &Value[*testutil.LeafContainerStruct]{
 			val: &testutil.LeafContainerStruct{
@@ -423,6 +434,7 @@ func TestLookupNonLeaf(t *testing.T) {
 		stub: func(s *testutil.Stubber) {
 			s.Sync()
 		},
+		inState:              true,
 		wantSubscriptionPath: rootPath,
 		wantVal: &Value[*testutil.LeafContainerStruct]{
 			Path: rootPath,
@@ -466,7 +478,7 @@ func TestWatch(t *testing.T) {
 	q := &LeafSingletonQuery[uint64]{
 		leafBaseQuery: leafBaseQuery[uint64]{
 			parentDir: "leaf-container-struct",
-			state:     false,
+			state:     true,
 			ps:        ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
 			extractFn: func(vgs ygot.ValidatedGoStruct) (uint64, bool) {
 				lcs := vgs.(*testutil.LeafContainerStruct)
@@ -674,6 +686,7 @@ func TestWatch(t *testing.T) {
 	startTime = time.Now()
 	nonLeafQuery := &NonLeafSingletonQuery[*testutil.LeafContainerStruct]{
 		nonLeafBaseQuery: nonLeafBaseQuery[*testutil.LeafContainerStruct]{
+			state:   true,
 			dir:     "leaf-container-struct",
 			ps:      ygot.NewNodePath([]string{"super-container", "leaf-container-struct"}, nil, ygot.NewDeviceRootBase("")),
 			yschema: testutil.GetSchemaStruct()(),
@@ -870,7 +883,6 @@ func TestWatch(t *testing.T) {
 	}
 }
 
-/*
 func TestLookupAll(t *testing.T) {
 	fakeGNMI, c := getClient(t)
 	leafPath := testutil.GNMIPath(t, "super-container/model/a/single-key[key=*]/state/value")
@@ -882,7 +894,7 @@ func TestLookupAll(t *testing.T) {
 	lq := &LeafWildcardQuery[int64]{
 		leafBaseQuery: leafBaseQuery[int64]{
 			parentDir: "Model_SingleKey",
-			state:     true,
+			state:     false,
 			ps:        leafPS,
 			extractFn: func(vgs ygot.ValidatedGoStruct) (int64, bool) {
 				return *((vgs.(*testutil.Model_SingleKey)).Value), true
@@ -1042,7 +1054,7 @@ func TestLookupAll(t *testing.T) {
 	nonLeafQ := &NonLeafWildcardQuery[*testutil.Model_SingleKey]{
 		nonLeafBaseQuery: nonLeafBaseQuery[*testutil.Model_SingleKey]{
 			dir:     "Model_SingleKey",
-			state:   true,
+			state:   false,
 			ps:      nonLeafPS,
 			yschema: testutil.GetSchemaStruct()(),
 		},
@@ -1158,7 +1170,7 @@ func TestWatchAll(t *testing.T) {
 	lq := &LeafWildcardQuery[int64]{
 		leafBaseQuery: leafBaseQuery[int64]{
 			parentDir: "Model_SingleKey",
-			state:     true,
+			state:     false,
 			ps:        leafPS,
 			extractFn: func(vgs ygot.ValidatedGoStruct) (int64, bool) {
 				return *((vgs.(*testutil.Model_SingleKey)).Value), true
@@ -1347,7 +1359,7 @@ func TestWatchAll(t *testing.T) {
 	nonLeafQ := &NonLeafWildcardQuery[*testutil.Model_SingleKey]{
 		nonLeafBaseQuery: nonLeafBaseQuery[*testutil.Model_SingleKey]{
 			dir:     "Model_SingleKey",
-			state:   true,
+			state:   false,
 			ps:      nonLeafPS,
 			yschema: testutil.GetSchemaStruct()(),
 		},
@@ -1461,7 +1473,7 @@ func TestWatchAll(t *testing.T) {
 		})
 	}
 }
-*/
+
 // checks that the received time is just before now
 func checkJustReceived(t *testing.T, recvTime time.Time) {
 	if diffSecs := time.Now().Sub(recvTime).Seconds(); diffSecs <= 0 && diffSecs > 1 {
@@ -1493,7 +1505,6 @@ func verifySubscriptionPathsSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, want
 	}
 }
 
-/*
 type fakeGNMISetClient struct {
 	gpb.GNMIClient
 	// Responses are the gNMI responses to return from calls to Set.
@@ -1879,4 +1890,3 @@ func TestDelete(t *testing.T) {
 		})
 	}
 }
-*/

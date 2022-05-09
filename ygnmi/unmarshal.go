@@ -130,7 +130,7 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 		return ret, nil
 	}
 
-	unmarshalledData, complianceErrs, err := unmarshal(data, q.schema().SchemaTree[q.dirName()], goStruct, queryPath, q.schema(), q.isLeaf(), q.isState())
+	unmarshalledData, complianceErrs, err := unmarshal(data, q.schema().SchemaTree[q.dirName()], goStruct, queryPath, q.schema(), q.isLeaf(), !q.isState())
 	ret.ComplianceErrors = complianceErrs
 	if err != nil {
 		return ret, err
@@ -162,7 +162,7 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 // NOTE: The subset of datapoints includes datapoints that are value restriction noncompliant.
 // The second error slice are internal errors, while the returned
 // *ComplianceError stores the compliance errors.
-func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.ValidatedGoStruct, queryPath *gpb.Path, schema *ytypes.Schema, isLeaf, reverseShadowPaths bool) ([]*DataPoint, *ComplianceErrors, error) {
+func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.ValidatedGoStruct, queryPath *gpb.Path, schema *ytypes.Schema, isLeaf, isConfig bool) ([]*DataPoint, *ComplianceErrors, error) {
 	queryPathStr := pathToString(queryPath)
 	if isLeaf {
 		switch {
@@ -189,7 +189,7 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 	// TODO(wenbli): Add fatal check for duplicate paths, as they're not allowed by GET semantics.
 	for _, dp := range data {
 		var gcopts []ytypes.GetOrCreateNodeOpt
-		if reverseShadowPaths {
+		if isConfig {
 			gcopts = append(gcopts, &ytypes.PreferShadowPath{})
 		}
 		// Sync datapoints don't contain path nor values.
@@ -231,7 +231,7 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 		relPath := util.TrimGNMIPathPrefix(dp.Path, util.PathStringToElements(structSchema.Path())[1:])
 		if dp.Value == nil {
 			var dopts []ytypes.DelNodeOpt
-			if reverseShadowPaths {
+			if isConfig {
 				dopts = append(dopts, &ytypes.PreferShadowPath{})
 			}
 			if err := ytypes.DeleteNode(structSchema, structPtr, relPath, dopts...); err == nil {
@@ -241,7 +241,7 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 			}
 		} else {
 			sopts := []ytypes.SetNodeOpt{&ytypes.InitMissingElements{}, &ytypes.TolerateJSONInconsistencies{}}
-			if reverseShadowPaths {
+			if isConfig {
 				sopts = append(sopts, &ytypes.PreferShadowPath{})
 			}
 			// 2. Check for type compliance (since path should already be compliant).
