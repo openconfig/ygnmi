@@ -788,22 +788,6 @@ func TestWatch(t *testing.T) {
 	}
 }
 
-func getClient(t testing.TB) (*testutil.FakeGNMI, *ygnmi.Client) {
-	fakeGNMI, err := testutil.Start(0)
-	if err != nil {
-		t.Fatal(err)
-	}
-	gnmiClient, err := fakeGNMI.Dial(context.Background())
-	if err != nil {
-		t.Fatal(err)
-	}
-	c, err := ygnmi.NewClient(gnmiClient)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return fakeGNMI, c
-}
-
 func TestLookupAll(t *testing.T) {
 	fakeGNMI, c := getClient(t)
 	leafPath := testutil.GNMIPath(t, "model/a/single-key[key=*]/state/value")
