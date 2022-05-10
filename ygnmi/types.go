@@ -196,7 +196,7 @@ type nonLeafBaseQuery[T ygot.ValidatedGoStruct] struct {
 // As non-leaves structs are always GoStructs, a simple cast is sufficient.
 func (lq *nonLeafBaseQuery[T]) extract(gs ygot.ValidatedGoStruct) (T, bool) {
 	val := gs.(T)
-	return val, !reflect.ValueOf(val).IsZero()
+	return val, !reflect.ValueOf(val).Elem().IsZero()
 }
 
 // dirName returns the YANG schema directory name, used to unmarshal values.

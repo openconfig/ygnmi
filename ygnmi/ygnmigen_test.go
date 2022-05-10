@@ -8,10 +8,12 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/openconfig/gnmi/errdiff"
+	"github.com/openconfig/ygnmi/internal/exampleoc"
 	"github.com/openconfig/ygnmi/internal/exampleoc/device"
 	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/util"
+	"github.com/openconfig/ygot/ygot"
 	"google.golang.org/protobuf/testing/protocmp"
 
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
@@ -213,6 +215,194 @@ func TestLookup(t *testing.T) {
 			tt.wantVal.RecvTimestamp = got.RecvTimestamp
 
 			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[string]{}), protocmp.Transform()); diff != "" {
+				t.Errorf("Lookup(ctx, c, %v) returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", tt.inQuery, diff, got.ComplianceErrors)
+			}
+		})
+	}
+
+	rootPath := testutil.GNMIPath(t, "parent/child")
+	strPath := testutil.GNMIPath(t, "parent/child/state/one")
+	enumPath := testutil.GNMIPath(t, "parent/child/state/three")
+	strCfgPath := testutil.GNMIPath(t, "parent/child/config/one")
+
+	configQuery := device.DeviceRoot("").Parent().Child().Config()
+	stateQuery := device.DeviceRoot("").Parent().Child().State()
+
+	tests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		inQuery              ygnmi.SingletonQuery[*exampleoc.Parent_Child]
+		wantSubscriptionPath *gpb.Path
+		wantVal              *ygnmi.Value[*exampleoc.Parent_Child]
+		wantErr              string
+	}{{
+		desc: "success one update and state false",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: strCfgPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		inQuery:              configQuery,
+		wantSubscriptionPath: rootPath,
+		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+			Path:      rootPath,
+			Timestamp: time.Unix(0, 100),
+		}).SetVal(&exampleoc.Parent_Child{
+			One: ygot.String("foo"),
+		}),
+	}, {
+		desc: "success one update and state true",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: strPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		inQuery:              stateQuery,
+		wantSubscriptionPath: rootPath,
+		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+			Path:      rootPath,
+			Timestamp: time.Unix(0, 100),
+		}).SetVal(&exampleoc.Parent_Child{
+			One: ygot.String("foo"),
+		}),
+	}, {
+		desc: "success one update with prefix",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Prefix:    testutil.GNMIPath(t, "parent"),
+				Update: []*gpb.Update{{
+					Path: testutil.GNMIPath(t, "child/state/one"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		inQuery:              stateQuery,
+		wantSubscriptionPath: rootPath,
+		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+			Path:      rootPath,
+			Timestamp: time.Unix(0, 100),
+		}).SetVal(&exampleoc.Parent_Child{
+			One: ygot.String("foo"),
+		}),
+	}, {
+		desc: "success ignore state update when state false",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: strPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		inQuery:              configQuery,
+		wantSubscriptionPath: rootPath,
+		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+			Path:      rootPath,
+			Timestamp: time.Unix(0, 100),
+		}),
+	}, {
+		desc: "success ignore non-state update when state true",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: strCfgPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		inQuery:              stateQuery,
+		wantSubscriptionPath: rootPath,
+		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+			Path:      rootPath,
+			Timestamp: time.Unix(0, 100),
+		}),
+	}, {
+		desc: "success multiple updates in single notification",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: enumPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "ONE"}},
+				}, {
+					Path: strPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		inQuery:              stateQuery,
+		wantSubscriptionPath: rootPath,
+		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+			Path:      rootPath,
+			Timestamp: time.Unix(0, 100),
+		}).SetVal(&exampleoc.Parent_Child{
+			One:   ygot.String("foo"),
+			Three: exampleoc.Child_Three_ONE,
+		}),
+	}, {
+		desc: "success multiple notifications",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: enumPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "ONE"}},
+				}},
+			}).Notification(&gpb.Notification{
+				Timestamp: 102,
+				Update: []*gpb.Update{{
+					Path: strPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		inQuery:              stateQuery,
+		wantSubscriptionPath: rootPath,
+		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+			Path:      rootPath,
+			Timestamp: time.Unix(0, 102),
+		}).SetVal(&exampleoc.Parent_Child{
+			One:   ygot.String("foo"),
+			Three: exampleoc.Child_Three_ONE,
+		}),
+	}, {
+		desc: "success no values",
+		stub: func(s *testutil.Stubber) {
+			s.Sync()
+		},
+		inQuery:              stateQuery,
+		wantSubscriptionPath: rootPath,
+		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+			Path: rootPath,
+		}),
+	}}
+
+	for _, tt := range tests {
+		t.Run("nonleaf "+tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			got, err := ygnmi.Lookup(context.Background(), c, tt.inQuery)
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Lookup(ctx, c, %v) returned unexpected diff: %s", tt.inQuery, diff)
+			}
+			if err != nil {
+				return
+			}
+			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
+			checkJustReceived(t, got.RecvTimestamp)
+			tt.wantVal.RecvTimestamp = got.RecvTimestamp
+
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Parent_Child]{}), protocmp.Transform()); diff != "" {
 				t.Errorf("Lookup(ctx, c, %v) returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", tt.inQuery, diff, got.ComplianceErrors)
 			}
 		})
