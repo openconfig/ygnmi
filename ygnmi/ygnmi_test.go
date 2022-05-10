@@ -1613,6 +1613,22 @@ func TestDelete(t *testing.T) {
 	}
 }
 
+func getClient(t testing.TB) (*testutil.FakeGNMI, *ygnmi.Client) {
+	fakeGNMI, err := testutil.Start(0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	gnmiClient, err := fakeGNMI.Dial(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, err := ygnmi.NewClient(gnmiClient)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return fakeGNMI, c
+}
+
 type fakeGNMISetClient struct {
 	gpb.GNMIClient
 	// Responses are the gNMI responses to return from calls to Set.
