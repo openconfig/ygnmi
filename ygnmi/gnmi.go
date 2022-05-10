@@ -104,9 +104,9 @@ func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bo
 				return nil, err
 			}
 			// Record the deprecated Element field for clearer compliance error messages.
-			//lint:ignore SA1019 ignore deprecated check
+			//nolint:staticcheck // ignore deprecated check
 			if elements := append(append([]string{}, n.GetPrefix().GetElement()...), p.GetElement()...); len(elements) > 0 {
-				//lint:ignore SA1019 ignore deprecated check
+				//nolint:staticcheck // ignore deprecated check
 				j.Element = elements
 			}
 			// Use the target only for the subscription but exclude from the datapoint construction.

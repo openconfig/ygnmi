@@ -162,7 +162,7 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 				var zero {{ .GoTypeName }}
 				return zero, false
 			}
-			return *ret, false
+			return *ret, true
 			{{- else }}
 			return ret, !reflect.ValueOf(ret).IsZero()
 			{{- end}}
@@ -201,7 +201,7 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 				var zero {{ .GoTypeName }}
 				return zero, false
 			}
-			return *ret, false
+			return *ret, true
 			{{- else }}
 			return ret, !reflect.ValueOf(ret).IsZero()
 			{{- end}}

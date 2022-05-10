@@ -88,10 +88,11 @@ type Value[T any] struct {
 	ComplianceErrors *ComplianceErrors
 }
 
-// SetVal sets the value and marks it present.
-func (v *Value[T]) SetVal(val T) {
+// SetVal sets the value and marks it present and returns the receiver.
+func (v *Value[T]) SetVal(val T) *Value[T] {
 	v.present = true
 	v.val = val
+	return v
 }
 
 // Val returns the val and whether it is present.

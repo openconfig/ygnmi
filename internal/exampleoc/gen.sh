@@ -23,7 +23,7 @@ go run github.com/openconfig/ygot/generator \
   -prefer_operational_state \
   -list_builder_key_threshold=4 \
   -output_file=telemetry.go \
-  -package_name=test \
+  -package_name=exampleoc \
   -compress_paths \
   -generate_fakeroot \
   -fakeroot_name=device \
@@ -40,15 +40,17 @@ go run github.com/openconfig/ygot/generator \
   -generate_delete \
   -generate_leaf_getters \
   -generate_populate_defaults \
-  -path=../pathgen/testdata/yang \
-  ../pathgen/testdata/yang/openconfig-simple.yang
+  -path=../../pathgen/testdata/yang \
+  ../../pathgen/testdata/yang/openconfig-simple.yang \
+  ../../pathgen/testdata/yang/openconfig-withlist.yang
 
 mkdir -p device
 
-go run ../app/ygnmi generator \
+go run ../../app/ygnmi generator \
   --output_dir=device \
-  --base_import_path=github.com/openconfig/ygnmi/test/device \
-  --schema_struct_path=github.com/openconfig/ygnmi/test \
-  ../pathgen/testdata/yang/openconfig-simple.yang 
+  --base_import_path=github.com/openconfig/ygnmi/internal/exampleoc/device \
+  --schema_struct_path=github.com/openconfig/ygnmi/internal/exampleoc \
+  ../../pathgen/testdata/yang/openconfig-simple.yang \
+  ../../pathgen/testdata/yang/openconfig-withlist.yang
 
 goimports -w .

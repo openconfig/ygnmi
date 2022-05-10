@@ -1,13 +1,18 @@
 run:
-  timeout: 1m
+  timeout: 5m
   skip-dirs:
     - pathgen/testdata
+    - exampleoc
 
 linters:
   enable:
     - gofmt
     - revive
     - goimports
+
+linters-settings:
+  revive:
+    confidence: 0.8
 
 issues:
   exclude:

@@ -7,9 +7,8 @@ build:
 test:
 	go test -v ./...
 
-integration_test:
-	test/gen.sh
-	go build ./test
+gen:
+	internal/exampleoc/gen.sh
 
 clean:
 	rm -rf test/device

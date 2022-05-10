@@ -42,7 +42,7 @@ func TestLookup(t *testing.T) {
 	lq := &LeafSingletonQuery[uint64]{
 		leafBaseQuery: leafBaseQuery[uint64]{
 			parentDir: "leaf-container-struct",
-			state:     false,
+			state:     true,
 			ps:        ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
 			extractFn: func(vgs ygot.ValidatedGoStruct) (uint64, bool) {
 				return *(vgs.(*testutil.LeafContainerStruct)).Uint64Leaf, true
@@ -283,6 +283,7 @@ func TestLookupNonLeaf(t *testing.T) {
 				}},
 			}).Sync()
 		},
+		inState:              true,
 		wantSubscriptionPath: rootPath,
 		wantVal: &Value[*testutil.LeafContainerStruct]{
 			val: &testutil.LeafContainerStruct{
@@ -303,7 +304,7 @@ func TestLookupNonLeaf(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		inState:              true,
+		inState:              false,
 		wantSubscriptionPath: rootPath,
 		wantVal: &Value[*testutil.LeafContainerStruct]{
 			val: &testutil.LeafContainerStruct{
@@ -325,7 +326,7 @@ func TestLookupNonLeaf(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		inState:              false,
+		inState:              true,
 		wantSubscriptionPath: rootPath,
 		wantVal: &Value[*testutil.LeafContainerStruct]{
 			val: &testutil.LeafContainerStruct{
@@ -346,6 +347,7 @@ func TestLookupNonLeaf(t *testing.T) {
 				}},
 			}).Sync()
 		},
+		inState:              true,
 		wantSubscriptionPath: rootPath,
 		wantVal: &Value[*testutil.LeafContainerStruct]{
 			// TODO(DanG100): fix the check to correctly mark this as not present.
@@ -365,7 +367,7 @@ func TestLookupNonLeaf(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		inState:              true,
+		inState:              false,
 		wantSubscriptionPath: rootPath,
 		wantVal: &Value[*testutil.LeafContainerStruct]{
 			// TODO(DanG100): fix the check to correctly mark this as not present.
@@ -388,6 +390,7 @@ func TestLookupNonLeaf(t *testing.T) {
 				}},
 			}).Sync()
 		},
+		inState:              true,
 		wantSubscriptionPath: rootPath,
 		wantVal: &Value[*testutil.LeafContainerStruct]{
 			val: &testutil.LeafContainerStruct{
@@ -415,6 +418,7 @@ func TestLookupNonLeaf(t *testing.T) {
 				}},
 			}).Sync()
 		},
+		inState:              true,
 		wantSubscriptionPath: rootPath,
 		wantVal: &Value[*testutil.LeafContainerStruct]{
 			val: &testutil.LeafContainerStruct{
@@ -430,6 +434,7 @@ func TestLookupNonLeaf(t *testing.T) {
 		stub: func(s *testutil.Stubber) {
 			s.Sync()
 		},
+		inState:              true,
 		wantSubscriptionPath: rootPath,
 		wantVal: &Value[*testutil.LeafContainerStruct]{
 			Path: rootPath,
@@ -473,7 +478,7 @@ func TestWatch(t *testing.T) {
 	q := &LeafSingletonQuery[uint64]{
 		leafBaseQuery: leafBaseQuery[uint64]{
 			parentDir: "leaf-container-struct",
-			state:     false,
+			state:     true,
 			ps:        ygot.NewNodePath([]string{"super-container", "leaf-container-struct", "uint64-leaf"}, nil, ygot.NewDeviceRootBase("")),
 			extractFn: func(vgs ygot.ValidatedGoStruct) (uint64, bool) {
 				lcs := vgs.(*testutil.LeafContainerStruct)
@@ -681,6 +686,7 @@ func TestWatch(t *testing.T) {
 	startTime = time.Now()
 	nonLeafQuery := &NonLeafSingletonQuery[*testutil.LeafContainerStruct]{
 		nonLeafBaseQuery: nonLeafBaseQuery[*testutil.LeafContainerStruct]{
+			state:   true,
 			dir:     "leaf-container-struct",
 			ps:      ygot.NewNodePath([]string{"super-container", "leaf-container-struct"}, nil, ygot.NewDeviceRootBase("")),
 			yschema: testutil.GetSchemaStruct()(),
@@ -888,7 +894,7 @@ func TestLookupAll(t *testing.T) {
 	lq := &LeafWildcardQuery[int64]{
 		leafBaseQuery: leafBaseQuery[int64]{
 			parentDir: "Model_SingleKey",
-			state:     true,
+			state:     false,
 			ps:        leafPS,
 			extractFn: func(vgs ygot.ValidatedGoStruct) (int64, bool) {
 				return *((vgs.(*testutil.Model_SingleKey)).Value), true
@@ -1048,7 +1054,7 @@ func TestLookupAll(t *testing.T) {
 	nonLeafQ := &NonLeafWildcardQuery[*testutil.Model_SingleKey]{
 		nonLeafBaseQuery: nonLeafBaseQuery[*testutil.Model_SingleKey]{
 			dir:     "Model_SingleKey",
-			state:   true,
+			state:   false,
 			ps:      nonLeafPS,
 			yschema: testutil.GetSchemaStruct()(),
 		},
@@ -1164,7 +1170,7 @@ func TestWatchAll(t *testing.T) {
 	lq := &LeafWildcardQuery[int64]{
 		leafBaseQuery: leafBaseQuery[int64]{
 			parentDir: "Model_SingleKey",
-			state:     true,
+			state:     false,
 			ps:        leafPS,
 			extractFn: func(vgs ygot.ValidatedGoStruct) (int64, bool) {
 				return *((vgs.(*testutil.Model_SingleKey)).Value), true
@@ -1353,7 +1359,7 @@ func TestWatchAll(t *testing.T) {
 	nonLeafQ := &NonLeafWildcardQuery[*testutil.Model_SingleKey]{
 		nonLeafBaseQuery: nonLeafBaseQuery[*testutil.Model_SingleKey]{
 			dir:     "Model_SingleKey",
-			state:   true,
+			state:   false,
 			ps:      nonLeafPS,
 			yschema: testutil.GetSchemaStruct()(),
 		},
@@ -1470,7 +1476,7 @@ func TestWatchAll(t *testing.T) {
 
 // checks that the received time is just before now
 func checkJustReceived(t *testing.T, recvTime time.Time) {
-	if diffSecs := time.Now().Sub(recvTime).Seconds(); diffSecs <= 0 && diffSecs > 1 {
+	if diffSecs := time.Since(recvTime).Seconds(); diffSecs <= 0 && diffSecs > 1 {
 		t.Errorf("received time is too far (%v seconds) away from now", diffSecs)
 	}
 }

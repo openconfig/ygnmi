@@ -28,8 +28,3 @@ jobs:
 
     - name: Test
       run: make test
-      
-    - name: Integration Tests
-      run: |
-        go install golang.org/x/tools/cmd/goimports@latest
-        make integration_test
