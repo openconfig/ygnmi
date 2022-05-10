@@ -88,7 +88,7 @@ type Value[T any] struct {
 	ComplianceErrors *ComplianceErrors
 }
 
-// SetVal sets the value and marks it present.
+// SetVal sets the value and marks it present and returns the receiver.
 func (v *Value[T]) SetVal(val T) *Value[T] {
 	v.present = true
 	v.val = val
