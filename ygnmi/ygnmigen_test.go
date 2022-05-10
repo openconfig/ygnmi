@@ -228,7 +228,7 @@ func TestLookup(t *testing.T) {
 	configQuery := device.DeviceRoot("").Parent().Child().Config()
 	stateQuery := device.DeviceRoot("").Parent().Child().State()
 
-	tests := []struct {
+	nonLeafTests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
 		inQuery              ygnmi.SingletonQuery[*exampleoc.Parent_Child]
@@ -388,7 +388,7 @@ func TestLookup(t *testing.T) {
 		}),
 	}}
 
-	for _, tt := range tests {
+	for _, tt := range nonLeafTests {
 		t.Run("nonleaf "+tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
 			got, err := ygnmi.Lookup(context.Background(), c, tt.inQuery)
@@ -411,11 +411,11 @@ func TestLookup(t *testing.T) {
 
 func TestWatch(t *testing.T) {
 	fakeGNMI, client := getClient(t)
-	path := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
+	leafPath := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
 	lq := device.DeviceRoot("").RemoteContainer().ALeaf().State()
 
 	startTime := time.Now()
-	tests := []struct {
+	leafTests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
 		dur                  time.Duration
@@ -429,7 +429,7 @@ func TestWatch(t *testing.T) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
-					Path: path,
+					Path: leafPath,
 					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
 				}},
 			}).Sync()
@@ -438,12 +438,12 @@ func TestWatch(t *testing.T) {
 		wantVals: []*ygnmi.Value[string]{
 			(&ygnmi.Value[string]{
 				Timestamp: startTime,
-				Path:      path,
+				Path:      leafPath,
 			}).SetVal("foo")},
-		wantSubscriptionPath: path,
+		wantSubscriptionPath: leafPath,
 		wantLastVal: (&ygnmi.Value[string]{
 			Timestamp: startTime,
-			Path:      path,
+			Path:      leafPath,
 		}).SetVal("foo"),
 	}, {
 		desc: "single notif and pred false error EOF",
@@ -451,7 +451,7 @@ func TestWatch(t *testing.T) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
-					Path: path,
+					Path: leafPath,
 					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
 				}},
 			}).Sync()
@@ -460,13 +460,13 @@ func TestWatch(t *testing.T) {
 		wantVals: []*ygnmi.Value[string]{
 			(&ygnmi.Value[string]{
 				Timestamp: startTime,
-				Path:      path,
+				Path:      leafPath,
 			}).SetVal("bar"),
 		},
-		wantSubscriptionPath: path,
+		wantSubscriptionPath: leafPath,
 		wantLastVal: (&ygnmi.Value[string]{
 			Timestamp: startTime,
-			Path:      path,
+			Path:      leafPath,
 		}).SetVal("bar"),
 		wantErr: "error receiving gNMI response: EOF",
 	}, {
@@ -475,13 +475,13 @@ func TestWatch(t *testing.T) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
-					Path: path,
+					Path: leafPath,
 					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
 				}},
 			}).Sync().Notification(&gpb.Notification{
 				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
 				Update: []*gpb.Update{{
-					Path: path,
+					Path: leafPath,
 					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
 				}},
 			})
@@ -490,17 +490,17 @@ func TestWatch(t *testing.T) {
 		wantVals: []*ygnmi.Value[string]{
 			(&ygnmi.Value[string]{
 				Timestamp: startTime,
-				Path:      path,
+				Path:      leafPath,
 			}).SetVal("bar"),
 			(&ygnmi.Value[string]{
 				Timestamp: startTime.Add(time.Millisecond),
-				Path:      path,
+				Path:      leafPath,
 			}).SetVal("foo"),
 		},
-		wantSubscriptionPath: path,
+		wantSubscriptionPath: leafPath,
 		wantLastVal: (&ygnmi.Value[string]{
 			Timestamp: startTime.Add(time.Millisecond),
-			Path:      path,
+			Path:      leafPath,
 		}).SetVal("foo"),
 	}, {
 		desc: "multiple notif with deletes",
@@ -508,29 +508,29 @@ func TestWatch(t *testing.T) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
-					Path: path,
+					Path: leafPath,
 					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
 				}},
 			}).Sync().Notification(&gpb.Notification{
 				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
-				Delete:    []*gpb.Path{path},
+				Delete:    []*gpb.Path{leafPath},
 			})
 		},
 		dur: time.Second,
 		wantVals: []*ygnmi.Value[string]{
 			(&ygnmi.Value[string]{
 				Timestamp: startTime,
-				Path:      path,
+				Path:      leafPath,
 			}).SetVal("bar"),
 			(&ygnmi.Value[string]{
 				Timestamp: startTime.Add(time.Millisecond),
-				Path:      path,
+				Path:      leafPath,
 			}),
 		},
-		wantSubscriptionPath: path,
+		wantSubscriptionPath: leafPath,
 		wantLastVal: (&ygnmi.Value[string]{
 			Timestamp: startTime.Add(time.Millisecond),
-			Path:      path,
+			Path:      leafPath,
 		}),
 		wantErr: "EOF",
 	}, {
@@ -541,7 +541,7 @@ func TestWatch(t *testing.T) {
 		dur:     -1 * time.Second,
 		wantErr: "context deadline exceeded",
 	}}
-	for _, tt := range tests {
+	for _, tt := range leafTests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
 			i := 0
@@ -579,7 +579,7 @@ func TestWatch(t *testing.T) {
 		fakeGNMI.Stub().Sync()
 		w := ygnmi.Watch(context.Background(), client, device.DeviceRoot("").RemoteContainer().ALeaf().State(), func(v *ygnmi.Value[string]) bool { return true })
 		want := &ygnmi.Value[string]{
-			Path: path,
+			Path: leafPath,
 		}
 		val, err := w.Await()
 		if err != nil {
