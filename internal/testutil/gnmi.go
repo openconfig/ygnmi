@@ -33,8 +33,8 @@ type FakeGNMI struct {
 	stub  *Stubber
 }
 
-// Start launches a new fake GNMI server on the given port
-func Start(port int) (*FakeGNMI, error) {
+// StartGNMI launches a new fake GNMI server on the given port
+func StartGNMI(port int) (*FakeGNMI, error) {
 	gen := &fpb.FixedGenerator{}
 	config := &fpb.Config{
 		Port:        int32(port),
