@@ -24,11 +24,11 @@ import (
 )
 
 func TestLookup(t *testing.T) {
-	fakeGNMI, c := getClient(t)
+	fakeGNMI, c := newClient(t)
 	leafPath := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
 	lq := device.DeviceRoot("").RemoteContainer().ALeaf().State()
 
-	leaftests := []struct {
+	leafTests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
 		inQuery              ygnmi.SingletonQuery[string]
@@ -203,7 +203,7 @@ func TestLookup(t *testing.T) {
 		},
 		wantErr: "failed to unmarshal",
 	}}
-	for _, tt := range leaftests {
+	for _, tt := range leafTests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
 			got, err := ygnmi.Lookup(context.Background(), c, tt.inQuery)
@@ -413,7 +413,7 @@ func TestLookup(t *testing.T) {
 }
 
 func TestWatch(t *testing.T) {
-	fakeGNMI, client := getClient(t)
+	fakeGNMI, client := newClient(t)
 	path := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
 	lq := device.DeviceRoot("").RemoteContainer().ALeaf().State()
 
@@ -789,11 +789,11 @@ func TestWatch(t *testing.T) {
 }
 
 func TestLookupAll(t *testing.T) {
-	fakeGNMI, c := getClient(t)
+	fakeGNMI, c := newClient(t)
 	leafPath := testutil.GNMIPath(t, "model/a/single-key[key=*]/state/value")
 	lq := device.DeviceRoot("").Model().SingleKeyAny().Value().State()
 
-	leaftests := []struct {
+	leafTests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
 		wantSubscriptionPath *gpb.Path
@@ -915,7 +915,7 @@ func TestLookupAll(t *testing.T) {
 		wantErr:              "failed to receive to data",
 		wantSubscriptionPath: leafPath,
 	}}
-	for _, tt := range leaftests {
+	for _, tt := range leafTests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
 			got, err := ygnmi.LookupAll(context.Background(), c, lq)
@@ -937,7 +937,7 @@ func TestLookupAll(t *testing.T) {
 
 	nonLeafPath := testutil.GNMIPath(t, "model/a/single-key[key=*]")
 	nonLeafQ := device.DeviceRoot("").Model().SingleKeyAny().State()
-	nonLeaftests := []struct {
+	nonLeafTests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
 		wantSubscriptionPath *gpb.Path
@@ -1011,7 +1011,7 @@ func TestLookupAll(t *testing.T) {
 		wantVals:             nil,
 		wantSubscriptionPath: nonLeafPath,
 	}}
-	for _, tt := range nonLeaftests {
+	for _, tt := range nonLeafTests {
 		t.Run("nonLeaf "+tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
 			got, err := ygnmi.LookupAll(context.Background(), c, nonLeafQ)
@@ -1033,7 +1033,7 @@ func TestLookupAll(t *testing.T) {
 }
 
 func TestWatchAll(t *testing.T) {
-	fakeGNMI, client := getClient(t)
+	fakeGNMI, client := newClient(t)
 	leafQueryPath := testutil.GNMIPath(t, "model/a/single-key[key=*]/state/value")
 	key10Path := testutil.GNMIPath(t, "model/a/single-key[key=10]/state/value")
 	key11Path := testutil.GNMIPath(t, "model/a/single-key[key=11]/state/value")
@@ -1328,7 +1328,7 @@ func TestUpdate(t *testing.T) {
 	setClient := &fakeGNMISetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
 	if err != nil {
-		t.Fatalf("unexpected error creating client: %v", err)
+		t.Fatalf("Unexpected error creating client: %v", err)
 	}
 
 	tests := []struct {
@@ -1424,7 +1424,7 @@ func TestUpdate(t *testing.T) {
 			if err != nil {
 				return
 			}
-			if diff := cmp.Diff(tt.wantRequest, setClient.Requests[0], protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantRequest, setClient.requests[0], protocmp.Transform()); diff != "" {
 				t.Errorf("Update() sent unexpected request (-want,+got):\n%s", diff)
 			}
 			if diff := cmp.Diff(tt.stubResponse, got, protocmp.Transform()); diff != "" {
@@ -1438,7 +1438,7 @@ func TestReplace(t *testing.T) {
 	setClient := &fakeGNMISetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
 	if err != nil {
-		t.Fatalf("unexpected error creating client: %v", err)
+		t.Fatalf("Unexpected error creating client: %v", err)
 	}
 	tests := []struct {
 		desc         string
@@ -1534,7 +1534,7 @@ func TestReplace(t *testing.T) {
 			if err != nil {
 				return
 			}
-			if diff := cmp.Diff(tt.wantRequest, setClient.Requests[0], protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantRequest, setClient.requests[0], protocmp.Transform()); diff != "" {
 				t.Errorf("Replace() sent unexpected request (-want,+got):\n%s", diff)
 			}
 			if diff := cmp.Diff(tt.stubResponse, got, protocmp.Transform()); diff != "" {
@@ -1548,7 +1548,7 @@ func TestDelete(t *testing.T) {
 	setClient := &fakeGNMISetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
 	if err != nil {
-		t.Fatalf("unexpected error creating client: %v", err)
+		t.Fatalf("Unexpected error creating client: %v", err)
 	}
 	tests := []struct {
 		desc         string
@@ -1603,7 +1603,7 @@ func TestDelete(t *testing.T) {
 			if err != nil {
 				return
 			}
-			if diff := cmp.Diff(tt.wantRequest, setClient.Requests[0], protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantRequest, setClient.requests[0], protocmp.Transform()); diff != "" {
 				t.Errorf("Delete() sent unexpected request (-want,+got):\n%s", diff)
 			}
 			if diff := cmp.Diff(tt.stubResponse, got, protocmp.Transform()); diff != "" {
@@ -1613,8 +1613,8 @@ func TestDelete(t *testing.T) {
 	}
 }
 
-func getClient(t testing.TB) (*testutil.FakeGNMI, *ygnmi.Client) {
-	fakeGNMI, err := testutil.Start(0)
+func newClient(t testing.TB) (*testutil.FakeGNMI, *ygnmi.Client) {
+	fakeGNMI, err := testutil.StartGNMI(0)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1631,39 +1631,39 @@ func getClient(t testing.TB) (*testutil.FakeGNMI, *ygnmi.Client) {
 
 type fakeGNMISetClient struct {
 	gpb.GNMIClient
-	// Responses are the gNMI responses to return from calls to Set.
-	Responses []*gpb.SetResponse
-	// Requests received by the client are stored in the slice.
-	Requests []*gpb.SetRequest
-	// ResponseErrs are the errors to return from calls to Set.
-	ResponseErrs []error
+	// responses are the gNMI responses to return from calls to Set.
+	responses []*gpb.SetResponse
+	// requests received by the client are stored in the slice.
+	requests []*gpb.SetRequest
+	// responseErrs are the errors to return from calls to Set.
+	responseErrs []error
 	// i is index current index of the response and error to return.
 	i int
 }
 
 func (f *fakeGNMISetClient) Reset() {
-	f.Requests = nil
-	f.Responses = nil
-	f.ResponseErrs = nil
+	f.requests = nil
+	f.responses = nil
+	f.responseErrs = nil
 	f.i = 0
 }
 
 func (f *fakeGNMISetClient) AddResponse(resp *gpb.SetResponse, err error) *fakeGNMISetClient {
-	f.Responses = append(f.Responses, resp)
-	f.ResponseErrs = append(f.ResponseErrs, err)
+	f.responses = append(f.responses, resp)
+	f.responseErrs = append(f.responseErrs, err)
 	return f
 }
 
 func (f *fakeGNMISetClient) Set(_ context.Context, req *gpb.SetRequest, opts ...grpc.CallOption) (*gpb.SetResponse, error) {
 	defer func() { f.i++ }()
-	f.Requests = append(f.Requests, req)
-	return f.Responses[f.i], f.ResponseErrs[f.i]
+	f.requests = append(f.requests, req)
+	return f.responses[f.i], f.responseErrs[f.i]
 }
 
-// checks that the received time is just before now
+// checkJustReceived checks that the received time is just before now.
 func checkJustReceived(t *testing.T, recvTime time.Time) {
 	if diffSecs := time.Since(recvTime).Seconds(); diffSecs <= 0 && diffSecs > 1 {
-		t.Errorf("received time is too far (%v seconds) away from now", diffSecs)
+		t.Errorf("Received time is too far (%v seconds) away from now", diffSecs)
 	}
 }
 
@@ -1687,6 +1687,6 @@ func verifySubscriptionPathsSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, want
 		gotPaths = append(gotPaths, got)
 	}
 	if diff := cmp.Diff(wantPaths, gotPaths, protocmp.Transform(), cmpopts.SortSlices(ygottestutil.PathLess)); diff != "" {
-		t.Errorf("subscription paths (-want, +got):\n%s", diff)
+		t.Errorf("Subscription paths (-want, +got):\n%s", diff)
 	}
 }
