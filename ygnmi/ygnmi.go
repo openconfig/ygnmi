@@ -18,6 +18,7 @@ package ygnmi
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/openconfig/ygot/ygot"
@@ -158,6 +159,23 @@ func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (*Value[
 	return val, nil
 }
 
+var ErrNotPresent = fmt.Errorf("value not present")
+
+// Get fetches the value of a SingletonQuery with a ONCE subscription, returning an error if the value is not present.
+// Use Lookup to get metadata and tolerate non-present data.
+func Get[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (T, error) {
+	val, err := Lookup(ctx, c, q)
+	if err != nil {
+		var zero T
+		return zero, err
+	}
+	ret, ok := val.Val()
+	if !ok {
+		return ret, fmt.Errorf("%w: at path %s", ErrNotPresent, val.Path.String())
+	}
+	return ret, nil
+}
+
 // Watcher represents an ongoing watch of telemetry values.
 type Watcher[T any] struct {
 	errCh      chan error
@@ -218,6 +236,39 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func
 	return w
 }
 
+// Await observes values at Query with a STREAM subscription,
+// blocking until a value that is deep equal to the specified val is received
+// or the context is cancelled. To wait for a generic predicate, or to make a
+// non-blocking call, use the Watch method instead.
+func Await[T any](ctx context.Context, c *Client, q SingletonQuery[T], val T) (*Value[T], error) {
+	w := Watch(ctx, c, q, func(v *Value[T]) bool {
+		return v.present && reflect.DeepEqual(v.val, val)
+	})
+	return w.Await()
+}
+
+type Collector[T any] struct {
+	w    *Watcher[T]
+	data []T
+}
+
+func Collect[T any](ctx context.Context, c *Client, q SingletonQuery[T]) *Collector[T] {
+	collect := &Collector[T]{}
+	collect.w = Watch(ctx, c, q, func(v *Value[T]) bool {
+		if q.isLeaf() {
+			collect.data = append(collect.data, v.val)
+		} else {
+			// https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md#why-not-permit-type-assertions-on-values-whose-type-is-a-type-parameter
+			gs, err := ygot.DeepCopy((interface{})(v.val).(ygot.GoStruct))
+			if err != nil {
+			}
+			collect.data = append(collect.data, gs.(T))
+		}
+		return false
+	})
+	return collect
+}
+
 // LookupAll fetches the values of a WildcardQuery with a ONCE subscription.
 // It returns an empty list if no values are present at the path.
 func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]*Value[T], error) {
@@ -252,6 +303,22 @@ func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]*Va
 		vals = append(vals, v)
 	}
 	return vals, nil
+}
+
+// GetAll fetches the value of a WildcardQuery with a ONCE subscription skipping any non-present paths.
+// Use LookupAll to also get metadata containing the returned paths.
+func GetAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]T, error) {
+	vals, err := LookupAll(ctx, c, q)
+	if err != nil {
+		return nil, err
+	}
+	ret := make([]T, 0, len(vals))
+	for _, val := range vals {
+		if v, ok := val.Val(); ok {
+			ret = append(ret, v)
+		}
+	}
+	return ret, nil
 }
 
 // WatchAll starts an asynchronous STREAM subscription, evaluating each observed value with the specified predicate.
