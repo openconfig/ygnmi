@@ -3,6 +3,8 @@
 
 ygnmi is a A Go gNMI client library based on [ygot](github.com/openconfig/ygot)-generated code. It includes a generator whose input is a set of YANG modules and output is ygot Go structs and a path library that can be used for making gNMI queries.
 
+The library supports querying telemetry and unmarshaling it into generated structs and setting config. Only gnmi.Subscribe and gnmi.Set RPC are supported by this library.
+
 This project is under active development and does not provide any compatibility or stability guarantees.
 
 Note: This is not an official Google product.
@@ -20,7 +22,3 @@ Not all ygot generator flags are supported by ygnmi. Notably ygnmi makes two imp
 2. PreferOperationState is selected.
 
 Note: the supported flags may evolve over time to include these options.
-
-## gNMI Client Library
-
-ygnmi is also a client library for gNMI. The library supports querying telemetry and unmarshaling it into generated structs and setting config. Only gnmi.Subscribe and gnmi.Set RPC are supported by this library.
