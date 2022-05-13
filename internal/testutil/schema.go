@@ -106,7 +106,7 @@ func (*Device) Validate(opts ...ygot.ValidationOption) error { return nil }
 func (*Device) ΛBelongingModule() string                     { return "" }
 func (*Device) ΛEnumTypeMap() map[string][]reflect.Type      { return nil }
 
-func unmarshalFunc([]byte, ygot.ValidatedGoStruct, ...ytypes.UnmarshalOpt) error { return nil }
+func unmarshalFunc([]byte, ygot.GoStruct, ...ytypes.UnmarshalOpt) error { return nil }
 
 type SuperContainer struct {
 	LeafContainerStruct *LeafContainerStruct `path:"leaf-container-struct"`
