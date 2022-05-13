@@ -145,8 +145,8 @@ func TestGeneratePathCode(t *testing.T) {
 				YANGFieldName:         "one",
 			},
 			"Parent_Child_ThreePath": {
-				GoTypeName:            "E_ChildThree",
-				LocalGoTypeName:       "E_ChildThree",
+				GoTypeName:            "E_Child_Three",
+				LocalGoTypeName:       "E_Child_Three",
 				GoFieldName:           "Three",
 				SubsumingGoStructName: "Parent_Child",
 				IsLeaf:                true,
@@ -268,8 +268,8 @@ func TestGeneratePathCode(t *testing.T) {
 				YANGFieldName:         "one",
 			},
 			"Parent_Child_ThreePath": {
-				GoTypeName:            "E_ChildThree",
-				LocalGoTypeName:       "E_ChildThree",
+				GoTypeName:            "E_Child_Three",
+				LocalGoTypeName:       "E_Child_Three",
 				GoFieldName:           "Three",
 				SubsumingGoStructName: "Parent_Child",
 				IsLeaf:                true,
@@ -388,8 +388,8 @@ func TestGeneratePathCode(t *testing.T) {
 				YANGFieldName:         "one",
 			},
 			"Parent_Child_ThreePath": {
-				GoTypeName:            "E_ChildThree",
-				LocalGoTypeName:       "E_ChildThree",
+				GoTypeName:            "E_Child_Three",
+				LocalGoTypeName:       "E_Child_Three",
 				GoFieldName:           "Three",
 				SubsumingGoStructName: "Parent_Child",
 				IsLeaf:                true,
@@ -509,8 +509,8 @@ func TestGeneratePathCode(t *testing.T) {
 				YANGFieldName:         "",
 			},
 			"DupEnum_APath": {
-				GoTypeName:            "E_DupEnumA",
-				LocalGoTypeName:       "E_DupEnumA",
+				GoTypeName:            "E_DupEnum_A",
+				LocalGoTypeName:       "E_DupEnum_A",
 				GoFieldName:           "A",
 				SubsumingGoStructName: "DupEnum",
 				IsLeaf:                true,
@@ -522,8 +522,8 @@ func TestGeneratePathCode(t *testing.T) {
 				YANGFieldName:         "A",
 			},
 			"DupEnum_BPath": {
-				GoTypeName:            "E_DupEnumB",
-				LocalGoTypeName:       "E_DupEnumB",
+				GoTypeName:            "E_DupEnum_B",
+				LocalGoTypeName:       "E_DupEnum_B",
 				GoFieldName:           "B",
 				SubsumingGoStructName: "DupEnum",
 				IsLeaf:                true,
@@ -896,6 +896,7 @@ func TestGeneratePathCode(t *testing.T) {
 				YANGTypeName:          "identityref",
 				GoPathPackageName:     "ocstructs",
 				YANGFieldName:         "id",
+				DirectoryName:         "Parent_Child",
 			},
 			"Parent_Child_Id2Path": {
 				GoTypeName:            "E_EnumTypes_ID",

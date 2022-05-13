@@ -260,6 +260,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 			ShortenEnumLeafNames:                 cg.ShortenEnumLeafNames,
 			EnumOrgPrefixesToTrim:                cg.EnumOrgPrefixesToTrim,
 			UseDefiningModuleForTypedefEnumNames: cg.UseDefiningModuleForTypedefEnumNames,
+			EnumerationsUseUnderscores:           true,
 		},
 		GoOptions: ygen.GoOpts{
 			AppendEnumSuffixForSimpleUnionEnums: cg.AppendEnumSuffixForSimpleUnionEnums,
