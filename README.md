@@ -1,10 +1,7 @@
 # ygnmi
 ## Introduction
 
-ygnmi is a set of tools consisting of the following:
-
-* A Go gNMI client library based on [ygot](github.com/openconfig/ygot)-generated code.
-* A generator whose input is a set of YANG modules and output is ygot Go structs and a path library that can be used for making gNMI queries.
+ygnmi is a A Go gNMI client library based on [ygot](github.com/openconfig/ygot)-generated code. It includes a generator whose input is a set of YANG modules and output is ygot Go structs and a path library that can be used for making gNMI queries.
 
 This project is under active development and does not provide any compatibility or stability guarantees.
 
@@ -17,7 +14,7 @@ The ygnmi generator can be installed by running: `go install github.com/openconf
 For the most up-to-date documentation of the generator commands and flags: use the built-in `help` command.
 An example generation script is located at internal/exampleoc/gen.sh.
 
-Not all ygot generator flags are supported ygnmi. Notably ygnmi makes to two important assumptions about the generated code:
+Not all ygot generator flags are supported by ygnmi. Notably ygnmi makes two important assumptions about the generated code:
 
 1. Path compression is enabled.
 2. PreferOperationState is selected.
