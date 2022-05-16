@@ -22,3 +22,7 @@ issues:
     # Exclude naming complaints from schema.
     - path: internal/testutil
       linters: revive
+    # Adding a package comment breaks other linters
+    - path: ygnmi/types.go
+      linters: unused
+
