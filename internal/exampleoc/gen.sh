@@ -22,5 +22,4 @@ go run ../../app/ygnmi generator \
   ../../pathgen/testdata/yang/openconfig-withlistval.yang
 
 go install golang.org/x/tools/cmd/goimports@v0.1.10
-gofmt -w -s .
 goimports -w .
