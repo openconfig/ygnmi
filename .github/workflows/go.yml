@@ -28,3 +28,17 @@ jobs:
 
     - name: Test
       run: make test
+
+  generation:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: '1.x'
+      id: go
+    - name: Generate
+      run: go generate ./...
+    - name: Check diff
+      run: git diff --exit-code

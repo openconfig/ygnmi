@@ -585,9 +585,9 @@ type {{ .TypeName }} struct {
 	*ygot.{{ .FakeRootBaseTypeName }}
 }
 
-// DeviceRoot returns a new path object from which YANG paths can be constructed.
-func DeviceRoot(id string) *{{ .TypeName }} {
-	return &{{ .TypeName }}{ygot.New{{- .FakeRootBaseTypeName }}(id)}
+// New returns a new path object from which YANG paths can be constructed.
+func New() *{{ .TypeName }} {
+	return &{{ .TypeName }}{ygot.New{{- .FakeRootBaseTypeName }}("")}
 }
 `)
 
