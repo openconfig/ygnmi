@@ -22,9 +22,9 @@ type DevicePath struct {
 	*ygot.DeviceRootBase
 }
 
-// DeviceRoot returns a new path object from which YANG paths can be constructed.
-func DeviceRoot(id string) *DevicePath {
-	return &DevicePath{ygot.NewDeviceRootBase(id)}
+// New returns a new path object from which YANG paths can be constructed.
+func New() *DevicePath {
+	return &DevicePath{ygot.NewDeviceRootBase("")}
 }
 
 // DupEnum (container): 

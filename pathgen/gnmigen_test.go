@@ -82,7 +82,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
-			Root:       &oc.Device{},
+			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
 			Unmarshal:  oc.Unmarshal,
 		},
@@ -115,7 +115,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
-			Root:       &oc.Device{},
+			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
 			Unmarshal:  oc.Unmarshal,
 		},
@@ -164,7 +164,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
-			Root:       &oc.Device{},
+			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
 			Unmarshal:  oc.Unmarshal,
 		},
@@ -197,7 +197,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
-			Root:       &oc.Device{},
+			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
 			Unmarshal:  oc.Unmarshal,
 		},
@@ -230,7 +230,7 @@ func (n *Container_Leaf) Config() ygnmi.ConfigQuery[int32] {
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
-			Root:       &oc.Device{},
+			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
 			Unmarshal:  oc.Unmarshal,
 		},
@@ -263,7 +263,7 @@ func (n *Container_LeafAny) Config() ygnmi.WildcardQuery[int32] {
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
-			Root:       &oc.Device{},
+			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
 			Unmarshal:  oc.Unmarshal,
 		},
@@ -308,7 +308,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[E_Child_Three] {
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
-			Root:       &oc.Device{},
+			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
 			Unmarshal:  oc.Unmarshal,
 		},
@@ -337,7 +337,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
-			Root:       &oc.Device{},
+			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
 			Unmarshal:  oc.Unmarshal,
 		},
@@ -367,7 +367,7 @@ func (n *Root) State() ygnmi.SingletonQuery[*Root] {
 		true,
 		n,
 		&ytypes.Schema{
-			Root:       &oc.Device{},
+			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
 			Unmarshal:  oc.Unmarshal,
 		},
@@ -381,7 +381,7 @@ func (n *Root) Config() ygnmi.ConfigQuery[*Root] {
 		false,
 		n,
 		&ytypes.Schema{
-			Root:       &oc.Device{},
+			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
 			Unmarshal:  oc.Unmarshal,
 		},
