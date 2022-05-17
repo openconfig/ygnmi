@@ -25,6 +25,7 @@ import (
 )
 
 // New creates a new root command.
+//nolint:errcheck
 func New() *cobra.Command {
 	root := &cobra.Command{
 		Use: "ygnmi",
