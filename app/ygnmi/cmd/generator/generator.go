@@ -70,6 +70,7 @@ func generate(cmd *cobra.Command, args []string) error {
 		}
 		schema_struct_path = viper.GetString("base_import_path")
 	}
+	version := "ygnmi version: " + cmd.Root().Version
 
 	pcg := pathgen.GenConfig{
 		PackageName: packageName,
@@ -92,7 +93,7 @@ func generate(cmd *cobra.Command, args []string) error {
 		YANGParseOptions: yang.Options{
 			IgnoreSubmoduleCircularDependencies: false,
 		},
-		GeneratingBinary:        "ygnmi version: " + cmd.Root().Version,
+		GeneratingBinary:        version,
 		ListBuilderKeyThreshold: 2,
 		GenerateWildcardPaths:   true,
 		SimplifyWildcardPaths:   false,
@@ -121,14 +122,14 @@ func generate(cmd *cobra.Command, args []string) error {
 	if !viper.GetBool("generate_structs") {
 		return nil
 	}
-	if err := generateStructs(args, schema_struct_path); err != nil {
+	if err := generateStructs(args, schema_struct_path, version); err != nil {
 		return nil
 	}
 
 	return nil
 }
 
-func generateStructs(modules []string, schemaPath string) error {
+func generateStructs(modules []string, schemaPath, version string) error {
 	cmp, err := genutil.TranslateToCompressBehaviour(true, false, true)
 	if err != nil {
 		return err
@@ -153,7 +154,7 @@ func generateStructs(modules []string, schemaPath string) error {
 			UseDefiningModuleForTypedefEnumNames: false,
 			EnumerationsUseUnderscores:           true,
 		},
-
+		Caller:              version,
 		PackageName:         path.Base(schemaPath),
 		GenerateJSONSchema:  true,
 		IncludeDescriptions: false,

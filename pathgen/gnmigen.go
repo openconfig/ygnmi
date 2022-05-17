@@ -46,6 +46,7 @@ type gnmiStruct struct {
 }
 
 const (
+	// TODO(DanG100): pass options into custom generators and remove this.
 	fakeRootName = "Root"
 )
 
