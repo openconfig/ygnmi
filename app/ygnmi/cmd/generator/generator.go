@@ -52,7 +52,7 @@ func New() *cobra.Command {
 	generator.Flags().StringSlice("path", nil, "Comma-separated list of paths to be recursively searched for included modules or submodules within the defined YANG modules.")
 	generator.Flags().String("output_dir", "", "The directory that the generated Go code should be written to. This directory is the base of the generated module packages. default (working dir)")
 	generator.Flags().Bool("generate_structs", true, "Generate structs and schema for YANG modules.")
-	generator.Flags().Int("structs_split_files_count", 1, "Generate structs and schema for YANG modules.")
+	generator.Flags().Int("structs_split_files_count", 1, "The number of files to split the generated schema structs into.")
 
 	generator.MarkFlagRequired("base_import_path")
 
