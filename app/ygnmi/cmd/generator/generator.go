@@ -52,6 +52,7 @@ func New() *cobra.Command {
 	generator.Flags().StringSlice("path", nil, "Comma-separated list of paths to be recursively searched for included modules or submodules within the defined YANG modules.")
 	generator.Flags().String("output_dir", "", "The directory that the generated Go code should be written to. This directory is the base of the generated module packages. default (working dir)")
 	generator.Flags().Bool("generate_structs", true, "Generate structs and schema for YANG modules.")
+	generator.Flags().Int("structs_split_files_count", 1, "Generate structs and schema for YANG modules.")
 
 	generator.MarkFlagRequired("base_import_path")
 
@@ -122,11 +123,8 @@ func generate(cmd *cobra.Command, args []string) error {
 	if !viper.GetBool("generate_structs") {
 		return nil
 	}
-	if err := generateStructs(args, schema_struct_path, version); err != nil {
-		return nil
-	}
 
-	return nil
+	return generateStructs(args, schema_struct_path, version)
 }
 
 func generateStructs(modules []string, schemaPath, version string) error {
@@ -181,12 +179,12 @@ func generateStructs(modules []string, schemaPath, version string) error {
 	if errs != nil {
 		return fmt.Errorf("error generating GoStruct Code: %v\n", errs)
 	}
-	out, err := splitCodeByFileN(generatedGoCode, 1)
+	out, err := splitCodeByFileN(generatedGoCode, viper.GetInt("structs_split_files_count"))
 	if err != nil {
-		return fmt.Errorf("error splitting GoStruct Code: %v\n", errs)
+		return fmt.Errorf("error splitting GoStruct Code: %w\n", err)
 	}
 	if err := writeFiles(viper.GetString("output_dir"), out); err != nil {
-		return fmt.Errorf("error while writing schema struct files: %v", err)
+		return fmt.Errorf("error while writing schema struct files: %w", err)
 	}
 	return nil
 }
@@ -221,7 +219,7 @@ func writeFiles(dir string, out map[string]string) error {
 			return fmt.Errorf("could not open file %q", filename)
 		}
 		if _, err := fh.WriteString(contents); err != nil {
-			return err
+			return fmt.Errorf("failed to write to file: %w", err)
 		}
 		// flush & close written files before function finishes.
 		defer genutil.SyncFile(fh)

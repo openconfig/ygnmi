@@ -45,7 +45,7 @@ func New() *cobra.Command {
 		if *cfgFile != "" {
 			viper.SetConfigFile(*cfgFile)
 			if err := viper.ReadInConfig(); err != nil {
-				return fmt.Errorf("error reading config: %v", err)
+				return fmt.Errorf("error reading config: %w", err)
 			}
 		}
 		viper.BindPFlags(cmd.Flags())
