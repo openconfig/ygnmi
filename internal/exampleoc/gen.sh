@@ -16,41 +16,10 @@
 
 cd "$(dirname "$0")"
 
-go run github.com/openconfig/ygot/generator \
-  -generate_structs \
-  -generate_path_structs=false \
-  -exclude_state=false \
-  -prefer_operational_state \
-  -list_builder_key_threshold=4 \
-  -output_file=telemetry.go \
-  -package_name=exampleoc \
-  -compress_paths \
-  -generate_fakeroot \
-  -fakeroot_name=device \
-  -ignore_shadow_schema_paths \
-  -generate_simple_unions \
-  -shorten_enum_leaf_names \
-  -typedef_enum_with_defmod \
-  -enum_suffix_for_simple_union_enums \
-  -trim_enum_openconfig_prefix \
-  -include_schema \
-  -generate_append \
-  -generate_getters \
-  -generate_rename \
-  -generate_delete \
-  -generate_leaf_getters \
-  -generate_populate_defaults \
-  -path=../../pathgen/testdata/yang \
-  ../../pathgen/testdata/yang/openconfig-simple.yang \
-  ../../pathgen/testdata/yang/openconfig-withlistval.yang
-
-mkdir -p device
-
 go run ../../app/ygnmi generator \
-  --output_dir=device \
-  --base_import_path=github.com/openconfig/ygnmi/internal/exampleoc/device \
-  --schema_struct_path=github.com/openconfig/ygnmi/internal/exampleoc \
+  --base_import_path=github.com/openconfig/ygnmi/internal/exampleoc \
   ../../pathgen/testdata/yang/openconfig-simple.yang \
   ../../pathgen/testdata/yang/openconfig-withlistval.yang
 
+go install golang.org/x/tools/cmd/goimports@v0.1.10
 goimports -w .

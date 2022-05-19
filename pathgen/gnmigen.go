@@ -46,7 +46,8 @@ type gnmiStruct struct {
 }
 
 const (
-	fakeRootName = "Device"
+	// TODO(DanG100): pass options into custom generators and remove this.
+	fakeRootName = "Root"
 )
 
 // GNMIGenerator is a plugin generator for generating ygnmi query objects.

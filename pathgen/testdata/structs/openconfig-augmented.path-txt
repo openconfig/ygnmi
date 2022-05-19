@@ -24,9 +24,9 @@ type Device struct {
 	*ygot.DeviceRootBase
 }
 
-// DeviceRoot returns a new path object from which YANG paths can be constructed.
-func DeviceRoot(id string) *Device {
-	return &Device{ygot.NewDeviceRootBase(id)}
+// New returns a new path object from which YANG paths can be constructed.
+func New() *Device {
+	return &Device{ygot.NewDeviceRootBase("")}
 }
 
 // Native (container): 

@@ -28,3 +28,19 @@ jobs:
 
     - name: Test
       run: make test
+
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: '1.x'
+
+    - name: Generate and Check Diff
+      # Ignore whitespace because goimports seems to modifying the generated commands inconsistently.
+      run: |
+        go generate ./...
+        git diff --exit-code --ignore-all-space --ignore-blank-lines 

@@ -2365,9 +2365,9 @@ type RootPath struct {
 	*ygot.DeviceRootBase
 }
 
-// DeviceRoot returns a new path object from which YANG paths can be constructed.
-func DeviceRoot(id string) *RootPath {
-	return &RootPath{ygot.NewDeviceRootBase(id)}
+// New returns a new path object from which YANG paths can be constructed.
+func New() *RootPath {
+	return &RootPath{ygot.NewDeviceRootBase("")}
 }
 
 // LeafPath represents the /root-module/leaf YANG schema element.
@@ -2389,9 +2389,9 @@ type RootPath struct {
 	*ygot.DeviceRootBase
 }
 
-// DeviceRoot returns a new path object from which YANG paths can be constructed.
-func DeviceRoot(id string) *RootPath {
-	return &RootPath{ygot.NewDeviceRootBase(id)}
+// New returns a new path object from which YANG paths can be constructed.
+func New() *RootPath {
+	return &RootPath{ygot.NewDeviceRootBase("")}
 }
 
 // LeafPath represents the /root-module/leaf YANG schema element.

@@ -24,7 +24,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/openconfig/gnmi/errdiff"
 	"github.com/openconfig/ygnmi/internal/exampleoc"
-	"github.com/openconfig/ygnmi/internal/exampleoc/device"
+	"github.com/openconfig/ygnmi/internal/exampleoc/root"
 	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/util"
@@ -40,7 +40,7 @@ import (
 func TestLookup(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 	leafPath := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
-	lq := device.DeviceRoot("").RemoteContainer().ALeaf().State()
+	lq := root.New().RemoteContainer().ALeaf().State()
 
 	leafTests := []struct {
 		desc                 string
@@ -242,8 +242,8 @@ func TestLookup(t *testing.T) {
 	enumPath := testutil.GNMIPath(t, "parent/child/state/three")
 	strCfgPath := testutil.GNMIPath(t, "parent/child/config/one")
 
-	configQuery := device.DeviceRoot("").Parent().Child().Config()
-	stateQuery := device.DeviceRoot("").Parent().Child().State()
+	configQuery := root.New().Parent().Child().Config()
+	stateQuery := root.New().Parent().Child().State()
 
 	tests := []struct {
 		desc                 string
@@ -429,7 +429,7 @@ func TestLookup(t *testing.T) {
 func TestWatch(t *testing.T) {
 	fakeGNMI, client := newClient(t)
 	path := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
-	lq := device.DeviceRoot("").RemoteContainer().ALeaf().State()
+	lq := root.New().RemoteContainer().ALeaf().State()
 
 	startTime := time.Now()
 	tests := []struct {
@@ -594,7 +594,7 @@ func TestWatch(t *testing.T) {
 
 	t.Run("multiple awaits", func(t *testing.T) {
 		fakeGNMI.Stub().Sync()
-		w := ygnmi.Watch(context.Background(), client, device.DeviceRoot("").RemoteContainer().ALeaf().State(), func(v *ygnmi.Value[string]) bool { return true })
+		w := ygnmi.Watch(context.Background(), client, root.New().RemoteContainer().ALeaf().State(), func(v *ygnmi.Value[string]) bool { return true })
 		want := &ygnmi.Value[string]{
 			Path: path,
 		}
@@ -615,7 +615,7 @@ func TestWatch(t *testing.T) {
 	strPath := testutil.GNMIPath(t, "parent/child/state/one")
 	enumPath := testutil.GNMIPath(t, "parent/child/state/three")
 	startTime = time.Now()
-	nonLeafQuery := device.DeviceRoot("").Parent().Child().State()
+	nonLeafQuery := root.New().Parent().Child().State()
 
 	nonLeafTests := []struct {
 		desc                 string
@@ -805,7 +805,7 @@ func TestWatch(t *testing.T) {
 func TestLookupAll(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 	leafPath := testutil.GNMIPath(t, "model/a/single-key[key=*]/state/value")
-	lq := device.DeviceRoot("").Model().SingleKeyAny().Value().State()
+	lq := root.New().Model().SingleKeyAny().Value().State()
 
 	leafTests := []struct {
 		desc                 string
@@ -950,7 +950,7 @@ func TestLookupAll(t *testing.T) {
 	}
 
 	nonLeafPath := testutil.GNMIPath(t, "model/a/single-key[key=*]")
-	nonLeafQ := device.DeviceRoot("").Model().SingleKeyAny().State()
+	nonLeafQ := root.New().Model().SingleKeyAny().State()
 	nonLeafTests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
@@ -1053,7 +1053,7 @@ func TestWatchAll(t *testing.T) {
 	key11Path := testutil.GNMIPath(t, "model/a/single-key[key=11]/state/value")
 
 	startTime := time.Now()
-	lq := device.DeviceRoot("").Model().SingleKeyAny().Value().State()
+	lq := root.New().Model().SingleKeyAny().Value().State()
 	tests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
@@ -1222,7 +1222,7 @@ func TestWatchAll(t *testing.T) {
 	nonLeafKey10Path := testutil.GNMIPath(t, "model/a/single-key[key=10]")
 	nonLeafKey11Path := testutil.GNMIPath(t, "model/a/single-key[key=11]")
 
-	nonLeafQ := device.DeviceRoot("").Model().SingleKeyAny().State()
+	nonLeafQ := root.New().Model().SingleKeyAny().State()
 	nonLeafTests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
@@ -1355,7 +1355,7 @@ func TestUpdate(t *testing.T) {
 	}{{
 		desc: "scalar leaf",
 		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
-			return ygnmi.Update(context.Background(), c, device.DeviceRoot("").Parent().Child().One().Config(), "10")
+			return ygnmi.Update(context.Background(), c, root.New().Parent().Child().One().Config(), "10")
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -1374,7 +1374,7 @@ func TestUpdate(t *testing.T) {
 	}, {
 		desc: "non scalar leaf",
 		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
-			return ygnmi.Update(context.Background(), c, device.DeviceRoot("").Parent().Child().Three().Config(), exampleoc.Child_Three_ONE)
+			return ygnmi.Update(context.Background(), c, root.New().Parent().Child().Three().Config(), exampleoc.Child_Three_ONE)
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -1393,7 +1393,7 @@ func TestUpdate(t *testing.T) {
 	}, {
 		desc: "non leaf",
 		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
-			return ygnmi.Update(context.Background(), c, device.DeviceRoot("").Parent().Child().Config(), &exampleoc.Parent_Child{One: ygot.String("10")})
+			return ygnmi.Update(context.Background(), c, root.New().Parent().Child().Config(), &exampleoc.Parent_Child{One: ygot.String("10")})
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -1412,7 +1412,7 @@ func TestUpdate(t *testing.T) {
 	}, {
 		desc: "server error",
 		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
-			return ygnmi.Update(context.Background(), c, device.DeviceRoot("").Parent().Child().One().Config(), "10")
+			return ygnmi.Update(context.Background(), c, root.New().Parent().Child().One().Config(), "10")
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -1464,7 +1464,7 @@ func TestReplace(t *testing.T) {
 	}{{
 		desc: "scalar leaf",
 		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
-			return ygnmi.Replace(context.Background(), c, device.DeviceRoot("").Parent().Child().One().Config(), "10")
+			return ygnmi.Replace(context.Background(), c, root.New().Parent().Child().One().Config(), "10")
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -1483,7 +1483,7 @@ func TestReplace(t *testing.T) {
 	}, {
 		desc: "non scalar leaf",
 		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
-			return ygnmi.Replace(context.Background(), c, device.DeviceRoot("").Parent().Child().Three().Config(), exampleoc.Child_Three_ONE)
+			return ygnmi.Replace(context.Background(), c, root.New().Parent().Child().Three().Config(), exampleoc.Child_Three_ONE)
 
 		},
 		wantRequest: &gpb.SetRequest{
@@ -1503,7 +1503,7 @@ func TestReplace(t *testing.T) {
 	}, {
 		desc: "non leaf",
 		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
-			return ygnmi.Replace(context.Background(), c, device.DeviceRoot("").Parent().Child().Config(), &exampleoc.Parent_Child{One: ygot.String("10")})
+			return ygnmi.Replace(context.Background(), c, root.New().Parent().Child().Config(), &exampleoc.Parent_Child{One: ygot.String("10")})
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -1522,7 +1522,7 @@ func TestReplace(t *testing.T) {
 	}, {
 		desc: "server error",
 		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
-			return ygnmi.Replace(context.Background(), c, device.DeviceRoot("").Parent().Child().One().Config(), "10")
+			return ygnmi.Replace(context.Background(), c, root.New().Parent().Child().One().Config(), "10")
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -1574,7 +1574,7 @@ func TestDelete(t *testing.T) {
 	}{{
 		desc: "success",
 		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
-			return ygnmi.Delete(context.Background(), c, device.DeviceRoot("").Parent().Child().One().Config())
+			return ygnmi.Delete(context.Background(), c, root.New().Parent().Child().One().Config())
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -1592,7 +1592,7 @@ func TestDelete(t *testing.T) {
 	}, {
 		desc: "server error",
 		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
-			return ygnmi.Delete(context.Background(), c, device.DeviceRoot("").Parent().Child().One().Config())
+			return ygnmi.Delete(context.Background(), c, root.New().Parent().Child().One().Config())
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
