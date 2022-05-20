@@ -50,12 +50,11 @@ func New() *cobra.Command {
 	generator.Flags().String("ytypes_path", "github.com/openconfig/ygot/ytypes", "The import path to use for ytypes.")
 	generator.Flags().String("goyang_path", "github.com/openconfig/goyang/pkg/yang", "The import path to use for goyang.")
 	generator.Flags().String("base_import_path", "", "This needs to be set to the import path of the output_dir.")
-	generator.Flags().StringSlice("path", nil, "Comma-separated list of paths to be recursively searched for included modules or submodules within the defined YANG modules.")
+	generator.Flags().StringSlice("paths", nil, "Comma-separated list of paths to be recursively searched for included modules or submodules within the defined YANG modules.")
+	generator.Flags().StringSlice("exclude_modules", nil, "Comma-separated YANG modules to exclude from code generation.")
 	generator.Flags().String("output_dir", "", "The directory that the generated Go code should be written to. This directory is the base of the generated module packages. default (working dir)")
 	generator.Flags().Bool("generate_structs", true, "Generate structs and schema for YANG modules.")
 	generator.Flags().Int("structs_split_files_count", 1, "The number of files to split the generated schema structs into.")
-
-	generator.MarkFlagRequired("base_import_path")
 
 	return generator
 }
@@ -65,6 +64,10 @@ const (
 )
 
 func generate(cmd *cobra.Command, args []string) error {
+	if viper.Get("base_import_path") == "" {
+		return fmt.Errorf("base_import_path must be set")
+	}
+
 	schemaStructPath := viper.GetString("schema_struct_path")
 	if viper.GetBool("generate_structs") {
 		if schemaStructPath == "" {
@@ -91,7 +94,7 @@ func generate(cmd *cobra.Command, args []string) error {
 		AppendEnumSuffixForSimpleUnionEnums:  true,
 		FakeRootName:                         "root",
 		PathStructSuffix:                     "Path",
-		ExcludeModules:                       nil,
+		ExcludeModules:                       viper.GetStringSlice("exclude_modules"),
 		YANGParseOptions: yang.Options{
 			IgnoreSubmoduleCircularDependencies: false,
 		},
@@ -137,7 +140,7 @@ func generateStructs(modules []string, schemaPath, version string) error {
 	// Perform the code generation.
 	cg := ygen.NewYANGCodeGenerator(&ygen.GeneratorConfig{
 		ParseOptions: ygen.ParseOpts{
-			ExcludeModules:        nil,
+			ExcludeModules:        viper.GetStringSlice("exclude_modules"),
 			SkipEnumDeduplication: false,
 			YANGParseOptions: yang.Options{
 				IgnoreSubmoduleCircularDependencies: false,

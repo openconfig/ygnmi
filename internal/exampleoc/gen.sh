@@ -21,5 +21,7 @@ go run ../../app/ygnmi generator \
   ../../pathgen/testdata/yang/openconfig-simple.yang \
   ../../pathgen/testdata/yang/openconfig-withlistval.yang
 
-go install golang.org/x/tools/cmd/goimports@v0.1.10
+go install golang.org/x/tools/cmd/goimports@latest
+go install github.com/google/addlicense@latest
 goimports -w .
+addlicense -c "Google LLC" -l apache .
