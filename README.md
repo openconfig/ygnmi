@@ -13,7 +13,7 @@ Note: This is not an official Google product.
 
 The ygnmi generator can be installed by running: `go install github.com/openconfig/ygnmi/app/ygnmi@latest`.
 
-For the most up-to-date documentation of the generator commands and flags: use the built-in `help` command.
+For the most up-to-date documentation of the generator commands and flags: use the built-in `help` command. ygnmi can be configured using (in order of precedence): flags, environment variables, or a config file. 
 An example generation script is located at internal/exampleoc/gen.sh.
 
 Not all ygot generator flags are supported by ygnmi. Notably ygnmi makes two important assumptions about the generated code:
