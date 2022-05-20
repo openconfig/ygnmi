@@ -21,7 +21,6 @@ import (
 
 	"github.com/openconfig/ygnmi/app/ygnmi/cmd/generator"
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -51,12 +50,6 @@ func New() *cobra.Command {
 		}
 		viper.BindPFlags(cmd.Flags())
 		viper.AutomaticEnv()
-		// Workaround for a flag marked as required, but set by config file or env var.
-		cmd.Flags().VisitAll(func(f *pflag.Flag) {
-			if viper.IsSet(f.Name) {
-				cmd.Flags().Set(f.Name, fmt.Sprint(viper.Get(f.Name)))
-			}
-		})
 		return nil
 	}
 
