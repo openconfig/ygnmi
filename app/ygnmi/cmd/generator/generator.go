@@ -44,7 +44,7 @@ func New() *cobra.Command {
 		Args:  cobra.MinimumNArgs(1),
 	}
 
-	generator.Flags().String("schema_struct_path", "", "The Go import path for the schema structs package.")
+	generator.Flags().String("schema_struct_path", "", "The Go import path for the schema structs package. If struct generation is enabled, this defaults to base_import_path.")
 	generator.Flags().String("ygot_path", "github.com/openconfig/ygot/ygot", "The import path to use for ygot.")
 	generator.Flags().String("ygnmi_path", "github.com/openconfig/ygnmi/ygnmi", "The import path to use for ygnmi.")
 	generator.Flags().String("ytypes_path", "github.com/openconfig/ygot/ytypes", "The import path to use for ytypes.")
@@ -65,19 +65,19 @@ const (
 )
 
 func generate(cmd *cobra.Command, args []string) error {
-	schema_struct_path := viper.GetString("schema_struct_path")
+	schemaStructPath := viper.GetString("schema_struct_path")
 	if viper.GetBool("generate_structs") {
-		if schema_struct_path != "" {
-			log.Warningf("schema_struct_path is set but unused because struct generation is enabled.")
+		if schemaStructPath == "" {
+			log.Info("schema_struct_path is unset, defaulting to base import path")
+			schemaStructPath = viper.GetString("base_import_path")
 		}
-		schema_struct_path = viper.GetString("base_import_path")
 	}
 	version := "ygnmi version: " + cmd.Root().Version
 
 	pcg := pathgen.GenConfig{
 		PackageName: packageName,
 		GoImports: pathgen.GoImports{
-			SchemaStructPkgPath: schema_struct_path,
+			SchemaStructPkgPath: schemaStructPath,
 			YgotImportPath:      viper.GetString("ygot_path"),
 			YgnmiImportPath:     viper.GetString("ygnmi_path"),
 			YtypesImportPath:    viper.GetString("ytypes_path"),
@@ -125,7 +125,7 @@ func generate(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	return generateStructs(args, schema_struct_path, version)
+	return generateStructs(args, schemaStructPath, version)
 }
 
 func generateStructs(modules []string, schemaPath, version string) error {
