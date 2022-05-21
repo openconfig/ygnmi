@@ -90,7 +90,7 @@ func generate(cmd *cobra.Command, args []string) error {
 		SkipEnumDeduplication:                false,
 		ShortenEnumLeafNames:                 true,
 		EnumOrgPrefixesToTrim:                []string{"openconfig"},
-		UseDefiningModuleForTypedefEnumNames: true,
+		UseDefiningModuleForTypedefEnumNames: false,
 		AppendEnumSuffixForSimpleUnionEnums:  true,
 		FakeRootName:                         "root",
 		PathStructSuffix:                     "Path",
