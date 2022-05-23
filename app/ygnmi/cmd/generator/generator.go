@@ -90,7 +90,7 @@ func generate(cmd *cobra.Command, args []string) error {
 		SkipEnumDeduplication:                false,
 		ShortenEnumLeafNames:                 true,
 		EnumOrgPrefixesToTrim:                []string{"openconfig"},
-		UseDefiningModuleForTypedefEnumNames: true,
+		UseDefiningModuleForTypedefEnumNames: false,
 		AppendEnumSuffixForSimpleUnionEnums:  true,
 		FakeRootName:                         "root",
 		PathStructSuffix:                     "Path",
@@ -181,7 +181,7 @@ func generateStructs(modules []string, schemaPath, version string) error {
 	})
 	generatedGoCode, errs := cg.GenerateGoCode(modules, viper.GetStringSlice("paths"))
 	if errs != nil {
-		return fmt.Errorf("error generating GoStruct Code: %v\n", errs)
+		return fmt.Errorf("error generating GoStruct Code: %v", errs)
 	}
 	out, err := splitCodeByFileN(generatedGoCode, viper.GetInt("structs_split_files_count"))
 	if err != nil {
