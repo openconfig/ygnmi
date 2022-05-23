@@ -15,10 +15,9 @@
 package pathgen
 
 import (
+	"fmt"
 	"strings"
 
-	"github.com/openconfig/goyang/pkg/yang"
-	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygen"
 	"github.com/openconfig/ygot/ygot"
 )
@@ -53,7 +52,7 @@ const (
 // GNMIGenerator is a plugin generator for generating ygnmi query objects.
 // Note: GNMIGenerator requires that PreferOperationalState be true when generating PathStructs.
 // TODO(DanG100): pass schema from parent to child.
-func GNMIGenerator(pathStructName string, dir *ygen.Directory, node *NodeData) (string, error) {
+func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeData) (string, error) {
 	tmplStruct := &gnmiStruct{
 		PathStructName:          pathStructName,
 		GoTypeName:              node.GoTypeName,
@@ -103,39 +102,38 @@ func GNMIGenerator(pathStructName string, dir *ygen.Directory, node *NodeData) (
 }
 
 // populateTmplForLeaf adds leaf specific fields to the gnmiStruct template.
-func populateTmplForLeaf(dir *ygen.Directory, fieldName string, shadow bool, tmplStruct *gnmiStruct) error {
-	schemaPathFn := ygen.FindSchemaPath
-	field := dir.Fields[fieldName]
+func populateTmplForLeaf(dir *ygen.ParsedDirectory, fieldName string, shadow bool, tmplStruct *gnmiStruct) error {
+	field, ok := dir.Fields[fieldName]
+	if !ok {
+		return fmt.Errorf("field %q does not exist in directory %s", fieldName, dir.Path)
+	}
+	// The longest path is the non-key path. This is the one we want to use
+	// since the key is "compressed out".
+	relPath := longestPath(field.MappedPaths)
 	if shadow {
-		schemaPathFn = ygen.FindShadowSchemaPath
-		field = dir.ShadowedFields[fieldName]
+		relPath = longestPath(field.ShadowMappedPaths)
 	}
 
-	relPath, err := schemaPathFn(dir, fieldName, false)
-	if err != nil {
-		return err
-	}
 	tmplStruct.RelPathList = `"` + strings.Join(relPath, `", "`) + `"`
-	tmplStruct.AbsPath = util.SchemaTreePathNoModule(field)
-	tmplStruct.RelPath = strings.Join(relPath, `/`)
-	tmplStruct.InstantiatingModuleName = util.SchemaTreeRoot(field).Name
-	if field.Node != nil {
-		if definingModule := yang.RootNode(field.Node); definingModule != nil {
-			tmplStruct.DefiningModuleName = definingModule.Name
-		}
+	tmplStruct.AbsPath = field.YANGDetails.SchemaPath
+	if shadow {
+		tmplStruct.AbsPath = field.YANGDetails.ShadowSchemaPath
 	}
+	tmplStruct.RelPath = strings.Join(relPath, `/`)
+	tmplStruct.InstantiatingModuleName = field.YANGDetails.BelongingModule
+	tmplStruct.DefiningModuleName = field.YANGDetails.DefiningModule
 	return nil
 }
 
-// generateConfig determines if a node should have a .Config() method.
+// generateConfigFunc determines if a node should have a .Config() method.
 // For leaves, it checks if the directory has a shadow-path field.
 // For non-leaves, it checks if the directory or any of its descendants are config nodes.
-func generateConfigFunc(dir *ygen.Directory, node *NodeData) bool {
+func generateConfigFunc(dir *ygen.ParsedDirectory, node *NodeData) bool {
 	if node.IsLeaf {
-		_, ok := dir.ShadowedFields[node.YANGFieldName]
-		return ok
+		field, ok := dir.Fields[node.YANGFieldName]
+		return ok && len(field.ShadowMappedPaths) > 0
 	}
-	return util.IsConfig(dir.Entry)
+	return !dir.ConfigFalse
 }
 
 var (

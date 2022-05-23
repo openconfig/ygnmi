@@ -23,12 +23,12 @@ import (
 )
 
 func TestGNMIGenerator(t *testing.T) {
-	_, dirs, _ := getSchemaAndDirs()
+	dirs := getIR().Directories
 
 	tests := []struct {
 		desc           string
 		pathStructName string
-		dir            *ygen.Directory
+		dir            *ygen.ParsedDirectory
 		node           *NodeData
 		want           string
 		wantErr        string
@@ -39,7 +39,7 @@ func TestGNMIGenerator(t *testing.T) {
 			YANGFieldName: "doesn't exist",
 			IsLeaf:        true,
 		},
-		wantErr: "does not exist in Directory",
+		wantErr: "does not exist in directory",
 	}, {
 		desc:           "scalar leaf without config",
 		dir:            dirs["/root-module/container"],
@@ -58,7 +58,7 @@ func TestGNMIGenerator(t *testing.T) {
 		want: `
 // State returns a Query that can be used in gNMI operations.
 // ----------------------------------------
-// Defining module: ""
+// Defining module: "root-module"
 // Instantiating module: "root-module"
 // Path from parent: "leaf"
 // Path from root: "/container/leaf"
@@ -91,7 +91,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 
 // State returns a Query that can be used in gNMI operations.
 // ----------------------------------------
-// Defining module: ""
+// Defining module: "root-module"
 // Instantiating module: "root-module"
 // Path from parent: "leaf"
 // Path from root: "/container/leaf"
@@ -125,42 +125,41 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 	}, {
 		desc:           "scalar leaf with config",
 		dir:            dirs["/root-module/container-with-config"],
-		pathStructName: "Container_Leaf",
+		pathStructName: "Container_LeafList",
 		node: &NodeData{
-			GoTypeName:            "int32",
-			LocalGoTypeName:       "int32",
-			GoFieldName:           "Leaf",
-			YANGFieldName:         "leaf",
+			GoTypeName:            "[]uint32",
+			LocalGoTypeName:       "[]uint32",
+			GoFieldName:           "Leaflist",
+			YANGFieldName:         "leaflist",
 			SubsumingGoStructName: "Container",
 			IsLeaf:                true,
-			IsScalarField:         true,
-			HasDefault:            true,
+			IsScalarField:         false,
+			HasDefault:            false,
 			YANGPath:              "/container/leaf",
+			YANGTypeName:          "uint32",
+			GoPathPackageName:     "rootmodulepath",
+			DirectoryName:         "Container",
 		},
 		want: `
 // State returns a Query that can be used in gNMI operations.
 // ----------------------------------------
-// Defining module: ""
+// Defining module: "root-module"
 // Instantiating module: "root-module"
-// Path from parent: "state/leaf"
-// Path from root: "/container-with-config/state/leaf"
-func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
-	return ygnmi.NewLeafSingletonQuery[int32](
+// Path from parent: "state/leaflist"
+// Path from root: "/container-with-config/state/leaflist"
+func (n *Container_LeafList) State() ygnmi.SingletonQuery[[]uint32] {
+	return ygnmi.NewLeafSingletonQuery[[]uint32](
 		"Container",
 		true,
-		true,
+		false,
 		ygot.NewNodePath(
-			[]string{"state", "leaf"},
+			[]string{"state", "leaflist"},
 			nil,
 			n.parent,
 		),
-		func(gs ygot.ValidatedGoStruct) (int32, bool) { 
-			ret := gs.(*oc.Container).Leaf
-			if ret == nil {
-				var zero int32
-				return zero, false
-			}
-			return *ret, true
+		func(gs ygot.ValidatedGoStruct) ([]uint32, bool) { 
+			ret := gs.(*oc.Container).Leaflist
+			return ret, !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
@@ -173,27 +172,23 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 
 // State returns a Query that can be used in gNMI operations.
 // ----------------------------------------
-// Defining module: ""
+// Defining module: "root-module"
 // Instantiating module: "root-module"
-// Path from parent: "state/leaf"
-// Path from root: "/container-with-config/state/leaf"
-func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
-	return ygnmi.NewLeafWildcardQuery[int32](
+// Path from parent: "state/leaflist"
+// Path from root: "/container-with-config/state/leaflist"
+func (n *Container_LeafListAny) State() ygnmi.WildcardQuery[[]uint32] {
+	return ygnmi.NewLeafWildcardQuery[[]uint32](
 		"Container",
 		true,
-		true,
+		false,
 		ygot.NewNodePath(
-			[]string{"state", "leaf"},
+			[]string{"state", "leaflist"},
 			nil,
 			n.parent,
 		),
-		func(gs ygot.ValidatedGoStruct) (int32, bool) { 
-			ret := gs.(*oc.Container).Leaf
-			if ret == nil {
-				var zero int32
-				return zero, false
-			}
-			return *ret, true
+		func(gs ygot.ValidatedGoStruct) ([]uint32, bool) { 
+			ret := gs.(*oc.Container).Leaflist
+			return ret, !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
@@ -206,27 +201,23 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 
 // Config returns a Query that can be used in gNMI operations.
 // ----------------------------------------
-// Defining module: ""
+// Defining module: "root-module"
 // Instantiating module: "root-module"
-// Path from parent: "config/leaf"
-// Path from root: "/container-with-config/config/leaf"
-func (n *Container_Leaf) Config() ygnmi.ConfigQuery[int32] {
-	return ygnmi.NewLeafConfigQuery[int32](
+// Path from parent: "config/leaflist"
+// Path from root: "/container-with-config/config/leaflist"
+func (n *Container_LeafList) Config() ygnmi.ConfigQuery[[]uint32] {
+	return ygnmi.NewLeafConfigQuery[[]uint32](
 		"Container",
 		false,
-		true,
+		false,
 		ygot.NewNodePath(
-			[]string{"config", "leaf"},
+			[]string{"config", "leaflist"},
 			nil,
 			n.parent,
 		),
-		func(gs ygot.ValidatedGoStruct) (int32, bool) { 
-			ret := gs.(*oc.Container).Leaf
-			if ret == nil {
-				var zero int32
-				return zero, false
-			}
-			return *ret, true
+		func(gs ygot.ValidatedGoStruct) ([]uint32, bool) { 
+			ret := gs.(*oc.Container).Leaflist
+			return ret, !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
@@ -239,27 +230,23 @@ func (n *Container_Leaf) Config() ygnmi.ConfigQuery[int32] {
 
 // Config returns a Query that can be used in gNMI operations.
 // ----------------------------------------
-// Defining module: ""
+// Defining module: "root-module"
 // Instantiating module: "root-module"
-// Path from parent: "config/leaf"
-// Path from root: "/container-with-config/config/leaf"
-func (n *Container_LeafAny) Config() ygnmi.WildcardQuery[int32] {
-	return ygnmi.NewLeafWildcardQuery[int32](
+// Path from parent: "config/leaflist"
+// Path from root: "/container-with-config/config/leaflist"
+func (n *Container_LeafListAny) Config() ygnmi.WildcardQuery[[]uint32] {
+	return ygnmi.NewLeafWildcardQuery[[]uint32](
 		"Container",
 		false,
-		true,
+		false,
 		ygot.NewNodePath(
-			[]string{"config", "leaf"},
+			[]string{"config", "leaflist"},
 			nil,
 			n.parent,
 		),
-		func(gs ygot.ValidatedGoStruct) (int32, bool) { 
-			ret := gs.(*oc.Container).Leaf
-			if ret == nil {
-				var zero int32
-				return zero, false
-			}
-			return *ret, true
+		func(gs ygot.ValidatedGoStruct) ([]uint32, bool) { 
+			ret := gs.(*oc.Container).Leaflist
+			return ret, !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Container) },
 		&ytypes.Schema{
@@ -288,7 +275,7 @@ func (n *Container_LeafAny) Config() ygnmi.WildcardQuery[int32] {
 		want: `
 // State returns a Query that can be used in gNMI operations.
 // ----------------------------------------
-// Defining module: ""
+// Defining module: "root-module"
 // Instantiating module: "root-module"
 // Path from parent: "leaf"
 // Path from root: "/container/leaf"
@@ -317,7 +304,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[E_Child_Three] {
 
 // State returns a Query that can be used in gNMI operations.
 // ----------------------------------------
-// Defining module: ""
+// Defining module: "root-module"
 // Instantiating module: "root-module"
 // Path from parent: "leaf"
 // Path from root: "/container/leaf"
