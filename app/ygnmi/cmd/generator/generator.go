@@ -181,7 +181,7 @@ func generateStructs(modules []string, schemaPath, version string) error {
 	})
 	generatedGoCode, errs := cg.GenerateGoCode(modules, viper.GetStringSlice("paths"))
 	if errs != nil {
-		return fmt.Errorf("error generating GoStruct Code: %v\n", errs)
+		return fmt.Errorf("error generating GoStruct Code: %v", errs)
 	}
 	out, err := splitCodeByFileN(generatedGoCode, viper.GetInt("structs_split_files_count"))
 	if err != nil {
