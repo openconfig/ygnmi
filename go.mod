@@ -44,4 +44,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
 
-replace github.com/openconfig/ygot => /usr/local/google/home/wenbli/gocode/src/github.com/openconfig/ygot
+replace github.com/openconfig/ygot => github.com/openconfig/ygot v0.20.2-0.20220523190500-03130569c2f5
