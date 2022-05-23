@@ -185,7 +185,7 @@ func generateStructs(modules []string, schemaPath, version string) error {
 	}
 	out, err := splitCodeByFileN(generatedGoCode, viper.GetInt("structs_split_files_count"))
 	if err != nil {
-		return fmt.Errorf("error splitting GoStruct Code: %w\n", err)
+		return fmt.Errorf("error splitting GoStruct Code: %w", err)
 	}
 	if err := writeFiles(viper.GetString("output_dir"), out); err != nil {
 		return fmt.Errorf("error while writing schema struct files: %w", err)
