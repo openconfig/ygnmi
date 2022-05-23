@@ -13,6 +13,8 @@ linters:
 linters-settings:
   revive:
     confidence: 0.8
+    rules:
+    - name: error-strings
 
 issues:
   exclude:
