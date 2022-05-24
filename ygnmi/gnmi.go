@@ -48,6 +48,11 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 	}
 	defer closer.Close(&rerr, sub.CloseSend, "error closing gNMI send stream")
 
+	// TODO: remove when fixed https://github.com/openconfig/ygot/issues/615
+	if len(path.Elem) > 0 && path.Elem[0].Name != "meta" {
+		path.Origin = "openconfig"
+	}
+
 	subs := []*gpb.Subscription{{
 		Path: &gpb.Path{
 			Elem:   path.GetElem(),

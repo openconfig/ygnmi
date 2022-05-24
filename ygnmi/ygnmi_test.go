@@ -1698,6 +1698,7 @@ func verifySubscriptionPathsSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, want
 			t.Fatal(err)
 		}
 		got.Target = ""
+		got.Origin = ""
 		gotPaths = append(gotPaths, got)
 	}
 	if diff := cmp.Diff(wantPaths, gotPaths, protocmp.Transform(), cmpopts.SortSlices(ygottestutil.PathLess)); diff != "" {
