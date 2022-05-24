@@ -159,6 +159,7 @@ func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (*Value[
 	return val, nil
 }
 
+// ErrNotPresent is returned by Get when there are no a values at a path.
 var ErrNotPresent = fmt.Errorf("value not present")
 
 // Get fetches the value of a SingletonQuery with a ONCE subscription,
