@@ -21,7 +21,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/openconfig/gnmi/errlist"
 	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygot"
 	"google.golang.org/grpc/codes"
@@ -35,11 +34,9 @@ import (
 
 // subscribe create a gNMI SubscribeClient for the given query.
 func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.SubscriptionList_Mode) (_ gpb.GNMI_SubscribeClient, rerr error) {
-	path, _, errs := ygot.ResolvePath(q.pathStruct())
-	if len(errs) > 0 {
-		l := errlist.List{}
-		l.Add(errs...)
-		return nil, l.Err()
+	path, err := resolvePath(q)
+	if err != nil {
+		return nil, err
 	}
 
 	sub, err := c.gnmiC.Subscribe(ctx)
@@ -47,11 +44,6 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 		return nil, fmt.Errorf("gNMI failed to Subscribe: %w", err)
 	}
 	defer closer.Close(&rerr, sub.CloseSend, "error closing gNMI send stream")
-
-	// TODO: remove when fixed https://github.com/openconfig/ygot/issues/615
-	if len(path.Elem) > 0 && path.Elem[0].Name != "meta" {
-		path.Origin = "openconfig"
-	}
 
 	subs := []*gpb.Subscription{{
 		Path: &gpb.Path{
@@ -236,8 +228,8 @@ func receiveStream[T any](sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-ch
 
 // set configures the target at the query path.
 func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, op setOperation) (*gpb.SetResponse, *gpb.Path, error) {
-	path, _, errs := ygot.ResolvePath(q.pathStruct())
-	if err := errsToErr(errs); err != nil {
+	path, err := resolvePath[T](q)
+	if err != nil {
 		return nil, nil, err
 	}
 
@@ -341,4 +333,17 @@ func prettySetRequest(setRequest *gpb.SetRequest) string {
 		writeVal(update.Val)
 	}
 	return buf.String()
+}
+
+func resolvePath[T any](q AnyQuery[T]) (*gpb.Path, error) {
+	path, _, errs := ygot.ResolvePath(q.pathStruct())
+	if err := errsToErr(errs); err != nil {
+		return nil, err
+	}
+	// TODO: remove when fixed https://github.com/openconfig/ygot/issues/615
+	if len(path.Elem) > 0 && path.Elem[0].Name != "meta" {
+		path.Origin = "openconfig"
+	}
+
+	return path, nil
 }

@@ -243,6 +243,10 @@ func GNMIPath(t *testing.T, s string) *gpb.Path {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// TODO: remove when fixed https://github.com/openconfig/ygot/issues/615
+	if len(p.Elem) > 0 && p.Elem[0].Name != "meta" {
+		p.Origin = "openconfig"
+	}
 	return p
 }
 

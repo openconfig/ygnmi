@@ -118,11 +118,10 @@ func (c *ComplianceErrors) String() string {
 // Collect calls, the input data must be sorted in order of timestamps.
 //nolint:deadcode // TODO(DanG100) remove this once this func is used
 func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.ValidatedGoStruct) (*Value[T], error) {
-	queryPath, _, errs := ygot.ResolvePath(q.pathStruct())
-	if err := errsToErr(errs); err != nil {
+	queryPath, err := resolvePath(q)
+	if err != nil {
 		return nil, err
 	}
-
 	ret := &Value[T]{
 		Path: queryPath,
 	}
