@@ -163,17 +163,17 @@ func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (*Value[
 var ErrNotPresent = fmt.Errorf("value not present")
 
 // Get fetches the value of a SingletonQuery with a ONCE subscription,
-// returning an error if the value is not present.
+// returning an error that wraps ErrNotPresent if the value is not present.
 // Use Lookup to get metadata and tolerate non-present data.
 func Get[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (T, error) {
+	var zero T
 	val, err := Lookup(ctx, c, q)
 	if err != nil {
-		var zero T
 		return zero, err
 	}
 	ret, ok := val.Val()
 	if !ok {
-		return ret, fmt.Errorf("%w: at path %s", ErrNotPresent, val.Path.String())
+		return zero, fmt.Errorf("path %s: %w", val.Path.String(), ErrNotPresent)
 	}
 	return ret, nil
 }
@@ -286,6 +286,7 @@ func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]*Va
 }
 
 // GetAll fetches the value of a WildcardQuery with a ONCE subscription skipping any non-present paths.
+// It returns an error that wraps ErrNotPresent if no values were received.
 // Use LookupAll to also get metadata containing the returned paths.
 func GetAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]T, error) {
 	vals, err := LookupAll(ctx, c, q)
@@ -297,6 +298,9 @@ func GetAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]T, err
 		if v, ok := val.Val(); ok {
 			ret = append(ret, v)
 		}
+	}
+	if len(ret) == 0 {
+		return nil, fmt.Errorf("query %q: %w", q, ErrNotPresent)
 	}
 	return ret, nil
 }

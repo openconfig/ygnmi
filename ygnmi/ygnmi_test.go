@@ -1287,7 +1287,7 @@ func TestGetAll(t *testing.T) {
 		stub: func(s *testutil.Stubber) {
 			s.Sync()
 		},
-		wantVals:             []int64{},
+		wantErr:              ygnmi.ErrNotPresent.Error(),
 		wantSubscriptionPath: leafPath,
 	}}
 
