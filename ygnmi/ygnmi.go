@@ -257,7 +257,7 @@ type Collector[T any] struct {
 
 // Await waits for the collection to finish and returns all received values.
 // When Await returns the watcher is closed, and Await may not be called again.
-// Note: th func blocks until the context is cancelled.
+// Note: the func blocks until the context is cancelled.
 func (c *Collector[T]) Await() ([]*Value[T], error) {
 	_, err := c.w.Await()
 	return c.data, err
@@ -268,15 +268,14 @@ func (c *Collector[T]) Await() ([]*Value[T], error) {
 func Collect[T any](ctx context.Context, c *Client, q SingletonQuery[T]) *Collector[T] {
 	collect := &Collector[T]{}
 	collect.w = Watch(ctx, c, q, func(v *Value[T]) bool {
-		if q.isLeaf() {
-			collect.data = append(collect.data, v)
-		} else {
+		if !q.isLeaf() {
 			// https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md#why-not-permit-type-assertions-on-values-whose-type-is-a-type-parameter
 			gs, err := ygot.DeepCopy((interface{})(v.val).(ygot.GoStruct))
 			if err != nil {
 			}
-			collect.data = append(collect.data, v.SetVal(gs.(T)))
+			v.SetVal(gs.(T))
 		}
+		collect.data = append(collect.data, v)
 		return false
 	})
 	return collect
@@ -401,15 +400,14 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 func CollectAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) *Collector[T] {
 	collect := &Collector[T]{}
 	collect.w = WatchAll(ctx, c, q, func(v *Value[T]) bool {
-		if q.isLeaf() {
-			collect.data = append(collect.data, v)
-		} else {
+		if !q.isLeaf() {
 			// https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md#why-not-permit-type-assertions-on-values-whose-type-is-a-type-parameter
 			gs, err := ygot.DeepCopy((interface{})(v.val).(ygot.GoStruct))
 			if err != nil {
 			}
-			collect.data = append(collect.data, v.SetVal(gs.(T)))
+			v.SetVal(gs.(T))
 		}
+		collect.data = append(collect.data, v)
 		return false
 	})
 	return collect
