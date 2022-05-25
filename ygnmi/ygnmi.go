@@ -249,6 +249,28 @@ func Await[T any](ctx context.Context, c *Client, q SingletonQuery[T], val T) (*
 	return w.Await()
 }
 
+type Collector[T any] struct {
+	w    *Watcher[T]
+	data []T
+}
+
+func Collect[T any](ctx context.Context, c *Client, q SingletonQuery[T]) *Collector[T] {
+	collect := &Collector[T]{}
+	collect.w = Watch(ctx, c, q, func(v *Value[T]) bool {
+		if q.isLeaf() {
+			collect.data = append(collect.data, v.val)
+		} else {
+			// https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md#why-not-permit-type-assertions-on-values-whose-type-is-a-type-parameter
+			gs, err := ygot.DeepCopy((interface{})(v.val).(ygot.GoStruct))
+			if err != nil {
+			}
+			collect.data = append(collect.data, gs.(T))
+		}
+		return false
+	})
+	return collect
+}
+
 // LookupAll fetches the values of a WildcardQuery with a ONCE subscription.
 // It returns an empty list if no values are present at the path.
 func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]*Value[T], error) {
