@@ -18,6 +18,7 @@ package ygnmi
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/openconfig/ygot/ygot"
@@ -158,6 +159,25 @@ func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (*Value[
 	return val, nil
 }
 
+// ErrNotPresent is returned by Get when there are no a values at a path.
+var ErrNotPresent = fmt.Errorf("value not present")
+
+// Get fetches the value of a SingletonQuery with a ONCE subscription,
+// returning an error that wraps ErrNotPresent if the value is not present.
+// Use Lookup to get metadata and tolerate non-present data.
+func Get[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (T, error) {
+	var zero T
+	val, err := Lookup(ctx, c, q)
+	if err != nil {
+		return zero, err
+	}
+	ret, ok := val.Val()
+	if !ok {
+		return zero, fmt.Errorf("path %s: %w", val.Path.String(), ErrNotPresent)
+	}
+	return ret, nil
+}
+
 // Watcher represents an ongoing watch of telemetry values.
 type Watcher[T any] struct {
 	errCh      chan error
@@ -218,6 +238,17 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func
 	return w
 }
 
+// Await observes values at Query with a STREAM subscription,
+// blocking until a value that is deep equal to the specified val is received
+// or the context is cancelled. To wait for a generic predicate, or to make a
+// non-blocking call, use the Watch method instead.
+func Await[T any](ctx context.Context, c *Client, q SingletonQuery[T], val T) (*Value[T], error) {
+	w := Watch(ctx, c, q, func(v *Value[T]) bool {
+		return v.present && reflect.DeepEqual(v.val, val)
+	})
+	return w.Await()
+}
+
 // LookupAll fetches the values of a WildcardQuery with a ONCE subscription.
 // It returns an empty list if no values are present at the path.
 func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]*Value[T], error) {
@@ -252,6 +283,26 @@ func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]*Va
 		vals = append(vals, v)
 	}
 	return vals, nil
+}
+
+// GetAll fetches the value of a WildcardQuery with a ONCE subscription skipping any non-present paths.
+// It returns an error that wraps ErrNotPresent if no values were received.
+// Use LookupAll to also get metadata containing the returned paths.
+func GetAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]T, error) {
+	vals, err := LookupAll(ctx, c, q)
+	if err != nil {
+		return nil, err
+	}
+	ret := make([]T, 0, len(vals))
+	for _, val := range vals {
+		if v, ok := val.Val(); ok {
+			ret = append(ret, v)
+		}
+	}
+	if len(ret) == 0 {
+		return nil, fmt.Errorf("query %q: %w", q, ErrNotPresent)
+	}
+	return ret, nil
 }
 
 // WatchAll starts an asynchronous STREAM subscription, evaluating each observed value with the specified predicate.

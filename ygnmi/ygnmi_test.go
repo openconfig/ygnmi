@@ -426,6 +426,71 @@ func TestLookup(t *testing.T) {
 	}
 }
 
+func TestGet(t *testing.T) {
+	fakeGNMI, c := newClient(t)
+	leafPath := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
+	lq := root.New().RemoteContainer().ALeaf().State()
+
+	tests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		wantSubscriptionPath *gpb.Path
+		want                 string
+		wantVal              string
+		wantErr              string
+	}{{
+		desc: "value present",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: leafPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		wantSubscriptionPath: leafPath,
+		wantVal:              "foo",
+	}, {
+		desc: "value not present",
+		stub: func(s *testutil.Stubber) {
+			s.Sync()
+		},
+		wantSubscriptionPath: leafPath,
+		wantErr:              "value not present",
+	}, {
+		desc: "error nil update",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 101,
+				Update: []*gpb.Update{{
+					Path: leafPath,
+					Val:  nil,
+				}},
+			}).Sync()
+		},
+		wantErr: "invalid nil Val",
+	}}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			got, err := ygnmi.Get(context.Background(), c, lq)
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Get(ctx, c, %v) returned unexpected diff: %s", lq, diff)
+			}
+			if err != nil {
+				return
+			}
+			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
+
+			if diff := cmp.Diff(tt.wantVal, got); diff != "" {
+				t.Errorf("Get(ctx, c, %v) returned unexpected diff (-want,+got):\n %s", lq, diff)
+			}
+		})
+	}
+}
+
 func TestWatch(t *testing.T) {
 	fakeGNMI, client := newClient(t)
 	path := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
@@ -802,6 +867,153 @@ func TestWatch(t *testing.T) {
 	}
 }
 
+func TestAwait(t *testing.T) {
+	fakeGNMI, client := newClient(t)
+	path := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
+	lq := root.New().RemoteContainer().ALeaf().State()
+
+	startTime := time.Now()
+	tests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		dur                  time.Duration
+		wantSubscriptionPath *gpb.Path
+		wantVal              *ygnmi.Value[string]
+		wantErr              string
+	}{{
+		desc: "value never equal",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+				}},
+			}).Sync()
+		},
+		dur:                  time.Second,
+		wantSubscriptionPath: path,
+		wantErr:              "EOF",
+	}, {
+		desc: "success",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		dur:                  time.Second,
+		wantSubscriptionPath: path,
+		wantVal: (&ygnmi.Value[string]{
+			Timestamp: startTime,
+			Path:      path,
+		}).SetVal("foo"),
+	}}
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			ctx, cancel := context.WithTimeout(context.Background(), tt.dur)
+			defer cancel()
+			val, err := ygnmi.Await(ctx, client, lq, "foo")
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Await() returned unexpected diff: %s", diff)
+			}
+			if err != nil {
+				return
+			}
+			if val != nil {
+				checkJustReceived(t, val.RecvTimestamp)
+				tt.wantVal.RecvTimestamp = val.RecvTimestamp
+			}
+			if diff := cmp.Diff(tt.wantVal, val, cmp.AllowUnexported(ygnmi.Value[string]{}), protocmp.Transform()); diff != "" {
+				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
+			}
+		})
+	}
+
+	rootPath := testutil.GNMIPath(t, "parent/child")
+	strPath := testutil.GNMIPath(t, "parent/child/state/one")
+	enumPath := testutil.GNMIPath(t, "parent/child/state/three")
+	startTime = time.Now()
+	nonLeafQuery := root.New().Parent().Child().State()
+
+	nonLeafTests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		wantSubscriptionPath *gpb.Path
+		wantLastVal          *ygnmi.Value[*exampleoc.Parent_Child]
+		wantErr              string
+	}{{
+		desc: "value never equal",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: strPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+				}},
+			}).Sync()
+		},
+		wantErr:              "EOF",
+		wantSubscriptionPath: rootPath,
+		wantLastVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+			Timestamp: startTime,
+			Path:      rootPath,
+		}).SetVal(&exampleoc.Parent_Child{
+			One: ygot.String("bar"),
+		}),
+	}, {
+		desc: "success",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: strPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+				Update: []*gpb.Update{{
+					Path: enumPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "ONE"}},
+				}},
+			})
+		},
+		wantSubscriptionPath: rootPath,
+		wantLastVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+			Timestamp: startTime.Add(time.Millisecond),
+			Path:      rootPath,
+		}).SetVal(&exampleoc.Parent_Child{
+			Three: exampleoc.Child_Three_ONE,
+			One:   ygot.String("foo"),
+		}),
+	}}
+
+	for _, tt := range nonLeafTests {
+		t.Run("nonleaf "+tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			val, err := ygnmi.Await(context.Background(), client, nonLeafQuery, &exampleoc.Parent_Child{One: ygot.String("foo"), Three: exampleoc.Child_Three_ONE})
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Await() returned unexpected diff: %s", diff)
+			}
+			if err != nil {
+				return
+			}
+			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
+			if val != nil {
+				checkJustReceived(t, val.RecvTimestamp)
+				tt.wantLastVal.RecvTimestamp = val.RecvTimestamp
+			}
+			if diff := cmp.Diff(tt.wantLastVal, val, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Parent_Child]{}), protocmp.Transform()); diff != "" {
+				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
+			}
+		})
+	}
+}
+
 func TestLookupAll(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 	leafPath := testutil.GNMIPath(t, "model/a/single-key[key=*]/state/value")
@@ -1040,6 +1252,57 @@ func TestLookupAll(t *testing.T) {
 				checkJustReceived(t, val.RecvTimestamp)
 			}
 			if diff := cmp.Diff(tt.wantVals, got, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Model_SingleKey]{}), cmpopts.IgnoreFields(ygnmi.Value[*exampleoc.Model_SingleKey]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
+				t.Errorf("LookupAll() returned unexpected diff (-want,+got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestGetAll(t *testing.T) {
+	fakeGNMI, c := newClient(t)
+	leafPath := testutil.GNMIPath(t, "model/a/single-key[key=*]/state/value")
+	lq := root.New().Model().SingleKeyAny().Value().State()
+
+	tests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		wantSubscriptionPath *gpb.Path
+		wantVals             []int64
+		wantErr              string
+	}{{
+		desc: "success",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: testutil.GNMIPath(t, "model/a/single-key[key=10]/state/value"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 10}},
+				}},
+			}).Sync()
+		},
+		wantVals:             []int64{10},
+		wantSubscriptionPath: leafPath,
+	}, {
+		desc: "success no values",
+		stub: func(s *testutil.Stubber) {
+			s.Sync()
+		},
+		wantErr:              ygnmi.ErrNotPresent.Error(),
+		wantSubscriptionPath: leafPath,
+	}}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			got, err := ygnmi.GetAll(context.Background(), c, lq)
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("LookupAll(ctx, c, %v) returned unexpected diff: %s", lq, diff)
+			}
+			if err != nil {
+				return
+			}
+			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
+			if diff := cmp.Diff(tt.wantVals, got); diff != "" {
 				t.Errorf("LookupAll() returned unexpected diff (-want,+got):\n%s", diff)
 			}
 		})
