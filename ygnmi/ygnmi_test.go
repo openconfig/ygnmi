@@ -1014,6 +1014,168 @@ func TestAwait(t *testing.T) {
 	}
 }
 
+func TestCollect(t *testing.T) {
+	fakeGNMI, client := newClient(t)
+	path := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
+	lq := root.New().RemoteContainer().ALeaf().State()
+
+	startTime := time.Now()
+	tests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		dur                  time.Duration
+		wantSubscriptionPath *gpb.Path
+		wantVals             []*ygnmi.Value[string]
+		wantErr              string
+	}{{
+		desc: "no values",
+		stub: func(s *testutil.Stubber) {
+			s.Sync()
+		},
+		dur:                  time.Second,
+		wantSubscriptionPath: path,
+		wantErr:              "EOF",
+		wantVals: []*ygnmi.Value[string]{
+			(&ygnmi.Value[string]{
+				Path: path,
+			}),
+		},
+	}, {
+		desc: "multiple values",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+				Update: []*gpb.Update{{
+					Path: path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+				}},
+			})
+		},
+		dur:                  100 * time.Millisecond,
+		wantSubscriptionPath: path,
+		wantErr:              "EOF",
+		wantVals: []*ygnmi.Value[string]{
+			(&ygnmi.Value[string]{
+				Timestamp: startTime,
+				Path:      path,
+			}).SetVal("foo"),
+			(&ygnmi.Value[string]{
+				Timestamp: startTime.Add(time.Millisecond),
+				Path:      path,
+			}).SetVal("bar"),
+		},
+	}}
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			ctx, cancel := context.WithTimeout(context.Background(), tt.dur)
+			defer cancel()
+			vals, err := ygnmi.Collect(ctx, client, lq).Await()
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Await() returned unexpected diff: %s", diff)
+			}
+			for _, val := range vals {
+				checkJustReceived(t, val.RecvTimestamp)
+			}
+			if diff := cmp.Diff(tt.wantVals, vals, cmpopts.IgnoreFields(ygnmi.Value[string]{}, "RecvTimestamp"), cmp.AllowUnexported(ygnmi.Value[string]{}), protocmp.Transform()); diff != "" {
+				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
+			}
+		})
+	}
+
+	rootPath := testutil.GNMIPath(t, "parent/child")
+	strPath := testutil.GNMIPath(t, "parent/child/state/one")
+	enumPath := testutil.GNMIPath(t, "parent/child/state/three")
+	startTime = time.Now()
+	nonLeafQuery := root.New().Parent().Child().State()
+
+	nonLeafTests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		wantSubscriptionPath *gpb.Path
+		wantVals             []*ygnmi.Value[*exampleoc.Parent_Child]
+		wantErr              string
+	}{{
+		desc: "one val",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: strPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+				}},
+			}).Sync()
+		},
+		wantErr:              "EOF",
+		wantSubscriptionPath: rootPath,
+		wantVals: []*ygnmi.Value[*exampleoc.Parent_Child]{
+			(&ygnmi.Value[*exampleoc.Parent_Child]{
+				Timestamp: startTime,
+				Path:      rootPath,
+			}).SetVal(&exampleoc.Parent_Child{
+				One: ygot.String("bar"),
+			}),
+		},
+	}, {
+		desc: "multiple values",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: strPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+				Update: []*gpb.Update{{
+					Path: enumPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "ONE"}},
+				}},
+			})
+		},
+		wantErr:              "EOF",
+		wantSubscriptionPath: rootPath,
+		wantVals: []*ygnmi.Value[*exampleoc.Parent_Child]{
+			(&ygnmi.Value[*exampleoc.Parent_Child]{
+				Timestamp: startTime,
+				Path:      rootPath,
+			}).SetVal(&exampleoc.Parent_Child{
+				One: ygot.String("foo"),
+			}),
+			(&ygnmi.Value[*exampleoc.Parent_Child]{
+				Timestamp: startTime.Add(time.Millisecond),
+				Path:      rootPath,
+			}).SetVal(&exampleoc.Parent_Child{
+				Three: exampleoc.Child_Three_ONE,
+				One:   ygot.String("foo"),
+			}),
+		},
+	}}
+
+	for _, tt := range nonLeafTests {
+		t.Run("nonleaf "+tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			vals, err := ygnmi.Collect(context.Background(), client, nonLeafQuery).Await()
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Errorf("Await() returned unexpected diff: %s", diff)
+			}
+			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
+			for _, val := range vals {
+				checkJustReceived(t, val.RecvTimestamp)
+			}
+			if diff := cmp.Diff(tt.wantVals, vals, cmpopts.IgnoreFields(ygnmi.Value[*exampleoc.Parent_Child]{}, "RecvTimestamp"), cmp.AllowUnexported(ygnmi.Value[*exampleoc.Parent_Child]{}), protocmp.Transform()); diff != "" {
+				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
+			}
+		})
+	}
+}
+
 func TestLookupAll(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 	leafPath := testutil.GNMIPath(t, "model/a/single-key[key=*]/state/value")
@@ -1595,6 +1757,156 @@ func TestWatchAll(t *testing.T) {
 				tt.wantLastVal.RecvTimestamp = val.RecvTimestamp
 			}
 			if diff := cmp.Diff(tt.wantLastVal, val, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Model_SingleKey]{}), protocmp.Transform()); diff != "" {
+				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestCollectAll(t *testing.T) {
+	fakeGNMI, client := newClient(t)
+	leafQueryPath := testutil.GNMIPath(t, "model/a/single-key[key=*]/state/value")
+	key10Path := testutil.GNMIPath(t, "model/a/single-key[key=10]/state/value")
+	key11Path := testutil.GNMIPath(t, "model/a/single-key[key=11]/state/value")
+
+	startTime := time.Now()
+	lq := root.New().Model().SingleKeyAny().Value().State()
+	tests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		dur                  time.Duration
+		wantSubscriptionPath *gpb.Path
+		wantVals             []*ygnmi.Value[int64]
+		wantErr              string
+	}{{
+		desc: "no values",
+		dur:  time.Second,
+		stub: func(s *testutil.Stubber) {
+			s.Sync()
+		},
+		wantErr:              "EOF",
+		wantSubscriptionPath: leafQueryPath,
+		wantVals:             nil,
+	}, {
+		desc: "multiple values",
+		dur:  time.Second,
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: key10Path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 100}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+				Update: []*gpb.Update{{
+					Path: key11Path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 101}},
+				}},
+			})
+		},
+		wantErr:              "EOF",
+		wantSubscriptionPath: leafQueryPath,
+		wantVals: []*ygnmi.Value[int64]{
+			(&ygnmi.Value[int64]{
+				Timestamp: startTime,
+				Path:      key10Path,
+			}).SetVal(100),
+			(&ygnmi.Value[int64]{
+				Timestamp: startTime.Add(time.Millisecond),
+				Path:      key11Path,
+			}).SetVal(101),
+		},
+	}}
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			ctx, cancel := context.WithTimeout(context.Background(), tt.dur)
+			defer cancel()
+
+			vals, err := ygnmi.CollectAll(ctx, client, lq).Await()
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Await() returned unexpected diff: %s", diff)
+			}
+			for _, val := range vals {
+				checkJustReceived(t, val.RecvTimestamp)
+			}
+			if diff := cmp.Diff(tt.wantVals, vals, cmpopts.IgnoreFields(ygnmi.Value[int64]{}, "RecvTimestamp"), cmp.AllowUnexported(ygnmi.Value[int64]{}), protocmp.Transform()); diff != "" {
+				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
+			}
+		})
+	}
+
+	nonLeafPath := testutil.GNMIPath(t, "model/a/single-key[key=*]")
+	nonLeafKey10Path := testutil.GNMIPath(t, "model/a/single-key[key=10]")
+	nonLeafKey11Path := testutil.GNMIPath(t, "model/a/single-key[key=11]")
+
+	nonLeafQ := root.New().Model().SingleKeyAny().State()
+	nonLeafTests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		dur                  time.Duration
+		wantSubscriptionPath *gpb.Path
+		wantVals             []*ygnmi.Value[*exampleoc.Model_SingleKey]
+		wantErr              string
+	}{{
+		desc: "no values",
+		dur:  time.Second,
+		stub: func(s *testutil.Stubber) {
+			s.Sync()
+		},
+		wantSubscriptionPath: nonLeafPath,
+		wantVals:             nil,
+		wantErr:              "EOF",
+	}, {
+		desc: "multiple values",
+		dur:  time.Second,
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: key10Path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 100}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+				Update: []*gpb.Update{{
+					Path: key11Path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 101}},
+				}},
+			})
+		},
+		wantSubscriptionPath: nonLeafPath,
+		wantErr:              "EOF",
+		wantVals: []*ygnmi.Value[*exampleoc.Model_SingleKey]{
+			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+				Timestamp: startTime,
+				Path:      nonLeafKey10Path,
+			}).SetVal(&exampleoc.Model_SingleKey{
+				Value: ygot.Int64(100),
+			}),
+			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+				Timestamp: startTime.Add(time.Millisecond),
+				Path:      nonLeafKey11Path,
+			}).SetVal(&exampleoc.Model_SingleKey{
+				Value: ygot.Int64(101),
+			}),
+		},
+	}}
+	for _, tt := range nonLeafTests {
+		t.Run("nonLeaf "+tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			ctx, cancel := context.WithTimeout(context.Background(), tt.dur)
+			defer cancel()
+
+			vals, err := ygnmi.CollectAll(ctx, client, nonLeafQ).Await()
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Await() returned unexpected diff: %s", diff)
+			}
+			for _, val := range vals {
+				checkJustReceived(t, val.RecvTimestamp)
+			}
+			if diff := cmp.Diff(tt.wantVals, vals, cmpopts.IgnoreFields(ygnmi.Value[*exampleoc.Model_SingleKey]{}, "RecvTimestamp"), cmp.AllowUnexported(ygnmi.Value[*exampleoc.Model_SingleKey]{}), protocmp.Transform()); diff != "" {
 				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
 			}
 		})

@@ -249,22 +249,33 @@ func Await[T any](ctx context.Context, c *Client, q SingletonQuery[T], val T) (*
 	return w.Await()
 }
 
+// Collector represents an ongoing collection of telemetry values.
 type Collector[T any] struct {
 	w    *Watcher[T]
-	data []T
+	data []*Value[T]
 }
 
+// Await waits for the collection to finish and returns all received values.
+// When Await returns the watcher is closed, and Await may not be called again.
+// Note: th func blocks until the context is cancelled.
+func (c *Collector[T]) Await() ([]*Value[T], error) {
+	_, err := c.w.Await()
+	return c.data, err
+}
+
+// Collect starts an asynchronous collection of the values at the query with a STREAM subscription.
+// Calling Await on the return Collection waits until the context is cancelled to elapse and returns the collected values.
 func Collect[T any](ctx context.Context, c *Client, q SingletonQuery[T]) *Collector[T] {
 	collect := &Collector[T]{}
 	collect.w = Watch(ctx, c, q, func(v *Value[T]) bool {
 		if q.isLeaf() {
-			collect.data = append(collect.data, v.val)
+			collect.data = append(collect.data, v)
 		} else {
 			// https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md#why-not-permit-type-assertions-on-values-whose-type-is-a-type-parameter
 			gs, err := ygot.DeepCopy((interface{})(v.val).(ygot.GoStruct))
 			if err != nil {
 			}
-			collect.data = append(collect.data, gs.(T))
+			collect.data = append(collect.data, v.SetVal(gs.(T)))
 		}
 		return false
 	})
@@ -383,6 +394,25 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 		}
 	}()
 	return w
+}
+
+// Collect starts an asynchronous collection of the values at the query with a STREAM subscription.
+// Calling Await on the return Collection waits until the context is cancelled to elapse and returns the collected values.
+func CollectAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) *Collector[T] {
+	collect := &Collector[T]{}
+	collect.w = WatchAll(ctx, c, q, func(v *Value[T]) bool {
+		if q.isLeaf() {
+			collect.data = append(collect.data, v)
+		} else {
+			// https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md#why-not-permit-type-assertions-on-values-whose-type-is-a-type-parameter
+			gs, err := ygot.DeepCopy((interface{})(v.val).(ygot.GoStruct))
+			if err != nil {
+			}
+			collect.data = append(collect.data, v.SetVal(gs.(T)))
+		}
+		return false
+	})
+	return collect
 }
 
 // Update updates the configuration at the given query path with the val.
