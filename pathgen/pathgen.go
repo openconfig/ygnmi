@@ -315,7 +315,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 		if es != nil {
 			errs = util.AppendErrs(errs, es)
 		}
-		if builder, ok := extraPerDir[directory.Name]; ok {
+		if builder, ok := extraPerDir[directory.Path]; ok {
 			structSnippet[0].ExtraGeneration = builder.String()
 		}
 
