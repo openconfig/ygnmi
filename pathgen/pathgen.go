@@ -291,7 +291,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 			extraPerDir[nodeDataMap[psName].DirectoryName] = &strings.Builder{}
 		}
 		for _, gen := range cg.ExtraGenerators {
-			extra, err := gen(psName, ir.Directories[nodeDataMap[psName].YANGPath], nodeDataMap[psName])
+			extra, err := gen(psName, ir.Directories[nodeDataMap[psName].DirectoryName], nodeDataMap[psName])
 			if err != nil {
 				errs = util.AppendErr(errs, err)
 			}
@@ -701,7 +701,7 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 				YANGTypeName:          "",
 				YANGPath:              "/",
 				GoPathPackageName:     goPackageName(dir.RootElementModule, splitByModule, trimOCPackage, true, packageName, packageSuffix),
-				DirectoryName:         dir.Name,
+				DirectoryName:         dir.Path,
 			}
 		}
 
@@ -756,10 +756,11 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 				YANGTypeName:          yangTypeName,
 				YANGPath:              field.YANGDetails.Path,
 				GoPathPackageName:     goPackageName(field.YANGDetails.RootElementModule, splitByModule, trimOCPackage, false, packageName, packageSuffix),
-				DirectoryName:         subsumingGoStructName,
+				DirectoryName:         field.YANGDetails.Path,
 			}
 			if isLeaf {
 				nodeDataMap[pathStructName].YANGFieldName = fieldName
+				nodeDataMap[pathStructName].DirectoryName = dir.Path
 			}
 		}
 	}
