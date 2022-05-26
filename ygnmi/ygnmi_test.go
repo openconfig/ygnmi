@@ -629,7 +629,7 @@ func TestWatch(t *testing.T) {
 			i := 0
 			ctx, cancel := context.WithTimeout(context.Background(), tt.dur)
 			defer cancel()
-			w := ygnmi.Watch(ctx, client, lq, func(v *ygnmi.Value[string]) bool {
+			w := ygnmi.Watch(ctx, client, lq, func(v *ygnmi.Value[string]) error {
 				if i > len(tt.wantVals) {
 					t.Fatalf("Predicate(%d) expected no more values but got: %+v", i, v)
 				}
@@ -638,7 +638,10 @@ func TestWatch(t *testing.T) {
 				}
 				val, present := v.Val()
 				i++
-				return present && val == "foo"
+				if present && val == "foo" {
+					return ygnmi.ErrPredicateDone
+				}
+				return nil
 			})
 			val, err := w.Await()
 			if i < len(tt.wantVals) {
@@ -659,7 +662,7 @@ func TestWatch(t *testing.T) {
 
 	t.Run("multiple awaits", func(t *testing.T) {
 		fakeGNMI.Stub().Sync()
-		w := ygnmi.Watch(context.Background(), client, root.New().RemoteContainer().ALeaf().State(), func(v *ygnmi.Value[string]) bool { return true })
+		w := ygnmi.Watch(context.Background(), client, root.New().RemoteContainer().ALeaf().State(), func(v *ygnmi.Value[string]) error { return ygnmi.ErrPredicateDone })
 		want := &ygnmi.Value[string]{
 			Path: path,
 		}
@@ -834,7 +837,7 @@ func TestWatch(t *testing.T) {
 	for _, tt := range nonLeafTests {
 		t.Run("nonleaf "+tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			w := ygnmi.Watch(context.Background(), client, nonLeafQuery, func(v *ygnmi.Value[*exampleoc.Parent_Child]) bool {
+			w := ygnmi.Watch(context.Background(), client, nonLeafQuery, func(v *ygnmi.Value[*exampleoc.Parent_Child]) error {
 				if len(tt.wantVals) == 0 {
 					t.Fatalf("Predicate expected no more values but got: %+v", v)
 				}
@@ -843,7 +846,10 @@ func TestWatch(t *testing.T) {
 				}
 				tt.wantVals = tt.wantVals[1:]
 				val, present := v.Val()
-				return present && val.One != nil && *val.One == "foo" && val.Three == exampleoc.Child_Three_ONE
+				if present && val.One != nil && *val.One == "foo" && val.Three == exampleoc.Child_Three_ONE {
+					return ygnmi.ErrPredicateDone
+				}
+				return nil
 			})
 			val, err := w.Await()
 			if len(tt.wantVals) > 0 {
@@ -1613,7 +1619,7 @@ func TestWatchAll(t *testing.T) {
 			defer cancel()
 			var key10Cond, key11Cond bool
 
-			w := ygnmi.WatchAll(ctx, client, lq, func(v *ygnmi.Value[int64]) bool {
+			w := ygnmi.WatchAll(ctx, client, lq, func(v *ygnmi.Value[int64]) error {
 				if i > len(tt.wantVals) {
 					t.Fatalf("Predicate(%d) expected no more values but got: %+v", i, v)
 				}
@@ -1624,7 +1630,10 @@ func TestWatchAll(t *testing.T) {
 				key10Cond = key10Cond || (present && proto.Equal(v.Path, key10Path) && val == 100)
 				key11Cond = key11Cond || (present && proto.Equal(v.Path, key11Path) && val == 101)
 				i++
-				return key10Cond && key11Cond
+				if key10Cond && key11Cond {
+					return ygnmi.ErrPredicateDone
+				}
+				return nil
 			})
 			val, err := w.Await()
 			if i < len(tt.wantVals) {
@@ -1732,7 +1741,7 @@ func TestWatchAll(t *testing.T) {
 			defer cancel()
 			var key10Cond, key11Cond bool
 
-			w := ygnmi.WatchAll(ctx, client, nonLeafQ, func(v *ygnmi.Value[*exampleoc.Model_SingleKey]) bool {
+			w := ygnmi.WatchAll(ctx, client, nonLeafQ, func(v *ygnmi.Value[*exampleoc.Model_SingleKey]) error {
 				if i > len(tt.wantVals) {
 					t.Fatalf("Predicate(%d) expected no more values but got: %+v", i, v)
 				}
@@ -1743,7 +1752,10 @@ func TestWatchAll(t *testing.T) {
 				key10Cond = key10Cond || (present && proto.Equal(v.Path, nonLeafKey10Path) && *val.Value == 100)
 				key11Cond = key11Cond || (present && proto.Equal(v.Path, nonLeafKey11Path) && *val.Value == 101)
 				i++
-				return key10Cond && key11Cond
+				if key10Cond && key11Cond {
+					return ygnmi.ErrPredicateDone
+				}
+				return nil
 			})
 			val, err := w.Await()
 			if i < len(tt.wantVals) {
