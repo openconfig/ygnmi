@@ -238,7 +238,7 @@ func addParents(e *yang.Entry) {
 }
 
 // mustPath converts a string to its path proto.
-func GNMIPath(t *testing.T, s string) *gpb.Path {
+func GNMIPath(t testing.TB, s string) *gpb.Path {
 	p, err := ygot.StringToStructuredPath(s)
 	if err != nil {
 		t.Fatal(err)
