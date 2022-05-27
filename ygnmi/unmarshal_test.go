@@ -1227,3 +1227,7 @@ func TestBundleDatapoints(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkUnmarshal(b *testing.B) {
+
+}
