@@ -639,9 +639,9 @@ func TestWatch(t *testing.T) {
 				val, present := v.Val()
 				i++
 				if present && val == "foo" {
-					return ygnmi.ErrPredicateDone
+					return nil
 				}
-				return nil
+				return ygnmi.Continue
 			})
 			val, err := w.Await()
 			if i < len(tt.wantVals) {
@@ -662,7 +662,7 @@ func TestWatch(t *testing.T) {
 
 	t.Run("multiple awaits", func(t *testing.T) {
 		fakeGNMI.Stub().Sync()
-		w := ygnmi.Watch(context.Background(), client, root.New().RemoteContainer().ALeaf().State(), func(v *ygnmi.Value[string]) error { return ygnmi.ErrPredicateDone })
+		w := ygnmi.Watch(context.Background(), client, root.New().RemoteContainer().ALeaf().State(), func(v *ygnmi.Value[string]) error { return nil })
 		want := &ygnmi.Value[string]{
 			Path: path,
 		}
@@ -847,9 +847,9 @@ func TestWatch(t *testing.T) {
 				tt.wantVals = tt.wantVals[1:]
 				val, present := v.Val()
 				if present && val.One != nil && *val.One == "foo" && val.Three == exampleoc.Child_Three_ONE {
-					return ygnmi.ErrPredicateDone
+					return nil
 				}
-				return nil
+				return ygnmi.Continue
 			})
 			val, err := w.Await()
 			if len(tt.wantVals) > 0 {
@@ -1631,9 +1631,9 @@ func TestWatchAll(t *testing.T) {
 				key11Cond = key11Cond || (present && proto.Equal(v.Path, key11Path) && val == 101)
 				i++
 				if key10Cond && key11Cond {
-					return ygnmi.ErrPredicateDone
+					return nil
 				}
-				return nil
+				return ygnmi.Continue
 			})
 			val, err := w.Await()
 			if i < len(tt.wantVals) {
@@ -1753,9 +1753,9 @@ func TestWatchAll(t *testing.T) {
 				key11Cond = key11Cond || (present && proto.Equal(v.Path, nonLeafKey11Path) && *val.Value == 101)
 				i++
 				if key10Cond && key11Cond {
-					return ygnmi.ErrPredicateDone
+					return nil
 				}
-				return nil
+				return ygnmi.Continue
 			})
 			val, err := w.Await()
 			if i < len(tt.wantVals) {

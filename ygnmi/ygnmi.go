@@ -163,8 +163,8 @@ func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (*Value[
 var (
 	// ErrNotPresent is returned by Get when there are no a values at a path.
 	ErrNotPresent = fmt.Errorf("value not present")
-	// ErrPredicateDone can be returned to indicate a successful exit of the predicate.
-	ErrPredicateDone = fmt.Errorf("predicate finished")
+	// Continue should returned by predicates to indicate the condition is not reached.
+	Continue = fmt.Errorf("condition not true")
 )
 
 // Get fetches the value of a SingletonQuery with a ONCE subscription,
@@ -198,14 +198,12 @@ func (w *Watcher[T]) Await() (*Value[T], error) {
 		return nil, fmt.Errorf("Await already called and Watcher is closed")
 	}
 	close(w.errCh)
-	if errors.Is(err, ErrPredicateDone) {
-		return w.lastVal, nil
-	}
 	return w.lastVal, err
 }
 
 // Watch starts an asynchronous STREAM subscription, evaluating each observed value with the specified predicate.
-// The subscription completes when either the predicate returns a non-nil error or the context is canceled.
+// The predicate must return ygnmi.Continue to continue the Watch. To stop the Watch, return nil for a success
+// or a non-nil error on failure. Watch can also be stopped by setting a deadline on or canceling the context.
 // Calling Await on the returned Watcher waits for the subscription to complete.
 // It returns the last observed value and a boolean that indicates whether that value satisfies the predicate.
 func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func(*Value[T]) error) *Watcher[T] {
@@ -232,7 +230,7 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func
 					return
 				}
 				w.lastVal = val
-				if err := pred(val); err != nil {
+				if err := pred(val); err == nil || !errors.Is(err, Continue) {
 					w.errCh <- err
 					return
 				}
@@ -252,9 +250,9 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func
 func Await[T any](ctx context.Context, c *Client, q SingletonQuery[T], val T) (*Value[T], error) {
 	w := Watch(ctx, c, q, func(v *Value[T]) error {
 		if v.present && reflect.DeepEqual(v.val, val) {
-			return ErrPredicateDone
+			return nil
 		}
-		return nil
+		return Continue
 	})
 	return w.Await()
 }
@@ -287,7 +285,7 @@ func Collect[T any](ctx context.Context, c *Client, q SingletonQuery[T]) *Collec
 			v.SetVal(gs.(T))
 		}
 		collect.data = append(collect.data, v)
-		return nil
+		return Continue
 	})
 	return collect
 }
@@ -349,7 +347,8 @@ func GetAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]T, err
 }
 
 // WatchAll starts an asynchronous STREAM subscription, evaluating each observed value with the specified predicate.
-// The subscription completes when either the predicate returns a non-nil error or the context is canceled.
+// The predicate must return ygnmi.Continue to continue the Watch. To stop the Watch, return nil for a success
+// or a non-nil error on failure. Watch can also be stopped by setting a deadline on or canceling the context.
 // Calling Await on the returned Watcher waits for the subscription to complete.
 // It returns the last observed value and a boolean that indicates whether that value satisfies the predicate.
 func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred func(*Value[T]) error) *Watcher[T] {
@@ -392,7 +391,7 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 						return
 					}
 					w.lastVal = val
-					if err := pred(val); err != nil {
+					if err := pred(val); err == nil || !errors.Is(err, Continue) {
 						w.errCh <- err
 						return
 					}
@@ -420,7 +419,7 @@ func CollectAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) *Coll
 			v.SetVal(gs.(T))
 		}
 		collect.data = append(collect.data, v)
-		return nil
+		return Continue
 	})
 	return collect
 }
