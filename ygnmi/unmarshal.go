@@ -116,7 +116,6 @@ func (c *ComplianceErrors) String() string {
 // NOTE: The datapoints are applied in order as they are in the input slice,
 // *NOT* in order of their timestamps. As such, in order to correctly support
 // Collect calls, the input data must be sorted in order of timestamps.
-//nolint:deadcode // TODO(DanG100) remove this once this func is used
 func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.ValidatedGoStruct) (*Value[T], error) {
 	queryPath, err := resolvePath(q)
 	if err != nil {

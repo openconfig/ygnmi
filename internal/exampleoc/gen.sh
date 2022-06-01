@@ -20,7 +20,8 @@ cd "$(dirname "$0")"
 go run ../../app/ygnmi generator \
   --base_import_path=github.com/openconfig/ygnmi/internal/exampleoc \
   ../../pathgen/testdata/yang/openconfig-simple.yang \
-  ../../pathgen/testdata/yang/openconfig-withlistval.yang
+  ../../pathgen/testdata/yang/openconfig-withlistval.yang \
+  ../../pathgen/testdata/yang/openconfig-nested.yang
 
 go install golang.org/x/tools/cmd/goimports@latest
 go install github.com/google/addlicense@latest
