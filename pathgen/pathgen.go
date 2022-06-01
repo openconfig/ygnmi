@@ -904,6 +904,8 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 	deps := map[string]bool{}
 	listBuilderAPIBufs := map[string]*strings.Builder{}
 
+	snippets := []GoPathStructCodeSnippet{}
+
 	goFieldNameMap := ygen.GoFieldNameMap(directory)
 	// Generate child constructor snippets for all fields of the node.
 	// Alphabetically order fields to produce deterministic output.
@@ -944,6 +946,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 		// to output their struct snippets somewhere, and here is
 		// convenient.
 		if field.Type == ygen.LeafNode || field.Type == ygen.LeafListNode {
+			var buf strings.Builder
 			leafTypeName, err := getFieldTypeName(directory, fName, goFieldName, directories, pathStructSuffix)
 			if err != nil {
 				errs = util.AppendErr(errs, err)
@@ -957,15 +960,21 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 					GenerateWildcardPaths:   generateWildcardPaths,
 				}
 				if unified {
-					if err := goUnifiedLeafPathStructTemplate.Execute(&structBuf, structData); err != nil {
+					if err := goUnifiedLeafPathStructTemplate.Execute(&buf, structData); err != nil {
 						errs = util.AppendErr(errs, err)
 					}
 				} else {
-					if err := goPathStructTemplate.Execute(&structBuf, structData); err != nil {
+					if err := goPathStructTemplate.Execute(&buf, structData); err != nil {
 						errs = util.AppendErr(errs, err)
 					}
 				}
 			}
+			snip := GoPathStructCodeSnippet{
+				PathStructName: structData.TypeName,
+				StructBase:     buf.String(),
+				Package:        goPackageName(directory.RootElementModule, splitByModule, trimOCPkg, directory.IsFakeRoot, pkgName, pkgSuffix),
+			}
+			snippets = append(snippets, snip)
 		}
 	}
 
@@ -981,7 +990,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 	for dep := range deps {
 		snippet.Deps = append(snippet.Deps, dep)
 	}
-	snippets := []GoPathStructCodeSnippet{snippet}
+	snippets = append(snippets, snippet)
 
 	for pkg, build := range listBuilderAPIBufs {
 		if code := build.String(); code != "" {

@@ -133,16 +133,6 @@ func (n *ParentPathAny) Config() ygnmi.WildcardQuery[*oc.Parent] {
 	)
 }
 
-// Parent_ChildPath represents the /openconfig-simple/parent/child YANG schema element.
-type Parent_ChildPath struct {
-	*ygot.NodePath
-}
-
-// Parent_ChildPathAny represents the wildcard version of the /openconfig-simple/parent/child YANG schema element.
-type Parent_ChildPathAny struct {
-	*ygot.NodePath
-}
-
 // Parent_Child_FourPath represents the /openconfig-simple/parent/child/state/four YANG schema element.
 type Parent_Child_FourPath struct {
 	parent ygot.PathStruct
@@ -151,100 +141,6 @@ type Parent_Child_FourPath struct {
 // Parent_Child_FourPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/four YANG schema element.
 type Parent_Child_FourPathAny struct {
 	parent ygot.PathStruct
-}
-
-// Parent_Child_OnePath represents the /openconfig-simple/parent/child/state/one YANG schema element.
-type Parent_Child_OnePath struct {
-	parent ygot.PathStruct
-}
-
-// Parent_Child_OnePathAny represents the wildcard version of the /openconfig-simple/parent/child/state/one YANG schema element.
-type Parent_Child_OnePathAny struct {
-	parent ygot.PathStruct
-}
-
-// Parent_Child_ThreePath represents the /openconfig-simple/parent/child/state/three YANG schema element.
-type Parent_Child_ThreePath struct {
-	parent ygot.PathStruct
-}
-
-// Parent_Child_ThreePathAny represents the wildcard version of the /openconfig-simple/parent/child/state/three YANG schema element.
-type Parent_Child_ThreePathAny struct {
-	parent ygot.PathStruct
-}
-
-// Parent_Child_TwoPath represents the /openconfig-simple/parent/child/state/two YANG schema element.
-type Parent_Child_TwoPath struct {
-	parent ygot.PathStruct
-}
-
-// Parent_Child_TwoPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/two YANG schema element.
-type Parent_Child_TwoPathAny struct {
-	parent ygot.PathStruct
-}
-
-// Four corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *Parent_ChildPath) Four() *Parent_Child_FourPath {
-	return &Parent_Child_FourPath{
-		parent: n,
-	}
-}
-
-// Four corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *Parent_ChildPathAny) Four() *Parent_Child_FourPathAny {
-	return &Parent_Child_FourPathAny{
-		parent: n,
-	}
-}
-
-// One corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *Parent_ChildPath) One() *Parent_Child_OnePath {
-	return &Parent_Child_OnePath{
-		parent: n,
-	}
-}
-
-// One corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *Parent_ChildPathAny) One() *Parent_Child_OnePathAny {
-	return &Parent_Child_OnePathAny{
-		parent: n,
-	}
-}
-
-// Three corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *Parent_ChildPath) Three() *Parent_Child_ThreePath {
-	return &Parent_Child_ThreePath{
-		parent: n,
-	}
-}
-
-// Three corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *Parent_ChildPathAny) Three() *Parent_Child_ThreePathAny {
-	return &Parent_Child_ThreePathAny{
-		parent: n,
-	}
-}
-
-// Two corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *Parent_ChildPath) Two() *Parent_Child_TwoPath {
-	return &Parent_Child_TwoPath{
-		parent: n,
-	}
-}
-
-// Two corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *Parent_ChildPathAny) Two() *Parent_Child_TwoPathAny {
-	return &Parent_Child_TwoPathAny{
-		parent: n,
-	}
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -733,14 +629,108 @@ func (n *Parent_Child_TwoPathAny) State() ygnmi.WildcardQuery[string] {
 	)
 }
 
-// RemoteContainerPath represents the /openconfig-simple/remote-container YANG schema element.
-type RemoteContainerPath struct {
+// Parent_Child_OnePath represents the /openconfig-simple/parent/child/state/one YANG schema element.
+type Parent_Child_OnePath struct {
+	parent ygot.PathStruct
+}
+
+// Parent_Child_OnePathAny represents the wildcard version of the /openconfig-simple/parent/child/state/one YANG schema element.
+type Parent_Child_OnePathAny struct {
+	parent ygot.PathStruct
+}
+
+// Parent_Child_ThreePath represents the /openconfig-simple/parent/child/state/three YANG schema element.
+type Parent_Child_ThreePath struct {
+	parent ygot.PathStruct
+}
+
+// Parent_Child_ThreePathAny represents the wildcard version of the /openconfig-simple/parent/child/state/three YANG schema element.
+type Parent_Child_ThreePathAny struct {
+	parent ygot.PathStruct
+}
+
+// Parent_Child_TwoPath represents the /openconfig-simple/parent/child/state/two YANG schema element.
+type Parent_Child_TwoPath struct {
+	parent ygot.PathStruct
+}
+
+// Parent_Child_TwoPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/two YANG schema element.
+type Parent_Child_TwoPathAny struct {
+	parent ygot.PathStruct
+}
+
+// Parent_ChildPath represents the /openconfig-simple/parent/child YANG schema element.
+type Parent_ChildPath struct {
 	*ygot.NodePath
 }
 
-// RemoteContainerPathAny represents the wildcard version of the /openconfig-simple/remote-container YANG schema element.
-type RemoteContainerPathAny struct {
+// Parent_ChildPathAny represents the wildcard version of the /openconfig-simple/parent/child YANG schema element.
+type Parent_ChildPathAny struct {
 	*ygot.NodePath
+}
+
+// Four corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *Parent_ChildPath) Four() *Parent_Child_FourPath {
+	return &Parent_Child_FourPath{
+		parent: n,
+	}
+}
+
+// Four corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *Parent_ChildPathAny) Four() *Parent_Child_FourPathAny {
+	return &Parent_Child_FourPathAny{
+		parent: n,
+	}
+}
+
+// One corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *Parent_ChildPath) One() *Parent_Child_OnePath {
+	return &Parent_Child_OnePath{
+		parent: n,
+	}
+}
+
+// One corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *Parent_ChildPathAny) One() *Parent_Child_OnePathAny {
+	return &Parent_Child_OnePathAny{
+		parent: n,
+	}
+}
+
+// Three corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *Parent_ChildPath) Three() *Parent_Child_ThreePath {
+	return &Parent_Child_ThreePath{
+		parent: n,
+	}
+}
+
+// Three corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *Parent_ChildPathAny) Three() *Parent_Child_ThreePathAny {
+	return &Parent_Child_ThreePathAny{
+		parent: n,
+	}
+}
+
+// Two corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *Parent_ChildPath) Two() *Parent_Child_TwoPath {
+	return &Parent_Child_TwoPath{
+		parent: n,
+	}
+}
+
+// Two corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *Parent_ChildPathAny) Two() *Parent_Child_TwoPathAny {
+	return &Parent_Child_TwoPathAny{
+		parent: n,
+	}
 }
 
 // RemoteContainer_ALeafPath represents the /openconfig-simple/remote-container/state/a-leaf YANG schema element.
@@ -751,22 +741,6 @@ type RemoteContainer_ALeafPath struct {
 // RemoteContainer_ALeafPathAny represents the wildcard version of the /openconfig-simple/remote-container/state/a-leaf YANG schema element.
 type RemoteContainer_ALeafPathAny struct {
 	parent ygot.PathStruct
-}
-
-// ALeaf corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *RemoteContainerPath) ALeaf() *RemoteContainer_ALeafPath {
-	return &RemoteContainer_ALeafPath{
-		parent: n,
-	}
-}
-
-// ALeaf corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *RemoteContainerPathAny) ALeaf() *RemoteContainer_ALeafPathAny {
-	return &RemoteContainer_ALeafPathAny{
-		parent: n,
-	}
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -955,4 +929,30 @@ func (n *RemoteContainer_ALeafPathAny) Config() ygnmi.WildcardQuery[string] {
 			Unmarshal:  oc.Unmarshal,
 		},
 	)
+}
+
+// RemoteContainerPath represents the /openconfig-simple/remote-container YANG schema element.
+type RemoteContainerPath struct {
+	*ygot.NodePath
+}
+
+// RemoteContainerPathAny represents the wildcard version of the /openconfig-simple/remote-container YANG schema element.
+type RemoteContainerPathAny struct {
+	*ygot.NodePath
+}
+
+// ALeaf corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *RemoteContainerPath) ALeaf() *RemoteContainer_ALeafPath {
+	return &RemoteContainer_ALeafPath{
+		parent: n,
+	}
+}
+
+// ALeaf corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *RemoteContainerPathAny) ALeaf() *RemoteContainer_ALeafPathAny {
+	return &RemoteContainer_ALeafPathAny{
+		parent: n,
+	}
 }

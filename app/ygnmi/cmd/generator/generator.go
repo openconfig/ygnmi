@@ -55,6 +55,7 @@ func New() *cobra.Command {
 	generator.Flags().String("output_dir", "", "The directory that the generated Go code should be written to. This directory is the base of the generated module packages. default (working dir)")
 	generator.Flags().Bool("generate_structs", true, "Generate structs and schema for YANG modules.")
 	generator.Flags().Int("structs_split_files_count", 1, "The number of files to split the generated schema structs into.")
+	generator.Flags().Int("pathstructs_split_files_count", 1, "The number of files to split the generated path structs into.")
 
 	return generator
 }
@@ -116,11 +117,25 @@ func generate(cmd *cobra.Command, args []string) error {
 	}
 
 	for packageName, code := range pathCode {
-		path := filepath.Join(viper.GetString("output_dir"), packageName, fmt.Sprintf("%s.go", packageName))
-		if err := os.MkdirAll(filepath.Join(viper.GetString("output_dir"), packageName), 0755); err != nil {
-			return fmt.Errorf("failed to create directory for package %q: %w", packageName, err)
+		if packageName == "root" {
+			path := filepath.Join(viper.GetString("output_dir"), packageName, fmt.Sprintf("%s.go", packageName))
+			if err := os.MkdirAll(filepath.Join(viper.GetString("output_dir"), packageName), 0755); err != nil {
+				return fmt.Errorf("failed to create directory for package %q: %w", packageName, err)
+			}
+			if err := ioutil.WriteFile(path, []byte(code.String()), 0644); err != nil {
+				return err
+			}
+			continue
 		}
-		if err := ioutil.WriteFile(path, []byte(code.String()), 0644); err != nil {
+		files, err := code.SplitFiles(viper.GetInt("pathstructs_split_files_count"))
+		if err != nil {
+			return err
+		}
+		outFiles := map[string]string{}
+		for i, f := range files {
+			outFiles[fmt.Sprintf("%s-%d.go", packageName, i)] = f
+		}
+		if err := writeFiles(filepath.Join(viper.GetString("output_dir"), packageName), outFiles); err != nil {
 			return err
 		}
 	}
@@ -217,6 +232,11 @@ func writeFiles(dir string, out map[string]string) error {
 	for filename, contents := range out {
 		if len(contents) == 0 {
 			continue
+		}
+		if dir != "" {
+			if err := os.MkdirAll(dir, 0755); err != nil {
+				return fmt.Errorf("failed to create directory %s: %w", dir, err)
+			}
 		}
 		fh := genutil.OpenFile(filepath.Join(dir, filename))
 		if fh == nil {
