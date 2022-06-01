@@ -272,7 +272,7 @@ func (c *Collector[T]) Await() ([]*Value[T], error) {
 }
 
 // Collect starts an asynchronous collection of the values at the query with a STREAM subscription.
-// Calling Await on the return Collection waits until the context is cancelled to elapse and returns the collected values.
+// Calling Await on the return Collection waits until the context is cancelled and returns the collected values.
 func Collect[T any](ctx context.Context, c *Client, q SingletonQuery[T]) *Collector[T] {
 	collect := &Collector[T]{}
 	collect.w = Watch(ctx, c, q, func(v *Value[T]) error {
