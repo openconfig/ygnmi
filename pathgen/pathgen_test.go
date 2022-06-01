@@ -2448,16 +2448,6 @@ type RootPath struct {
 func New() *RootPath {
 	return &RootPath{ygot.NewDeviceRootBase("")}
 }
-
-// LeafPath represents the /root-module/leaf YANG schema element.
-type LeafPath struct {
-	*ygot.NodePath
-}
-
-// LeafWithDefaultPath represents the /root-module/leaf-with-default YANG schema element.
-type LeafWithDefaultPath struct {
-	*ygot.NodePath
-}
 `
 
 	// wantFakeRootStructsWC is the expected structs for the root device
@@ -2471,26 +2461,6 @@ type RootPath struct {
 // New returns a new path object from which YANG paths can be constructed.
 func New() *RootPath {
 	return &RootPath{ygot.NewDeviceRootBase("")}
-}
-
-// LeafPath represents the /root-module/leaf YANG schema element.
-type LeafPath struct {
-	*ygot.NodePath
-}
-
-// LeafPathAny represents the wildcard version of the /root-module/leaf YANG schema element.
-type LeafPathAny struct {
-	*ygot.NodePath
-}
-
-// LeafWithDefaultPath represents the /root-module/leaf-with-default YANG schema element.
-type LeafWithDefaultPath struct {
-	*ygot.NodePath
-}
-
-// LeafWithDefaultPathAny represents the wildcard version of the /root-module/leaf-with-default YANG schema element.
-type LeafWithDefaultPathAny struct {
-	*ygot.NodePath
 }
 `
 )
@@ -2517,8 +2487,23 @@ func TestGenerateDirectorySnippet(t *testing.T) {
 		inPackageName:   "device",
 		inPackageSuffix: "path",
 		want: []GoPathStructCodeSnippet{{
+			PathStructName: "ContainerWithConfig_Leaflist",
+			StructBase: `
+// ContainerWithConfig_Leaflist represents the /root-module/container-with-config/state/leaflist YANG schema element.
+type ContainerWithConfig_Leaflist struct {
+	*ygot.NodePath
+}
+
+// ContainerWithConfig_LeaflistAny represents the wildcard version of the /root-module/container-with-config/state/leaflist YANG schema element.
+type ContainerWithConfig_LeaflistAny struct {
+	*ygot.NodePath
+}
+`,
+			ChildConstructors: ``,
+			Package:           "device",
+			ExtraGeneration:   "",
+		}, {
 			PathStructName: "ContainerWithConfig",
-			Package:        "device",
 			StructBase: `
 // ContainerWithConfig represents the /root-module/container-with-config YANG schema element.
 type ContainerWithConfig struct {
@@ -2527,16 +2512,6 @@ type ContainerWithConfig struct {
 
 // ContainerWithConfigAny represents the wildcard version of the /root-module/container-with-config YANG schema element.
 type ContainerWithConfigAny struct {
-	*ygot.NodePath
-}
-
-// ContainerWithConfig_Leaflist represents the /root-module/container-with-config/state/leaflist YANG schema element.
-type ContainerWithConfig_Leaflist struct {
-	*ygot.NodePath
-}
-
-// ContainerWithConfig_LeaflistAny represents the wildcard version of the /root-module/container-with-config/state/leaflist YANG schema element.
-type ContainerWithConfig_LeaflistAny struct {
 	*ygot.NodePath
 }
 `,
@@ -2561,18 +2536,25 @@ func (n *ContainerWithConfigAny) Leaflist() *ContainerWithConfig_LeaflistAny {
 	}
 }
 `,
+			Package:         "device",
+			ExtraGeneration: "",
 		}},
 		wantNoWildcard: []GoPathStructCodeSnippet{{
+			PathStructName: "ContainerWithConfig_Leaflist",
+			StructBase: `
+// ContainerWithConfig_Leaflist represents the /root-module/container-with-config/state/leaflist YANG schema element.
+type ContainerWithConfig_Leaflist struct {
+	*ygot.NodePath
+}
+`,
+			ChildConstructors: ``,
+			Package:           "device",
+			ExtraGeneration:   "",
+		}, {
 			PathStructName: "ContainerWithConfig",
-			Package:        "device",
 			StructBase: `
 // ContainerWithConfig represents the /root-module/container-with-config YANG schema element.
 type ContainerWithConfig struct {
-	*ygot.NodePath
-}
-
-// ContainerWithConfig_Leaflist represents the /root-module/container-with-config/state/leaflist YANG schema element.
-type ContainerWithConfig_Leaflist struct {
 	*ygot.NodePath
 }
 `,
@@ -2587,6 +2569,8 @@ func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
 	}
 }
 `,
+			Package:         "device",
+			ExtraGeneration: "",
 		}},
 	}, {
 		name:            "unified-container-with-config",
@@ -2595,8 +2579,23 @@ func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
 		inPackageSuffix: "path",
 		inUnifiedPath:   true,
 		want: []GoPathStructCodeSnippet{{
+			PathStructName: "ContainerWithConfig_Leaflist",
+			StructBase: `
+// ContainerWithConfig_Leaflist represents the /root-module/container-with-config/state/leaflist YANG schema element.
+type ContainerWithConfig_Leaflist struct {
+	parent ygot.PathStruct
+}
+
+// ContainerWithConfig_LeaflistAny represents the wildcard version of the /root-module/container-with-config/state/leaflist YANG schema element.
+type ContainerWithConfig_LeaflistAny struct {
+	parent ygot.PathStruct
+}
+`,
+			ChildConstructors: ``,
+			Package:           "device",
+			ExtraGeneration:   "",
+		}, {
 			PathStructName: "ContainerWithConfig",
-			Package:        "device",
 			StructBase: `
 // ContainerWithConfig represents the /root-module/container-with-config YANG schema element.
 type ContainerWithConfig struct {
@@ -2606,16 +2605,6 @@ type ContainerWithConfig struct {
 // ContainerWithConfigAny represents the wildcard version of the /root-module/container-with-config YANG schema element.
 type ContainerWithConfigAny struct {
 	*ygot.NodePath
-}
-
-// ContainerWithConfig_Leaflist represents the /root-module/container-with-config/state/leaflist YANG schema element.
-type ContainerWithConfig_Leaflist struct {
-	parent ygot.PathStruct
-}
-
-// ContainerWithConfig_LeaflistAny represents the wildcard version of the /root-module/container-with-config/state/leaflist YANG schema element.
-type ContainerWithConfig_LeaflistAny struct {
-	parent ygot.PathStruct
 }
 `,
 			ChildConstructors: `
@@ -2631,19 +2620,26 @@ func (n *ContainerWithConfigAny) Leaflist() *ContainerWithConfig_LeaflistAny {
 	}
 }
 `,
+			Package:         "device",
+			ExtraGeneration: "",
 		}},
 		wantNoWildcard: []GoPathStructCodeSnippet{{
+			PathStructName: "ContainerWithConfig_Leaflist",
+			StructBase: `
+// ContainerWithConfig_Leaflist represents the /root-module/container-with-config/state/leaflist YANG schema element.
+type ContainerWithConfig_Leaflist struct {
+	parent ygot.PathStruct
+}
+`,
+			ChildConstructors: ``,
+			Package:           "device",
+			ExtraGeneration:   "",
+		}, {
 			PathStructName: "ContainerWithConfig",
-			Package:        "device",
 			StructBase: `
 // ContainerWithConfig represents the /root-module/container-with-config YANG schema element.
 type ContainerWithConfig struct {
 	*ygot.NodePath
-}
-
-// ContainerWithConfig_Leaflist represents the /root-module/container-with-config/state/leaflist YANG schema element.
-type ContainerWithConfig_Leaflist struct {
-	parent ygot.PathStruct
 }
 `,
 			ChildConstructors: `
@@ -2653,6 +2649,8 @@ func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
 	}
 }
 `,
+			Package:         "device",
+			ExtraGeneration: "",
 		}},
 	}, {
 		name:               "fakeroot",
@@ -2661,6 +2659,38 @@ func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
 		inPackageName:      "ocpathstructs",
 		inPackageSuffix:    "path",
 		want: []GoPathStructCodeSnippet{{
+			PathStructName: "LeafPath",
+			StructBase: `
+// LeafPath represents the /root-module/leaf YANG schema element.
+type LeafPath struct {
+	*ygot.NodePath
+}
+
+// LeafPathAny represents the wildcard version of the /root-module/leaf YANG schema element.
+type LeafPathAny struct {
+	*ygot.NodePath
+}
+`,
+			ChildConstructors: ``,
+			Package:           "ocpathstructs",
+			ExtraGeneration:   "",
+		}, {
+			PathStructName: "LeafWithDefaultPath",
+			StructBase: `
+// LeafWithDefaultPath represents the /root-module/leaf-with-default YANG schema element.
+type LeafWithDefaultPath struct {
+	*ygot.NodePath
+}
+
+// LeafWithDefaultPathAny represents the wildcard version of the /root-module/leaf-with-default YANG schema element.
+type LeafWithDefaultPathAny struct {
+	*ygot.NodePath
+}
+`,
+			ChildConstructors: ``,
+			Package:           "ocpathstructs",
+			ExtraGeneration:   "",
+		}, {
 			PathStructName: "RootPath",
 			Package:        "ocpathstructs",
 			StructBase:     wantFakeRootStructsWC,
@@ -2687,9 +2717,31 @@ func (n *RootPath) ListWithState(Key float64) *ListWithStatePath {
 `,
 		}},
 		wantNoWildcard: []GoPathStructCodeSnippet{{
+			PathStructName: "LeafPath",
+			StructBase: `
+// LeafPath represents the /root-module/leaf YANG schema element.
+type LeafPath struct {
+	*ygot.NodePath
+}
+`,
+			ChildConstructors: ``,
+			Package:           "ocpathstructs",
+			ExtraGeneration:   "",
+		}, {
+			PathStructName: "LeafWithDefaultPath",
+			StructBase: `
+// LeafWithDefaultPath represents the /root-module/leaf-with-default YANG schema element.
+type LeafWithDefaultPath struct {
+	*ygot.NodePath
+}
+`,
+			ChildConstructors: ``,
+			Package:           "ocpathstructs",
+			ExtraGeneration:   "",
+		}, {
 			PathStructName: "RootPath",
 			Package:        "ocpathstructs",
-			StructBase:     wantFakeRootStructsNWC,
+			StructBase:     wantFakeRootStructsWC,
 			ChildConstructors: trimDocComments(wantNonListMethods+wantListMethodsNonWildcard) + `
 func (n *RootPath) ListWithState(Key float64) *ListWithStatePath {
 	return &ListWithStatePath{
@@ -2708,19 +2760,8 @@ func (n *RootPath) ListWithState(Key float64) *ListWithStatePath {
 		inPackageName:   "device",
 		inPackageSuffix: "path",
 		want: []GoPathStructCodeSnippet{{
-			PathStructName: "List",
-			Package:        "device",
+			PathStructName: "List_Key1",
 			StructBase: `
-// List represents the /root-module/list-container/list YANG schema element.
-type List struct {
-	*ygot.NodePath
-}
-
-// ListAny represents the wildcard version of the /root-module/list-container/list YANG schema element.
-type ListAny struct {
-	*ygot.NodePath
-}
-
 // List_Key1 represents the /root-module/list-container/list/key1 YANG schema element.
 type List_Key1 struct {
 	*ygot.NodePath
@@ -2730,7 +2771,13 @@ type List_Key1 struct {
 type List_Key1Any struct {
 	*ygot.NodePath
 }
-
+`,
+			ChildConstructors: ``,
+			Package:           "device",
+			ExtraGeneration:   "",
+		}, {
+			PathStructName: "List_Key2",
+			StructBase: `
 // List_Key2 represents the /root-module/list-container/list/key2 YANG schema element.
 type List_Key2 struct {
 	*ygot.NodePath
@@ -2740,7 +2787,13 @@ type List_Key2 struct {
 type List_Key2Any struct {
 	*ygot.NodePath
 }
-
+`,
+			ChildConstructors: ``,
+			Package:           "device",
+			ExtraGeneration:   "",
+		}, {
+			PathStructName: "List_UnionKey",
+			StructBase: `
 // List_UnionKey represents the /root-module/list-container/list/union-key YANG schema element.
 type List_UnionKey struct {
 	*ygot.NodePath
@@ -2748,6 +2801,22 @@ type List_UnionKey struct {
 
 // List_UnionKeyAny represents the wildcard version of the /root-module/list-container/list/union-key YANG schema element.
 type List_UnionKeyAny struct {
+	*ygot.NodePath
+}
+`,
+			ChildConstructors: ``,
+			Package:           "device",
+			ExtraGeneration:   "",
+		}, {
+			PathStructName: "List",
+			StructBase: `
+// List represents the /root-module/list-container/list YANG schema element.
+type List struct {
+	*ygot.NodePath
+}
+
+// ListAny represents the wildcard version of the /root-module/list-container/list YANG schema element.
+type ListAny struct {
 	*ygot.NodePath
 }
 `,
@@ -2812,28 +2881,47 @@ func (n *ListAny) UnionKey() *List_UnionKeyAny {
 	}
 }
 `,
+			Package:         "device",
+			ExtraGeneration: "",
 		}},
 		wantNoWildcard: []GoPathStructCodeSnippet{{
-			PathStructName: "List",
-			Package:        "device",
+			PathStructName: "List_Key1",
 			StructBase: `
-// List represents the /root-module/list-container/list YANG schema element.
-type List struct {
-	*ygot.NodePath
-}
-
 // List_Key1 represents the /root-module/list-container/list/key1 YANG schema element.
 type List_Key1 struct {
 	*ygot.NodePath
 }
-
+`,
+			ChildConstructors: ``,
+			Package:           "device",
+			ExtraGeneration:   "",
+		}, {
+			PathStructName: "List_Key2",
+			StructBase: `
 // List_Key2 represents the /root-module/list-container/list/key2 YANG schema element.
 type List_Key2 struct {
 	*ygot.NodePath
 }
-
+`,
+			ChildConstructors: ``,
+			Package:           "device",
+			ExtraGeneration:   "",
+		}, {
+			PathStructName: "List_UnionKey",
+			StructBase: `
 // List_UnionKey represents the /root-module/list-container/list/union-key YANG schema element.
 type List_UnionKey struct {
+	*ygot.NodePath
+}
+`,
+			ChildConstructors: ``,
+			Package:           "device",
+			ExtraGeneration:   "",
+		}, {
+			PathStructName: "List",
+			StructBase: `
+// List represents the /root-module/list-container/list YANG schema element.
+type List struct {
 	*ygot.NodePath
 }
 `,
@@ -2868,6 +2956,8 @@ func (n *List) UnionKey() *List_UnionKey {
 	}
 }
 `,
+			Package:         "device",
+			ExtraGeneration: "",
 		}},
 	}, {
 		name:               "fakeroot split by modules",
@@ -2877,6 +2967,28 @@ func (n *List) UnionKey() *List_UnionKey {
 		inPackageName:      "device",
 		inPackageSuffix:    "path",
 		wantNoWildcard: []GoPathStructCodeSnippet{{
+			PathStructName: "LeafPath",
+			StructBase: `
+// LeafPath represents the /root-module/leaf YANG schema element.
+type LeafPath struct {
+	*ygot.NodePath
+}
+`,
+			ChildConstructors: ``,
+			Package:           "device",
+			ExtraGeneration:   "",
+		}, {
+			PathStructName: "LeafWithDefaultPath",
+			StructBase: `
+// LeafWithDefaultPath represents the /root-module/leaf-with-default YANG schema element.
+type LeafWithDefaultPath struct {
+	*ygot.NodePath
+}
+`,
+			ChildConstructors: ``,
+			Package:           "device",
+			ExtraGeneration:   "",
+		}, {
 			PathStructName: "RootPath",
 			Package:        "device",
 			Deps:           []string{"rootmodulepath"},
@@ -2912,9 +3024,39 @@ func (n *RootPath) ListWithState(Key float64) *rootmodulepath.ListWithStatePath 
 		inPackageSuffix:           "path",
 		inListBuilderKeyThreshold: 1,
 		want: []GoPathStructCodeSnippet{{
-			Package:        "device",
+			PathStructName: "LeafPath",
+			StructBase: `
+// LeafPath represents the /root-module/leaf YANG schema element.
+type LeafPath struct {
+	*ygot.NodePath
+}
+
+// LeafPathAny represents the wildcard version of the /root-module/leaf YANG schema element.
+type LeafPathAny struct {
+	*ygot.NodePath
+}
+`,
+			ChildConstructors: ``,
+			Package:           "device",
+			ExtraGeneration:   "",
+		}, {
+			PathStructName: "LeafWithDefaultPath",
+			StructBase: `
+// LeafWithDefaultPath represents the /root-module/leaf-with-default YANG schema element.
+type LeafWithDefaultPath struct {
+	*ygot.NodePath
+}
+
+// LeafWithDefaultPathAny represents the wildcard version of the /root-module/leaf-with-default YANG schema element.
+type LeafWithDefaultPathAny struct {
+	*ygot.NodePath
+}
+`,
+			ChildConstructors: ``,
+			Package:           "device",
+			ExtraGeneration:   "",
+		}, {
 			PathStructName: "RootPath",
-			Deps:           []string{"rootmodulepath"},
 			StructBase:     wantFakeRootStructsWC,
 			ChildConstructors: trimDocComments(wantNonListMethodsSplitModule) + `
 func (n *RootPath) ListAny() *rootmodulepath.ListPathAny {
@@ -2937,9 +3079,12 @@ func (n *RootPath) ListWithStateAny() *rootmodulepath.ListWithStatePathAny {
 	}
 }
 `,
+			Package:         "device",
+			Deps:            []string{"rootmodulepath"},
+			ExtraGeneration: "",
 		}, {
 			PathStructName: "RootPath",
-			Package:        "rootmodulepath",
+			StructBase:     ``,
 			ChildConstructors: `
 func (n *ListPathAny) WithKey1(Key1 string) *ListPathAny {
 	ygot.ModifyKey(n.NodePath, "key1", Key1)
@@ -2961,6 +3106,8 @@ func (n *ListWithStatePathAny) WithKey(Key float64) *ListWithStatePathAny {
 	return n
 }
 `,
+			Package:         "rootmodulepath",
+			ExtraGeneration: "",
 		}},
 	}}
 
@@ -2976,7 +3123,7 @@ func (n *ListWithStatePathAny) WithKey(Key float64) *ListWithStatePathAny {
 					got[i].ChildConstructors = trimDocComments(s.ChildConstructors)
 				}
 				if diff := cmp.Diff(tt.want, got); diff != "" {
-					t.Errorf("func generateDirectorySnippet mismatch (-want, +got):\n%s", diff)
+					t.Errorf("func generateDirectorySnippet mismatch (-want, +got): %s\n", diff)
 				}
 			})
 		}
@@ -2992,7 +3139,7 @@ func (n *ListWithStatePathAny) WithKey(Key float64) *ListWithStatePathAny {
 					got[i].ChildConstructors = trimDocComments(s.ChildConstructors)
 				}
 				if diff := cmp.Diff(tt.wantNoWildcard, got); diff != "" {
-					t.Errorf("func generateDirectorySnippet mismatch (-want, +got):\n%s", diff)
+					t.Errorf("func generateDirectorySnippet mismatch (-want, +got):%s\n", diff)
 				}
 			})
 		}
