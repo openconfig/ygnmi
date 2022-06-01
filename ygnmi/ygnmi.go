@@ -17,6 +17,7 @@ package ygnmi
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"reflect"
 	"time"
@@ -159,8 +160,12 @@ func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (*Value[
 	return val, nil
 }
 
-// ErrNotPresent is returned by Get when there are no a values at a path.
-var ErrNotPresent = fmt.Errorf("value not present")
+var (
+	// ErrNotPresent is returned by Get when there are no a values at a path.
+	ErrNotPresent = fmt.Errorf("value not present")
+	// Continue should returned by predicates to indicate the condition is not reached.
+	Continue = fmt.Errorf("condition not true")
+)
 
 // Get fetches the value of a SingletonQuery with a ONCE subscription,
 // returning an error that wraps ErrNotPresent if the value is not present.
@@ -180,9 +185,8 @@ func Get[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (T, error) 
 
 // Watcher represents an ongoing watch of telemetry values.
 type Watcher[T any] struct {
-	errCh      chan error
-	lastVal    *Value[T]
-	predStatus bool
+	errCh   chan error
+	lastVal *Value[T]
 }
 
 // Await waits for the watch to finish and returns the last received value
@@ -198,10 +202,11 @@ func (w *Watcher[T]) Await() (*Value[T], error) {
 }
 
 // Watch starts an asynchronous STREAM subscription, evaluating each observed value with the specified predicate.
-// The subscription completes when either the predicate is true or the context is canceled.
+// The predicate must return ygnmi.Continue to continue the Watch. To stop the Watch, return nil for a success
+// or a non-nil error on failure. Watch can also be stopped by setting a deadline on or canceling the context.
 // Calling Await on the returned Watcher waits for the subscription to complete.
 // It returns the last observed value and a boolean that indicates whether that value satisfies the predicate.
-func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func(*Value[T]) bool) *Watcher[T] {
+func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func(*Value[T]) error) *Watcher[T] {
 	w := &Watcher[T]{
 		errCh: make(chan error, 1),
 	}
@@ -225,8 +230,8 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func
 					return
 				}
 				w.lastVal = val
-				if w.predStatus = pred(val); w.predStatus {
-					w.errCh <- nil
+				if err := pred(val); err == nil || !errors.Is(err, Continue) {
+					w.errCh <- err
 					return
 				}
 			case err := <-errCh:
@@ -243,10 +248,46 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func
 // or the context is cancelled. To wait for a generic predicate, or to make a
 // non-blocking call, use the Watch method instead.
 func Await[T any](ctx context.Context, c *Client, q SingletonQuery[T], val T) (*Value[T], error) {
-	w := Watch(ctx, c, q, func(v *Value[T]) bool {
-		return v.present && reflect.DeepEqual(v.val, val)
+	w := Watch(ctx, c, q, func(v *Value[T]) error {
+		if v.present && reflect.DeepEqual(v.val, val) {
+			return nil
+		}
+		return Continue
 	})
 	return w.Await()
+}
+
+// Collector represents an ongoing collection of telemetry values.
+type Collector[T any] struct {
+	w    *Watcher[T]
+	data []*Value[T]
+}
+
+// Await waits for the collection to finish and returns all received values.
+// When Await returns the watcher is closed, and Await may not be called again.
+// Note: the func blocks until the context is cancelled.
+func (c *Collector[T]) Await() ([]*Value[T], error) {
+	_, err := c.w.Await()
+	return c.data, err
+}
+
+// Collect starts an asynchronous collection of the values at the query with a STREAM subscription.
+// Calling Await on the return Collection waits until the context is cancelled and returns the collected values.
+func Collect[T any](ctx context.Context, c *Client, q SingletonQuery[T]) *Collector[T] {
+	collect := &Collector[T]{}
+	collect.w = Watch(ctx, c, q, func(v *Value[T]) error {
+		if !q.isLeaf() {
+			// https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md#why-not-permit-type-assertions-on-values-whose-type-is-a-type-parameter
+			gs, err := ygot.DeepCopy((interface{})(v.val).(ygot.GoStruct))
+			if err != nil {
+				return err
+			}
+			v.SetVal(gs.(T))
+		}
+		collect.data = append(collect.data, v)
+		return Continue
+	})
+	return collect
 }
 
 // LookupAll fetches the values of a WildcardQuery with a ONCE subscription.
@@ -306,10 +347,11 @@ func GetAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]T, err
 }
 
 // WatchAll starts an asynchronous STREAM subscription, evaluating each observed value with the specified predicate.
-// The subscription completes when either the predicate is true or the context is canceled.
+// The predicate must return ygnmi.Continue to continue the Watch. To stop the Watch, return nil for a success
+// or a non-nil error on failure. Watch can also be stopped by setting a deadline on or canceling the context.
 // Calling Await on the returned Watcher waits for the subscription to complete.
 // It returns the last observed value and a boolean that indicates whether that value satisfies the predicate.
-func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred func(*Value[T]) bool) *Watcher[T] {
+func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred func(*Value[T]) error) *Watcher[T] {
 	w := &Watcher[T]{
 		errCh: make(chan error, 1),
 	}
@@ -349,8 +391,8 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 						return
 					}
 					w.lastVal = val
-					if w.predStatus = pred(val); w.predStatus {
-						w.errCh <- nil
+					if err := pred(val); err == nil || !errors.Is(err, Continue) {
+						w.errCh <- err
 						return
 					}
 				}
@@ -361,6 +403,25 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 		}
 	}()
 	return w
+}
+
+// Collect starts an asynchronous collection of the values at the query with a STREAM subscription.
+// Calling Await on the return Collection waits until the context is cancelled to elapse and returns the collected values.
+func CollectAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) *Collector[T] {
+	collect := &Collector[T]{}
+	collect.w = WatchAll(ctx, c, q, func(v *Value[T]) error {
+		if !q.isLeaf() {
+			// https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md#why-not-permit-type-assertions-on-values-whose-type-is-a-type-parameter
+			gs, err := ygot.DeepCopy((interface{})(v.val).(ygot.GoStruct))
+			if err != nil {
+				return err
+			}
+			v.SetVal(gs.(T))
+		}
+		collect.data = append(collect.data, v)
+		return Continue
+	})
+	return collect
 }
 
 // Update updates the configuration at the given query path with the val.
