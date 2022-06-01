@@ -11,4 +11,4 @@ gen:
 	internal/exampleoc/gen.sh
 
 clean:
-	find internal/exampleoc -mindepth 1 -maxdepth 1 ! -name gen.go ! -name gen.sh -exec rm -r {} +
+	find internal/exampleoc -mindepth 1 -maxdepth 1 ! -name gen.go ! -name gen.sh -exec rm -r {} \+

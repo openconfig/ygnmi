@@ -61,9 +61,10 @@ func New() *cobra.Command {
 }
 
 const (
-	packageName = "root"
+	rootPackageName = "root"
 )
 
+// generate runs the ygnmi PathStruct and optionally the ygot GoStruct generation.
 func generate(cmd *cobra.Command, args []string) error {
 	if viper.Get("base_import_path") == "" {
 		return fmt.Errorf("base_import_path must be set")
@@ -79,7 +80,7 @@ func generate(cmd *cobra.Command, args []string) error {
 	version := "ygnmi version: " + cmd.Root().Version
 
 	pcg := pathgen.GenConfig{
-		PackageName: packageName,
+		PackageName: rootPackageName,
 		GoImports: pathgen.GoImports{
 			SchemaStructPkgPath: schemaStructPath,
 			YgotImportPath:      viper.GetString("ygot_path"),
@@ -117,7 +118,7 @@ func generate(cmd *cobra.Command, args []string) error {
 	}
 
 	for packageName, code := range pathCode {
-		if packageName == "root" {
+		if packageName == rootPackageName {
 			path := filepath.Join(viper.GetString("output_dir"), packageName, fmt.Sprintf("%s.go", packageName))
 			if err := os.MkdirAll(filepath.Join(viper.GetString("output_dir"), packageName), 0755); err != nil {
 				return fmt.Errorf("failed to create directory for package %q: %w", packageName, err)

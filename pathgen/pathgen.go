@@ -969,28 +969,28 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 					}
 				}
 			}
-			snip := GoPathStructCodeSnippet{
+			leafSnippet := GoPathStructCodeSnippet{
 				PathStructName: leafTypeName,
 				StructBase:     buf.String(),
 				Package:        goPackageName(directory.RootElementModule, splitByModule, trimOCPkg, directory.IsFakeRoot, pkgName, pkgSuffix),
 			}
-			snippets = append(snippets, snip)
+			snippets = append(snippets, leafSnippet)
 		}
 	}
 
 	if len(errs) == 0 {
 		errs = nil
 	}
-	snippet := GoPathStructCodeSnippet{
+	nonLeafSnippet := GoPathStructCodeSnippet{
 		PathStructName:    structData.TypeName,
 		StructBase:        structBuf.String(),
 		ChildConstructors: methodBuf.String(),
 		Package:           goPackageName(directory.RootElementModule, splitByModule, trimOCPkg, directory.IsFakeRoot, pkgName, pkgSuffix),
 	}
 	for dep := range deps {
-		snippet.Deps = append(snippet.Deps, dep)
+		nonLeafSnippet.Deps = append(nonLeafSnippet.Deps, dep)
 	}
-	snippets = append(snippets, snippet)
+	snippets = append(snippets, nonLeafSnippet)
 
 	for pkg, build := range listBuilderAPIBufs {
 		if code := build.String(); code != "" {
