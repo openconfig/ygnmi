@@ -17,16 +17,6 @@ import (
 	"github.com/openconfig/ygot/ytypes"
 )
 
-// AListPath represents the /enum-module/a-lists/a-list YANG schema element.
-type AListPath struct {
-	*ygot.NodePath
-}
-
-// AListPathAny represents the wildcard version of the /enum-module/a-lists/a-list YANG schema element.
-type AListPathAny struct {
-	*ygot.NodePath
-}
-
 // AList_ValuePath represents the /enum-module/a-lists/a-list/state/value YANG schema element.
 type AList_ValuePath struct {
 	*ygot.NodePath
@@ -34,6 +24,16 @@ type AList_ValuePath struct {
 
 // AList_ValuePathAny represents the wildcard version of the /enum-module/a-lists/a-list/state/value YANG schema element.
 type AList_ValuePathAny struct {
+	*ygot.NodePath
+}
+
+// AListPath represents the /enum-module/a-lists/a-list YANG schema element.
+type AListPath struct {
+	*ygot.NodePath
+}
+
+// AListPathAny represents the wildcard version of the /enum-module/a-lists/a-list YANG schema element.
+type AListPathAny struct {
 	*ygot.NodePath
 }
 
@@ -69,16 +69,6 @@ func (n *AListPathAny) Value() *AList_ValuePathAny {
 	}
 }
 
-// BListPath represents the /enum-module/b-lists/b-list YANG schema element.
-type BListPath struct {
-	*ygot.NodePath
-}
-
-// BListPathAny represents the wildcard version of the /enum-module/b-lists/b-list YANG schema element.
-type BListPathAny struct {
-	*ygot.NodePath
-}
-
 // BList_ValuePath represents the /enum-module/b-lists/b-list/state/value YANG schema element.
 type BList_ValuePath struct {
 	*ygot.NodePath
@@ -86,6 +76,16 @@ type BList_ValuePath struct {
 
 // BList_ValuePathAny represents the wildcard version of the /enum-module/b-lists/b-list/state/value YANG schema element.
 type BList_ValuePathAny struct {
+	*ygot.NodePath
+}
+
+// BListPath represents the /enum-module/b-lists/b-list YANG schema element.
+type BListPath struct {
+	*ygot.NodePath
+}
+
+// BListPathAny represents the wildcard version of the /enum-module/b-lists/b-list YANG schema element.
+type BListPathAny struct {
 	*ygot.NodePath
 }
 
@@ -121,16 +121,6 @@ func (n *BListPathAny) Value() *BList_ValuePathAny {
 	}
 }
 
-// CPath represents the /enum-module/c YANG schema element.
-type CPath struct {
-	*ygot.NodePath
-}
-
-// CPathAny represents the wildcard version of the /enum-module/c YANG schema element.
-type CPathAny struct {
-	*ygot.NodePath
-}
-
 // C_ClPath represents the /enum-module/c/cl YANG schema element.
 type C_ClPath struct {
 	*ygot.NodePath
@@ -138,6 +128,16 @@ type C_ClPath struct {
 
 // C_ClPathAny represents the wildcard version of the /enum-module/c/cl YANG schema element.
 type C_ClPathAny struct {
+	*ygot.NodePath
+}
+
+// CPath represents the /enum-module/c YANG schema element.
+type CPath struct {
+	*ygot.NodePath
+}
+
+// CPathAny represents the wildcard version of the /enum-module/c YANG schema element.
+type CPathAny struct {
 	*ygot.NodePath
 }
 
@@ -325,16 +325,6 @@ func (n *ParentPathAny) Child() *Parent_ChildPathAny {
 	}
 }
 
-// Parent_ChildPath represents the /enum-module/parent/child YANG schema element.
-type Parent_ChildPath struct {
-	*ygot.NodePath
-}
-
-// Parent_ChildPathAny represents the wildcard version of the /enum-module/parent/child YANG schema element.
-type Parent_ChildPathAny struct {
-	*ygot.NodePath
-}
-
 // Parent_Child_EnumPath represents the /enum-module/parent/child/state/enum YANG schema element.
 type Parent_Child_EnumPath struct {
 	*ygot.NodePath
@@ -372,6 +362,16 @@ type Parent_Child_InlineEnumPath struct {
 
 // Parent_Child_InlineEnumPathAny represents the wildcard version of the /enum-module/parent/child/state/inline-enum YANG schema element.
 type Parent_Child_InlineEnumPathAny struct {
+	*ygot.NodePath
+}
+
+// Parent_ChildPath represents the /enum-module/parent/child YANG schema element.
+type Parent_ChildPath struct {
+	*ygot.NodePath
+}
+
+// Parent_ChildPathAny represents the wildcard version of the /enum-module/parent/child YANG schema element.
+type Parent_ChildPathAny struct {
 	*ygot.NodePath
 }
 

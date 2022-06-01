@@ -102,16 +102,6 @@ func (n *ParentPathAny) Child() *Parent_ChildPathAny {
 	}
 }
 
-// Parent_ChildPath represents the /openconfig-simple/parent/child YANG schema element.
-type Parent_ChildPath struct {
-	*ygot.NodePath
-}
-
-// Parent_ChildPathAny represents the wildcard version of the /openconfig-simple/parent/child YANG schema element.
-type Parent_ChildPathAny struct {
-	*ygot.NodePath
-}
-
 // Parent_Child_FourPath represents the /openconfig-simple/parent/child/config/four YANG schema element.
 type Parent_Child_FourPath struct {
 	*ygot.NodePath
@@ -139,6 +129,16 @@ type Parent_Child_ThreePath struct {
 
 // Parent_Child_ThreePathAny represents the wildcard version of the /openconfig-simple/parent/child/config/three YANG schema element.
 type Parent_Child_ThreePathAny struct {
+	*ygot.NodePath
+}
+
+// Parent_ChildPath represents the /openconfig-simple/parent/child YANG schema element.
+type Parent_ChildPath struct {
+	*ygot.NodePath
+}
+
+// Parent_ChildPathAny represents the wildcard version of the /openconfig-simple/parent/child YANG schema element.
+type Parent_ChildPathAny struct {
 	*ygot.NodePath
 }
 
@@ -238,16 +238,6 @@ func (n *Parent_ChildPathAny) Three() *Parent_Child_ThreePathAny {
 	}
 }
 
-// RemoteContainerPath represents the /openconfig-simple/remote-container YANG schema element.
-type RemoteContainerPath struct {
-	*ygot.NodePath
-}
-
-// RemoteContainerPathAny represents the wildcard version of the /openconfig-simple/remote-container YANG schema element.
-type RemoteContainerPathAny struct {
-	*ygot.NodePath
-}
-
 // RemoteContainer_ALeafPath represents the /openconfig-simple/remote-container/config/a-leaf YANG schema element.
 type RemoteContainer_ALeafPath struct {
 	*ygot.NodePath
@@ -255,6 +245,16 @@ type RemoteContainer_ALeafPath struct {
 
 // RemoteContainer_ALeafPathAny represents the wildcard version of the /openconfig-simple/remote-container/config/a-leaf YANG schema element.
 type RemoteContainer_ALeafPathAny struct {
+	*ygot.NodePath
+}
+
+// RemoteContainerPath represents the /openconfig-simple/remote-container YANG schema element.
+type RemoteContainerPath struct {
+	*ygot.NodePath
+}
+
+// RemoteContainerPathAny represents the wildcard version of the /openconfig-simple/remote-container YANG schema element.
+type RemoteContainerPathAny struct {
 	*ygot.NodePath
 }
 

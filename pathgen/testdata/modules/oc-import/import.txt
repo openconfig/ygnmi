@@ -17,16 +17,6 @@ import (
 	"github.com/openconfig/ygot/ytypes"
 )
 
-// ChildPath represents the /openconfig-import/child YANG schema element.
-type ChildPath struct {
-	*ygot.NodePath
-}
-
-// ChildPathAny represents the wildcard version of the /openconfig-import/child YANG schema element.
-type ChildPathAny struct {
-	*ygot.NodePath
-}
-
 // Child_TestPath represents the /openconfig-import/child/test YANG schema element.
 type Child_TestPath struct {
 	*ygot.NodePath
@@ -34,6 +24,16 @@ type Child_TestPath struct {
 
 // Child_TestPathAny represents the wildcard version of the /openconfig-import/child/test YANG schema element.
 type Child_TestPathAny struct {
+	*ygot.NodePath
+}
+
+// ChildPath represents the /openconfig-import/child YANG schema element.
+type ChildPath struct {
+	*ygot.NodePath
+}
+
+// ChildPathAny represents the wildcard version of the /openconfig-import/child YANG schema element.
+type ChildPathAny struct {
 	*ygot.NodePath
 }
 

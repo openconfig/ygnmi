@@ -12,7 +12,6 @@ package ocstructs
 
 import (
 	"reflect"
-	oc "github.com/openconfig/ygot/ypathgen/testdata/exampleoc"
 	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygnmi/ygmni"
 	"github.com/openconfig/ygot/ytypes"

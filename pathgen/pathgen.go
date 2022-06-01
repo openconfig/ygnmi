@@ -970,7 +970,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 				}
 			}
 			snip := GoPathStructCodeSnippet{
-				PathStructName: structData.TypeName,
+				PathStructName: leafTypeName,
 				StructBase:     buf.String(),
 				Package:        goPackageName(directory.RootElementModule, splitByModule, trimOCPkg, directory.IsFakeRoot, pkgName, pkgSuffix),
 			}

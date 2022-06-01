@@ -59,16 +59,6 @@ func (n *DevicePath) Platform() *PlatformPath {
 	}
 }
 
-// DupEnumPath represents the /openconfig-unione/dup-enum YANG schema element.
-type DupEnumPath struct {
-	*ygot.NodePath
-}
-
-// DupEnumPathAny represents the wildcard version of the /openconfig-unione/dup-enum YANG schema element.
-type DupEnumPathAny struct {
-	*ygot.NodePath
-}
-
 // DupEnum_APath represents the /openconfig-unione/dup-enum/state/A YANG schema element.
 type DupEnum_APath struct {
 	*ygot.NodePath
@@ -86,6 +76,16 @@ type DupEnum_BPath struct {
 
 // DupEnum_BPathAny represents the wildcard version of the /openconfig-unione/dup-enum/state/B YANG schema element.
 type DupEnum_BPathAny struct {
+	*ygot.NodePath
+}
+
+// DupEnumPath represents the /openconfig-unione/dup-enum YANG schema element.
+type DupEnumPath struct {
+	*ygot.NodePath
+}
+
+// DupEnumPathAny represents the wildcard version of the /openconfig-unione/dup-enum YANG schema element.
+type DupEnumPathAny struct {
 	*ygot.NodePath
 }
 
@@ -195,16 +195,6 @@ func (n *PlatformPathAny) Component() *Platform_ComponentPathAny {
 	}
 }
 
-// Platform_ComponentPath represents the /openconfig-unione/platform/component YANG schema element.
-type Platform_ComponentPath struct {
-	*ygot.NodePath
-}
-
-// Platform_ComponentPathAny represents the wildcard version of the /openconfig-unione/platform/component YANG schema element.
-type Platform_ComponentPathAny struct {
-	*ygot.NodePath
-}
-
 // Platform_Component_E1Path represents the /openconfig-unione/platform/component/state/e1 YANG schema element.
 type Platform_Component_E1Path struct {
 	*ygot.NodePath
@@ -252,6 +242,16 @@ type Platform_Component_TypePath struct {
 
 // Platform_Component_TypePathAny represents the wildcard version of the /openconfig-unione/platform/component/state/type YANG schema element.
 type Platform_Component_TypePathAny struct {
+	*ygot.NodePath
+}
+
+// Platform_ComponentPath represents the /openconfig-unione/platform/component YANG schema element.
+type Platform_ComponentPath struct {
+	*ygot.NodePath
+}
+
+// Platform_ComponentPathAny represents the wildcard version of the /openconfig-unione/platform/component YANG schema element.
+type Platform_ComponentPathAny struct {
 	*ygot.NodePath
 }
 

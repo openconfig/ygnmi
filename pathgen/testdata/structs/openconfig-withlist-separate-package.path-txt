@@ -266,16 +266,6 @@ func (n *ModelAny) SingleKey(Key string) *Model_SingleKeyAny {
 	}
 }
 
-// Model_MultiKey represents the /openconfig-withlist/model/b/multi-key YANG schema element.
-type Model_MultiKey struct {
-	*ygot.NodePath
-}
-
-// Model_MultiKeyAny represents the wildcard version of the /openconfig-withlist/model/b/multi-key YANG schema element.
-type Model_MultiKeyAny struct {
-	*ygot.NodePath
-}
-
 // Model_MultiKey_Key1 represents the /openconfig-withlist/model/b/multi-key/state/key1 YANG schema element.
 type Model_MultiKey_Key1 struct {
 	*ygot.NodePath
@@ -293,6 +283,16 @@ type Model_MultiKey_Key2 struct {
 
 // Model_MultiKey_Key2Any represents the wildcard version of the /openconfig-withlist/model/b/multi-key/state/key2 YANG schema element.
 type Model_MultiKey_Key2Any struct {
+	*ygot.NodePath
+}
+
+// Model_MultiKey represents the /openconfig-withlist/model/b/multi-key YANG schema element.
+type Model_MultiKey struct {
+	*ygot.NodePath
+}
+
+// Model_MultiKeyAny represents the wildcard version of the /openconfig-withlist/model/b/multi-key YANG schema element.
+type Model_MultiKeyAny struct {
 	*ygot.NodePath
 }
 
@@ -360,16 +360,6 @@ func (n *Model_MultiKeyAny) Key2() *Model_MultiKey_Key2Any {
 	}
 }
 
-// Model_SingleKey represents the /openconfig-withlist/model/a/single-key YANG schema element.
-type Model_SingleKey struct {
-	*ygot.NodePath
-}
-
-// Model_SingleKeyAny represents the wildcard version of the /openconfig-withlist/model/a/single-key YANG schema element.
-type Model_SingleKeyAny struct {
-	*ygot.NodePath
-}
-
 // Model_SingleKey_Key represents the /openconfig-withlist/model/a/single-key/state/key YANG schema element.
 type Model_SingleKey_Key struct {
 	*ygot.NodePath
@@ -377,6 +367,16 @@ type Model_SingleKey_Key struct {
 
 // Model_SingleKey_KeyAny represents the wildcard version of the /openconfig-withlist/model/a/single-key/state/key YANG schema element.
 type Model_SingleKey_KeyAny struct {
+	*ygot.NodePath
+}
+
+// Model_SingleKey represents the /openconfig-withlist/model/a/single-key YANG schema element.
+type Model_SingleKey struct {
+	*ygot.NodePath
+}
+
+// Model_SingleKeyAny represents the wildcard version of the /openconfig-withlist/model/a/single-key YANG schema element.
+type Model_SingleKeyAny struct {
 	*ygot.NodePath
 }
 
