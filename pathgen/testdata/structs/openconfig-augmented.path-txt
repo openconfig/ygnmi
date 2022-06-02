@@ -61,16 +61,6 @@ func (n *Device) Target() *Target {
 	}
 }
 
-// Native represents the /openconfig-simple-target/native YANG schema element.
-type Native struct {
-	*ygot.NodePath
-}
-
-// NativeAny represents the wildcard version of the /openconfig-simple-target/native YANG schema element.
-type NativeAny struct {
-	*ygot.NodePath
-}
-
 // Native_A represents the /openconfig-simple-target/native/state/a YANG schema element.
 type Native_A struct {
 	*ygot.NodePath
@@ -88,6 +78,16 @@ type Native_B struct {
 
 // Native_BAny represents the wildcard version of the /openconfig-simple-target/native/state/b YANG schema element.
 type Native_BAny struct {
+	*ygot.NodePath
+}
+
+// Native represents the /openconfig-simple-target/native YANG schema element.
+type Native struct {
+	*ygot.NodePath
+}
+
+// NativeAny represents the wildcard version of the /openconfig-simple-target/native YANG schema element.
+type NativeAny struct {
 	*ygot.NodePath
 }
 
@@ -197,16 +197,6 @@ func (n *TargetAny) Foo() *Target_FooAny {
 	}
 }
 
-// Target_Foo represents the /openconfig-simple-target/target/foo YANG schema element.
-type Target_Foo struct {
-	*ygot.NodePath
-}
-
-// Target_FooAny represents the wildcard version of the /openconfig-simple-target/target/foo YANG schema element.
-type Target_FooAny struct {
-	*ygot.NodePath
-}
-
 // Target_Foo_A represents the /openconfig-simple-target/target/foo/state/a YANG schema element.
 type Target_Foo_A struct {
 	*ygot.NodePath
@@ -214,6 +204,16 @@ type Target_Foo_A struct {
 
 // Target_Foo_AAny represents the wildcard version of the /openconfig-simple-target/target/foo/state/a YANG schema element.
 type Target_Foo_AAny struct {
+	*ygot.NodePath
+}
+
+// Target_Foo represents the /openconfig-simple-target/target/foo YANG schema element.
+type Target_Foo struct {
+	*ygot.NodePath
+}
+
+// Target_FooAny represents the wildcard version of the /openconfig-simple-target/target/foo YANG schema element.
+type Target_FooAny struct {
 	*ygot.NodePath
 }
 

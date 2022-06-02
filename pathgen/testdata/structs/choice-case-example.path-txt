@@ -17,16 +17,6 @@ import (
 	"github.com/openconfig/ygot/ytypes"
 )
 
-// ChoiceCaseAnonymousCasePath represents the /choice-case-example/choice-case-anonymous-case YANG schema element.
-type ChoiceCaseAnonymousCasePath struct {
-	*ygot.NodePath
-}
-
-// ChoiceCaseAnonymousCasePathAny represents the wildcard version of the /choice-case-example/choice-case-anonymous-case YANG schema element.
-type ChoiceCaseAnonymousCasePathAny struct {
-	*ygot.NodePath
-}
-
 // ChoiceCaseAnonymousCase_APath represents the /choice-case-example/choice-case-anonymous-case/foo/a/a YANG schema element.
 type ChoiceCaseAnonymousCase_APath struct {
 	*ygot.NodePath
@@ -44,6 +34,16 @@ type ChoiceCaseAnonymousCase_BPath struct {
 
 // ChoiceCaseAnonymousCase_BPathAny represents the wildcard version of the /choice-case-example/choice-case-anonymous-case/foo/b/b YANG schema element.
 type ChoiceCaseAnonymousCase_BPathAny struct {
+	*ygot.NodePath
+}
+
+// ChoiceCaseAnonymousCasePath represents the /choice-case-example/choice-case-anonymous-case YANG schema element.
+type ChoiceCaseAnonymousCasePath struct {
+	*ygot.NodePath
+}
+
+// ChoiceCaseAnonymousCasePathAny represents the wildcard version of the /choice-case-example/choice-case-anonymous-case YANG schema element.
+type ChoiceCaseAnonymousCasePathAny struct {
 	*ygot.NodePath
 }
 
@@ -111,16 +111,6 @@ func (n *ChoiceCaseAnonymousCasePathAny) B() *ChoiceCaseAnonymousCase_BPathAny {
 	}
 }
 
-// ChoiceCaseWithLeafrefPath represents the /choice-case-example/choice-case-with-leafref YANG schema element.
-type ChoiceCaseWithLeafrefPath struct {
-	*ygot.NodePath
-}
-
-// ChoiceCaseWithLeafrefPathAny represents the wildcard version of the /choice-case-example/choice-case-with-leafref YANG schema element.
-type ChoiceCaseWithLeafrefPathAny struct {
-	*ygot.NodePath
-}
-
 // ChoiceCaseWithLeafref_PtrPath represents the /choice-case-example/choice-case-with-leafref/foo/bar/ptr YANG schema element.
 type ChoiceCaseWithLeafref_PtrPath struct {
 	*ygot.NodePath
@@ -138,6 +128,16 @@ type ChoiceCaseWithLeafref_ReferencedPath struct {
 
 // ChoiceCaseWithLeafref_ReferencedPathAny represents the wildcard version of the /choice-case-example/choice-case-with-leafref/referenced YANG schema element.
 type ChoiceCaseWithLeafref_ReferencedPathAny struct {
+	*ygot.NodePath
+}
+
+// ChoiceCaseWithLeafrefPath represents the /choice-case-example/choice-case-with-leafref YANG schema element.
+type ChoiceCaseWithLeafrefPath struct {
+	*ygot.NodePath
+}
+
+// ChoiceCaseWithLeafrefPathAny represents the wildcard version of the /choice-case-example/choice-case-with-leafref YANG schema element.
+type ChoiceCaseWithLeafrefPathAny struct {
 	*ygot.NodePath
 }
 
@@ -263,16 +263,6 @@ func (n *DevicePath) SimpleChoiceCase() *SimpleChoiceCasePath {
 	}
 }
 
-// SimpleChoiceCasePath represents the /choice-case-example/simple-choice-case YANG schema element.
-type SimpleChoiceCasePath struct {
-	*ygot.NodePath
-}
-
-// SimpleChoiceCasePathAny represents the wildcard version of the /choice-case-example/simple-choice-case YANG schema element.
-type SimpleChoiceCasePathAny struct {
-	*ygot.NodePath
-}
-
 // SimpleChoiceCase_APath represents the /choice-case-example/simple-choice-case/foo/bar/a YANG schema element.
 type SimpleChoiceCase_APath struct {
 	*ygot.NodePath
@@ -290,6 +280,16 @@ type SimpleChoiceCase_BPath struct {
 
 // SimpleChoiceCase_BPathAny represents the wildcard version of the /choice-case-example/simple-choice-case/foo/baz/b YANG schema element.
 type SimpleChoiceCase_BPathAny struct {
+	*ygot.NodePath
+}
+
+// SimpleChoiceCasePath represents the /choice-case-example/simple-choice-case YANG schema element.
+type SimpleChoiceCasePath struct {
+	*ygot.NodePath
+}
+
+// SimpleChoiceCasePathAny represents the wildcard version of the /choice-case-example/simple-choice-case YANG schema element.
+type SimpleChoiceCasePathAny struct {
 	*ygot.NodePath
 }
 

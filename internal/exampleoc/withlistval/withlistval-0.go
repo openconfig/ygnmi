@@ -213,16 +213,6 @@ func (n *ModelPathAny) Config() ygnmi.WildcardQuery[*oc.Model] {
 	)
 }
 
-// Model_MultiKeyPath represents the /openconfig-withlistval/model/b/multi-key YANG schema element.
-type Model_MultiKeyPath struct {
-	*ygot.NodePath
-}
-
-// Model_MultiKeyPathAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key YANG schema element.
-type Model_MultiKeyPathAny struct {
-	*ygot.NodePath
-}
-
 // Model_MultiKey_Key1Path represents the /openconfig-withlistval/model/b/multi-key/state/key1 YANG schema element.
 type Model_MultiKey_Key1Path struct {
 	parent ygot.PathStruct
@@ -231,48 +221,6 @@ type Model_MultiKey_Key1Path struct {
 // Model_MultiKey_Key1PathAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key/state/key1 YANG schema element.
 type Model_MultiKey_Key1PathAny struct {
 	parent ygot.PathStruct
-}
-
-// Model_MultiKey_Key2Path represents the /openconfig-withlistval/model/b/multi-key/state/key2 YANG schema element.
-type Model_MultiKey_Key2Path struct {
-	parent ygot.PathStruct
-}
-
-// Model_MultiKey_Key2PathAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key/state/key2 YANG schema element.
-type Model_MultiKey_Key2PathAny struct {
-	parent ygot.PathStruct
-}
-
-// Key1 corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *Model_MultiKeyPath) Key1() *Model_MultiKey_Key1Path {
-	return &Model_MultiKey_Key1Path{
-		parent: n,
-	}
-}
-
-// Key1 corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *Model_MultiKeyPathAny) Key1() *Model_MultiKey_Key1PathAny {
-	return &Model_MultiKey_Key1PathAny{
-		parent: n,
-	}
-}
-
-// Key2 corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *Model_MultiKeyPath) Key2() *Model_MultiKey_Key2Path {
-	return &Model_MultiKey_Key2Path{
-		parent: n,
-	}
-}
-
-// Key2 corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *Model_MultiKeyPathAny) Key2() *Model_MultiKey_Key2PathAny {
-	return &Model_MultiKey_Key2PathAny{
-		parent: n,
-	}
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -595,14 +543,56 @@ func (n *Model_MultiKey_Key2PathAny) Config() ygnmi.WildcardQuery[uint64] {
 	)
 }
 
-// Model_SingleKeyPath represents the /openconfig-withlistval/model/a/single-key YANG schema element.
-type Model_SingleKeyPath struct {
+// Model_MultiKey_Key2Path represents the /openconfig-withlistval/model/b/multi-key/state/key2 YANG schema element.
+type Model_MultiKey_Key2Path struct {
+	parent ygot.PathStruct
+}
+
+// Model_MultiKey_Key2PathAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key/state/key2 YANG schema element.
+type Model_MultiKey_Key2PathAny struct {
+	parent ygot.PathStruct
+}
+
+// Model_MultiKeyPath represents the /openconfig-withlistval/model/b/multi-key YANG schema element.
+type Model_MultiKeyPath struct {
 	*ygot.NodePath
 }
 
-// Model_SingleKeyPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key YANG schema element.
-type Model_SingleKeyPathAny struct {
+// Model_MultiKeyPathAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key YANG schema element.
+type Model_MultiKeyPathAny struct {
 	*ygot.NodePath
+}
+
+// Key1 corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *Model_MultiKeyPath) Key1() *Model_MultiKey_Key1Path {
+	return &Model_MultiKey_Key1Path{
+		parent: n,
+	}
+}
+
+// Key1 corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *Model_MultiKeyPathAny) Key1() *Model_MultiKey_Key1PathAny {
+	return &Model_MultiKey_Key1PathAny{
+		parent: n,
+	}
+}
+
+// Key2 corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *Model_MultiKeyPath) Key2() *Model_MultiKey_Key2Path {
+	return &Model_MultiKey_Key2Path{
+		parent: n,
+	}
+}
+
+// Key2 corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *Model_MultiKeyPathAny) Key2() *Model_MultiKey_Key2PathAny {
+	return &Model_MultiKey_Key2PathAny{
+		parent: n,
+	}
 }
 
 // Model_SingleKey_KeyPath represents the /openconfig-withlistval/model/a/single-key/state/key YANG schema element.
@@ -613,48 +603,6 @@ type Model_SingleKey_KeyPath struct {
 // Model_SingleKey_KeyPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/state/key YANG schema element.
 type Model_SingleKey_KeyPathAny struct {
 	parent ygot.PathStruct
-}
-
-// Model_SingleKey_ValuePath represents the /openconfig-withlistval/model/a/single-key/state/value YANG schema element.
-type Model_SingleKey_ValuePath struct {
-	parent ygot.PathStruct
-}
-
-// Model_SingleKey_ValuePathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/state/value YANG schema element.
-type Model_SingleKey_ValuePathAny struct {
-	parent ygot.PathStruct
-}
-
-// Key corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *Model_SingleKeyPath) Key() *Model_SingleKey_KeyPath {
-	return &Model_SingleKey_KeyPath{
-		parent: n,
-	}
-}
-
-// Key corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *Model_SingleKeyPathAny) Key() *Model_SingleKey_KeyPathAny {
-	return &Model_SingleKey_KeyPathAny{
-		parent: n,
-	}
-}
-
-// Value corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *Model_SingleKeyPath) Value() *Model_SingleKey_ValuePath {
-	return &Model_SingleKey_ValuePath{
-		parent: n,
-	}
-}
-
-// Value corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *Model_SingleKeyPathAny) Value() *Model_SingleKey_ValuePathAny {
-	return &Model_SingleKey_ValuePathAny{
-		parent: n,
-	}
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -975,4 +923,56 @@ func (n *Model_SingleKey_ValuePathAny) Config() ygnmi.WildcardQuery[int64] {
 			Unmarshal:  oc.Unmarshal,
 		},
 	)
+}
+
+// Model_SingleKey_ValuePath represents the /openconfig-withlistval/model/a/single-key/state/value YANG schema element.
+type Model_SingleKey_ValuePath struct {
+	parent ygot.PathStruct
+}
+
+// Model_SingleKey_ValuePathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/state/value YANG schema element.
+type Model_SingleKey_ValuePathAny struct {
+	parent ygot.PathStruct
+}
+
+// Model_SingleKeyPath represents the /openconfig-withlistval/model/a/single-key YANG schema element.
+type Model_SingleKeyPath struct {
+	*ygot.NodePath
+}
+
+// Model_SingleKeyPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key YANG schema element.
+type Model_SingleKeyPathAny struct {
+	*ygot.NodePath
+}
+
+// Key corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *Model_SingleKeyPath) Key() *Model_SingleKey_KeyPath {
+	return &Model_SingleKey_KeyPath{
+		parent: n,
+	}
+}
+
+// Key corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *Model_SingleKeyPathAny) Key() *Model_SingleKey_KeyPathAny {
+	return &Model_SingleKey_KeyPathAny{
+		parent: n,
+	}
+}
+
+// Value corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *Model_SingleKeyPath) Value() *Model_SingleKey_ValuePath {
+	return &Model_SingleKey_ValuePath{
+		parent: n,
+	}
+}
+
+// Value corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *Model_SingleKeyPathAny) Value() *Model_SingleKey_ValuePathAny {
+	return &Model_SingleKey_ValuePathAny{
+		parent: n,
+	}
 }

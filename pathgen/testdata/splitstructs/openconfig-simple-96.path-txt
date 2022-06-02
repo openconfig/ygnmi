@@ -28,46 +28,6 @@ type Parent_ChildAny struct {
 	*ygot.NodePath
 }
 
-// Parent_Child_Four represents the /openconfig-simple/parent/child/state/four YANG schema element.
-type Parent_Child_Four struct {
-	*ygot.NodePath
-}
-
-// Parent_Child_FourAny represents the wildcard version of the /openconfig-simple/parent/child/state/four YANG schema element.
-type Parent_Child_FourAny struct {
-	*ygot.NodePath
-}
-
-// Parent_Child_One represents the /openconfig-simple/parent/child/state/one YANG schema element.
-type Parent_Child_One struct {
-	*ygot.NodePath
-}
-
-// Parent_Child_OneAny represents the wildcard version of the /openconfig-simple/parent/child/state/one YANG schema element.
-type Parent_Child_OneAny struct {
-	*ygot.NodePath
-}
-
-// Parent_Child_Three represents the /openconfig-simple/parent/child/state/three YANG schema element.
-type Parent_Child_Three struct {
-	*ygot.NodePath
-}
-
-// Parent_Child_ThreeAny represents the wildcard version of the /openconfig-simple/parent/child/state/three YANG schema element.
-type Parent_Child_ThreeAny struct {
-	*ygot.NodePath
-}
-
-// Parent_Child_Two represents the /openconfig-simple/parent/child/state/two YANG schema element.
-type Parent_Child_Two struct {
-	*ygot.NodePath
-}
-
-// Parent_Child_TwoAny represents the wildcard version of the /openconfig-simple/parent/child/state/two YANG schema element.
-type Parent_Child_TwoAny struct {
-	*ygot.NodePath
-}
-
 // Four (leaf): 
 // ----------------------------------------
 // Defining module: "openconfig-simple"
@@ -190,58 +150,6 @@ func (n *Parent_ChildAny) Two() *Parent_Child_TwoAny {
 	return &Parent_Child_TwoAny{
 		NodePath: ygot.NewNodePath(
 			[]string{"state", "two"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-}
-
-// RemoteContainer represents the /openconfig-simple/remote-container YANG schema element.
-type RemoteContainer struct {
-	*ygot.NodePath
-}
-
-// RemoteContainerAny represents the wildcard version of the /openconfig-simple/remote-container YANG schema element.
-type RemoteContainerAny struct {
-	*ygot.NodePath
-}
-
-// RemoteContainer_ALeaf represents the /openconfig-simple/remote-container/state/a-leaf YANG schema element.
-type RemoteContainer_ALeaf struct {
-	*ygot.NodePath
-}
-
-// RemoteContainer_ALeafAny represents the wildcard version of the /openconfig-simple/remote-container/state/a-leaf YANG schema element.
-type RemoteContainer_ALeafAny struct {
-	*ygot.NodePath
-}
-
-// ALeaf (leaf): 
-// ----------------------------------------
-// Defining module: "openconfig-remote"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/a-leaf"
-// Path from root: "/remote-container/state/a-leaf"
-func (n *RemoteContainer) ALeaf() *RemoteContainer_ALeaf {
-	return &RemoteContainer_ALeaf{
-		NodePath: ygot.NewNodePath(
-			[]string{"state", "a-leaf"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-}
-
-// ALeaf (leaf): 
-// ----------------------------------------
-// Defining module: "openconfig-remote"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/a-leaf"
-// Path from root: "/remote-container/state/a-leaf"
-func (n *RemoteContainerAny) ALeaf() *RemoteContainer_ALeafAny {
-	return &RemoteContainer_ALeafAny{
-		NodePath: ygot.NewNodePath(
-			[]string{"state", "a-leaf"},
 			map[string]interface{}{},
 			n,
 		),

@@ -43,16 +43,6 @@ func (n *DevicePath) Foo() *FooPath {
 	}
 }
 
-// FooPath represents the /openconfig-enumcamelcase/foo YANG schema element.
-type FooPath struct {
-	*ygot.NodePath
-}
-
-// FooPathAny represents the wildcard version of the /openconfig-enumcamelcase/foo YANG schema element.
-type FooPathAny struct {
-	*ygot.NodePath
-}
-
 // Foo_BarPath represents the /openconfig-enumcamelcase/foo/bar YANG schema element.
 type Foo_BarPath struct {
 	*ygot.NodePath
@@ -70,6 +60,16 @@ type Foo_BazPath struct {
 
 // Foo_BazPathAny represents the wildcard version of the /openconfig-enumcamelcase/foo/baz YANG schema element.
 type Foo_BazPathAny struct {
+	*ygot.NodePath
+}
+
+// FooPath represents the /openconfig-enumcamelcase/foo YANG schema element.
+type FooPath struct {
+	*ygot.NodePath
+}
+
+// FooPathAny represents the wildcard version of the /openconfig-enumcamelcase/foo YANG schema element.
+type FooPathAny struct {
 	*ygot.NodePath
 }
 

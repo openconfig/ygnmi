@@ -17,16 +17,6 @@ import (
 	"github.com/openconfig/ygot/ytypes"
 )
 
-// NativePath represents the /openconfig-simple-target/native YANG schema element.
-type NativePath struct {
-	*ygot.NodePath
-}
-
-// NativePathAny represents the wildcard version of the /openconfig-simple-target/native YANG schema element.
-type NativePathAny struct {
-	*ygot.NodePath
-}
-
 // Native_APath represents the /openconfig-simple-target/native/state/a YANG schema element.
 type Native_APath struct {
 	*ygot.NodePath
@@ -34,6 +24,16 @@ type Native_APath struct {
 
 // Native_APathAny represents the wildcard version of the /openconfig-simple-target/native/state/a YANG schema element.
 type Native_APathAny struct {
+	*ygot.NodePath
+}
+
+// NativePath represents the /openconfig-simple-target/native YANG schema element.
+type NativePath struct {
+	*ygot.NodePath
+}
+
+// NativePathAny represents the wildcard version of the /openconfig-simple-target/native YANG schema element.
+type NativePathAny struct {
 	*ygot.NodePath
 }
 

@@ -17,3 +17,13 @@ import (
 	"github.com/openconfig/ygnmi/ygmni"
 	"github.com/openconfig/ygot/ytypes"
 )
+
+// Parent_Child_One represents the /openconfig-simple/parent/child/state/one YANG schema element.
+type Parent_Child_One struct {
+	*ygot.NodePath
+}
+
+// Parent_Child_OneAny represents the wildcard version of the /openconfig-simple/parent/child/state/one YANG schema element.
+type Parent_Child_OneAny struct {
+	*ygot.NodePath
+}
