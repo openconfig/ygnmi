@@ -34,24 +34,20 @@ import (
 
 // subscribe create a gNMI SubscribeClient for the given query.
 func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.SubscriptionList_Mode) (_ gpb.GNMI_SubscribeClient, rerr error) {
-	path, err := resolvePath(q.pathStruct())
-	if err != nil {
-		return nil, err
+	subs := []*gpb.Subscription{}
+	for _, path := range q.subPaths() {
+		path, err := resolvePath(path)
+		if err != nil {
+			return nil, err
+		}
+		subs = append(subs, &gpb.Subscription{
+			Path: &gpb.Path{
+				Elem:   path.GetElem(),
+				Origin: path.GetOrigin(),
+			},
+			Mode: gpb.SubscriptionMode_TARGET_DEFINED,
+		})
 	}
-
-	sub, err := c.gnmiC.Subscribe(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("gNMI failed to Subscribe: %w", err)
-	}
-	defer closer.Close(&rerr, sub.CloseSend, "error closing gNMI send stream")
-
-	subs := []*gpb.Subscription{{
-		Path: &gpb.Path{
-			Elem:   path.GetElem(),
-			Origin: path.GetOrigin(),
-		},
-		Mode: gpb.SubscriptionMode_TARGET_DEFINED,
-	}}
 
 	sr := &gpb.SubscribeRequest{
 		Request: &gpb.SubscribeRequest_Subscribe{
@@ -65,6 +61,12 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 			},
 		},
 	}
+
+	sub, err := c.gnmiC.Subscribe(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("gNMI failed to Subscribe: %w", err)
+	}
+	defer closer.Close(&rerr, sub.CloseSend, "error closing gNMI send stream")
 
 	log.V(1).Info(prototext.Format(sr))
 	if err := sub.Send(sr); err != nil {

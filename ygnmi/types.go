@@ -37,13 +37,14 @@ func NewLeafSingletonQuery[T any](parentDir string, state, scalar bool, ps PathS
 }
 
 // NewNonLeafSingletonQuery creates a new NonLeafSingletonQuery object.
-func NewNonLeafSingletonQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps PathStruct, schema *ytypes.Schema) *NonLeafSingletonQuery[T] {
+func NewNonLeafSingletonQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps PathStruct, subPaths []PathStruct, schema *ytypes.Schema) *NonLeafSingletonQuery[T] {
 	return &NonLeafSingletonQuery[T]{
 		nonLeafBaseQuery: nonLeafBaseQuery[T]{
-			dir:     dir,
-			state:   state,
-			ps:      ps,
-			yschema: schema,
+			dir:            dir,
+			state:          state,
+			ps:             ps,
+			yschema:        schema,
+			subPathStructs: subPaths,
 		},
 	}
 }
@@ -64,7 +65,7 @@ func NewLeafConfigQuery[T any](parentDir string, state, scalar bool, ps PathStru
 }
 
 // NewNonLeafConfigQuery creates a new NewNonLeafConfigQuery object.
-func NewNonLeafConfigQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps PathStruct, schema *ytypes.Schema) *NonLeafConfigQuery[T] {
+func NewNonLeafConfigQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps PathStruct, subPaths []PathStruct, schema *ytypes.Schema) *NonLeafConfigQuery[T] {
 	return &NonLeafConfigQuery[T]{
 		nonLeafBaseQuery: nonLeafBaseQuery[T]{
 			dir:     dir,
@@ -170,6 +171,11 @@ func (lq *leafBaseQuery[T]) pathStruct() PathStruct {
 	return lq.ps
 }
 
+// subPaths returns the path struct containing the path for the Query.
+func (lq *leafBaseQuery[T]) subPaths() []PathStruct {
+	return []PathStruct{lq.ps}
+}
+
 // schema returns the schema used for unmarshalling.
 func (lq *leafBaseQuery[T]) schema() *ytypes.Schema {
 	return lq.yschema
@@ -199,10 +205,11 @@ type NonLeafWildcardQuery[T ygot.ValidatedGoStruct] struct {
 func (lq *NonLeafWildcardQuery[T]) isWildcard() {}
 
 type nonLeafBaseQuery[T ygot.ValidatedGoStruct] struct {
-	dir     string
-	state   bool
-	ps      PathStruct
-	yschema *ytypes.Schema
+	dir            string
+	state          bool
+	ps             PathStruct
+	subPathStructs []PathStruct
+	yschema        *ytypes.Schema
 }
 
 // extract casts the input GoStruct to the concrete type for the query.
@@ -244,6 +251,14 @@ func (lq *nonLeafBaseQuery[T]) isState() bool {
 // pathStruct returns the path struct containing the path for the Query.
 func (lq *nonLeafBaseQuery[T]) pathStruct() PathStruct {
 	return lq.ps
+}
+
+// subPaths returns the path struct containing the path for the Query.
+func (lq *nonLeafBaseQuery[T]) subPaths() []PathStruct {
+	if len(lq.subPathStructs) == 0 {
+		return []PathStruct{lq.ps}
+	}
+	return lq.subPathStructs
 }
 
 // schema returns the schema used for unmarshalling.

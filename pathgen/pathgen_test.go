@@ -2602,12 +2602,14 @@ func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
 			StructBase: `
 // ContainerWithConfig_Leaflist represents the /root-module/container-with-config/state/leaflist YANG schema element.
 type ContainerWithConfig_Leaflist struct {
-	parent ygnmi.PathStruct
+	*ygot.NodePath
+	parent ygot.PathStruct
 }
 
 // ContainerWithConfig_LeaflistAny represents the wildcard version of the /root-module/container-with-config/state/leaflist YANG schema element.
 type ContainerWithConfig_LeaflistAny struct {
-	parent ygnmi.PathStruct
+	*ygot.NodePath
+	parent ygot.PathStruct
 }
 `,
 			ChildConstructors: ``,
@@ -2629,12 +2631,22 @@ type ContainerWithConfigAny struct {
 			ChildConstructors: `
 func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
 	return &ContainerWithConfig_Leaflist{
+		NodePath: ygot.NewNodePath(
+			[]string{"*", "leaflist"},
+			map[string]interface{}{},
+			n,
+		),
 		parent: n,
 	}
 }
 
 func (n *ContainerWithConfigAny) Leaflist() *ContainerWithConfig_LeaflistAny {
 	return &ContainerWithConfig_LeaflistAny{
+		NodePath: ygot.NewNodePath(
+			[]string{"*", "leaflist"},
+			map[string]interface{}{},
+			n,
+		),
 		parent: n,
 	}
 }
@@ -2647,7 +2659,8 @@ func (n *ContainerWithConfigAny) Leaflist() *ContainerWithConfig_LeaflistAny {
 			StructBase: `
 // ContainerWithConfig_Leaflist represents the /root-module/container-with-config/state/leaflist YANG schema element.
 type ContainerWithConfig_Leaflist struct {
-	parent ygnmi.PathStruct
+	*ygot.NodePath
+	parent ygot.PathStruct
 }
 `,
 			ChildConstructors: ``,
@@ -2664,6 +2677,11 @@ type ContainerWithConfig struct {
 			ChildConstructors: `
 func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
 	return &ContainerWithConfig_Leaflist{
+		NodePath: ygot.NewNodePath(
+			[]string{"*", "leaflist"},
+			map[string]interface{}{},
+			n,
+		),
 		parent: n,
 	}
 }
@@ -3245,12 +3263,22 @@ func (n *ContainerPathAny) Leaf() *Container_LeafPathAny {
 func (n *ContainerPath) Leaf() *Container_LeafPath {
 	return &Container_LeafPath{
 		parent: n,
+		NodePath: ygot.NewNodePath(
+			[]string{"*"},
+			map[string]interface{}{},
+			n,
+		),
 	}
 }
 
 func (n *ContainerPathAny) Leaf() *Container_LeafPathAny {
 	return &Container_LeafPathAny{
 		parent: n,
+		NodePath: ygot.NewNodePath(
+			[]string{"*"},
+			map[string]interface{}{},
+			n,
+		),
 	}
 }
 `,

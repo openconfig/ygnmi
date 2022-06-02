@@ -613,6 +613,7 @@ type {{ .TypeName }}{{ .WildcardSuffix }} struct {
 	goUnifiedLeafPathStructTemplate = mustTemplate("leaf-struct", `
 // {{ .TypeName }} represents the {{ .YANGPath }} YANG schema element.
 type {{ .TypeName }} struct {
+	*ygnmi.{{ .PathBaseTypeName }}
 	parent ygnmi.PathStruct
 }
 
@@ -620,6 +621,7 @@ type {{ .TypeName }} struct {
 
 // {{ .TypeName }}{{ .WildcardSuffix }} represents the wildcard version of the {{ .YANGPath }} YANG schema element.
 type {{ .TypeName }}{{ .WildcardSuffix }} struct {
+	*ygnmi.{{ .PathBaseTypeName }}
 	parent ygnmi.PathStruct
 }
 {{- end }}
@@ -657,10 +659,14 @@ func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{
 	// because with path compression, a leaf path may be a state or config path.
 	goUnifiedLeafPathChildConstructorTemplate = mustTemplate("unifiedchildConstructor", `
 // {{ .MethodName }} corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
 func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{ .ChildPkgAccessor }}{{ .TypeName }} {
 	return &{{ .ChildPkgAccessor }}{{ .TypeName }}{
 		parent: n,
+		{{ .Struct.PathBaseTypeName }}: ygnmi.New{{ .Struct.PathBaseTypeName }}(
+			[]string{ {{- .RelPathList -}} },
+			map[string]interface{}{ {{- .KeyEntriesStr -}} },
+			n,
+		),
 	}
 }
 `)
@@ -1050,6 +1056,12 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 	// Be nil-tolerant for these two attributes. In real deployments (i.e.
 	// not tests), these should be populated. Since these are just use for
 	// documentation, it is not critical that they are populated.
+
+	if unified && (field.Type == ygen.LeafNode || field.Type == ygen.LeafListNode) {
+		relPath[0] = "*"
+		field.YANGDetails.SchemaPath = strings.ReplaceAll(field.YANGDetails.SchemaPath, "/state/", "/*/")
+	}
+
 	fieldData := goPathFieldData{
 		MethodName:              goFieldName,
 		TypeName:                fieldTypeName,
