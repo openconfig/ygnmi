@@ -78,4 +78,12 @@ func BenchmarkGet(b *testing.B) {
 			ygnmi.Get(ctx, c, q)
 		}
 	})
+	b.Run("list", func(b *testing.B) {
+		ctx := context.Background()
+		q := root.New().Model().SingleKeyAny().State()
+		setUpdate(testutil.GNMIPath(b, "/model/a/single-key/state/value"), &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 1}})
+		for i := 0; i < b.N; i++ {
+			ygnmi.GetAll(ctx, c, q)
+		}
+	})
 }
