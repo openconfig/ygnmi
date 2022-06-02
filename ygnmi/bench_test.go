@@ -81,9 +81,12 @@ func BenchmarkGet(b *testing.B) {
 	b.Run("list", func(b *testing.B) {
 		ctx := context.Background()
 		q := root.New().Model().SingleKeyAny().State()
-		setUpdate(testutil.GNMIPath(b, "/model/a/single-key/state/value"), &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 1}})
+		setUpdate(testutil.GNMIPath(b, "/model/a/single-key[key=\"foo\"]/state/value"), &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 1}})
 		for i := 0; i < b.N; i++ {
-			ygnmi.GetAll(ctx, c, q)
+			got, _ := ygnmi.GetAll(ctx, c, q)
+			if *got[0].Value != 1 {
+				b.Fatalf("got %v want %v", *got[0].Value, 1)
+			}
 		}
 	})
 }
