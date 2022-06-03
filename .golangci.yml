@@ -15,6 +15,7 @@ linters-settings:
     confidence: 0.8
     rules:
     - name: error-strings
+    - name: exported
 
 issues:
   exclude:

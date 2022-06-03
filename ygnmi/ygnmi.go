@@ -405,7 +405,7 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 	return w
 }
 
-// Collect starts an asynchronous collection of the values at the query with a STREAM subscription.
+// CollectAll starts an asynchronous collection of the values at the query with a STREAM subscription.
 // Calling Await on the return Collection waits until the context is cancelled to elapse and returns the collected values.
 func CollectAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) *Collector[T] {
 	collect := &Collector[T]{}
