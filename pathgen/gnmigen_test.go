@@ -57,11 +57,10 @@ func TestGNMIGenerator(t *testing.T) {
 		},
 		want: `
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "root-module"
-// Instantiating module: "root-module"
-// Path from parent: "leaf"
-// Path from root: "/container/leaf"
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "leaf"
+// 	Path from root:       "/container/leaf"
 func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 	return ygnmi.NewLeafSingletonQuery[int32](
 		"Container",
@@ -90,11 +89,10 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "root-module"
-// Instantiating module: "root-module"
-// Path from parent: "leaf"
-// Path from root: "/container/leaf"
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "leaf"
+// 	Path from root:       "/container/leaf"
 func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 	return ygnmi.NewLeafWildcardQuery[int32](
 		"Container",
@@ -142,11 +140,10 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 		},
 		want: `
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "root-module"
-// Instantiating module: "root-module"
-// Path from parent: "state/leaflist"
-// Path from root: "/container-with-config/state/leaflist"
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "state/leaflist"
+// 	Path from root:       "/container-with-config/state/leaflist"
 func (n *Container_LeafList) State() ygnmi.SingletonQuery[[]uint32] {
 	return ygnmi.NewLeafSingletonQuery[[]uint32](
 		"Container",
@@ -171,11 +168,10 @@ func (n *Container_LeafList) State() ygnmi.SingletonQuery[[]uint32] {
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "root-module"
-// Instantiating module: "root-module"
-// Path from parent: "state/leaflist"
-// Path from root: "/container-with-config/state/leaflist"
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "state/leaflist"
+// 	Path from root:       "/container-with-config/state/leaflist"
 func (n *Container_LeafListAny) State() ygnmi.WildcardQuery[[]uint32] {
 	return ygnmi.NewLeafWildcardQuery[[]uint32](
 		"Container",
@@ -200,11 +196,10 @@ func (n *Container_LeafListAny) State() ygnmi.WildcardQuery[[]uint32] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "root-module"
-// Instantiating module: "root-module"
-// Path from parent: "config/leaflist"
-// Path from root: "/container-with-config/config/leaflist"
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "config/leaflist"
+// 	Path from root:       "/container-with-config/config/leaflist"
 func (n *Container_LeafList) Config() ygnmi.ConfigQuery[[]uint32] {
 	return ygnmi.NewLeafConfigQuery[[]uint32](
 		"Container",
@@ -229,11 +224,10 @@ func (n *Container_LeafList) Config() ygnmi.ConfigQuery[[]uint32] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "root-module"
-// Instantiating module: "root-module"
-// Path from parent: "config/leaflist"
-// Path from root: "/container-with-config/config/leaflist"
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "config/leaflist"
+// 	Path from root:       "/container-with-config/config/leaflist"
 func (n *Container_LeafListAny) Config() ygnmi.WildcardQuery[[]uint32] {
 	return ygnmi.NewLeafWildcardQuery[[]uint32](
 		"Container",
@@ -274,11 +268,10 @@ func (n *Container_LeafListAny) Config() ygnmi.WildcardQuery[[]uint32] {
 		},
 		want: `
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "root-module"
-// Instantiating module: "root-module"
-// Path from parent: "leaf"
-// Path from root: "/container/leaf"
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "leaf"
+// 	Path from root:       "/container/leaf"
 func (n *Container_Leaf) State() ygnmi.SingletonQuery[E_Child_Three] {
 	return ygnmi.NewLeafSingletonQuery[E_Child_Three](
 		"Container",
@@ -303,11 +296,10 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[E_Child_Three] {
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "root-module"
-// Instantiating module: "root-module"
-// Path from parent: "leaf"
-// Path from root: "/container/leaf"
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "leaf"
+// 	Path from root:       "/container/leaf"
 func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
 	return ygnmi.NewLeafWildcardQuery[E_Child_Three](
 		"Container",
