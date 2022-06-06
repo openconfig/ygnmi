@@ -28,11 +28,10 @@ type Parent_ChildPathAny struct {
 }
 
 // Four (leaf): 
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/four"
-// Path from root: "/parent/child/state/four"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/four"
+// 	Path from root:       "/parent/child/state/four"
 func (n *Parent_ChildPath) Four() *Parent_Child_FourPath {
 	return &Parent_Child_FourPath{
 		NodePath: ygot.NewNodePath(
@@ -44,11 +43,10 @@ func (n *Parent_ChildPath) Four() *Parent_Child_FourPath {
 }
 
 // Four (leaf): 
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/four"
-// Path from root: "/parent/child/state/four"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/four"
+// 	Path from root:       "/parent/child/state/four"
 func (n *Parent_ChildPathAny) Four() *Parent_Child_FourPathAny {
 	return &Parent_Child_FourPathAny{
 		NodePath: ygot.NewNodePath(
@@ -60,11 +58,10 @@ func (n *Parent_ChildPathAny) Four() *Parent_Child_FourPathAny {
 }
 
 // One (leaf): 
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/one"
-// Path from root: "/parent/child/state/one"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/one"
+// 	Path from root:       "/parent/child/state/one"
 func (n *Parent_ChildPath) One() *Parent_Child_OnePath {
 	return &Parent_Child_OnePath{
 		NodePath: ygot.NewNodePath(
@@ -76,11 +73,10 @@ func (n *Parent_ChildPath) One() *Parent_Child_OnePath {
 }
 
 // One (leaf): 
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/one"
-// Path from root: "/parent/child/state/one"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/one"
+// 	Path from root:       "/parent/child/state/one"
 func (n *Parent_ChildPathAny) One() *Parent_Child_OnePathAny {
 	return &Parent_Child_OnePathAny{
 		NodePath: ygot.NewNodePath(
@@ -92,11 +88,10 @@ func (n *Parent_ChildPathAny) One() *Parent_Child_OnePathAny {
 }
 
 // Three (leaf): 
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/three"
-// Path from root: "/parent/child/state/three"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/three"
+// 	Path from root:       "/parent/child/state/three"
 func (n *Parent_ChildPath) Three() *Parent_Child_ThreePath {
 	return &Parent_Child_ThreePath{
 		NodePath: ygot.NewNodePath(
@@ -108,11 +103,10 @@ func (n *Parent_ChildPath) Three() *Parent_Child_ThreePath {
 }
 
 // Three (leaf): 
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/three"
-// Path from root: "/parent/child/state/three"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/three"
+// 	Path from root:       "/parent/child/state/three"
 func (n *Parent_ChildPathAny) Three() *Parent_Child_ThreePathAny {
 	return &Parent_Child_ThreePathAny{
 		NodePath: ygot.NewNodePath(
@@ -124,11 +118,10 @@ func (n *Parent_ChildPathAny) Three() *Parent_Child_ThreePathAny {
 }
 
 // Two (leaf): 
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/two"
-// Path from root: "/parent/child/state/two"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/two"
+// 	Path from root:       "/parent/child/state/two"
 func (n *Parent_ChildPath) Two() *Parent_Child_TwoPath {
 	return &Parent_Child_TwoPath{
 		NodePath: ygot.NewNodePath(
@@ -140,11 +133,10 @@ func (n *Parent_ChildPath) Two() *Parent_Child_TwoPath {
 }
 
 // Two (leaf): 
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/two"
-// Path from root: "/parent/child/state/two"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/two"
+// 	Path from root:       "/parent/child/state/two"
 func (n *Parent_ChildPathAny) Two() *Parent_Child_TwoPathAny {
 	return &Parent_Child_TwoPathAny{
 		NodePath: ygot.NewNodePath(

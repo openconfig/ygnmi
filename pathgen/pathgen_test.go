@@ -15,7 +15,9 @@
 package pathgen
 
 import (
+	"flag"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -38,6 +40,8 @@ const (
 	// datapath is the path to common YANG test modules.
 	datapath = "testdata/yang/"
 )
+
+var updateGolden = flag.Bool("update_golden", false, "Update golden files")
 
 func TestGeneratePathCode(t *testing.T) {
 	tests := []struct {
@@ -1111,6 +1115,11 @@ func TestGeneratePathCode(t *testing.T) {
 			wantCode := string(wantCodeBytes)
 
 			if gotCode != wantCode {
+				if *updateGolden {
+					if err := os.WriteFile(tt.wantStructsCodeFile, []byte(gotCode), 0644); err != nil {
+						t.Fatal(err)
+					}
+				}
 				// Use difflib to generate a unified diff between the
 				// two code snippets such that this is simpler to debug
 				// in the test output.
@@ -1249,6 +1258,11 @@ func TestGeneratePathCodeSplitFiles(t *testing.T) {
 			} else {
 				for i := range gotCode {
 					if gotCode[i] != wantCode[i] {
+						if *updateGolden {
+							if err := os.WriteFile(tt.wantStructsCodeFiles[i], []byte(gotCode[i]), 0644); err != nil {
+								t.Fatal(err)
+							}
+						}
 						// Use difflib to generate a unified diff between the
 						// two code snippets such that this is simpler to debug
 						// in the test output.
@@ -1352,6 +1366,11 @@ func TestGeneratePathCodeSplitModules(t *testing.T) {
 			} else {
 				for pkg := range gotCode {
 					if gotCode[pkg] != wantCode[pkg] {
+						if *updateGolden {
+							if err := os.WriteFile(tt.wantStructsCodeFiles[pkg], []byte(gotCode[pkg]), 0644); err != nil {
+								t.Fatal(err)
+							}
+						}
 						// Use difflib to generate a unified diff between the
 						// two code snippets such that this is simpler to debug
 						// in the test output.
@@ -2160,14 +2179,14 @@ const (
 	// method for the test list node.
 	wantListMethodsNonWildcard = `
 // List (list): 
-// ----------------------------------------
-// Defining module: "root-module"
-// Instantiating module: "root-module"
-// Path from parent: "list-container/list"
-// Path from root: "/list-container/list"
-// Key1: string
-// Key2: oc.Binary
-// UnionKey: [oc.UnionString, oc.Binary]
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "list-container/list"
+// 	Path from root:       "/list-container/list"
+//
+// 	Key1: string
+// 	Key2: oc.Binary
+// 	UnionKey: [oc.UnionString, oc.Binary]
 func (n *RootPath) List(Key1 string, Key2 oc.Binary, UnionKey oc.RootElementModule_List_UnionKey_Union) *ListPath {
 	return &ListPath{
 		NodePath: ygot.NewNodePath(
@@ -2181,14 +2200,14 @@ func (n *RootPath) List(Key1 string, Key2 oc.Binary, UnionKey oc.RootElementModu
 
 	wantListMethodsWildcardCommon = `
 // ListAnyKey2AnyUnionKey (list): 
-// ----------------------------------------
-// Defining module: "root-module"
-// Instantiating module: "root-module"
-// Path from parent: "list-container/list"
-// Path from root: "/list-container/list"
-// Key1: string
-// Key2 (wildcarded): oc.Binary
-// UnionKey (wildcarded): [oc.UnionString, oc.Binary]
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "list-container/list"
+// 	Path from root:       "/list-container/list"
+//
+// 	Key1: string
+// 	Key2 (wildcarded): oc.Binary
+// 	UnionKey (wildcarded): [oc.UnionString, oc.Binary]
 func (n *RootPath) ListAnyKey2AnyUnionKey(Key1 string) *ListPathAny {
 	return &ListPathAny{
 		NodePath: ygot.NewNodePath(
@@ -2200,14 +2219,14 @@ func (n *RootPath) ListAnyKey2AnyUnionKey(Key1 string) *ListPathAny {
 }
 
 // ListAnyKey1AnyUnionKey (list): 
-// ----------------------------------------
-// Defining module: "root-module"
-// Instantiating module: "root-module"
-// Path from parent: "list-container/list"
-// Path from root: "/list-container/list"
-// Key1 (wildcarded): string
-// Key2: oc.Binary
-// UnionKey (wildcarded): [oc.UnionString, oc.Binary]
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "list-container/list"
+// 	Path from root:       "/list-container/list"
+//
+// 	Key1 (wildcarded): string
+// 	Key2: oc.Binary
+// 	UnionKey (wildcarded): [oc.UnionString, oc.Binary]
 func (n *RootPath) ListAnyKey1AnyUnionKey(Key2 oc.Binary) *ListPathAny {
 	return &ListPathAny{
 		NodePath: ygot.NewNodePath(
@@ -2219,14 +2238,14 @@ func (n *RootPath) ListAnyKey1AnyUnionKey(Key2 oc.Binary) *ListPathAny {
 }
 
 // ListAnyUnionKey (list): 
-// ----------------------------------------
-// Defining module: "root-module"
-// Instantiating module: "root-module"
-// Path from parent: "list-container/list"
-// Path from root: "/list-container/list"
-// Key1: string
-// Key2: oc.Binary
-// UnionKey (wildcarded): [oc.UnionString, oc.Binary]
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "list-container/list"
+// 	Path from root:       "/list-container/list"
+//
+// 	Key1: string
+// 	Key2: oc.Binary
+// 	UnionKey (wildcarded): [oc.UnionString, oc.Binary]
 func (n *RootPath) ListAnyUnionKey(Key1 string, Key2 oc.Binary) *ListPathAny {
 	return &ListPathAny{
 		NodePath: ygot.NewNodePath(
@@ -2238,14 +2257,14 @@ func (n *RootPath) ListAnyUnionKey(Key1 string, Key2 oc.Binary) *ListPathAny {
 }
 
 // ListAnyKey1AnyKey2 (list): 
-// ----------------------------------------
-// Defining module: "root-module"
-// Instantiating module: "root-module"
-// Path from parent: "list-container/list"
-// Path from root: "/list-container/list"
-// Key1 (wildcarded): string
-// Key2 (wildcarded): oc.Binary
-// UnionKey: [oc.UnionString, oc.Binary]
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "list-container/list"
+// 	Path from root:       "/list-container/list"
+//
+// 	Key1 (wildcarded): string
+// 	Key2 (wildcarded): oc.Binary
+// 	UnionKey: [oc.UnionString, oc.Binary]
 func (n *RootPath) ListAnyKey1AnyKey2(UnionKey oc.RootElementModule_List_UnionKey_Union) *ListPathAny {
 	return &ListPathAny{
 		NodePath: ygot.NewNodePath(
@@ -2257,14 +2276,14 @@ func (n *RootPath) ListAnyKey1AnyKey2(UnionKey oc.RootElementModule_List_UnionKe
 }
 
 // ListAnyKey2 (list): 
-// ----------------------------------------
-// Defining module: "root-module"
-// Instantiating module: "root-module"
-// Path from parent: "list-container/list"
-// Path from root: "/list-container/list"
-// Key1: string
-// Key2 (wildcarded): oc.Binary
-// UnionKey: [oc.UnionString, oc.Binary]
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "list-container/list"
+// 	Path from root:       "/list-container/list"
+//
+// 	Key1: string
+// 	Key2 (wildcarded): oc.Binary
+// 	UnionKey: [oc.UnionString, oc.Binary]
 func (n *RootPath) ListAnyKey2(Key1 string, UnionKey oc.RootElementModule_List_UnionKey_Union) *ListPathAny {
 	return &ListPathAny{
 		NodePath: ygot.NewNodePath(
@@ -2276,14 +2295,14 @@ func (n *RootPath) ListAnyKey2(Key1 string, UnionKey oc.RootElementModule_List_U
 }
 
 // ListAnyKey1 (list): 
-// ----------------------------------------
-// Defining module: "root-module"
-// Instantiating module: "root-module"
-// Path from parent: "list-container/list"
-// Path from root: "/list-container/list"
-// Key1 (wildcarded): string
-// Key2: oc.Binary
-// UnionKey: [oc.UnionString, oc.Binary]
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "list-container/list"
+// 	Path from root:       "/list-container/list"
+//
+// 	Key1 (wildcarded): string
+// 	Key2: oc.Binary
+// 	UnionKey: [oc.UnionString, oc.Binary]
 func (n *RootPath) ListAnyKey1(Key2 oc.Binary, UnionKey oc.RootElementModule_List_UnionKey_Union) *ListPathAny {
 	return &ListPathAny{
 		NodePath: ygot.NewNodePath(
@@ -2298,14 +2317,14 @@ func (n *RootPath) ListAnyKey1(Key2 oc.Binary, UnionKey oc.RootElementModule_Lis
 	// wantListMethods is the expected child constructor methods for the test list node.
 	wantListMethods = `
 // ListAny (list): 
-// ----------------------------------------
-// Defining module: "root-module"
-// Instantiating module: "root-module"
-// Path from parent: "list-container/list"
-// Path from root: "/list-container/list"
-// Key1 (wildcarded): string
-// Key2 (wildcarded): oc.Binary
-// UnionKey (wildcarded): [oc.UnionString, oc.Binary]
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "list-container/list"
+// 	Path from root:       "/list-container/list"
+//
+// 	Key1 (wildcarded): string
+// 	Key2 (wildcarded): oc.Binary
+// 	UnionKey (wildcarded): [oc.UnionString, oc.Binary]
 func (n *RootPath) ListAny() *ListPathAny {
 	return &ListPathAny{
 		NodePath: ygot.NewNodePath(
@@ -2321,14 +2340,14 @@ func (n *RootPath) ListAny() *ListPathAny {
 	// the test list node when SimplifyWildcardPaths=true.
 	wantListMethodsSimplified = `
 // ListAny (list): 
-// ----------------------------------------
-// Defining module: "root-module"
-// Instantiating module: "root-module"
-// Path from parent: "list-container/list"
-// Path from root: "/list-container/list"
-// Key1 (wildcarded): string
-// Key2 (wildcarded): oc.Binary
-// UnionKey (wildcarded): [oc.UnionString, oc.Binary]
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "list-container/list"
+// 	Path from root:       "/list-container/list"
+//
+// 	Key1 (wildcarded): string
+// 	Key2 (wildcarded): oc.Binary
+// 	UnionKey (wildcarded): [oc.UnionString, oc.Binary]
 func (n *RootPath) ListAny() *ListPathAny {
 	return &ListPathAny{
 		NodePath: ygot.NewNodePath(

@@ -629,13 +629,15 @@ type {{ .TypeName }}{{ .WildcardSuffix }} struct {
 	// path struct object.
 	goPathChildConstructorTemplate = mustTemplate("childConstructor", `
 // {{ .MethodName }} ({{ .YANGNodeType }}): {{ .YANGDescription }}
-// ----------------------------------------
-// Defining module: "{{ .DefiningModuleName }}"
-// Instantiating module: "{{ .InstantiatingModuleName }}"
-// Path from parent: "{{ .RelPath }}"
-// Path from root: "{{ .AbsPath }}"
+// 	Defining module:      "{{ .DefiningModuleName }}"
+// 	Instantiating module: "{{ .InstantiatingModuleName }}"
+// 	Path from parent:     "{{ .RelPath }}"
+// 	Path from root:       "{{ .AbsPath }}"
+{{- if .KeyParamDocStrs }}
+//
+{{- end }}
 {{- range $paramDocStr := .KeyParamDocStrs }}
-// {{ $paramDocStr }}
+// 	{{ $paramDocStr }}
 {{- end }}
 func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{ .ChildPkgAccessor }}{{ .TypeName }} {
 	return &{{ .ChildPkgAccessor }}{{ .TypeName }}{

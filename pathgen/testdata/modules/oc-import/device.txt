@@ -30,11 +30,10 @@ func New() *DevicePath {
 }
 
 // Child (container): 
-// ----------------------------------------
-// Defining module: "openconfig-import"
-// Instantiating module: "openconfig-import"
-// Path from parent: "child"
-// Path from root: "/child"
+// 	Defining module:      "openconfig-import"
+// 	Instantiating module: "openconfig-import"
+// 	Path from parent:     "child"
+// 	Path from root:       "/child"
 func (n *DevicePath) Child() *openconfigimportpath.ChildPath {
 	return &openconfigimportpath.ChildPath{
 		NodePath: ygot.NewNodePath(
@@ -46,11 +45,10 @@ func (n *DevicePath) Child() *openconfigimportpath.ChildPath {
 }
 
 // Native (container): 
-// ----------------------------------------
-// Defining module: "openconfig-simple-target"
-// Instantiating module: "openconfig-simple-target"
-// Path from parent: "native"
-// Path from root: "/native"
+// 	Defining module:      "openconfig-simple-target"
+// 	Instantiating module: "openconfig-simple-target"
+// 	Path from parent:     "native"
+// 	Path from root:       "/native"
 func (n *DevicePath) Native() *openconfigsimpletargetpath.NativePath {
 	return &openconfigsimpletargetpath.NativePath{
 		NodePath: ygot.NewNodePath(
@@ -62,11 +60,10 @@ func (n *DevicePath) Native() *openconfigsimpletargetpath.NativePath {
 }
 
 // Target (container): 
-// ----------------------------------------
-// Defining module: "openconfig-simple-target"
-// Instantiating module: "openconfig-simple-target"
-// Path from parent: "target"
-// Path from root: "/target"
+// 	Defining module:      "openconfig-simple-target"
+// 	Instantiating module: "openconfig-simple-target"
+// 	Path from parent:     "target"
+// 	Path from root:       "/target"
 func (n *DevicePath) Target() *openconfigsimpletargetpath.TargetPath {
 	return &openconfigsimpletargetpath.TargetPath{
 		NodePath: ygot.NewNodePath(

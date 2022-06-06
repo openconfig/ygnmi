@@ -46,11 +46,10 @@ type ParentPathAny struct {
 }
 
 // Child (container):
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "child"
-// Path from root: "/parent/child"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "child"
+// 	Path from root:       "/parent/child"
 func (n *ParentPath) Child() *Parent_ChildPath {
 	return &Parent_ChildPath{
 		NodePath: ygot.NewNodePath(
@@ -62,11 +61,10 @@ func (n *ParentPath) Child() *Parent_ChildPath {
 }
 
 // Child (container):
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "child"
-// Path from root: "/parent/child"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "child"
+// 	Path from root:       "/parent/child"
 func (n *ParentPathAny) Child() *Parent_ChildPathAny {
 	return &Parent_ChildPathAny{
 		NodePath: ygot.NewNodePath(
@@ -200,11 +198,10 @@ func (n *Parent_ChildPathAny) Config() ygnmi.WildcardQuery[*oc.Parent_Child] {
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/four"
-// Path from root: "/parent/child/state/four"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/four"
+// 	Path from root:       "/parent/child/state/four"
 func (n *Parent_Child_FourPath) State() ygnmi.SingletonQuery[oc.Binary] {
 	return ygnmi.NewLeafSingletonQuery[oc.Binary](
 		"Parent_Child",
@@ -229,11 +226,10 @@ func (n *Parent_Child_FourPath) State() ygnmi.SingletonQuery[oc.Binary] {
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/four"
-// Path from root: "/parent/child/state/four"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/four"
+// 	Path from root:       "/parent/child/state/four"
 func (n *Parent_Child_FourPathAny) State() ygnmi.WildcardQuery[oc.Binary] {
 	return ygnmi.NewLeafWildcardQuery[oc.Binary](
 		"Parent_Child",
@@ -258,11 +254,10 @@ func (n *Parent_Child_FourPathAny) State() ygnmi.WildcardQuery[oc.Binary] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "config/four"
-// Path from root: "/parent/child/config/four"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "config/four"
+// 	Path from root:       "/parent/child/config/four"
 func (n *Parent_Child_FourPath) Config() ygnmi.ConfigQuery[oc.Binary] {
 	return ygnmi.NewLeafConfigQuery[oc.Binary](
 		"Parent_Child",
@@ -287,11 +282,10 @@ func (n *Parent_Child_FourPath) Config() ygnmi.ConfigQuery[oc.Binary] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "config/four"
-// Path from root: "/parent/child/config/four"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "config/four"
+// 	Path from root:       "/parent/child/config/four"
 func (n *Parent_Child_FourPathAny) Config() ygnmi.WildcardQuery[oc.Binary] {
 	return ygnmi.NewLeafWildcardQuery[oc.Binary](
 		"Parent_Child",
@@ -316,11 +310,10 @@ func (n *Parent_Child_FourPathAny) Config() ygnmi.WildcardQuery[oc.Binary] {
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/one"
-// Path from root: "/parent/child/state/one"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/one"
+// 	Path from root:       "/parent/child/state/one"
 func (n *Parent_Child_OnePath) State() ygnmi.SingletonQuery[string] {
 	return ygnmi.NewLeafSingletonQuery[string](
 		"Parent_Child",
@@ -349,11 +342,10 @@ func (n *Parent_Child_OnePath) State() ygnmi.SingletonQuery[string] {
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/one"
-// Path from root: "/parent/child/state/one"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/one"
+// 	Path from root:       "/parent/child/state/one"
 func (n *Parent_Child_OnePathAny) State() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewLeafWildcardQuery[string](
 		"Parent_Child",
@@ -382,11 +374,10 @@ func (n *Parent_Child_OnePathAny) State() ygnmi.WildcardQuery[string] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "config/one"
-// Path from root: "/parent/child/config/one"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "config/one"
+// 	Path from root:       "/parent/child/config/one"
 func (n *Parent_Child_OnePath) Config() ygnmi.ConfigQuery[string] {
 	return ygnmi.NewLeafConfigQuery[string](
 		"Parent_Child",
@@ -415,11 +406,10 @@ func (n *Parent_Child_OnePath) Config() ygnmi.ConfigQuery[string] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "config/one"
-// Path from root: "/parent/child/config/one"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "config/one"
+// 	Path from root:       "/parent/child/config/one"
 func (n *Parent_Child_OnePathAny) Config() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewLeafWildcardQuery[string](
 		"Parent_Child",
@@ -448,11 +438,10 @@ func (n *Parent_Child_OnePathAny) Config() ygnmi.WildcardQuery[string] {
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/three"
-// Path from root: "/parent/child/state/three"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/three"
+// 	Path from root:       "/parent/child/state/three"
 func (n *Parent_Child_ThreePath) State() ygnmi.SingletonQuery[oc.E_Child_Three] {
 	return ygnmi.NewLeafSingletonQuery[oc.E_Child_Three](
 		"Parent_Child",
@@ -477,11 +466,10 @@ func (n *Parent_Child_ThreePath) State() ygnmi.SingletonQuery[oc.E_Child_Three] 
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/three"
-// Path from root: "/parent/child/state/three"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/three"
+// 	Path from root:       "/parent/child/state/three"
 func (n *Parent_Child_ThreePathAny) State() ygnmi.WildcardQuery[oc.E_Child_Three] {
 	return ygnmi.NewLeafWildcardQuery[oc.E_Child_Three](
 		"Parent_Child",
@@ -506,11 +494,10 @@ func (n *Parent_Child_ThreePathAny) State() ygnmi.WildcardQuery[oc.E_Child_Three
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "config/three"
-// Path from root: "/parent/child/config/three"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "config/three"
+// 	Path from root:       "/parent/child/config/three"
 func (n *Parent_Child_ThreePath) Config() ygnmi.ConfigQuery[oc.E_Child_Three] {
 	return ygnmi.NewLeafConfigQuery[oc.E_Child_Three](
 		"Parent_Child",
@@ -535,11 +522,10 @@ func (n *Parent_Child_ThreePath) Config() ygnmi.ConfigQuery[oc.E_Child_Three] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "config/three"
-// Path from root: "/parent/child/config/three"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "config/three"
+// 	Path from root:       "/parent/child/config/three"
 func (n *Parent_Child_ThreePathAny) Config() ygnmi.WildcardQuery[oc.E_Child_Three] {
 	return ygnmi.NewLeafWildcardQuery[oc.E_Child_Three](
 		"Parent_Child",
@@ -564,11 +550,10 @@ func (n *Parent_Child_ThreePathAny) Config() ygnmi.WildcardQuery[oc.E_Child_Thre
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/two"
-// Path from root: "/parent/child/state/two"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/two"
+// 	Path from root:       "/parent/child/state/two"
 func (n *Parent_Child_TwoPath) State() ygnmi.SingletonQuery[string] {
 	return ygnmi.NewLeafSingletonQuery[string](
 		"Parent_Child",
@@ -597,11 +582,10 @@ func (n *Parent_Child_TwoPath) State() ygnmi.SingletonQuery[string] {
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/two"
-// Path from root: "/parent/child/state/two"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/two"
+// 	Path from root:       "/parent/child/state/two"
 func (n *Parent_Child_TwoPathAny) State() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewLeafWildcardQuery[string](
 		"Parent_Child",
@@ -800,11 +784,10 @@ func (n *RemoteContainerPathAny) Config() ygnmi.WildcardQuery[*oc.RemoteContaine
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-remote"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/a-leaf"
-// Path from root: "/remote-container/state/a-leaf"
+// 	Defining module:      "openconfig-remote"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/a-leaf"
+// 	Path from root:       "/remote-container/state/a-leaf"
 func (n *RemoteContainer_ALeafPath) State() ygnmi.SingletonQuery[string] {
 	return ygnmi.NewLeafSingletonQuery[string](
 		"RemoteContainer",
@@ -833,11 +816,10 @@ func (n *RemoteContainer_ALeafPath) State() ygnmi.SingletonQuery[string] {
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-remote"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "state/a-leaf"
-// Path from root: "/remote-container/state/a-leaf"
+// 	Defining module:      "openconfig-remote"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/a-leaf"
+// 	Path from root:       "/remote-container/state/a-leaf"
 func (n *RemoteContainer_ALeafPathAny) State() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewLeafWildcardQuery[string](
 		"RemoteContainer",
@@ -866,11 +848,10 @@ func (n *RemoteContainer_ALeafPathAny) State() ygnmi.WildcardQuery[string] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-remote"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "config/a-leaf"
-// Path from root: "/remote-container/config/a-leaf"
+// 	Defining module:      "openconfig-remote"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "config/a-leaf"
+// 	Path from root:       "/remote-container/config/a-leaf"
 func (n *RemoteContainer_ALeafPath) Config() ygnmi.ConfigQuery[string] {
 	return ygnmi.NewLeafConfigQuery[string](
 		"RemoteContainer",
@@ -899,11 +880,10 @@ func (n *RemoteContainer_ALeafPath) Config() ygnmi.ConfigQuery[string] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-remote"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "config/a-leaf"
-// Path from root: "/remote-container/config/a-leaf"
+// 	Defining module:      "openconfig-remote"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "config/a-leaf"
+// 	Path from root:       "/remote-container/config/a-leaf"
 func (n *RemoteContainer_ALeafPathAny) Config() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewLeafWildcardQuery[string](
 		"RemoteContainer",
