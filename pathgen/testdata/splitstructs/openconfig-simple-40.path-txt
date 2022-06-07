@@ -30,11 +30,10 @@ func New() *Device {
 
 // Parent (container): I am a parent container
 // that has 4 children.
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "parent"
-// Path from root: "/parent"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "parent"
+// 	Path from root:       "/parent"
 func (n *Device) Parent() *Parent {
 	return &Parent{
 		NodePath: ygot.NewNodePath(
@@ -46,11 +45,10 @@ func (n *Device) Parent() *Parent {
 }
 
 // RemoteContainer (container): 
-// ----------------------------------------
-// Defining module: "openconfig-remote"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "remote-container"
-// Path from root: "/remote-container"
+// 	Defining module:      "openconfig-remote"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "remote-container"
+// 	Path from root:       "/remote-container"
 func (n *Device) RemoteContainer() *RemoteContainer {
 	return &RemoteContainer{
 		NodePath: ygot.NewNodePath(
@@ -72,11 +70,10 @@ type ParentAny struct {
 }
 
 // Child (container): 
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "child"
-// Path from root: "/parent/child"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "child"
+// 	Path from root:       "/parent/child"
 func (n *Parent) Child() *Parent_Child {
 	return &Parent_Child{
 		NodePath: ygot.NewNodePath(
@@ -88,11 +85,10 @@ func (n *Parent) Child() *Parent_Child {
 }
 
 // Child (container): 
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "child"
-// Path from root: "/parent/child"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "child"
+// 	Path from root:       "/parent/child"
 func (n *ParentAny) Child() *Parent_ChildAny {
 	return &Parent_ChildAny{
 		NodePath: ygot.NewNodePath(

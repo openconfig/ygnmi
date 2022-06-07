@@ -139,11 +139,10 @@ func generateConfigFunc(dir *ygen.ParsedDirectory, node *NodeData) bool {
 var (
 	goGNMILeafTemplate = mustTemplate("leaf-gnmi", `
 // {{ .MethodName }} returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "{{ .DefiningModuleName }}"
-// Instantiating module: "{{ .InstantiatingModuleName }}"
-// Path from parent: "{{ .RelPath }}"
-// Path from root: "{{ .AbsPath }}"
+// 	Defining module:      "{{ .DefiningModuleName }}"
+// 	Instantiating module: "{{ .InstantiatingModuleName }}"
+// 	Path from parent:     "{{ .RelPath }}"
+// 	Path from root:       "{{ .AbsPath }}"
 func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
 	return ygnmi.NewLeaf{{ .SingletonTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
@@ -178,11 +177,10 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 {{- if .GenerateWildcard }}
 
 // {{ .MethodName }} returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "{{ .DefiningModuleName }}"
-// Instantiating module: "{{ .InstantiatingModuleName }}"
-// Path from parent: "{{ .RelPath }}"
-// Path from root: "{{ .AbsPath }}"
+// 	Defining module:      "{{ .DefiningModuleName }}"
+// 	Instantiating module: "{{ .InstantiatingModuleName }}"
+// 	Path from parent:     "{{ .RelPath }}"
+// 	Path from root:       "{{ .AbsPath }}"
 func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{{ .WildcardTypeName }}[{{ .GoTypeName }}] {
 	return ygnmi.NewLeaf{{ .WildcardTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",

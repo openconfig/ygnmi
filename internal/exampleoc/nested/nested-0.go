@@ -44,11 +44,10 @@ type APathAny struct {
 }
 
 // B (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "b"
-// Path from root: "/a/b"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "b"
+// 	Path from root:       "/a/b"
 func (n *APath) B() *A_BPath {
 	return &A_BPath{
 		NodePath: ygot.NewNodePath(
@@ -60,11 +59,10 @@ func (n *APath) B() *A_BPath {
 }
 
 // B (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "b"
-// Path from root: "/a/b"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "b"
+// 	Path from root:       "/a/b"
 func (n *APathAny) B() *A_BPathAny {
 	return &A_BPathAny{
 		NodePath: ygot.NewNodePath(
@@ -142,11 +140,10 @@ type A_BPathAny struct {
 }
 
 // C (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "c"
-// Path from root: "/a/b/c"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "c"
+// 	Path from root:       "/a/b/c"
 func (n *A_BPath) C() *A_B_CPath {
 	return &A_B_CPath{
 		NodePath: ygot.NewNodePath(
@@ -158,11 +155,10 @@ func (n *A_BPath) C() *A_B_CPath {
 }
 
 // C (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "c"
-// Path from root: "/a/b/c"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "c"
+// 	Path from root:       "/a/b/c"
 func (n *A_BPathAny) C() *A_B_CPathAny {
 	return &A_B_CPathAny{
 		NodePath: ygot.NewNodePath(
@@ -240,11 +236,10 @@ type A_B_CPathAny struct {
 }
 
 // D (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "d"
-// Path from root: "/a/b/c/d"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "d"
+// 	Path from root:       "/a/b/c/d"
 func (n *A_B_CPath) D() *A_B_C_DPath {
 	return &A_B_C_DPath{
 		NodePath: ygot.NewNodePath(
@@ -256,11 +251,10 @@ func (n *A_B_CPath) D() *A_B_C_DPath {
 }
 
 // D (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "d"
-// Path from root: "/a/b/c/d"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "d"
+// 	Path from root:       "/a/b/c/d"
 func (n *A_B_CPathAny) D() *A_B_C_DPathAny {
 	return &A_B_C_DPathAny{
 		NodePath: ygot.NewNodePath(
@@ -338,11 +332,10 @@ type A_B_C_DPathAny struct {
 }
 
 // E (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "e"
-// Path from root: "/a/b/c/d/e"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "e"
+// 	Path from root:       "/a/b/c/d/e"
 func (n *A_B_C_DPath) E() *A_B_C_D_EPath {
 	return &A_B_C_D_EPath{
 		NodePath: ygot.NewNodePath(
@@ -354,11 +347,10 @@ func (n *A_B_C_DPath) E() *A_B_C_D_EPath {
 }
 
 // E (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "e"
-// Path from root: "/a/b/c/d/e"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "e"
+// 	Path from root:       "/a/b/c/d/e"
 func (n *A_B_C_DPathAny) E() *A_B_C_D_EPathAny {
 	return &A_B_C_D_EPathAny{
 		NodePath: ygot.NewNodePath(
@@ -436,11 +428,10 @@ type A_B_C_D_EPathAny struct {
 }
 
 // F (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "f"
-// Path from root: "/a/b/c/d/e/f"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "f"
+// 	Path from root:       "/a/b/c/d/e/f"
 func (n *A_B_C_D_EPath) F() *A_B_C_D_E_FPath {
 	return &A_B_C_D_E_FPath{
 		NodePath: ygot.NewNodePath(
@@ -452,11 +443,10 @@ func (n *A_B_C_D_EPath) F() *A_B_C_D_E_FPath {
 }
 
 // F (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "f"
-// Path from root: "/a/b/c/d/e/f"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "f"
+// 	Path from root:       "/a/b/c/d/e/f"
 func (n *A_B_C_D_EPathAny) F() *A_B_C_D_E_FPathAny {
 	return &A_B_C_D_E_FPathAny{
 		NodePath: ygot.NewNodePath(
@@ -534,11 +524,10 @@ type A_B_C_D_E_FPathAny struct {
 }
 
 // G (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "g"
-// Path from root: "/a/b/c/d/e/f/g"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "g"
+// 	Path from root:       "/a/b/c/d/e/f/g"
 func (n *A_B_C_D_E_FPath) G() *A_B_C_D_E_F_GPath {
 	return &A_B_C_D_E_F_GPath{
 		NodePath: ygot.NewNodePath(
@@ -550,11 +539,10 @@ func (n *A_B_C_D_E_FPath) G() *A_B_C_D_E_F_GPath {
 }
 
 // G (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "g"
-// Path from root: "/a/b/c/d/e/f/g"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "g"
+// 	Path from root:       "/a/b/c/d/e/f/g"
 func (n *A_B_C_D_E_FPathAny) G() *A_B_C_D_E_F_GPathAny {
 	return &A_B_C_D_E_F_GPathAny{
 		NodePath: ygot.NewNodePath(
@@ -632,11 +620,10 @@ type A_B_C_D_E_F_GPathAny struct {
 }
 
 // H (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "h"
-// Path from root: "/a/b/c/d/e/f/g/h"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "h"
+// 	Path from root:       "/a/b/c/d/e/f/g/h"
 func (n *A_B_C_D_E_F_GPath) H() *A_B_C_D_E_F_G_HPath {
 	return &A_B_C_D_E_F_G_HPath{
 		NodePath: ygot.NewNodePath(
@@ -648,11 +635,10 @@ func (n *A_B_C_D_E_F_GPath) H() *A_B_C_D_E_F_G_HPath {
 }
 
 // H (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "h"
-// Path from root: "/a/b/c/d/e/f/g/h"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "h"
+// 	Path from root:       "/a/b/c/d/e/f/g/h"
 func (n *A_B_C_D_E_F_GPathAny) H() *A_B_C_D_E_F_G_HPathAny {
 	return &A_B_C_D_E_F_G_HPathAny{
 		NodePath: ygot.NewNodePath(
@@ -730,11 +716,10 @@ type A_B_C_D_E_F_G_HPathAny struct {
 }
 
 // I (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "i"
-// Path from root: "/a/b/c/d/e/f/g/h/i"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "i"
+// 	Path from root:       "/a/b/c/d/e/f/g/h/i"
 func (n *A_B_C_D_E_F_G_HPath) I() *A_B_C_D_E_F_G_H_IPath {
 	return &A_B_C_D_E_F_G_H_IPath{
 		NodePath: ygot.NewNodePath(
@@ -746,11 +731,10 @@ func (n *A_B_C_D_E_F_G_HPath) I() *A_B_C_D_E_F_G_H_IPath {
 }
 
 // I (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "i"
-// Path from root: "/a/b/c/d/e/f/g/h/i"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "i"
+// 	Path from root:       "/a/b/c/d/e/f/g/h/i"
 func (n *A_B_C_D_E_F_G_HPathAny) I() *A_B_C_D_E_F_G_H_IPathAny {
 	return &A_B_C_D_E_F_G_H_IPathAny{
 		NodePath: ygot.NewNodePath(
@@ -828,11 +812,10 @@ type A_B_C_D_E_F_G_H_IPathAny struct {
 }
 
 // J (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "j"
-// Path from root: "/a/b/c/d/e/f/g/h/i/j"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "j"
+// 	Path from root:       "/a/b/c/d/e/f/g/h/i/j"
 func (n *A_B_C_D_E_F_G_H_IPath) J() *A_B_C_D_E_F_G_H_I_JPath {
 	return &A_B_C_D_E_F_G_H_I_JPath{
 		NodePath: ygot.NewNodePath(
@@ -844,11 +827,10 @@ func (n *A_B_C_D_E_F_G_H_IPath) J() *A_B_C_D_E_F_G_H_I_JPath {
 }
 
 // J (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "j"
-// Path from root: "/a/b/c/d/e/f/g/h/i/j"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "j"
+// 	Path from root:       "/a/b/c/d/e/f/g/h/i/j"
 func (n *A_B_C_D_E_F_G_H_IPathAny) J() *A_B_C_D_E_F_G_H_I_JPathAny {
 	return &A_B_C_D_E_F_G_H_I_JPathAny{
 		NodePath: ygot.NewNodePath(
@@ -926,11 +908,10 @@ type A_B_C_D_E_F_G_H_I_JPathAny struct {
 }
 
 // K (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "k"
-// Path from root: "/a/b/c/d/e/f/g/h/i/j/k"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "k"
+// 	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k"
 func (n *A_B_C_D_E_F_G_H_I_JPath) K() *A_B_C_D_E_F_G_H_I_J_KPath {
 	return &A_B_C_D_E_F_G_H_I_J_KPath{
 		NodePath: ygot.NewNodePath(
@@ -942,11 +923,10 @@ func (n *A_B_C_D_E_F_G_H_I_JPath) K() *A_B_C_D_E_F_G_H_I_J_KPath {
 }
 
 // K (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "k"
-// Path from root: "/a/b/c/d/e/f/g/h/i/j/k"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "k"
+// 	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k"
 func (n *A_B_C_D_E_F_G_H_I_JPathAny) K() *A_B_C_D_E_F_G_H_I_J_KPathAny {
 	return &A_B_C_D_E_F_G_H_I_J_KPathAny{
 		NodePath: ygot.NewNodePath(
@@ -1024,11 +1004,10 @@ type A_B_C_D_E_F_G_H_I_J_KPathAny struct {
 }
 
 // L (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "l"
-// Path from root: "/a/b/c/d/e/f/g/h/i/j/k/l"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "l"
+// 	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l"
 func (n *A_B_C_D_E_F_G_H_I_J_KPath) L() *A_B_C_D_E_F_G_H_I_J_K_LPath {
 	return &A_B_C_D_E_F_G_H_I_J_K_LPath{
 		NodePath: ygot.NewNodePath(
@@ -1040,11 +1019,10 @@ func (n *A_B_C_D_E_F_G_H_I_J_KPath) L() *A_B_C_D_E_F_G_H_I_J_K_LPath {
 }
 
 // L (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "l"
-// Path from root: "/a/b/c/d/e/f/g/h/i/j/k/l"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "l"
+// 	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l"
 func (n *A_B_C_D_E_F_G_H_I_J_KPathAny) L() *A_B_C_D_E_F_G_H_I_J_K_LPathAny {
 	return &A_B_C_D_E_F_G_H_I_J_K_LPathAny{
 		NodePath: ygot.NewNodePath(
@@ -1122,11 +1100,10 @@ type A_B_C_D_E_F_G_H_I_J_K_LPathAny struct {
 }
 
 // M (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "m"
-// Path from root: "/a/b/c/d/e/f/g/h/i/j/k/l/m"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "m"
+// 	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m"
 func (n *A_B_C_D_E_F_G_H_I_J_K_LPath) M() *A_B_C_D_E_F_G_H_I_J_K_L_MPath {
 	return &A_B_C_D_E_F_G_H_I_J_K_L_MPath{
 		NodePath: ygot.NewNodePath(
@@ -1138,11 +1115,10 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_LPath) M() *A_B_C_D_E_F_G_H_I_J_K_L_MPath {
 }
 
 // M (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "m"
-// Path from root: "/a/b/c/d/e/f/g/h/i/j/k/l/m"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "m"
+// 	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m"
 func (n *A_B_C_D_E_F_G_H_I_J_K_LPathAny) M() *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny {
 	return &A_B_C_D_E_F_G_H_I_J_K_L_MPathAny{
 		NodePath: ygot.NewNodePath(
@@ -1209,16 +1185,6 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_LPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_
 	)
 }
 
-// A_B_C_D_E_F_G_H_I_J_K_L_MPath represents the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m YANG schema element.
-type A_B_C_D_E_F_G_H_I_J_K_L_MPath struct {
-	*ygot.NodePath
-}
-
-// A_B_C_D_E_F_G_H_I_J_K_L_MPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m YANG schema element.
-type A_B_C_D_E_F_G_H_I_J_K_L_MPathAny struct {
-	*ygot.NodePath
-}
-
 // A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath represents the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo YANG schema element.
 type A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath struct {
 	parent ygot.PathStruct
@@ -1227,22 +1193,6 @@ type A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath struct {
 // A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo YANG schema element.
 type A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny struct {
 	parent ygot.PathStruct
-}
-
-// Foo corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath {
-	return &A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath{
-		parent: n,
-	}
-}
-
-// Foo corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
-func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny {
-	return &A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny{
-		parent: n,
-	}
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -1302,11 +1252,10 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "state/foo"
-// Path from root: "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "state/foo"
+// 	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"
 func (n *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath) State() ygnmi.SingletonQuery[string] {
 	return ygnmi.NewLeafSingletonQuery[string](
 		"A_B_C_D_E_F_G_H_I_J_K_L_M",
@@ -1335,11 +1284,10 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath) State() ygnmi.SingletonQuery[string]
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "state/foo"
-// Path from root: "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "state/foo"
+// 	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"
 func (n *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny) State() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewLeafWildcardQuery[string](
 		"A_B_C_D_E_F_G_H_I_J_K_L_M",
@@ -1365,4 +1313,30 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny) State() ygnmi.WildcardQuery[strin
 			Unmarshal:  oc.Unmarshal,
 		},
 	)
+}
+
+// A_B_C_D_E_F_G_H_I_J_K_L_MPath represents the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m YANG schema element.
+type A_B_C_D_E_F_G_H_I_J_K_L_MPath struct {
+	*ygot.NodePath
+}
+
+// A_B_C_D_E_F_G_H_I_J_K_L_MPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m YANG schema element.
+type A_B_C_D_E_F_G_H_I_J_K_L_MPathAny struct {
+	*ygot.NodePath
+}
+
+// Foo corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath {
+	return &A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath{
+		parent: n,
+	}
+}
+
+// Foo corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Note: The returned struct does not implement the PathStruct interface.
+func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny {
+	return &A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny{
+		parent: n,
+	}
 }

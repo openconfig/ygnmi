@@ -44,11 +44,10 @@ type ModelPathAny struct {
 }
 
 // MultiKeyAny (list):
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "b/multi-key"
-// Path from root: "/model/b/multi-key"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "b/multi-key"
+// 	Path from root:       "/model/b/multi-key"
 func (n *ModelPath) MultiKeyAny() *Model_MultiKeyPathAny {
 	return &Model_MultiKeyPathAny{
 		NodePath: ygot.NewNodePath(
@@ -60,11 +59,10 @@ func (n *ModelPath) MultiKeyAny() *Model_MultiKeyPathAny {
 }
 
 // MultiKeyAny (list):
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "b/multi-key"
-// Path from root: "/model/b/multi-key"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "b/multi-key"
+// 	Path from root:       "/model/b/multi-key"
 func (n *ModelPathAny) MultiKeyAny() *Model_MultiKeyPathAny {
 	return &Model_MultiKeyPathAny{
 		NodePath: ygot.NewNodePath(
@@ -90,12 +88,12 @@ func (n *Model_MultiKeyPathAny) WithKey2(Key2 uint64) *Model_MultiKeyPathAny {
 }
 
 // SingleKeyAny (list):
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "a/single-key"
-// Path from root: "/model/a/single-key"
-// Key (wildcarded): string
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "a/single-key"
+// 	Path from root:       "/model/a/single-key"
+//
+// 	Key (wildcarded): string
 func (n *ModelPath) SingleKeyAny() *Model_SingleKeyPathAny {
 	return &Model_SingleKeyPathAny{
 		NodePath: ygot.NewNodePath(
@@ -107,12 +105,12 @@ func (n *ModelPath) SingleKeyAny() *Model_SingleKeyPathAny {
 }
 
 // SingleKeyAny (list):
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "a/single-key"
-// Path from root: "/model/a/single-key"
-// Key (wildcarded): string
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "a/single-key"
+// 	Path from root:       "/model/a/single-key"
+//
+// 	Key (wildcarded): string
 func (n *ModelPathAny) SingleKeyAny() *Model_SingleKeyPathAny {
 	return &Model_SingleKeyPathAny{
 		NodePath: ygot.NewNodePath(
@@ -124,12 +122,12 @@ func (n *ModelPathAny) SingleKeyAny() *Model_SingleKeyPathAny {
 }
 
 // SingleKey (list):
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "a/single-key"
-// Path from root: "/model/a/single-key"
-// Key: string
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "a/single-key"
+// 	Path from root:       "/model/a/single-key"
+//
+// 	Key: string
 func (n *ModelPath) SingleKey(Key string) *Model_SingleKeyPath {
 	return &Model_SingleKeyPath{
 		NodePath: ygot.NewNodePath(
@@ -141,12 +139,12 @@ func (n *ModelPath) SingleKey(Key string) *Model_SingleKeyPath {
 }
 
 // SingleKey (list):
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "a/single-key"
-// Path from root: "/model/a/single-key"
-// Key: string
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "a/single-key"
+// 	Path from root:       "/model/a/single-key"
+//
+// 	Key: string
 func (n *ModelPathAny) SingleKey(Key string) *Model_SingleKeyPathAny {
 	return &Model_SingleKeyPathAny{
 		NodePath: ygot.NewNodePath(
@@ -280,11 +278,10 @@ func (n *Model_MultiKeyPathAny) Config() ygnmi.WildcardQuery[*oc.Model_MultiKey]
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "state/key1"
-// Path from root: "/model/b/multi-key/state/key1"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "state/key1"
+// 	Path from root:       "/model/b/multi-key/state/key1"
 func (n *Model_MultiKey_Key1Path) State() ygnmi.SingletonQuery[uint32] {
 	return ygnmi.NewLeafSingletonQuery[uint32](
 		"Model_MultiKey",
@@ -313,11 +310,10 @@ func (n *Model_MultiKey_Key1Path) State() ygnmi.SingletonQuery[uint32] {
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "state/key1"
-// Path from root: "/model/b/multi-key/state/key1"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "state/key1"
+// 	Path from root:       "/model/b/multi-key/state/key1"
 func (n *Model_MultiKey_Key1PathAny) State() ygnmi.WildcardQuery[uint32] {
 	return ygnmi.NewLeafWildcardQuery[uint32](
 		"Model_MultiKey",
@@ -346,11 +342,10 @@ func (n *Model_MultiKey_Key1PathAny) State() ygnmi.WildcardQuery[uint32] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "config/key1"
-// Path from root: "/model/b/multi-key/config/key1"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "config/key1"
+// 	Path from root:       "/model/b/multi-key/config/key1"
 func (n *Model_MultiKey_Key1Path) Config() ygnmi.ConfigQuery[uint32] {
 	return ygnmi.NewLeafConfigQuery[uint32](
 		"Model_MultiKey",
@@ -379,11 +374,10 @@ func (n *Model_MultiKey_Key1Path) Config() ygnmi.ConfigQuery[uint32] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "config/key1"
-// Path from root: "/model/b/multi-key/config/key1"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "config/key1"
+// 	Path from root:       "/model/b/multi-key/config/key1"
 func (n *Model_MultiKey_Key1PathAny) Config() ygnmi.WildcardQuery[uint32] {
 	return ygnmi.NewLeafWildcardQuery[uint32](
 		"Model_MultiKey",
@@ -412,11 +406,10 @@ func (n *Model_MultiKey_Key1PathAny) Config() ygnmi.WildcardQuery[uint32] {
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "state/key2"
-// Path from root: "/model/b/multi-key/state/key2"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "state/key2"
+// 	Path from root:       "/model/b/multi-key/state/key2"
 func (n *Model_MultiKey_Key2Path) State() ygnmi.SingletonQuery[uint64] {
 	return ygnmi.NewLeafSingletonQuery[uint64](
 		"Model_MultiKey",
@@ -445,11 +438,10 @@ func (n *Model_MultiKey_Key2Path) State() ygnmi.SingletonQuery[uint64] {
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "state/key2"
-// Path from root: "/model/b/multi-key/state/key2"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "state/key2"
+// 	Path from root:       "/model/b/multi-key/state/key2"
 func (n *Model_MultiKey_Key2PathAny) State() ygnmi.WildcardQuery[uint64] {
 	return ygnmi.NewLeafWildcardQuery[uint64](
 		"Model_MultiKey",
@@ -478,11 +470,10 @@ func (n *Model_MultiKey_Key2PathAny) State() ygnmi.WildcardQuery[uint64] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "config/key2"
-// Path from root: "/model/b/multi-key/config/key2"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "config/key2"
+// 	Path from root:       "/model/b/multi-key/config/key2"
 func (n *Model_MultiKey_Key2Path) Config() ygnmi.ConfigQuery[uint64] {
 	return ygnmi.NewLeafConfigQuery[uint64](
 		"Model_MultiKey",
@@ -511,11 +502,10 @@ func (n *Model_MultiKey_Key2Path) Config() ygnmi.ConfigQuery[uint64] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "config/key2"
-// Path from root: "/model/b/multi-key/config/key2"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "config/key2"
+// 	Path from root:       "/model/b/multi-key/config/key2"
 func (n *Model_MultiKey_Key2PathAny) Config() ygnmi.WildcardQuery[uint64] {
 	return ygnmi.NewLeafWildcardQuery[uint64](
 		"Model_MultiKey",
@@ -662,11 +652,10 @@ func (n *Model_SingleKeyPathAny) Config() ygnmi.WildcardQuery[*oc.Model_SingleKe
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "state/key"
-// Path from root: "/model/a/single-key/state/key"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "state/key"
+// 	Path from root:       "/model/a/single-key/state/key"
 func (n *Model_SingleKey_KeyPath) State() ygnmi.SingletonQuery[string] {
 	return ygnmi.NewLeafSingletonQuery[string](
 		"Model_SingleKey",
@@ -695,11 +684,10 @@ func (n *Model_SingleKey_KeyPath) State() ygnmi.SingletonQuery[string] {
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "state/key"
-// Path from root: "/model/a/single-key/state/key"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "state/key"
+// 	Path from root:       "/model/a/single-key/state/key"
 func (n *Model_SingleKey_KeyPathAny) State() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewLeafWildcardQuery[string](
 		"Model_SingleKey",
@@ -728,11 +716,10 @@ func (n *Model_SingleKey_KeyPathAny) State() ygnmi.WildcardQuery[string] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "config/key"
-// Path from root: "/model/a/single-key/config/key"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "config/key"
+// 	Path from root:       "/model/a/single-key/config/key"
 func (n *Model_SingleKey_KeyPath) Config() ygnmi.ConfigQuery[string] {
 	return ygnmi.NewLeafConfigQuery[string](
 		"Model_SingleKey",
@@ -761,11 +748,10 @@ func (n *Model_SingleKey_KeyPath) Config() ygnmi.ConfigQuery[string] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "config/key"
-// Path from root: "/model/a/single-key/config/key"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "config/key"
+// 	Path from root:       "/model/a/single-key/config/key"
 func (n *Model_SingleKey_KeyPathAny) Config() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewLeafWildcardQuery[string](
 		"Model_SingleKey",
@@ -794,11 +780,10 @@ func (n *Model_SingleKey_KeyPathAny) Config() ygnmi.WildcardQuery[string] {
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "state/value"
-// Path from root: "/model/a/single-key/state/value"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "state/value"
+// 	Path from root:       "/model/a/single-key/state/value"
 func (n *Model_SingleKey_ValuePath) State() ygnmi.SingletonQuery[int64] {
 	return ygnmi.NewLeafSingletonQuery[int64](
 		"Model_SingleKey",
@@ -827,11 +812,10 @@ func (n *Model_SingleKey_ValuePath) State() ygnmi.SingletonQuery[int64] {
 }
 
 // State returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "state/value"
-// Path from root: "/model/a/single-key/state/value"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "state/value"
+// 	Path from root:       "/model/a/single-key/state/value"
 func (n *Model_SingleKey_ValuePathAny) State() ygnmi.WildcardQuery[int64] {
 	return ygnmi.NewLeafWildcardQuery[int64](
 		"Model_SingleKey",
@@ -860,11 +844,10 @@ func (n *Model_SingleKey_ValuePathAny) State() ygnmi.WildcardQuery[int64] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "config/value"
-// Path from root: "/model/a/single-key/config/value"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "config/value"
+// 	Path from root:       "/model/a/single-key/config/value"
 func (n *Model_SingleKey_ValuePath) Config() ygnmi.ConfigQuery[int64] {
 	return ygnmi.NewLeafConfigQuery[int64](
 		"Model_SingleKey",
@@ -893,11 +876,10 @@ func (n *Model_SingleKey_ValuePath) Config() ygnmi.ConfigQuery[int64] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "config/value"
-// Path from root: "/model/a/single-key/config/value"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "config/value"
+// 	Path from root:       "/model/a/single-key/config/value"
 func (n *Model_SingleKey_ValuePathAny) Config() ygnmi.WildcardQuery[int64] {
 	return ygnmi.NewLeafWildcardQuery[int64](
 		"Model_SingleKey",

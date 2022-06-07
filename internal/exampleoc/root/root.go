@@ -47,11 +47,10 @@ func New() *RootPath {
 }
 
 // A (container):
-// ----------------------------------------
-// Defining module: "openconfig-nested"
-// Instantiating module: "openconfig-nested"
-// Path from parent: "a"
-// Path from root: "/a"
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "a"
+// 	Path from root:       "/a"
 func (n *RootPath) A() *nested.APath {
 	return &nested.APath{
 		NodePath: ygot.NewNodePath(
@@ -63,11 +62,10 @@ func (n *RootPath) A() *nested.APath {
 }
 
 // Model (container):
-// ----------------------------------------
-// Defining module: "openconfig-withlistval"
-// Instantiating module: "openconfig-withlistval"
-// Path from parent: "model"
-// Path from root: "/model"
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "model"
+// 	Path from root:       "/model"
 func (n *RootPath) Model() *withlistval.ModelPath {
 	return &withlistval.ModelPath{
 		NodePath: ygot.NewNodePath(
@@ -80,11 +78,10 @@ func (n *RootPath) Model() *withlistval.ModelPath {
 
 // Parent (container): I am a parent container
 // that has 4 children.
-// ----------------------------------------
-// Defining module: "openconfig-simple"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "parent"
-// Path from root: "/parent"
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "parent"
+// 	Path from root:       "/parent"
 func (n *RootPath) Parent() *simple.ParentPath {
 	return &simple.ParentPath{
 		NodePath: ygot.NewNodePath(
@@ -96,11 +93,10 @@ func (n *RootPath) Parent() *simple.ParentPath {
 }
 
 // RemoteContainer (container):
-// ----------------------------------------
-// Defining module: "openconfig-remote"
-// Instantiating module: "openconfig-simple"
-// Path from parent: "remote-container"
-// Path from root: "/remote-container"
+// 	Defining module:      "openconfig-remote"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "remote-container"
+// 	Path from root:       "/remote-container"
 func (n *RootPath) RemoteContainer() *simple.RemoteContainerPath {
 	return &simple.RemoteContainerPath{
 		NodePath: ygot.NewNodePath(
