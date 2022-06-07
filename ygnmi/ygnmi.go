@@ -424,30 +424,45 @@ func CollectAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) *Coll
 	return collect
 }
 
+// Result is the result of a Set request.
+type Result struct {
+	// RawResponse is the raw gNMI response received from the server.
+	RawResponse *gpb.SetResponse
+	// Timestamp is the timestamp from the SetResponse as a native Go time struct.
+	Timestamp time.Time
+}
+
+func responseToResult(resp *gpb.SetResponse) *Result {
+	return &Result{
+		RawResponse: resp,
+		Timestamp:   time.Unix(0, resp.GetTimestamp()),
+	}
+}
+
 // Update updates the configuration at the given query path with the val.
-func Update[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T) (*gpb.SetResponse, error) {
+func Update[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T) (*Result, error) {
 	resp, path, err := set(ctx, c, q, val, updatePath)
 	if err != nil {
-		return resp, fmt.Errorf("Update(t) at path %s: %w", path, err)
+		return nil, fmt.Errorf("Update(t) at path %s: %w", path, err)
 	}
-	return resp, nil
+	return responseToResult(resp), nil
 }
 
 // Replace replaces the configuration at the given query path with the val.
-func Replace[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T) (*gpb.SetResponse, error) {
+func Replace[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T) (*Result, error) {
 	resp, path, err := set(ctx, c, q, val, replacePath)
 	if err != nil {
-		return resp, fmt.Errorf("Replace(t) at path %s: %w", path, err)
+		return nil, fmt.Errorf("Replace(t) at path %s: %w", path, err)
 	}
-	return resp, nil
+	return responseToResult(resp), nil
 }
 
 // Delete deletes the configuration at the given query path.
-func Delete[T any](ctx context.Context, c *Client, q ConfigQuery[T]) (*gpb.SetResponse, error) {
+func Delete[T any](ctx context.Context, c *Client, q ConfigQuery[T]) (*Result, error) {
 	var t T
 	resp, path, err := set(ctx, c, q, t, deletePath)
 	if err != nil {
-		return resp, fmt.Errorf("Delete(t) at path %s: %w", path, err)
+		return nil, fmt.Errorf("Delete(t) at path %s: %w", path, err)
 	}
-	return resp, nil
+	return responseToResult(resp), nil
 }

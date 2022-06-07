@@ -1934,14 +1934,14 @@ func TestUpdate(t *testing.T) {
 
 	tests := []struct {
 		desc         string
-		op           func(*ygnmi.Client) (*gpb.SetResponse, error)
+		op           func(*ygnmi.Client) (*ygnmi.Result, error)
 		wantErr      string
 		wantRequest  *gpb.SetRequest
 		stubResponse *gpb.SetResponse
 		stubErr      error
 	}{{
 		desc: "scalar leaf",
-		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
 			return ygnmi.Update(context.Background(), c, root.New().Parent().Child().One().Config(), "10")
 		},
 		wantRequest: &gpb.SetRequest{
@@ -1960,7 +1960,7 @@ func TestUpdate(t *testing.T) {
 		},
 	}, {
 		desc: "non scalar leaf",
-		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
 			return ygnmi.Update(context.Background(), c, root.New().Parent().Child().Three().Config(), exampleoc.Child_Three_ONE)
 		},
 		wantRequest: &gpb.SetRequest{
@@ -1979,7 +1979,7 @@ func TestUpdate(t *testing.T) {
 		},
 	}, {
 		desc: "non leaf",
-		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
 			return ygnmi.Update(context.Background(), c, root.New().Parent().Child().Config(), &exampleoc.Parent_Child{One: ygot.String("10")})
 		},
 		wantRequest: &gpb.SetRequest{
@@ -1998,7 +1998,7 @@ func TestUpdate(t *testing.T) {
 		},
 	}, {
 		desc: "server error",
-		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
 			return ygnmi.Update(context.Background(), c, root.New().Parent().Child().One().Config(), "10")
 		},
 		wantRequest: &gpb.SetRequest{
@@ -2028,7 +2028,11 @@ func TestUpdate(t *testing.T) {
 			if diff := cmp.Diff(tt.wantRequest, setClient.requests[0], protocmp.Transform()); diff != "" {
 				t.Errorf("Update() sent unexpected request (-want,+got):\n%s", diff)
 			}
-			if diff := cmp.Diff(tt.stubResponse, got, protocmp.Transform()); diff != "" {
+			want := &ygnmi.Result{
+				RawResponse: tt.stubResponse,
+				Timestamp:   time.Unix(0, tt.stubResponse.GetTimestamp()),
+			}
+			if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
 				t.Errorf("Update() returned unexpected value (-want,+got):\n%s", diff)
 			}
 		})
@@ -2043,14 +2047,14 @@ func TestReplace(t *testing.T) {
 	}
 	tests := []struct {
 		desc         string
-		op           func(*ygnmi.Client) (*gpb.SetResponse, error)
+		op           func(*ygnmi.Client) (*ygnmi.Result, error)
 		wantErr      string
 		wantRequest  *gpb.SetRequest
 		stubResponse *gpb.SetResponse
 		stubErr      error
 	}{{
 		desc: "scalar leaf",
-		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
 			return ygnmi.Replace(context.Background(), c, root.New().Parent().Child().One().Config(), "10")
 		},
 		wantRequest: &gpb.SetRequest{
@@ -2069,7 +2073,7 @@ func TestReplace(t *testing.T) {
 		},
 	}, {
 		desc: "non scalar leaf",
-		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
 			return ygnmi.Replace(context.Background(), c, root.New().Parent().Child().Three().Config(), exampleoc.Child_Three_ONE)
 
 		},
@@ -2089,7 +2093,7 @@ func TestReplace(t *testing.T) {
 		},
 	}, {
 		desc: "non leaf",
-		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
 			return ygnmi.Replace(context.Background(), c, root.New().Parent().Child().Config(), &exampleoc.Parent_Child{One: ygot.String("10")})
 		},
 		wantRequest: &gpb.SetRequest{
@@ -2108,7 +2112,7 @@ func TestReplace(t *testing.T) {
 		},
 	}, {
 		desc: "server error",
-		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
 			return ygnmi.Replace(context.Background(), c, root.New().Parent().Child().One().Config(), "10")
 		},
 		wantRequest: &gpb.SetRequest{
@@ -2138,7 +2142,11 @@ func TestReplace(t *testing.T) {
 			if diff := cmp.Diff(tt.wantRequest, setClient.requests[0], protocmp.Transform()); diff != "" {
 				t.Errorf("Replace() sent unexpected request (-want,+got):\n%s", diff)
 			}
-			if diff := cmp.Diff(tt.stubResponse, got, protocmp.Transform()); diff != "" {
+			want := &ygnmi.Result{
+				RawResponse: tt.stubResponse,
+				Timestamp:   time.Unix(0, tt.stubResponse.GetTimestamp()),
+			}
+			if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
 				t.Errorf("Replace() returned unexpected value (-want,+got):\n%s", diff)
 			}
 		})
@@ -2153,14 +2161,14 @@ func TestDelete(t *testing.T) {
 	}
 	tests := []struct {
 		desc         string
-		op           func(*ygnmi.Client) (*gpb.SetResponse, error)
+		op           func(*ygnmi.Client) (*ygnmi.Result, error)
 		wantErr      string
 		wantRequest  *gpb.SetRequest
 		stubResponse *gpb.SetResponse
 		stubErr      error
 	}{{
 		desc: "success",
-		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
 			return ygnmi.Delete(context.Background(), c, root.New().Parent().Child().One().Config())
 		},
 		wantRequest: &gpb.SetRequest{
@@ -2178,7 +2186,7 @@ func TestDelete(t *testing.T) {
 		},
 	}, {
 		desc: "server error",
-		op: func(c *ygnmi.Client) (*gpb.SetResponse, error) {
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
 			return ygnmi.Delete(context.Background(), c, root.New().Parent().Child().One().Config())
 		},
 		wantRequest: &gpb.SetRequest{
@@ -2207,7 +2215,11 @@ func TestDelete(t *testing.T) {
 			if diff := cmp.Diff(tt.wantRequest, setClient.requests[0], protocmp.Transform()); diff != "" {
 				t.Errorf("Delete() sent unexpected request (-want,+got):\n%s", diff)
 			}
-			if diff := cmp.Diff(tt.stubResponse, got, protocmp.Transform()); diff != "" {
+			want := &ygnmi.Result{
+				RawResponse: tt.stubResponse,
+				Timestamp:   time.Unix(0, tt.stubResponse.GetTimestamp()),
+			}
+			if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
 				t.Errorf("Delete() returned unexpected value (-want,+got):\n%s", diff)
 			}
 		})
