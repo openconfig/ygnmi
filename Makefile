@@ -1,11 +1,11 @@
-.PHONY: test integration_test clean
+.PHONY: test clean
 
 build:
 	go build -v ./...
 
 # TODO: Add race tests for specific packages with concurrency.
 test:
-	go test -v ./...
+	go test -coverprofile=profile.cov -v ./...
 
 gen:
 	internal/exampleoc/gen.sh
