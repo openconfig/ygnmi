@@ -29,22 +29,20 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
 
     - name: Set up Go
-      uses: actions/setup-go@v3
+      uses: actions/setup-go@v2
       with:
         go-version: '1.x'
 
-    - name: Run coverage
-      run: |
-        go install github.com/go-playground/overalls@latest
-        overalls -project ${GITHUB_WORKSPACE} -covermode=count 
+    - name: Test
+      run: make test
 
     - name: Send coverage
       uses: shogo82148/actions-goveralls@v1
       with:
-        path-to-profile: overalls.coverprofile
+        path-to-profile: profile.cov
 
   generate:
     runs-on: ubuntu-latest
