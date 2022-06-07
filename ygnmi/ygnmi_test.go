@@ -2029,8 +2029,8 @@ func TestUpdate(t *testing.T) {
 				t.Errorf("Update() sent unexpected request (-want,+got):\n%s", diff)
 			}
 			want := &ygnmi.Result{
-				Response:  tt.stubResponse,
-				Timestamp: time.Unix(0, tt.stubResponse.GetTimestamp()),
+				RawResponse: tt.stubResponse,
+				Timestamp:   time.Unix(0, tt.stubResponse.GetTimestamp()),
 			}
 			if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
 				t.Errorf("Update() returned unexpected value (-want,+got):\n%s", diff)
@@ -2143,8 +2143,8 @@ func TestReplace(t *testing.T) {
 				t.Errorf("Replace() sent unexpected request (-want,+got):\n%s", diff)
 			}
 			want := &ygnmi.Result{
-				Response:  tt.stubResponse,
-				Timestamp: time.Unix(0, tt.stubResponse.GetTimestamp()),
+				RawResponse: tt.stubResponse,
+				Timestamp:   time.Unix(0, tt.stubResponse.GetTimestamp()),
 			}
 			if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
 				t.Errorf("Replace() returned unexpected value (-want,+got):\n%s", diff)
@@ -2216,8 +2216,8 @@ func TestDelete(t *testing.T) {
 				t.Errorf("Delete() sent unexpected request (-want,+got):\n%s", diff)
 			}
 			want := &ygnmi.Result{
-				Response:  tt.stubResponse,
-				Timestamp: time.Unix(0, tt.stubResponse.GetTimestamp()),
+				RawResponse: tt.stubResponse,
+				Timestamp:   time.Unix(0, tt.stubResponse.GetTimestamp()),
 			}
 			if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
 				t.Errorf("Delete() returned unexpected value (-want,+got):\n%s", diff)

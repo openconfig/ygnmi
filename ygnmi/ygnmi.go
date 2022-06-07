@@ -426,16 +426,16 @@ func CollectAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) *Coll
 
 // Result is the result of a Set request.
 type Result struct {
-	// Response is the raw gNMI response received from the server.
-	Response *gpb.SetResponse
-	// Timestamp is the timestamp from the SetResponse a native Go time struct.
+	// RawResponse is the raw gNMI response received from the server.
+	RawResponse *gpb.SetResponse
+	// Timestamp is the timestamp from the SetResponse as a native Go time struct.
 	Timestamp time.Time
 }
 
 func responseToResult(resp *gpb.SetResponse) *Result {
 	return &Result{
-		Response:  resp,
-		Timestamp: time.Unix(0, resp.GetTimestamp()),
+		RawResponse: resp,
+		Timestamp:   time.Unix(0, resp.GetTimestamp()),
 	}
 }
 
