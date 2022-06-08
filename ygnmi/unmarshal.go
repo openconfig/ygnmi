@@ -320,9 +320,3 @@ func bundleDatapoints(datapoints []*DataPoint, prefixLen int) (map[string][]*Dat
 
 	return groups, prefixes, nil
 }
-
-func errsToErr(errs []error) error {
-	l := &errlist.List{}
-	l.Add(errs...)
-	return l.Err()
-}
