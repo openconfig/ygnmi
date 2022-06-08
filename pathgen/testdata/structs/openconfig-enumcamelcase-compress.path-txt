@@ -19,12 +19,12 @@ import (
 
 // DevicePath represents the /device YANG schema element.
 type DevicePath struct {
-	*ygot.DeviceRootBase
+	*ygnmi.DeviceRootBase
 }
 
 // New returns a new path object from which YANG paths can be constructed.
 func New() *DevicePath {
-	return &DevicePath{ygot.NewDeviceRootBase("")}
+	return &DevicePath{ygnmi.NewDeviceRootBase()}
 }
 
 // Foo (container): 
@@ -34,7 +34,7 @@ func New() *DevicePath {
 // 	Path from root:       "/foo"
 func (n *DevicePath) Foo() *FooPath {
 	return &FooPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"foo"},
 			map[string]interface{}{},
 			n,
@@ -44,32 +44,32 @@ func (n *DevicePath) Foo() *FooPath {
 
 // Foo_BarPath represents the /openconfig-enumcamelcase/foo/bar YANG schema element.
 type Foo_BarPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Foo_BarPathAny represents the wildcard version of the /openconfig-enumcamelcase/foo/bar YANG schema element.
 type Foo_BarPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Foo_BazPath represents the /openconfig-enumcamelcase/foo/baz YANG schema element.
 type Foo_BazPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Foo_BazPathAny represents the wildcard version of the /openconfig-enumcamelcase/foo/baz YANG schema element.
 type Foo_BazPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // FooPath represents the /openconfig-enumcamelcase/foo YANG schema element.
 type FooPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // FooPathAny represents the wildcard version of the /openconfig-enumcamelcase/foo YANG schema element.
 type FooPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Bar (leaf): 
@@ -79,7 +79,7 @@ type FooPathAny struct {
 // 	Path from root:       "/foo/bar"
 func (n *FooPath) Bar() *Foo_BarPath {
 	return &Foo_BarPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"bar"},
 			map[string]interface{}{},
 			n,
@@ -94,7 +94,7 @@ func (n *FooPath) Bar() *Foo_BarPath {
 // 	Path from root:       "/foo/bar"
 func (n *FooPathAny) Bar() *Foo_BarPathAny {
 	return &Foo_BarPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"bar"},
 			map[string]interface{}{},
 			n,
@@ -109,7 +109,7 @@ func (n *FooPathAny) Bar() *Foo_BarPathAny {
 // 	Path from root:       "/foo/baz"
 func (n *FooPath) Baz() *Foo_BazPath {
 	return &Foo_BazPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"baz"},
 			map[string]interface{}{},
 			n,
@@ -124,7 +124,7 @@ func (n *FooPath) Baz() *Foo_BazPath {
 // 	Path from root:       "/foo/baz"
 func (n *FooPathAny) Baz() *Foo_BazPathAny {
 	return &Foo_BazPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"baz"},
 			map[string]interface{}{},
 			n,

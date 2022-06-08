@@ -21,12 +21,12 @@ import (
 
 // DevicePath represents the /device YANG schema element.
 type DevicePath struct {
-	*ygot.DeviceRootBase
+	*ygnmi.DeviceRootBase
 }
 
 // New returns a new path object from which YANG paths can be constructed.
 func New() *DevicePath {
-	return &DevicePath{ygot.NewDeviceRootBase("")}
+	return &DevicePath{ygnmi.NewDeviceRootBase()}
 }
 
 // Child (container): 
@@ -36,7 +36,7 @@ func New() *DevicePath {
 // 	Path from root:       "/child"
 func (n *DevicePath) Child() *openconfigimportpath.ChildPath {
 	return &openconfigimportpath.ChildPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"child"},
 			map[string]interface{}{},
 			n,
@@ -51,7 +51,7 @@ func (n *DevicePath) Child() *openconfigimportpath.ChildPath {
 // 	Path from root:       "/native"
 func (n *DevicePath) Native() *openconfigsimpletargetpath.NativePath {
 	return &openconfigsimpletargetpath.NativePath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"native"},
 			map[string]interface{}{},
 			n,
@@ -66,7 +66,7 @@ func (n *DevicePath) Native() *openconfigsimpletargetpath.NativePath {
 // 	Path from root:       "/target"
 func (n *DevicePath) Target() *openconfigsimpletargetpath.TargetPath {
 	return &openconfigsimpletargetpath.TargetPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"target"},
 			map[string]interface{}{},
 			n,

@@ -19,12 +19,12 @@ import (
 
 // DevicePath represents the /device YANG schema element.
 type DevicePath struct {
-	*ygot.DeviceRootBase
+	*ygnmi.DeviceRootBase
 }
 
 // New returns a new path object from which YANG paths can be constructed.
 func New() *DevicePath {
-	return &DevicePath{ygot.NewDeviceRootBase("")}
+	return &DevicePath{ygnmi.NewDeviceRootBase()}
 }
 
 // Parent (container): I am a parent container
@@ -35,7 +35,7 @@ func New() *DevicePath {
 // 	Path from root:       "/parent"
 func (n *DevicePath) Parent() *ParentPath {
 	return &ParentPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"parent"},
 			map[string]interface{}{},
 			n,
@@ -50,7 +50,7 @@ func (n *DevicePath) Parent() *ParentPath {
 // 	Path from root:       "/remote-container"
 func (n *DevicePath) RemoteContainer() *RemoteContainerPath {
 	return &RemoteContainerPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"remote-container"},
 			map[string]interface{}{},
 			n,
@@ -60,12 +60,12 @@ func (n *DevicePath) RemoteContainer() *RemoteContainerPath {
 
 // ParentPath represents the /openconfig-simple/parent YANG schema element.
 type ParentPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // ParentPathAny represents the wildcard version of the /openconfig-simple/parent YANG schema element.
 type ParentPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Child (container): 
@@ -75,7 +75,7 @@ type ParentPathAny struct {
 // 	Path from root:       "/parent/child"
 func (n *ParentPath) Child() *Parent_ChildPath {
 	return &Parent_ChildPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"child"},
 			map[string]interface{}{},
 			n,
@@ -90,7 +90,7 @@ func (n *ParentPath) Child() *Parent_ChildPath {
 // 	Path from root:       "/parent/child"
 func (n *ParentPathAny) Child() *Parent_ChildPathAny {
 	return &Parent_ChildPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"child"},
 			map[string]interface{}{},
 			n,
@@ -100,52 +100,52 @@ func (n *ParentPathAny) Child() *Parent_ChildPathAny {
 
 // Parent_Child_FourPath represents the /openconfig-simple/parent/child/state/four YANG schema element.
 type Parent_Child_FourPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Parent_Child_FourPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/four YANG schema element.
 type Parent_Child_FourPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Parent_Child_OnePath represents the /openconfig-simple/parent/child/state/one YANG schema element.
 type Parent_Child_OnePath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Parent_Child_OnePathAny represents the wildcard version of the /openconfig-simple/parent/child/state/one YANG schema element.
 type Parent_Child_OnePathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Parent_Child_ThreePath represents the /openconfig-simple/parent/child/state/three YANG schema element.
 type Parent_Child_ThreePath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Parent_Child_ThreePathAny represents the wildcard version of the /openconfig-simple/parent/child/state/three YANG schema element.
 type Parent_Child_ThreePathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Parent_Child_TwoPath represents the /openconfig-simple/parent/child/state/two YANG schema element.
 type Parent_Child_TwoPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Parent_Child_TwoPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/two YANG schema element.
 type Parent_Child_TwoPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Parent_ChildPath represents the /openconfig-simple/parent/child YANG schema element.
 type Parent_ChildPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Parent_ChildPathAny represents the wildcard version of the /openconfig-simple/parent/child YANG schema element.
 type Parent_ChildPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Four (leaf): 
@@ -155,7 +155,7 @@ type Parent_ChildPathAny struct {
 // 	Path from root:       "/parent/child/state/four"
 func (n *Parent_ChildPath) Four() *Parent_Child_FourPath {
 	return &Parent_Child_FourPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "four"},
 			map[string]interface{}{},
 			n,
@@ -170,7 +170,7 @@ func (n *Parent_ChildPath) Four() *Parent_Child_FourPath {
 // 	Path from root:       "/parent/child/state/four"
 func (n *Parent_ChildPathAny) Four() *Parent_Child_FourPathAny {
 	return &Parent_Child_FourPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "four"},
 			map[string]interface{}{},
 			n,
@@ -185,7 +185,7 @@ func (n *Parent_ChildPathAny) Four() *Parent_Child_FourPathAny {
 // 	Path from root:       "/parent/child/state/one"
 func (n *Parent_ChildPath) One() *Parent_Child_OnePath {
 	return &Parent_Child_OnePath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "one"},
 			map[string]interface{}{},
 			n,
@@ -200,7 +200,7 @@ func (n *Parent_ChildPath) One() *Parent_Child_OnePath {
 // 	Path from root:       "/parent/child/state/one"
 func (n *Parent_ChildPathAny) One() *Parent_Child_OnePathAny {
 	return &Parent_Child_OnePathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "one"},
 			map[string]interface{}{},
 			n,
@@ -215,7 +215,7 @@ func (n *Parent_ChildPathAny) One() *Parent_Child_OnePathAny {
 // 	Path from root:       "/parent/child/state/three"
 func (n *Parent_ChildPath) Three() *Parent_Child_ThreePath {
 	return &Parent_Child_ThreePath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "three"},
 			map[string]interface{}{},
 			n,
@@ -230,7 +230,7 @@ func (n *Parent_ChildPath) Three() *Parent_Child_ThreePath {
 // 	Path from root:       "/parent/child/state/three"
 func (n *Parent_ChildPathAny) Three() *Parent_Child_ThreePathAny {
 	return &Parent_Child_ThreePathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "three"},
 			map[string]interface{}{},
 			n,
@@ -245,7 +245,7 @@ func (n *Parent_ChildPathAny) Three() *Parent_Child_ThreePathAny {
 // 	Path from root:       "/parent/child/state/two"
 func (n *Parent_ChildPath) Two() *Parent_Child_TwoPath {
 	return &Parent_Child_TwoPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "two"},
 			map[string]interface{}{},
 			n,
@@ -260,7 +260,7 @@ func (n *Parent_ChildPath) Two() *Parent_Child_TwoPath {
 // 	Path from root:       "/parent/child/state/two"
 func (n *Parent_ChildPathAny) Two() *Parent_Child_TwoPathAny {
 	return &Parent_Child_TwoPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "two"},
 			map[string]interface{}{},
 			n,
@@ -270,22 +270,22 @@ func (n *Parent_ChildPathAny) Two() *Parent_Child_TwoPathAny {
 
 // RemoteContainer_ALeafPath represents the /openconfig-simple/remote-container/state/a-leaf YANG schema element.
 type RemoteContainer_ALeafPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // RemoteContainer_ALeafPathAny represents the wildcard version of the /openconfig-simple/remote-container/state/a-leaf YANG schema element.
 type RemoteContainer_ALeafPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // RemoteContainerPath represents the /openconfig-simple/remote-container YANG schema element.
 type RemoteContainerPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // RemoteContainerPathAny represents the wildcard version of the /openconfig-simple/remote-container YANG schema element.
 type RemoteContainerPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // ALeaf (leaf): 
@@ -295,7 +295,7 @@ type RemoteContainerPathAny struct {
 // 	Path from root:       "/remote-container/state/a-leaf"
 func (n *RemoteContainerPath) ALeaf() *RemoteContainer_ALeafPath {
 	return &RemoteContainer_ALeafPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "a-leaf"},
 			map[string]interface{}{},
 			n,
@@ -310,7 +310,7 @@ func (n *RemoteContainerPath) ALeaf() *RemoteContainer_ALeafPath {
 // 	Path from root:       "/remote-container/state/a-leaf"
 func (n *RemoteContainerPathAny) ALeaf() *RemoteContainer_ALeafPathAny {
 	return &RemoteContainer_ALeafPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "a-leaf"},
 			map[string]interface{}{},
 			n,

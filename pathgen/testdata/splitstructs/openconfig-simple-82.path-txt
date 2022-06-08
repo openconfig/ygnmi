@@ -19,20 +19,20 @@ import (
 
 // Parent_Child_ThreePath represents the /openconfig-simple/parent/child/state/three YANG schema element.
 type Parent_Child_ThreePath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Parent_Child_ThreePathAny represents the wildcard version of the /openconfig-simple/parent/child/state/three YANG schema element.
 type Parent_Child_ThreePathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Parent_Child_TwoPath represents the /openconfig-simple/parent/child/state/two YANG schema element.
 type Parent_Child_TwoPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Parent_Child_TwoPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/two YANG schema element.
 type Parent_Child_TwoPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }

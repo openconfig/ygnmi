@@ -34,7 +34,7 @@ import (
 
 // subscribe create a gNMI SubscribeClient for the given query.
 func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.SubscriptionList_Mode) (_ gpb.GNMI_SubscribeClient, rerr error) {
-	path, err := resolvePath(q)
+	path, err := resolvePath(q.pathStruct())
 	if err != nil {
 		return nil, err
 	}
@@ -228,7 +228,7 @@ func receiveStream[T any](sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-ch
 
 // set configures the target at the query path.
 func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, op setOperation) (*gpb.SetResponse, *gpb.Path, error) {
-	path, err := resolvePath[T](q)
+	path, err := resolvePath(q.pathStruct())
 	if err != nil {
 		return nil, nil, err
 	}
@@ -335,9 +335,9 @@ func prettySetRequest(setRequest *gpb.SetRequest) string {
 	return buf.String()
 }
 
-func resolvePath[T any](q AnyQuery[T]) (*gpb.Path, error) {
-	path, _, errs := ygot.ResolvePath(q.pathStruct())
-	if err := errsToErr(errs); err != nil {
+func resolvePath(q PathStruct) (*gpb.Path, error) {
+	path, _, err := ResolvePath(q)
+	if err != nil {
 		return nil, err
 	}
 	// TODO: remove when fixed https://github.com/openconfig/ygot/issues/615

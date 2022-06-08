@@ -2189,7 +2189,7 @@ const (
 // 	UnionKey: [oc.UnionString, oc.Binary]
 func (n *RootPath) List(Key1 string, Key2 oc.Binary, UnionKey oc.RootElementModule_List_UnionKey_Union) *ListPath {
 	return &ListPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": Key1, "key2": Key2, "union-key": UnionKey},
 			n,
@@ -2210,7 +2210,7 @@ func (n *RootPath) List(Key1 string, Key2 oc.Binary, UnionKey oc.RootElementModu
 // 	UnionKey (wildcarded): [oc.UnionString, oc.Binary]
 func (n *RootPath) ListAnyKey2AnyUnionKey(Key1 string) *ListPathAny {
 	return &ListPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": Key1, "key2": "*", "union-key": "*"},
 			n,
@@ -2229,7 +2229,7 @@ func (n *RootPath) ListAnyKey2AnyUnionKey(Key1 string) *ListPathAny {
 // 	UnionKey (wildcarded): [oc.UnionString, oc.Binary]
 func (n *RootPath) ListAnyKey1AnyUnionKey(Key2 oc.Binary) *ListPathAny {
 	return &ListPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": "*", "key2": Key2, "union-key": "*"},
 			n,
@@ -2248,7 +2248,7 @@ func (n *RootPath) ListAnyKey1AnyUnionKey(Key2 oc.Binary) *ListPathAny {
 // 	UnionKey (wildcarded): [oc.UnionString, oc.Binary]
 func (n *RootPath) ListAnyUnionKey(Key1 string, Key2 oc.Binary) *ListPathAny {
 	return &ListPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": Key1, "key2": Key2, "union-key": "*"},
 			n,
@@ -2267,7 +2267,7 @@ func (n *RootPath) ListAnyUnionKey(Key1 string, Key2 oc.Binary) *ListPathAny {
 // 	UnionKey: [oc.UnionString, oc.Binary]
 func (n *RootPath) ListAnyKey1AnyKey2(UnionKey oc.RootElementModule_List_UnionKey_Union) *ListPathAny {
 	return &ListPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": "*", "key2": "*", "union-key": UnionKey},
 			n,
@@ -2286,7 +2286,7 @@ func (n *RootPath) ListAnyKey1AnyKey2(UnionKey oc.RootElementModule_List_UnionKe
 // 	UnionKey: [oc.UnionString, oc.Binary]
 func (n *RootPath) ListAnyKey2(Key1 string, UnionKey oc.RootElementModule_List_UnionKey_Union) *ListPathAny {
 	return &ListPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": Key1, "key2": "*", "union-key": UnionKey},
 			n,
@@ -2305,7 +2305,7 @@ func (n *RootPath) ListAnyKey2(Key1 string, UnionKey oc.RootElementModule_List_U
 // 	UnionKey: [oc.UnionString, oc.Binary]
 func (n *RootPath) ListAnyKey1(Key2 oc.Binary, UnionKey oc.RootElementModule_List_UnionKey_Union) *ListPathAny {
 	return &ListPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": "*", "key2": Key2, "union-key": UnionKey},
 			n,
@@ -2327,7 +2327,7 @@ func (n *RootPath) ListAnyKey1(Key2 oc.Binary, UnionKey oc.RootElementModule_Lis
 // 	UnionKey (wildcarded): [oc.UnionString, oc.Binary]
 func (n *RootPath) ListAny() *ListPathAny {
 	return &ListPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": "*", "key2": "*", "union-key": "*"},
 			n,
@@ -2350,7 +2350,7 @@ func (n *RootPath) ListAny() *ListPathAny {
 // 	UnionKey (wildcarded): [oc.UnionString, oc.Binary]
 func (n *RootPath) ListAny() *ListPathAny {
 	return &ListPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{},
 			n,
@@ -2365,7 +2365,7 @@ func (n *RootPath) ListAny() *ListPathAny {
 // Container returns from RootPath the path struct for its child "container".
 func (n *RootPath) Container() *ContainerPath {
 	return &ContainerPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"container"},
 			map[string]interface{}{},
 			n,
@@ -2376,7 +2376,7 @@ func (n *RootPath) Container() *ContainerPath {
 // ContainerWithConfig returns from RootPath the path struct for its child "container-with-config".
 func (n *RootPath) ContainerWithConfig() *ContainerWithConfigPath {
 	return &ContainerWithConfigPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"container-with-config"},
 			map[string]interface{}{},
 			n,
@@ -2387,7 +2387,7 @@ func (n *RootPath) ContainerWithConfig() *ContainerWithConfigPath {
 // Leaf returns from RootPath the path struct for its child "leaf".
 func (n *RootPath) Leaf() *LeafPath {
 	return &LeafPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"leaf"},
 			map[string]interface{}{},
 			n,
@@ -2398,7 +2398,7 @@ func (n *RootPath) Leaf() *LeafPath {
 // LeafWithDefault returns from RootPath the path struct for its child "leaf-with-default".
 func (n *RootPath) LeafWithDefault() *LeafWithDefaultPath {
 	return &LeafWithDefaultPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"leaf-with-default"},
 			map[string]interface{}{},
 			n,
@@ -2413,7 +2413,7 @@ func (n *RootPath) LeafWithDefault() *LeafWithDefaultPath {
 // Container returns from RootPath the path struct for its child "container".
 func (n *RootPath) Container() *rootmodulepath.ContainerPath {
 	return &rootmodulepath.ContainerPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"container"},
 			map[string]interface{}{},
 			n,
@@ -2424,7 +2424,7 @@ func (n *RootPath) Container() *rootmodulepath.ContainerPath {
 // ContainerWithConfig returns from RootPath the path struct for its child "container-with-config".
 func (n *RootPath) ContainerWithConfig() *rootmodulepath.ContainerWithConfigPath {
 	return &rootmodulepath.ContainerWithConfigPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"container-with-config"},
 			map[string]interface{}{},
 			n,
@@ -2435,7 +2435,7 @@ func (n *RootPath) ContainerWithConfig() *rootmodulepath.ContainerWithConfigPath
 // Leaf returns from RootPath the path struct for its child "leaf".
 func (n *RootPath) Leaf() *LeafPath {
 	return &LeafPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"leaf"},
 			map[string]interface{}{},
 			n,
@@ -2446,7 +2446,7 @@ func (n *RootPath) Leaf() *LeafPath {
 // LeafWithDefault returns from RootPath the path struct for its child "leaf-with-default".
 func (n *RootPath) LeafWithDefault() *LeafWithDefaultPath {
 	return &LeafWithDefaultPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"leaf-with-default"},
 			map[string]interface{}{},
 			n,
@@ -2460,12 +2460,12 @@ func (n *RootPath) LeafWithDefault() *LeafWithDefaultPath {
 	wantFakeRootStructsNWC = `
 // RootPath represents the /root YANG schema element.
 type RootPath struct {
-	*ygot.DeviceRootBase
+	*ygnmi.DeviceRootBase
 }
 
 // New returns a new path object from which YANG paths can be constructed.
 func New() *RootPath {
-	return &RootPath{ygot.NewDeviceRootBase("")}
+	return &RootPath{ygnmi.NewDeviceRootBase()}
 }
 `
 
@@ -2474,12 +2474,12 @@ func New() *RootPath {
 	wantFakeRootStructsWC = `
 // RootPath represents the /root YANG schema element.
 type RootPath struct {
-	*ygot.DeviceRootBase
+	*ygnmi.DeviceRootBase
 }
 
 // New returns a new path object from which YANG paths can be constructed.
 func New() *RootPath {
-	return &RootPath{ygot.NewDeviceRootBase("")}
+	return &RootPath{ygnmi.NewDeviceRootBase()}
 }
 `
 )
@@ -2510,12 +2510,12 @@ func TestGenerateDirectorySnippet(t *testing.T) {
 			StructBase: `
 // ContainerWithConfig_Leaflist represents the /root-module/container-with-config/state/leaflist YANG schema element.
 type ContainerWithConfig_Leaflist struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // ContainerWithConfig_LeaflistAny represents the wildcard version of the /root-module/container-with-config/state/leaflist YANG schema element.
 type ContainerWithConfig_LeaflistAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: ``,
@@ -2526,18 +2526,18 @@ type ContainerWithConfig_LeaflistAny struct {
 			StructBase: `
 // ContainerWithConfig represents the /root-module/container-with-config YANG schema element.
 type ContainerWithConfig struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // ContainerWithConfigAny represents the wildcard version of the /root-module/container-with-config YANG schema element.
 type ContainerWithConfigAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: `
 func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
 	return &ContainerWithConfig_Leaflist{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "leaflist"},
 			map[string]interface{}{},
 			n,
@@ -2547,7 +2547,7 @@ func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
 
 func (n *ContainerWithConfigAny) Leaflist() *ContainerWithConfig_LeaflistAny {
 	return &ContainerWithConfig_LeaflistAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "leaflist"},
 			map[string]interface{}{},
 			n,
@@ -2563,7 +2563,7 @@ func (n *ContainerWithConfigAny) Leaflist() *ContainerWithConfig_LeaflistAny {
 			StructBase: `
 // ContainerWithConfig_Leaflist represents the /root-module/container-with-config/state/leaflist YANG schema element.
 type ContainerWithConfig_Leaflist struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: ``,
@@ -2574,13 +2574,13 @@ type ContainerWithConfig_Leaflist struct {
 			StructBase: `
 // ContainerWithConfig represents the /root-module/container-with-config YANG schema element.
 type ContainerWithConfig struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: `
 func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
 	return &ContainerWithConfig_Leaflist{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "leaflist"},
 			map[string]interface{}{},
 			n,
@@ -2602,12 +2602,12 @@ func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
 			StructBase: `
 // ContainerWithConfig_Leaflist represents the /root-module/container-with-config/state/leaflist YANG schema element.
 type ContainerWithConfig_Leaflist struct {
-	parent ygot.PathStruct
+	parent ygnmi.PathStruct
 }
 
 // ContainerWithConfig_LeaflistAny represents the wildcard version of the /root-module/container-with-config/state/leaflist YANG schema element.
 type ContainerWithConfig_LeaflistAny struct {
-	parent ygot.PathStruct
+	parent ygnmi.PathStruct
 }
 `,
 			ChildConstructors: ``,
@@ -2618,12 +2618,12 @@ type ContainerWithConfig_LeaflistAny struct {
 			StructBase: `
 // ContainerWithConfig represents the /root-module/container-with-config YANG schema element.
 type ContainerWithConfig struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // ContainerWithConfigAny represents the wildcard version of the /root-module/container-with-config YANG schema element.
 type ContainerWithConfigAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: `
@@ -2647,7 +2647,7 @@ func (n *ContainerWithConfigAny) Leaflist() *ContainerWithConfig_LeaflistAny {
 			StructBase: `
 // ContainerWithConfig_Leaflist represents the /root-module/container-with-config/state/leaflist YANG schema element.
 type ContainerWithConfig_Leaflist struct {
-	parent ygot.PathStruct
+	parent ygnmi.PathStruct
 }
 `,
 			ChildConstructors: ``,
@@ -2658,7 +2658,7 @@ type ContainerWithConfig_Leaflist struct {
 			StructBase: `
 // ContainerWithConfig represents the /root-module/container-with-config YANG schema element.
 type ContainerWithConfig struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: `
@@ -2682,12 +2682,12 @@ func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
 			StructBase: `
 // LeafPath represents the /root-module/leaf YANG schema element.
 type LeafPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // LeafPathAny represents the wildcard version of the /root-module/leaf YANG schema element.
 type LeafPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: ``,
@@ -2698,12 +2698,12 @@ type LeafPathAny struct {
 			StructBase: `
 // LeafWithDefaultPath represents the /root-module/leaf-with-default YANG schema element.
 type LeafWithDefaultPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // LeafWithDefaultPathAny represents the wildcard version of the /root-module/leaf-with-default YANG schema element.
 type LeafWithDefaultPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: ``,
@@ -2716,7 +2716,7 @@ type LeafWithDefaultPathAny struct {
 			ChildConstructors: trimDocComments(wantNonListMethods+wantListMethods) + `
 func (n *RootPath) ListWithStateAny() *ListWithStatePathAny {
 	return &ListWithStatePathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": "*"},
 			n,
@@ -2726,7 +2726,7 @@ func (n *RootPath) ListWithStateAny() *ListWithStatePathAny {
 
 func (n *RootPath) ListWithState(Key float64) *ListWithStatePath {
 	return &ListWithStatePath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": Key},
 			n,
@@ -2740,7 +2740,7 @@ func (n *RootPath) ListWithState(Key float64) *ListWithStatePath {
 			StructBase: `
 // LeafPath represents the /root-module/leaf YANG schema element.
 type LeafPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: ``,
@@ -2751,7 +2751,7 @@ type LeafPath struct {
 			StructBase: `
 // LeafWithDefaultPath represents the /root-module/leaf-with-default YANG schema element.
 type LeafWithDefaultPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: ``,
@@ -2764,7 +2764,7 @@ type LeafWithDefaultPath struct {
 			ChildConstructors: trimDocComments(wantNonListMethods+wantListMethodsNonWildcard) + `
 func (n *RootPath) ListWithState(Key float64) *ListWithStatePath {
 	return &ListWithStatePath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": Key},
 			n,
@@ -2783,12 +2783,12 @@ func (n *RootPath) ListWithState(Key float64) *ListWithStatePath {
 			StructBase: `
 // List_Key1 represents the /root-module/list-container/list/key1 YANG schema element.
 type List_Key1 struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // List_Key1Any represents the wildcard version of the /root-module/list-container/list/key1 YANG schema element.
 type List_Key1Any struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: ``,
@@ -2799,12 +2799,12 @@ type List_Key1Any struct {
 			StructBase: `
 // List_Key2 represents the /root-module/list-container/list/key2 YANG schema element.
 type List_Key2 struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // List_Key2Any represents the wildcard version of the /root-module/list-container/list/key2 YANG schema element.
 type List_Key2Any struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: ``,
@@ -2815,12 +2815,12 @@ type List_Key2Any struct {
 			StructBase: `
 // List_UnionKey represents the /root-module/list-container/list/union-key YANG schema element.
 type List_UnionKey struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // List_UnionKeyAny represents the wildcard version of the /root-module/list-container/list/union-key YANG schema element.
 type List_UnionKeyAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: ``,
@@ -2831,18 +2831,18 @@ type List_UnionKeyAny struct {
 			StructBase: `
 // List represents the /root-module/list-container/list YANG schema element.
 type List struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // ListAny represents the wildcard version of the /root-module/list-container/list YANG schema element.
 type ListAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: `
 func (n *List) Key1() *List_Key1 {
 	return &List_Key1{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"key1"},
 			map[string]interface{}{},
 			n,
@@ -2852,7 +2852,7 @@ func (n *List) Key1() *List_Key1 {
 
 func (n *ListAny) Key1() *List_Key1Any {
 	return &List_Key1Any{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"key1"},
 			map[string]interface{}{},
 			n,
@@ -2862,7 +2862,7 @@ func (n *ListAny) Key1() *List_Key1Any {
 
 func (n *List) Key2() *List_Key2 {
 	return &List_Key2{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"key2"},
 			map[string]interface{}{},
 			n,
@@ -2872,7 +2872,7 @@ func (n *List) Key2() *List_Key2 {
 
 func (n *ListAny) Key2() *List_Key2Any {
 	return &List_Key2Any{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"key2"},
 			map[string]interface{}{},
 			n,
@@ -2882,7 +2882,7 @@ func (n *ListAny) Key2() *List_Key2Any {
 
 func (n *List) UnionKey() *List_UnionKey {
 	return &List_UnionKey{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"union-key"},
 			map[string]interface{}{},
 			n,
@@ -2892,7 +2892,7 @@ func (n *List) UnionKey() *List_UnionKey {
 
 func (n *ListAny) UnionKey() *List_UnionKeyAny {
 	return &List_UnionKeyAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"union-key"},
 			map[string]interface{}{},
 			n,
@@ -2908,7 +2908,7 @@ func (n *ListAny) UnionKey() *List_UnionKeyAny {
 			StructBase: `
 // List_Key1 represents the /root-module/list-container/list/key1 YANG schema element.
 type List_Key1 struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: ``,
@@ -2919,7 +2919,7 @@ type List_Key1 struct {
 			StructBase: `
 // List_Key2 represents the /root-module/list-container/list/key2 YANG schema element.
 type List_Key2 struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: ``,
@@ -2930,7 +2930,7 @@ type List_Key2 struct {
 			StructBase: `
 // List_UnionKey represents the /root-module/list-container/list/union-key YANG schema element.
 type List_UnionKey struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: ``,
@@ -2941,13 +2941,13 @@ type List_UnionKey struct {
 			StructBase: `
 // List represents the /root-module/list-container/list YANG schema element.
 type List struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: `
 func (n *List) Key1() *List_Key1 {
 	return &List_Key1{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"key1"},
 			map[string]interface{}{},
 			n,
@@ -2957,7 +2957,7 @@ func (n *List) Key1() *List_Key1 {
 
 func (n *List) Key2() *List_Key2 {
 	return &List_Key2{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"key2"},
 			map[string]interface{}{},
 			n,
@@ -2967,7 +2967,7 @@ func (n *List) Key2() *List_Key2 {
 
 func (n *List) UnionKey() *List_UnionKey {
 	return &List_UnionKey{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"union-key"},
 			map[string]interface{}{},
 			n,
@@ -2990,7 +2990,7 @@ func (n *List) UnionKey() *List_UnionKey {
 			StructBase: `
 // LeafPath represents the /root-module/leaf YANG schema element.
 type LeafPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: ``,
@@ -3001,7 +3001,7 @@ type LeafPath struct {
 			StructBase: `
 // LeafWithDefaultPath represents the /root-module/leaf-with-default YANG schema element.
 type LeafWithDefaultPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: ``,
@@ -3015,7 +3015,7 @@ type LeafWithDefaultPath struct {
 			ChildConstructors: trimDocComments(wantNonListMethodsSplitModule) + `
 func (n *RootPath) List(Key1 string, Key2 oc.Binary, UnionKey oc.RootElementModule_List_UnionKey_Union) *rootmodulepath.ListPath {
 	return &rootmodulepath.ListPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": Key1, "key2": Key2, "union-key": UnionKey},
 			n,
@@ -3025,7 +3025,7 @@ func (n *RootPath) List(Key1 string, Key2 oc.Binary, UnionKey oc.RootElementModu
 
 func (n *RootPath) ListWithState(Key float64) *rootmodulepath.ListWithStatePath {
 	return &rootmodulepath.ListWithStatePath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": Key},
 			n,
@@ -3047,12 +3047,12 @@ func (n *RootPath) ListWithState(Key float64) *rootmodulepath.ListWithStatePath 
 			StructBase: `
 // LeafPath represents the /root-module/leaf YANG schema element.
 type LeafPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // LeafPathAny represents the wildcard version of the /root-module/leaf YANG schema element.
 type LeafPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: ``,
@@ -3063,12 +3063,12 @@ type LeafPathAny struct {
 			StructBase: `
 // LeafWithDefaultPath represents the /root-module/leaf-with-default YANG schema element.
 type LeafWithDefaultPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // LeafWithDefaultPathAny represents the wildcard version of the /root-module/leaf-with-default YANG schema element.
 type LeafWithDefaultPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 `,
 			ChildConstructors: ``,
@@ -3080,7 +3080,7 @@ type LeafWithDefaultPathAny struct {
 			ChildConstructors: trimDocComments(wantNonListMethodsSplitModule) + `
 func (n *RootPath) ListAny() *rootmodulepath.ListPathAny {
 	return &rootmodulepath.ListPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": "*", "key2": "*", "union-key": "*"},
 			n,
@@ -3090,7 +3090,7 @@ func (n *RootPath) ListAny() *rootmodulepath.ListPathAny {
 
 func (n *RootPath) ListWithStateAny() *rootmodulepath.ListWithStatePathAny {
 	return &rootmodulepath.ListWithStatePathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": "*"},
 			n,
@@ -3106,22 +3106,22 @@ func (n *RootPath) ListWithStateAny() *rootmodulepath.ListWithStatePathAny {
 			StructBase:     ``,
 			ChildConstructors: `
 func (n *ListPathAny) WithKey1(Key1 string) *ListPathAny {
-	ygot.ModifyKey(n.NodePath, "key1", Key1)
+	ygnmi.ModifyKey(n.NodePath, "key1", Key1)
 	return n
 }
 
 func (n *ListPathAny) WithKey2(Key2 oc.Binary) *ListPathAny {
-	ygot.ModifyKey(n.NodePath, "key2", Key2)
+	ygnmi.ModifyKey(n.NodePath, "key2", Key2)
 	return n
 }
 
 func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_Union) *ListPathAny {
-	ygot.ModifyKey(n.NodePath, "union-key", UnionKey)
+	ygnmi.ModifyKey(n.NodePath, "union-key", UnionKey)
 	return n
 }
 
 func (n *ListWithStatePathAny) WithKey(Key float64) *ListWithStatePathAny {
-	ygot.ModifyKey(n.NodePath, "key", Key)
+	ygnmi.ModifyKey(n.NodePath, "key", Key)
 	return n
 }
 `,
@@ -3195,7 +3195,7 @@ func TestGenerateChildConstructor(t *testing.T) {
 		wantMethod: `
 func (n *RootPath) Container() *ContainerPath {
 	return &ContainerPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"container"},
 			map[string]interface{}{},
 			n,
@@ -3214,7 +3214,7 @@ func (n *RootPath) Container() *ContainerPath {
 		wantMethod: `
 func (n *ContainerPath) Leaf() *Container_LeafPath {
 	return &Container_LeafPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"leaf"},
 			map[string]interface{}{},
 			n,
@@ -3224,7 +3224,7 @@ func (n *ContainerPath) Leaf() *Container_LeafPath {
 
 func (n *ContainerPathAny) Leaf() *Container_LeafPathAny {
 	return &Container_LeafPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"leaf"},
 			map[string]interface{}{},
 			n,
@@ -3265,7 +3265,7 @@ func (n *ContainerPathAny) Leaf() *Container_LeafPathAny {
 		wantMethod: `
 func (n *ContainerPath) Leaf() *Container_LeafPath {
 	return &Container_LeafPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"leaf"},
 			map[string]interface{}{},
 			n,
@@ -3284,7 +3284,7 @@ func (n *ContainerPath) Leaf() *Container_LeafPath {
 		wantMethod: `
 func (n *RootPath) Leaf() *LeafPath {
 	return &LeafPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"leaf"},
 			map[string]interface{}{},
 			n,
@@ -3303,7 +3303,7 @@ func (n *RootPath) Leaf() *LeafPath {
 		wantMethod: `
 func (n *ContainerWithConfigPath) Leaflist() *ContainerWithConfig_LeaflistPath {
 	return &ContainerWithConfig_LeaflistPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "leaflist"},
 			map[string]interface{}{},
 			n,
@@ -3313,7 +3313,7 @@ func (n *ContainerWithConfigPath) Leaflist() *ContainerWithConfig_LeaflistPath {
 
 func (n *ContainerWithConfigPathAny) Leaflist() *ContainerWithConfig_LeaflistPathAny {
 	return &ContainerWithConfig_LeaflistPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "leaflist"},
 			map[string]interface{}{},
 			n,
@@ -3342,7 +3342,7 @@ func (n *ContainerWithConfigPathAny) Leaflist() *ContainerWithConfig_LeaflistPat
 		wantMethod: `
 func (n *RootPath) ListWithStateAny() *ListWithStatePathAny {
 	return &ListWithStatePathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": "*"},
 			n,
@@ -3352,7 +3352,7 @@ func (n *RootPath) ListWithStateAny() *ListWithStatePathAny {
 
 func (n *RootPath) ListWithState(Key float64) *ListWithStatePath {
 	return &ListWithStatePath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": Key},
 			n,
@@ -3405,7 +3405,7 @@ func (n *RootPath) ListWithState(Key float64) *ListWithStatePath {
 		wantMethod: `
 func (n *RootPath) ListAny() *ListPathAny {
 	return &ListPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": "*", "key2": "*", "union-key": "*"},
 			n,
@@ -3417,21 +3417,21 @@ func (n *RootPath) ListAny() *ListPathAny {
 // WithKey1 sets ListPathAny's key "key1" to the specified value.
 // Key1: string
 func (n *ListPathAny) WithKey1(Key1 string) *ListPathAny {
-	ygot.ModifyKey(n.NodePath, "key1", Key1)
+	ygnmi.ModifyKey(n.NodePath, "key1", Key1)
 	return n
 }
 
 // WithKey2 sets ListPathAny's key "key2" to the specified value.
 // Key2: oc.Binary
 func (n *ListPathAny) WithKey2(Key2 oc.Binary) *ListPathAny {
-	ygot.ModifyKey(n.NodePath, "key2", Key2)
+	ygnmi.ModifyKey(n.NodePath, "key2", Key2)
 	return n
 }
 
 // WithUnionKey sets ListPathAny's key "union-key" to the specified value.
 // UnionKey: [oc.UnionString, oc.Binary]
 func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_Union) *ListPathAny {
-	ygot.ModifyKey(n.NodePath, "union-key", UnionKey)
+	ygnmi.ModifyKey(n.NodePath, "union-key", UnionKey)
 	return n
 }
 `,

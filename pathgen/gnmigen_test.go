@@ -66,7 +66,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 		"Container",
 		true,
 		true,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"leaf"},
 			nil,
 			n.parent,
@@ -98,7 +98,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 		"Container",
 		true,
 		true,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"leaf"},
 			nil,
 			n.parent,
@@ -149,7 +149,7 @@ func (n *Container_LeafList) State() ygnmi.SingletonQuery[[]uint32] {
 		"Container",
 		true,
 		false,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"state", "leaflist"},
 			nil,
 			n.parent,
@@ -177,7 +177,7 @@ func (n *Container_LeafListAny) State() ygnmi.WildcardQuery[[]uint32] {
 		"Container",
 		true,
 		false,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"state", "leaflist"},
 			nil,
 			n.parent,
@@ -205,7 +205,7 @@ func (n *Container_LeafList) Config() ygnmi.ConfigQuery[[]uint32] {
 		"Container",
 		false,
 		false,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"config", "leaflist"},
 			nil,
 			n.parent,
@@ -233,7 +233,7 @@ func (n *Container_LeafListAny) Config() ygnmi.WildcardQuery[[]uint32] {
 		"Container",
 		false,
 		false,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"config", "leaflist"},
 			nil,
 			n.parent,
@@ -277,7 +277,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[E_Child_Three] {
 		"Container",
 		true,
 		false,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"leaf"},
 			nil,
 			n.parent,
@@ -305,7 +305,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
 		"Container",
 		true,
 		false,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"leaf"},
 			nil,
 			n.parent,

@@ -33,7 +33,7 @@ import (
 // Supported operations: Batch.
 type AnyQuery[T any] interface {
 	// pathStruct returns to path struct for this query.
-	pathStruct() ygot.PathStruct
+	pathStruct() PathStruct
 	// fieldname returns the name of YANG directory schema entry.
 	// For leaves, this is the parent entry.
 	dirName() string
@@ -301,8 +301,8 @@ func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]*Va
 	if err != nil {
 		return nil, fmt.Errorf("failed to receive to data: %w", err)
 	}
-	p, _, errs := ygot.ResolvePath(q.pathStruct())
-	if err := errsToErr(errs); err != nil {
+	p, err := resolvePath(q.pathStruct())
+	if err != nil {
 		return nil, fmt.Errorf("failed to resolve path: %w", err)
 	}
 
@@ -355,8 +355,8 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 	w := &Watcher[T]{
 		errCh: make(chan error, 1),
 	}
-	path, _, errs := ygot.ResolvePath(q.pathStruct())
-	if err := errsToErr(errs); err != nil {
+	path, err := resolvePath(q.pathStruct())
+	if err != nil {
 		w.errCh <- err
 		return w
 	}

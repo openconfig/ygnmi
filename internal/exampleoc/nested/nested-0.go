@@ -35,12 +35,12 @@ import (
 
 // APath represents the /openconfig-nested/a YANG schema element.
 type APath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // APathAny represents the wildcard version of the /openconfig-nested/a YANG schema element.
 type APathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // B (container):
@@ -50,7 +50,7 @@ type APathAny struct {
 // 	Path from root:       "/a/b"
 func (n *APath) B() *A_BPath {
 	return &A_BPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"b"},
 			map[string]interface{}{},
 			n,
@@ -65,7 +65,7 @@ func (n *APath) B() *A_BPath {
 // 	Path from root:       "/a/b"
 func (n *APathAny) B() *A_BPathAny {
 	return &A_BPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"b"},
 			map[string]interface{}{},
 			n,
@@ -131,12 +131,12 @@ func (n *APathAny) Config() ygnmi.WildcardQuery[*oc.A] {
 
 // A_BPath represents the /openconfig-nested/a/b YANG schema element.
 type A_BPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // A_BPathAny represents the wildcard version of the /openconfig-nested/a/b YANG schema element.
 type A_BPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // C (container):
@@ -146,7 +146,7 @@ type A_BPathAny struct {
 // 	Path from root:       "/a/b/c"
 func (n *A_BPath) C() *A_B_CPath {
 	return &A_B_CPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"c"},
 			map[string]interface{}{},
 			n,
@@ -161,7 +161,7 @@ func (n *A_BPath) C() *A_B_CPath {
 // 	Path from root:       "/a/b/c"
 func (n *A_BPathAny) C() *A_B_CPathAny {
 	return &A_B_CPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"c"},
 			map[string]interface{}{},
 			n,
@@ -227,12 +227,12 @@ func (n *A_BPathAny) Config() ygnmi.WildcardQuery[*oc.A_B] {
 
 // A_B_CPath represents the /openconfig-nested/a/b/c YANG schema element.
 type A_B_CPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // A_B_CPathAny represents the wildcard version of the /openconfig-nested/a/b/c YANG schema element.
 type A_B_CPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // D (container):
@@ -242,7 +242,7 @@ type A_B_CPathAny struct {
 // 	Path from root:       "/a/b/c/d"
 func (n *A_B_CPath) D() *A_B_C_DPath {
 	return &A_B_C_DPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"d"},
 			map[string]interface{}{},
 			n,
@@ -257,7 +257,7 @@ func (n *A_B_CPath) D() *A_B_C_DPath {
 // 	Path from root:       "/a/b/c/d"
 func (n *A_B_CPathAny) D() *A_B_C_DPathAny {
 	return &A_B_C_DPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"d"},
 			map[string]interface{}{},
 			n,
@@ -323,12 +323,12 @@ func (n *A_B_CPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C] {
 
 // A_B_C_DPath represents the /openconfig-nested/a/b/c/d YANG schema element.
 type A_B_C_DPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // A_B_C_DPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d YANG schema element.
 type A_B_C_DPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // E (container):
@@ -338,7 +338,7 @@ type A_B_C_DPathAny struct {
 // 	Path from root:       "/a/b/c/d/e"
 func (n *A_B_C_DPath) E() *A_B_C_D_EPath {
 	return &A_B_C_D_EPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"e"},
 			map[string]interface{}{},
 			n,
@@ -353,7 +353,7 @@ func (n *A_B_C_DPath) E() *A_B_C_D_EPath {
 // 	Path from root:       "/a/b/c/d/e"
 func (n *A_B_C_DPathAny) E() *A_B_C_D_EPathAny {
 	return &A_B_C_D_EPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"e"},
 			map[string]interface{}{},
 			n,
@@ -419,12 +419,12 @@ func (n *A_B_C_DPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D] {
 
 // A_B_C_D_EPath represents the /openconfig-nested/a/b/c/d/e YANG schema element.
 type A_B_C_D_EPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // A_B_C_D_EPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e YANG schema element.
 type A_B_C_D_EPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // F (container):
@@ -434,7 +434,7 @@ type A_B_C_D_EPathAny struct {
 // 	Path from root:       "/a/b/c/d/e/f"
 func (n *A_B_C_D_EPath) F() *A_B_C_D_E_FPath {
 	return &A_B_C_D_E_FPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"f"},
 			map[string]interface{}{},
 			n,
@@ -449,7 +449,7 @@ func (n *A_B_C_D_EPath) F() *A_B_C_D_E_FPath {
 // 	Path from root:       "/a/b/c/d/e/f"
 func (n *A_B_C_D_EPathAny) F() *A_B_C_D_E_FPathAny {
 	return &A_B_C_D_E_FPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"f"},
 			map[string]interface{}{},
 			n,
@@ -515,12 +515,12 @@ func (n *A_B_C_D_EPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E] {
 
 // A_B_C_D_E_FPath represents the /openconfig-nested/a/b/c/d/e/f YANG schema element.
 type A_B_C_D_E_FPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // A_B_C_D_E_FPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f YANG schema element.
 type A_B_C_D_E_FPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // G (container):
@@ -530,7 +530,7 @@ type A_B_C_D_E_FPathAny struct {
 // 	Path from root:       "/a/b/c/d/e/f/g"
 func (n *A_B_C_D_E_FPath) G() *A_B_C_D_E_F_GPath {
 	return &A_B_C_D_E_F_GPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"g"},
 			map[string]interface{}{},
 			n,
@@ -545,7 +545,7 @@ func (n *A_B_C_D_E_FPath) G() *A_B_C_D_E_F_GPath {
 // 	Path from root:       "/a/b/c/d/e/f/g"
 func (n *A_B_C_D_E_FPathAny) G() *A_B_C_D_E_F_GPathAny {
 	return &A_B_C_D_E_F_GPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"g"},
 			map[string]interface{}{},
 			n,
@@ -611,12 +611,12 @@ func (n *A_B_C_D_E_FPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F] {
 
 // A_B_C_D_E_F_GPath represents the /openconfig-nested/a/b/c/d/e/f/g YANG schema element.
 type A_B_C_D_E_F_GPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // A_B_C_D_E_F_GPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g YANG schema element.
 type A_B_C_D_E_F_GPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // H (container):
@@ -626,7 +626,7 @@ type A_B_C_D_E_F_GPathAny struct {
 // 	Path from root:       "/a/b/c/d/e/f/g/h"
 func (n *A_B_C_D_E_F_GPath) H() *A_B_C_D_E_F_G_HPath {
 	return &A_B_C_D_E_F_G_HPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"h"},
 			map[string]interface{}{},
 			n,
@@ -641,7 +641,7 @@ func (n *A_B_C_D_E_F_GPath) H() *A_B_C_D_E_F_G_HPath {
 // 	Path from root:       "/a/b/c/d/e/f/g/h"
 func (n *A_B_C_D_E_F_GPathAny) H() *A_B_C_D_E_F_G_HPathAny {
 	return &A_B_C_D_E_F_G_HPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"h"},
 			map[string]interface{}{},
 			n,
@@ -707,12 +707,12 @@ func (n *A_B_C_D_E_F_GPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_G] {
 
 // A_B_C_D_E_F_G_HPath represents the /openconfig-nested/a/b/c/d/e/f/g/h YANG schema element.
 type A_B_C_D_E_F_G_HPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // A_B_C_D_E_F_G_HPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h YANG schema element.
 type A_B_C_D_E_F_G_HPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // I (container):
@@ -722,7 +722,7 @@ type A_B_C_D_E_F_G_HPathAny struct {
 // 	Path from root:       "/a/b/c/d/e/f/g/h/i"
 func (n *A_B_C_D_E_F_G_HPath) I() *A_B_C_D_E_F_G_H_IPath {
 	return &A_B_C_D_E_F_G_H_IPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"i"},
 			map[string]interface{}{},
 			n,
@@ -737,7 +737,7 @@ func (n *A_B_C_D_E_F_G_HPath) I() *A_B_C_D_E_F_G_H_IPath {
 // 	Path from root:       "/a/b/c/d/e/f/g/h/i"
 func (n *A_B_C_D_E_F_G_HPathAny) I() *A_B_C_D_E_F_G_H_IPathAny {
 	return &A_B_C_D_E_F_G_H_IPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"i"},
 			map[string]interface{}{},
 			n,
@@ -803,12 +803,12 @@ func (n *A_B_C_D_E_F_G_HPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_G_
 
 // A_B_C_D_E_F_G_H_IPath represents the /openconfig-nested/a/b/c/d/e/f/g/h/i YANG schema element.
 type A_B_C_D_E_F_G_H_IPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // A_B_C_D_E_F_G_H_IPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h/i YANG schema element.
 type A_B_C_D_E_F_G_H_IPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // J (container):
@@ -818,7 +818,7 @@ type A_B_C_D_E_F_G_H_IPathAny struct {
 // 	Path from root:       "/a/b/c/d/e/f/g/h/i/j"
 func (n *A_B_C_D_E_F_G_H_IPath) J() *A_B_C_D_E_F_G_H_I_JPath {
 	return &A_B_C_D_E_F_G_H_I_JPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"j"},
 			map[string]interface{}{},
 			n,
@@ -833,7 +833,7 @@ func (n *A_B_C_D_E_F_G_H_IPath) J() *A_B_C_D_E_F_G_H_I_JPath {
 // 	Path from root:       "/a/b/c/d/e/f/g/h/i/j"
 func (n *A_B_C_D_E_F_G_H_IPathAny) J() *A_B_C_D_E_F_G_H_I_JPathAny {
 	return &A_B_C_D_E_F_G_H_I_JPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"j"},
 			map[string]interface{}{},
 			n,
@@ -899,12 +899,12 @@ func (n *A_B_C_D_E_F_G_H_IPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_
 
 // A_B_C_D_E_F_G_H_I_JPath represents the /openconfig-nested/a/b/c/d/e/f/g/h/i/j YANG schema element.
 type A_B_C_D_E_F_G_H_I_JPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // A_B_C_D_E_F_G_H_I_JPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h/i/j YANG schema element.
 type A_B_C_D_E_F_G_H_I_JPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // K (container):
@@ -914,7 +914,7 @@ type A_B_C_D_E_F_G_H_I_JPathAny struct {
 // 	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k"
 func (n *A_B_C_D_E_F_G_H_I_JPath) K() *A_B_C_D_E_F_G_H_I_J_KPath {
 	return &A_B_C_D_E_F_G_H_I_J_KPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"k"},
 			map[string]interface{}{},
 			n,
@@ -929,7 +929,7 @@ func (n *A_B_C_D_E_F_G_H_I_JPath) K() *A_B_C_D_E_F_G_H_I_J_KPath {
 // 	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k"
 func (n *A_B_C_D_E_F_G_H_I_JPathAny) K() *A_B_C_D_E_F_G_H_I_J_KPathAny {
 	return &A_B_C_D_E_F_G_H_I_J_KPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"k"},
 			map[string]interface{}{},
 			n,
@@ -995,12 +995,12 @@ func (n *A_B_C_D_E_F_G_H_I_JPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E_
 
 // A_B_C_D_E_F_G_H_I_J_KPath represents the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k YANG schema element.
 type A_B_C_D_E_F_G_H_I_J_KPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // A_B_C_D_E_F_G_H_I_J_KPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k YANG schema element.
 type A_B_C_D_E_F_G_H_I_J_KPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // L (container):
@@ -1010,7 +1010,7 @@ type A_B_C_D_E_F_G_H_I_J_KPathAny struct {
 // 	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l"
 func (n *A_B_C_D_E_F_G_H_I_J_KPath) L() *A_B_C_D_E_F_G_H_I_J_K_LPath {
 	return &A_B_C_D_E_F_G_H_I_J_K_LPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"l"},
 			map[string]interface{}{},
 			n,
@@ -1025,7 +1025,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_KPath) L() *A_B_C_D_E_F_G_H_I_J_K_LPath {
 // 	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l"
 func (n *A_B_C_D_E_F_G_H_I_J_KPathAny) L() *A_B_C_D_E_F_G_H_I_J_K_LPathAny {
 	return &A_B_C_D_E_F_G_H_I_J_K_LPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"l"},
 			map[string]interface{}{},
 			n,
@@ -1091,12 +1091,12 @@ func (n *A_B_C_D_E_F_G_H_I_J_KPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_
 
 // A_B_C_D_E_F_G_H_I_J_K_LPath represents the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l YANG schema element.
 type A_B_C_D_E_F_G_H_I_J_K_LPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // A_B_C_D_E_F_G_H_I_J_K_LPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l YANG schema element.
 type A_B_C_D_E_F_G_H_I_J_K_LPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // M (container):
@@ -1106,7 +1106,7 @@ type A_B_C_D_E_F_G_H_I_J_K_LPathAny struct {
 // 	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m"
 func (n *A_B_C_D_E_F_G_H_I_J_K_LPath) M() *A_B_C_D_E_F_G_H_I_J_K_L_MPath {
 	return &A_B_C_D_E_F_G_H_I_J_K_L_MPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"m"},
 			map[string]interface{}{},
 			n,
@@ -1121,7 +1121,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_LPath) M() *A_B_C_D_E_F_G_H_I_J_K_L_MPath {
 // 	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m"
 func (n *A_B_C_D_E_F_G_H_I_J_K_LPathAny) M() *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny {
 	return &A_B_C_D_E_F_G_H_I_J_K_L_MPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"m"},
 			map[string]interface{}{},
 			n,
@@ -1187,12 +1187,12 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_LPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_
 
 // A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath represents the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo YANG schema element.
 type A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath struct {
-	parent ygot.PathStruct
+	parent ygnmi.PathStruct
 }
 
 // A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo YANG schema element.
 type A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny struct {
-	parent ygot.PathStruct
+	parent ygnmi.PathStruct
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -1261,7 +1261,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath) State() ygnmi.SingletonQuery[string]
 		"A_B_C_D_E_F_G_H_I_J_K_L_M",
 		true,
 		true,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"state", "foo"},
 			nil,
 			n.parent,
@@ -1293,7 +1293,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny) State() ygnmi.WildcardQuery[strin
 		"A_B_C_D_E_F_G_H_I_J_K_L_M",
 		true,
 		true,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"state", "foo"},
 			nil,
 			n.parent,
@@ -1317,12 +1317,12 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny) State() ygnmi.WildcardQuery[strin
 
 // A_B_C_D_E_F_G_H_I_J_K_L_MPath represents the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m YANG schema element.
 type A_B_C_D_E_F_G_H_I_J_K_L_MPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // A_B_C_D_E_F_G_H_I_J_K_L_MPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m YANG schema element.
 type A_B_C_D_E_F_G_H_I_J_K_L_MPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Foo corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.

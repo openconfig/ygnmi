@@ -20,10 +20,10 @@ import (
 
 // RemoteContainer_ALeaf represents the /openconfig-simple/remote-container/state/a-leaf YANG schema element.
 type RemoteContainer_ALeaf struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // RemoteContainer_ALeafAny represents the wildcard version of the /openconfig-simple/remote-container/state/a-leaf YANG schema element.
 type RemoteContainer_ALeafAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
