@@ -19,12 +19,12 @@ import (
 
 // DevicePath represents the /device YANG schema element.
 type DevicePath struct {
-	*ygot.DeviceRootBase
+	*ygnmi.DeviceRootBase
 }
 
 // New returns a new path object from which YANG paths can be constructed.
 func New() *DevicePath {
-	return &DevicePath{ygot.NewDeviceRootBase("")}
+	return &DevicePath{ygnmi.NewDeviceRootBase()}
 }
 
 // Parent (container): I am a parent container
@@ -35,7 +35,7 @@ func New() *DevicePath {
 // 	Path from root:       "/parent"
 func (n *DevicePath) Parent() *ParentPath {
 	return &ParentPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"parent"},
 			map[string]interface{}{},
 			n,
@@ -50,7 +50,7 @@ func (n *DevicePath) Parent() *ParentPath {
 // 	Path from root:       "/remote-container"
 func (n *DevicePath) RemoteContainer() *RemoteContainerPath {
 	return &RemoteContainerPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"remote-container"},
 			map[string]interface{}{},
 			n,
@@ -60,12 +60,12 @@ func (n *DevicePath) RemoteContainer() *RemoteContainerPath {
 
 // ParentPath represents the /openconfig-simple/parent YANG schema element.
 type ParentPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // ParentPathAny represents the wildcard version of the /openconfig-simple/parent YANG schema element.
 type ParentPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Child (container): 
@@ -75,7 +75,7 @@ type ParentPathAny struct {
 // 	Path from root:       "/parent/child"
 func (n *ParentPath) Child() *Parent_ChildPath {
 	return &Parent_ChildPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"child"},
 			map[string]interface{}{},
 			n,
@@ -90,7 +90,7 @@ func (n *ParentPath) Child() *Parent_ChildPath {
 // 	Path from root:       "/parent/child"
 func (n *ParentPathAny) Child() *Parent_ChildPathAny {
 	return &Parent_ChildPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"child"},
 			map[string]interface{}{},
 			n,

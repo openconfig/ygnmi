@@ -21,12 +21,12 @@ import (
 
 // Device represents the /device YANG schema element.
 type Device struct {
-	*ygot.DeviceRootBase
+	*ygnmi.DeviceRootBase
 }
 
 // New returns a new path object from which YANG paths can be constructed.
 func New() *Device {
-	return &Device{ygot.NewDeviceRootBase("")}
+	return &Device{ygnmi.NewDeviceRootBase()}
 }
 
 // Native (container): 
@@ -36,7 +36,7 @@ func New() *Device {
 // 	Path from root:       "/native"
 func (n *Device) Native() *Native {
 	return &Native{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"native"},
 			map[string]interface{}{},
 			n,
@@ -51,7 +51,7 @@ func (n *Device) Native() *Native {
 // 	Path from root:       "/target"
 func (n *Device) Target() *Target {
 	return &Target{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"target"},
 			map[string]interface{}{},
 			n,
@@ -61,32 +61,32 @@ func (n *Device) Target() *Target {
 
 // Native_A represents the /openconfig-simple-target/native/state/a YANG schema element.
 type Native_A struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Native_AAny represents the wildcard version of the /openconfig-simple-target/native/state/a YANG schema element.
 type Native_AAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Native_B represents the /openconfig-simple-target/native/state/b YANG schema element.
 type Native_B struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Native_BAny represents the wildcard version of the /openconfig-simple-target/native/state/b YANG schema element.
 type Native_BAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Native represents the /openconfig-simple-target/native YANG schema element.
 type Native struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // NativeAny represents the wildcard version of the /openconfig-simple-target/native YANG schema element.
 type NativeAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // A (leaf): 
@@ -96,7 +96,7 @@ type NativeAny struct {
 // 	Path from root:       "/native/state/a"
 func (n *Native) A() *Native_A {
 	return &Native_A{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "a"},
 			map[string]interface{}{},
 			n,
@@ -111,7 +111,7 @@ func (n *Native) A() *Native_A {
 // 	Path from root:       "/native/state/a"
 func (n *NativeAny) A() *Native_AAny {
 	return &Native_AAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "a"},
 			map[string]interface{}{},
 			n,
@@ -126,7 +126,7 @@ func (n *NativeAny) A() *Native_AAny {
 // 	Path from root:       "/native/state/b"
 func (n *Native) B() *Native_B {
 	return &Native_B{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "b"},
 			map[string]interface{}{},
 			n,
@@ -141,7 +141,7 @@ func (n *Native) B() *Native_B {
 // 	Path from root:       "/native/state/b"
 func (n *NativeAny) B() *Native_BAny {
 	return &Native_BAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "b"},
 			map[string]interface{}{},
 			n,
@@ -151,12 +151,12 @@ func (n *NativeAny) B() *Native_BAny {
 
 // Target represents the /openconfig-simple-target/target YANG schema element.
 type Target struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // TargetAny represents the wildcard version of the /openconfig-simple-target/target YANG schema element.
 type TargetAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Foo (container): 
@@ -166,7 +166,7 @@ type TargetAny struct {
 // 	Path from root:       "/target/foo"
 func (n *Target) Foo() *Target_Foo {
 	return &Target_Foo{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"foo"},
 			map[string]interface{}{},
 			n,
@@ -181,7 +181,7 @@ func (n *Target) Foo() *Target_Foo {
 // 	Path from root:       "/target/foo"
 func (n *TargetAny) Foo() *Target_FooAny {
 	return &Target_FooAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"foo"},
 			map[string]interface{}{},
 			n,
@@ -191,22 +191,22 @@ func (n *TargetAny) Foo() *Target_FooAny {
 
 // Target_Foo_A represents the /openconfig-simple-target/target/foo/state/a YANG schema element.
 type Target_Foo_A struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Target_Foo_AAny represents the wildcard version of the /openconfig-simple-target/target/foo/state/a YANG schema element.
 type Target_Foo_AAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Target_Foo represents the /openconfig-simple-target/target/foo YANG schema element.
 type Target_Foo struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Target_FooAny represents the wildcard version of the /openconfig-simple-target/target/foo YANG schema element.
 type Target_FooAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // A (leaf): 
@@ -216,7 +216,7 @@ type Target_FooAny struct {
 // 	Path from root:       "/target/foo/state/a"
 func (n *Target_Foo) A() *Target_Foo_A {
 	return &Target_Foo_A{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "a"},
 			map[string]interface{}{},
 			n,
@@ -231,7 +231,7 @@ func (n *Target_Foo) A() *Target_Foo_A {
 // 	Path from root:       "/target/foo/state/a"
 func (n *Target_FooAny) A() *Target_Foo_AAny {
 	return &Target_Foo_AAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "a"},
 			map[string]interface{}{},
 			n,

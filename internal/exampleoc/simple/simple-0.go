@@ -37,12 +37,12 @@ import (
 
 // ParentPath represents the /openconfig-simple/parent YANG schema element.
 type ParentPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // ParentPathAny represents the wildcard version of the /openconfig-simple/parent YANG schema element.
 type ParentPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Child (container):
@@ -52,7 +52,7 @@ type ParentPathAny struct {
 // 	Path from root:       "/parent/child"
 func (n *ParentPath) Child() *Parent_ChildPath {
 	return &Parent_ChildPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"child"},
 			map[string]interface{}{},
 			n,
@@ -67,7 +67,7 @@ func (n *ParentPath) Child() *Parent_ChildPath {
 // 	Path from root:       "/parent/child"
 func (n *ParentPathAny) Child() *Parent_ChildPathAny {
 	return &Parent_ChildPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"child"},
 			map[string]interface{}{},
 			n,
@@ -133,12 +133,12 @@ func (n *ParentPathAny) Config() ygnmi.WildcardQuery[*oc.Parent] {
 
 // Parent_Child_FourPath represents the /openconfig-simple/parent/child/state/four YANG schema element.
 type Parent_Child_FourPath struct {
-	parent ygot.PathStruct
+	parent ygnmi.PathStruct
 }
 
 // Parent_Child_FourPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/four YANG schema element.
 type Parent_Child_FourPathAny struct {
-	parent ygot.PathStruct
+	parent ygnmi.PathStruct
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -207,7 +207,7 @@ func (n *Parent_Child_FourPath) State() ygnmi.SingletonQuery[oc.Binary] {
 		"Parent_Child",
 		true,
 		false,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"state", "four"},
 			nil,
 			n.parent,
@@ -235,7 +235,7 @@ func (n *Parent_Child_FourPathAny) State() ygnmi.WildcardQuery[oc.Binary] {
 		"Parent_Child",
 		true,
 		false,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"state", "four"},
 			nil,
 			n.parent,
@@ -263,7 +263,7 @@ func (n *Parent_Child_FourPath) Config() ygnmi.ConfigQuery[oc.Binary] {
 		"Parent_Child",
 		false,
 		false,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"config", "four"},
 			nil,
 			n.parent,
@@ -291,7 +291,7 @@ func (n *Parent_Child_FourPathAny) Config() ygnmi.WildcardQuery[oc.Binary] {
 		"Parent_Child",
 		false,
 		false,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"config", "four"},
 			nil,
 			n.parent,
@@ -319,7 +319,7 @@ func (n *Parent_Child_OnePath) State() ygnmi.SingletonQuery[string] {
 		"Parent_Child",
 		true,
 		true,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"state", "one"},
 			nil,
 			n.parent,
@@ -351,7 +351,7 @@ func (n *Parent_Child_OnePathAny) State() ygnmi.WildcardQuery[string] {
 		"Parent_Child",
 		true,
 		true,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"state", "one"},
 			nil,
 			n.parent,
@@ -383,7 +383,7 @@ func (n *Parent_Child_OnePath) Config() ygnmi.ConfigQuery[string] {
 		"Parent_Child",
 		false,
 		true,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"config", "one"},
 			nil,
 			n.parent,
@@ -415,7 +415,7 @@ func (n *Parent_Child_OnePathAny) Config() ygnmi.WildcardQuery[string] {
 		"Parent_Child",
 		false,
 		true,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"config", "one"},
 			nil,
 			n.parent,
@@ -447,7 +447,7 @@ func (n *Parent_Child_ThreePath) State() ygnmi.SingletonQuery[oc.E_Child_Three] 
 		"Parent_Child",
 		true,
 		false,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"state", "three"},
 			nil,
 			n.parent,
@@ -475,7 +475,7 @@ func (n *Parent_Child_ThreePathAny) State() ygnmi.WildcardQuery[oc.E_Child_Three
 		"Parent_Child",
 		true,
 		false,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"state", "three"},
 			nil,
 			n.parent,
@@ -503,7 +503,7 @@ func (n *Parent_Child_ThreePath) Config() ygnmi.ConfigQuery[oc.E_Child_Three] {
 		"Parent_Child",
 		false,
 		false,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"config", "three"},
 			nil,
 			n.parent,
@@ -531,7 +531,7 @@ func (n *Parent_Child_ThreePathAny) Config() ygnmi.WildcardQuery[oc.E_Child_Thre
 		"Parent_Child",
 		false,
 		false,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"config", "three"},
 			nil,
 			n.parent,
@@ -559,7 +559,7 @@ func (n *Parent_Child_TwoPath) State() ygnmi.SingletonQuery[string] {
 		"Parent_Child",
 		true,
 		true,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"state", "two"},
 			nil,
 			n.parent,
@@ -591,7 +591,7 @@ func (n *Parent_Child_TwoPathAny) State() ygnmi.WildcardQuery[string] {
 		"Parent_Child",
 		true,
 		true,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"state", "two"},
 			nil,
 			n.parent,
@@ -615,42 +615,42 @@ func (n *Parent_Child_TwoPathAny) State() ygnmi.WildcardQuery[string] {
 
 // Parent_Child_OnePath represents the /openconfig-simple/parent/child/state/one YANG schema element.
 type Parent_Child_OnePath struct {
-	parent ygot.PathStruct
+	parent ygnmi.PathStruct
 }
 
 // Parent_Child_OnePathAny represents the wildcard version of the /openconfig-simple/parent/child/state/one YANG schema element.
 type Parent_Child_OnePathAny struct {
-	parent ygot.PathStruct
+	parent ygnmi.PathStruct
 }
 
 // Parent_Child_ThreePath represents the /openconfig-simple/parent/child/state/three YANG schema element.
 type Parent_Child_ThreePath struct {
-	parent ygot.PathStruct
+	parent ygnmi.PathStruct
 }
 
 // Parent_Child_ThreePathAny represents the wildcard version of the /openconfig-simple/parent/child/state/three YANG schema element.
 type Parent_Child_ThreePathAny struct {
-	parent ygot.PathStruct
+	parent ygnmi.PathStruct
 }
 
 // Parent_Child_TwoPath represents the /openconfig-simple/parent/child/state/two YANG schema element.
 type Parent_Child_TwoPath struct {
-	parent ygot.PathStruct
+	parent ygnmi.PathStruct
 }
 
 // Parent_Child_TwoPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/two YANG schema element.
 type Parent_Child_TwoPathAny struct {
-	parent ygot.PathStruct
+	parent ygnmi.PathStruct
 }
 
 // Parent_ChildPath represents the /openconfig-simple/parent/child YANG schema element.
 type Parent_ChildPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Parent_ChildPathAny represents the wildcard version of the /openconfig-simple/parent/child YANG schema element.
 type Parent_ChildPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Four corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
@@ -719,12 +719,12 @@ func (n *Parent_ChildPathAny) Two() *Parent_Child_TwoPathAny {
 
 // RemoteContainer_ALeafPath represents the /openconfig-simple/remote-container/state/a-leaf YANG schema element.
 type RemoteContainer_ALeafPath struct {
-	parent ygot.PathStruct
+	parent ygnmi.PathStruct
 }
 
 // RemoteContainer_ALeafPathAny represents the wildcard version of the /openconfig-simple/remote-container/state/a-leaf YANG schema element.
 type RemoteContainer_ALeafPathAny struct {
-	parent ygot.PathStruct
+	parent ygnmi.PathStruct
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -793,7 +793,7 @@ func (n *RemoteContainer_ALeafPath) State() ygnmi.SingletonQuery[string] {
 		"RemoteContainer",
 		true,
 		true,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"state", "a-leaf"},
 			nil,
 			n.parent,
@@ -825,7 +825,7 @@ func (n *RemoteContainer_ALeafPathAny) State() ygnmi.WildcardQuery[string] {
 		"RemoteContainer",
 		true,
 		true,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"state", "a-leaf"},
 			nil,
 			n.parent,
@@ -857,7 +857,7 @@ func (n *RemoteContainer_ALeafPath) Config() ygnmi.ConfigQuery[string] {
 		"RemoteContainer",
 		false,
 		true,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"config", "a-leaf"},
 			nil,
 			n.parent,
@@ -889,7 +889,7 @@ func (n *RemoteContainer_ALeafPathAny) Config() ygnmi.WildcardQuery[string] {
 		"RemoteContainer",
 		false,
 		true,
-		ygot.NewNodePath(
+		ygnmi.NewNodePath(
 			[]string{"config", "a-leaf"},
 			nil,
 			n.parent,
@@ -913,12 +913,12 @@ func (n *RemoteContainer_ALeafPathAny) Config() ygnmi.WildcardQuery[string] {
 
 // RemoteContainerPath represents the /openconfig-simple/remote-container YANG schema element.
 type RemoteContainerPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // RemoteContainerPathAny represents the wildcard version of the /openconfig-simple/remote-container YANG schema element.
 type RemoteContainerPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // ALeaf corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.

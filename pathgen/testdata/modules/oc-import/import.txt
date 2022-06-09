@@ -19,22 +19,22 @@ import (
 
 // Child_TestPath represents the /openconfig-import/child/test YANG schema element.
 type Child_TestPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Child_TestPathAny represents the wildcard version of the /openconfig-import/child/test YANG schema element.
 type Child_TestPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // ChildPath represents the /openconfig-import/child YANG schema element.
 type ChildPath struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // ChildPathAny represents the wildcard version of the /openconfig-import/child YANG schema element.
 type ChildPathAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Test (leaf): 
@@ -44,7 +44,7 @@ type ChildPathAny struct {
 // 	Path from root:       "/child/test"
 func (n *ChildPath) Test() *Child_TestPath {
 	return &Child_TestPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"test"},
 			map[string]interface{}{},
 			n,
@@ -59,7 +59,7 @@ func (n *ChildPath) Test() *Child_TestPath {
 // 	Path from root:       "/child/test"
 func (n *ChildPathAny) Test() *Child_TestPathAny {
 	return &Child_TestPathAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"test"},
 			map[string]interface{}{},
 			n,

@@ -20,12 +20,12 @@ import (
 
 // Device represents the /device YANG schema element.
 type Device struct {
-	*ygot.DeviceRootBase
+	*ygnmi.DeviceRootBase
 }
 
 // New returns a new path object from which YANG paths can be constructed.
 func New() *Device {
-	return &Device{ygot.NewDeviceRootBase("")}
+	return &Device{ygnmi.NewDeviceRootBase()}
 }
 
 // Model (container): 
@@ -35,7 +35,7 @@ func New() *Device {
 // 	Path from root:       "/model"
 func (n *Device) Model() *Model {
 	return &Model{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"model"},
 			map[string]interface{}{},
 			n,
@@ -45,12 +45,12 @@ func (n *Device) Model() *Model {
 
 // Model represents the /openconfig-withlist/model YANG schema element.
 type Model struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // ModelAny represents the wildcard version of the /openconfig-withlist/model YANG schema element.
 type ModelAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // MultiKeyAny (list): 
@@ -63,7 +63,7 @@ type ModelAny struct {
 // 	Key2 (wildcarded): uint64
 func (n *Model) MultiKeyAny() *Model_MultiKeyAny {
 	return &Model_MultiKeyAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"b", "multi-key"},
 			map[string]interface{}{"key1": "*", "key2": "*"},
 			n,
@@ -81,7 +81,7 @@ func (n *Model) MultiKeyAny() *Model_MultiKeyAny {
 // 	Key2 (wildcarded): uint64
 func (n *ModelAny) MultiKeyAny() *Model_MultiKeyAny {
 	return &Model_MultiKeyAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"b", "multi-key"},
 			map[string]interface{}{"key1": "*", "key2": "*"},
 			n,
@@ -99,7 +99,7 @@ func (n *ModelAny) MultiKeyAny() *Model_MultiKeyAny {
 // 	Key2 (wildcarded): uint64
 func (n *Model) MultiKeyAnyKey2(Key1 uint32) *Model_MultiKeyAny {
 	return &Model_MultiKeyAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"b", "multi-key"},
 			map[string]interface{}{"key1": Key1, "key2": "*"},
 			n,
@@ -117,7 +117,7 @@ func (n *Model) MultiKeyAnyKey2(Key1 uint32) *Model_MultiKeyAny {
 // 	Key2 (wildcarded): uint64
 func (n *ModelAny) MultiKeyAnyKey2(Key1 uint32) *Model_MultiKeyAny {
 	return &Model_MultiKeyAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"b", "multi-key"},
 			map[string]interface{}{"key1": Key1, "key2": "*"},
 			n,
@@ -135,7 +135,7 @@ func (n *ModelAny) MultiKeyAnyKey2(Key1 uint32) *Model_MultiKeyAny {
 // 	Key2: uint64
 func (n *Model) MultiKeyAnyKey1(Key2 uint64) *Model_MultiKeyAny {
 	return &Model_MultiKeyAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"b", "multi-key"},
 			map[string]interface{}{"key1": "*", "key2": Key2},
 			n,
@@ -153,7 +153,7 @@ func (n *Model) MultiKeyAnyKey1(Key2 uint64) *Model_MultiKeyAny {
 // 	Key2: uint64
 func (n *ModelAny) MultiKeyAnyKey1(Key2 uint64) *Model_MultiKeyAny {
 	return &Model_MultiKeyAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"b", "multi-key"},
 			map[string]interface{}{"key1": "*", "key2": Key2},
 			n,
@@ -171,7 +171,7 @@ func (n *ModelAny) MultiKeyAnyKey1(Key2 uint64) *Model_MultiKeyAny {
 // 	Key2: uint64
 func (n *Model) MultiKey(Key1 uint32, Key2 uint64) *Model_MultiKey {
 	return &Model_MultiKey{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"b", "multi-key"},
 			map[string]interface{}{"key1": Key1, "key2": Key2},
 			n,
@@ -189,7 +189,7 @@ func (n *Model) MultiKey(Key1 uint32, Key2 uint64) *Model_MultiKey {
 // 	Key2: uint64
 func (n *ModelAny) MultiKey(Key1 uint32, Key2 uint64) *Model_MultiKeyAny {
 	return &Model_MultiKeyAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"b", "multi-key"},
 			map[string]interface{}{"key1": Key1, "key2": Key2},
 			n,
@@ -206,7 +206,7 @@ func (n *ModelAny) MultiKey(Key1 uint32, Key2 uint64) *Model_MultiKeyAny {
 // 	Key (wildcarded): string
 func (n *Model) SingleKeyAny() *Model_SingleKeyAny {
 	return &Model_SingleKeyAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"a", "single-key"},
 			map[string]interface{}{"key": "*"},
 			n,
@@ -223,7 +223,7 @@ func (n *Model) SingleKeyAny() *Model_SingleKeyAny {
 // 	Key (wildcarded): string
 func (n *ModelAny) SingleKeyAny() *Model_SingleKeyAny {
 	return &Model_SingleKeyAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"a", "single-key"},
 			map[string]interface{}{"key": "*"},
 			n,
@@ -240,7 +240,7 @@ func (n *ModelAny) SingleKeyAny() *Model_SingleKeyAny {
 // 	Key: string
 func (n *Model) SingleKey(Key string) *Model_SingleKey {
 	return &Model_SingleKey{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"a", "single-key"},
 			map[string]interface{}{"key": Key},
 			n,
@@ -257,7 +257,7 @@ func (n *Model) SingleKey(Key string) *Model_SingleKey {
 // 	Key: string
 func (n *ModelAny) SingleKey(Key string) *Model_SingleKeyAny {
 	return &Model_SingleKeyAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"a", "single-key"},
 			map[string]interface{}{"key": Key},
 			n,
@@ -267,32 +267,32 @@ func (n *ModelAny) SingleKey(Key string) *Model_SingleKeyAny {
 
 // Model_MultiKey_Key1 represents the /openconfig-withlist/model/b/multi-key/state/key1 YANG schema element.
 type Model_MultiKey_Key1 struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Model_MultiKey_Key1Any represents the wildcard version of the /openconfig-withlist/model/b/multi-key/state/key1 YANG schema element.
 type Model_MultiKey_Key1Any struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Model_MultiKey_Key2 represents the /openconfig-withlist/model/b/multi-key/state/key2 YANG schema element.
 type Model_MultiKey_Key2 struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Model_MultiKey_Key2Any represents the wildcard version of the /openconfig-withlist/model/b/multi-key/state/key2 YANG schema element.
 type Model_MultiKey_Key2Any struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Model_MultiKey represents the /openconfig-withlist/model/b/multi-key YANG schema element.
 type Model_MultiKey struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Model_MultiKeyAny represents the wildcard version of the /openconfig-withlist/model/b/multi-key YANG schema element.
 type Model_MultiKeyAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Key1 (leaf): 
@@ -302,7 +302,7 @@ type Model_MultiKeyAny struct {
 // 	Path from root:       "/model/b/multi-key/state/key1"
 func (n *Model_MultiKey) Key1() *Model_MultiKey_Key1 {
 	return &Model_MultiKey_Key1{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "key1"},
 			map[string]interface{}{},
 			n,
@@ -317,7 +317,7 @@ func (n *Model_MultiKey) Key1() *Model_MultiKey_Key1 {
 // 	Path from root:       "/model/b/multi-key/state/key1"
 func (n *Model_MultiKeyAny) Key1() *Model_MultiKey_Key1Any {
 	return &Model_MultiKey_Key1Any{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "key1"},
 			map[string]interface{}{},
 			n,
@@ -332,7 +332,7 @@ func (n *Model_MultiKeyAny) Key1() *Model_MultiKey_Key1Any {
 // 	Path from root:       "/model/b/multi-key/state/key2"
 func (n *Model_MultiKey) Key2() *Model_MultiKey_Key2 {
 	return &Model_MultiKey_Key2{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "key2"},
 			map[string]interface{}{},
 			n,
@@ -347,7 +347,7 @@ func (n *Model_MultiKey) Key2() *Model_MultiKey_Key2 {
 // 	Path from root:       "/model/b/multi-key/state/key2"
 func (n *Model_MultiKeyAny) Key2() *Model_MultiKey_Key2Any {
 	return &Model_MultiKey_Key2Any{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "key2"},
 			map[string]interface{}{},
 			n,
@@ -357,22 +357,22 @@ func (n *Model_MultiKeyAny) Key2() *Model_MultiKey_Key2Any {
 
 // Model_SingleKey_Key represents the /openconfig-withlist/model/a/single-key/state/key YANG schema element.
 type Model_SingleKey_Key struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Model_SingleKey_KeyAny represents the wildcard version of the /openconfig-withlist/model/a/single-key/state/key YANG schema element.
 type Model_SingleKey_KeyAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Model_SingleKey represents the /openconfig-withlist/model/a/single-key YANG schema element.
 type Model_SingleKey struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Model_SingleKeyAny represents the wildcard version of the /openconfig-withlist/model/a/single-key YANG schema element.
 type Model_SingleKeyAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Key (leaf): 
@@ -382,7 +382,7 @@ type Model_SingleKeyAny struct {
 // 	Path from root:       "/model/a/single-key/state/key"
 func (n *Model_SingleKey) Key() *Model_SingleKey_Key {
 	return &Model_SingleKey_Key{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "key"},
 			map[string]interface{}{},
 			n,
@@ -397,7 +397,7 @@ func (n *Model_SingleKey) Key() *Model_SingleKey_Key {
 // 	Path from root:       "/model/a/single-key/state/key"
 func (n *Model_SingleKeyAny) Key() *Model_SingleKey_KeyAny {
 	return &Model_SingleKey_KeyAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "key"},
 			map[string]interface{}{},
 			n,

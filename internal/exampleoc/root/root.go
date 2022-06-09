@@ -32,18 +32,17 @@ import (
 	"github.com/openconfig/ygnmi/internal/exampleoc/simple"
 	"github.com/openconfig/ygnmi/internal/exampleoc/withlistval"
 	"github.com/openconfig/ygnmi/ygnmi"
-	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygot/ytypes"
 )
 
 // RootPath represents the /root YANG schema element.
 type RootPath struct {
-	*ygot.DeviceRootBase
+	*ygnmi.DeviceRootBase
 }
 
 // New returns a new path object from which YANG paths can be constructed.
 func New() *RootPath {
-	return &RootPath{ygot.NewDeviceRootBase("")}
+	return &RootPath{ygnmi.NewDeviceRootBase()}
 }
 
 // A (container):
@@ -53,7 +52,7 @@ func New() *RootPath {
 // 	Path from root:       "/a"
 func (n *RootPath) A() *nested.APath {
 	return &nested.APath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"a"},
 			map[string]interface{}{},
 			n,
@@ -68,7 +67,7 @@ func (n *RootPath) A() *nested.APath {
 // 	Path from root:       "/model"
 func (n *RootPath) Model() *withlistval.ModelPath {
 	return &withlistval.ModelPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"model"},
 			map[string]interface{}{},
 			n,
@@ -84,7 +83,7 @@ func (n *RootPath) Model() *withlistval.ModelPath {
 // 	Path from root:       "/parent"
 func (n *RootPath) Parent() *simple.ParentPath {
 	return &simple.ParentPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"parent"},
 			map[string]interface{}{},
 			n,
@@ -99,7 +98,7 @@ func (n *RootPath) Parent() *simple.ParentPath {
 // 	Path from root:       "/remote-container"
 func (n *RootPath) RemoteContainer() *simple.RemoteContainerPath {
 	return &simple.RemoteContainerPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"remote-container"},
 			map[string]interface{}{},
 			n,

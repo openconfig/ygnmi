@@ -20,12 +20,12 @@ import (
 
 // RemoteContainer represents the /openconfig-simple/remote-container YANG schema element.
 type RemoteContainer struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // RemoteContainerAny represents the wildcard version of the /openconfig-simple/remote-container YANG schema element.
 type RemoteContainerAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // ALeaf (leaf): 
@@ -35,7 +35,7 @@ type RemoteContainerAny struct {
 // 	Path from root:       "/remote-container/state/a-leaf"
 func (n *RemoteContainer) ALeaf() *RemoteContainer_ALeaf {
 	return &RemoteContainer_ALeaf{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "a-leaf"},
 			map[string]interface{}{},
 			n,
@@ -50,7 +50,7 @@ func (n *RemoteContainer) ALeaf() *RemoteContainer_ALeaf {
 // 	Path from root:       "/remote-container/state/a-leaf"
 func (n *RemoteContainerAny) ALeaf() *RemoteContainer_ALeafAny {
 	return &RemoteContainer_ALeafAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "a-leaf"},
 			map[string]interface{}{},
 			n,

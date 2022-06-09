@@ -117,7 +117,7 @@ func (c *ComplianceErrors) String() string {
 // *NOT* in order of their timestamps. As such, in order to correctly support
 // Collect calls, the input data must be sorted in order of timestamps.
 func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.ValidatedGoStruct) (*Value[T], error) {
-	queryPath, err := resolvePath(q)
+	queryPath, err := resolvePath(q.pathStruct())
 	if err != nil {
 		return nil, err
 	}
@@ -319,10 +319,4 @@ func bundleDatapoints(datapoints []*DataPoint, prefixLen int) (map[string][]*Dat
 	sort.Strings(prefixes)
 
 	return groups, prefixes, nil
-}
-
-func errsToErr(errs []error) error {
-	l := &errlist.List{}
-	l.Add(errs...)
-	return l.Err()
 }

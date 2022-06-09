@@ -20,12 +20,12 @@ import (
 
 // Parent represents the /openconfig-simple/parent YANG schema element.
 type Parent struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // ParentAny represents the wildcard version of the /openconfig-simple/parent YANG schema element.
 type ParentAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Child (container): 
@@ -35,7 +35,7 @@ type ParentAny struct {
 // 	Path from root:       "/parent/child"
 func (n *Parent) Child() *Parent_Child {
 	return &Parent_Child{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"child"},
 			map[string]interface{}{},
 			n,
@@ -50,7 +50,7 @@ func (n *Parent) Child() *Parent_Child {
 // 	Path from root:       "/parent/child"
 func (n *ParentAny) Child() *Parent_ChildAny {
 	return &Parent_ChildAny{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"child"},
 			map[string]interface{}{},
 			n,

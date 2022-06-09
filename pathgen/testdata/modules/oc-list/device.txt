@@ -20,12 +20,12 @@ import (
 
 // DevicePath represents the /device YANG schema element.
 type DevicePath struct {
-	*ygot.DeviceRootBase
+	*ygnmi.DeviceRootBase
 }
 
 // New returns a new path object from which YANG paths can be constructed.
 func New() *DevicePath {
-	return &DevicePath{ygot.NewDeviceRootBase("")}
+	return &DevicePath{ygnmi.NewDeviceRootBase()}
 }
 
 // Model (container): 
@@ -35,7 +35,7 @@ func New() *DevicePath {
 // 	Path from root:       "/model"
 func (n *DevicePath) Model() *openconfigwithlistpath.ModelPath {
 	return &openconfigwithlistpath.ModelPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"model"},
 			map[string]interface{}{},
 			n,

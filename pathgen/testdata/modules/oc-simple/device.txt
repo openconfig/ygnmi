@@ -20,12 +20,12 @@ import (
 
 // DevicePath represents the /device YANG schema element.
 type DevicePath struct {
-	*ygot.DeviceRootBase
+	*ygnmi.DeviceRootBase
 }
 
 // New returns a new path object from which YANG paths can be constructed.
 func New() *DevicePath {
-	return &DevicePath{ygot.NewDeviceRootBase("")}
+	return &DevicePath{ygnmi.NewDeviceRootBase()}
 }
 
 // Parent (container): I am a parent container
@@ -36,7 +36,7 @@ func New() *DevicePath {
 // 	Path from root:       "/parent"
 func (n *DevicePath) Parent() *openconfigsimplepath.ParentPath {
 	return &openconfigsimplepath.ParentPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"parent"},
 			map[string]interface{}{},
 			n,
@@ -51,7 +51,7 @@ func (n *DevicePath) Parent() *openconfigsimplepath.ParentPath {
 // 	Path from root:       "/remote-container"
 func (n *DevicePath) RemoteContainer() *openconfigsimplepath.RemoteContainerPath {
 	return &openconfigsimplepath.RemoteContainerPath{
-		NodePath: ygot.NewNodePath(
+		NodePath: ygnmi.NewNodePath(
 			[]string{"remote-container"},
 			map[string]interface{}{},
 			n,

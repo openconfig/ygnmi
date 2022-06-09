@@ -31,6 +31,7 @@ import (
 	"text/template"
 
 	"github.com/openconfig/goyang/pkg/yang"
+	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/genutil"
 	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygen"
@@ -569,17 +570,17 @@ import (
 	// goPathFakeRootTemplate defines a template for the type definition and
 	// basic methods of the fakeroot object. The fakeroot object adheres to
 	// the methods of PathStructInterfaceName and FakeRootBaseTypeName in
-	// order to allow its path struct descendents to use the ygot.Resolve()
+	// order to allow its path struct descendents to use the ygnmi.Resolve()
 	// helper function for obtaining their absolute paths.
 	goPathFakeRootTemplate = mustTemplate("fakeroot", `
 // {{ .TypeName }} represents the {{ .YANGPath }} YANG schema element.
 type {{ .TypeName }} struct {
-	*ygot.{{ .FakeRootBaseTypeName }}
+	*ygnmi.{{ .FakeRootBaseTypeName }}
 }
 
 // New returns a new path object from which YANG paths can be constructed.
 func New() *{{ .TypeName }} {
-	return &{{ .TypeName }}{ygot.New{{- .FakeRootBaseTypeName }}("")}
+	return &{{ .TypeName }}{ygnmi.New{{- .FakeRootBaseTypeName }}()}
 }
 `)
 
@@ -595,14 +596,14 @@ func New() *{{ .TypeName }} {
 	goPathStructTemplate = mustTemplate("struct", `
 // {{ .TypeName }} represents the {{ .YANGPath }} YANG schema element.
 type {{ .TypeName }} struct {
-	*ygot.{{ .PathBaseTypeName }}
+	*ygnmi.{{ .PathBaseTypeName }}
 }
 
 {{- if .GenerateWildcardPaths }}
 
 // {{ .TypeName }}{{ .WildcardSuffix }} represents the wildcard version of the {{ .YANGPath }} YANG schema element.
 type {{ .TypeName }}{{ .WildcardSuffix }} struct {
-	*ygot.{{ .PathBaseTypeName }}
+	*ygnmi.{{ .PathBaseTypeName }}
 }
 {{- end }}
 `)
@@ -612,14 +613,14 @@ type {{ .TypeName }}{{ .WildcardSuffix }} struct {
 	goUnifiedLeafPathStructTemplate = mustTemplate("leaf-struct", `
 // {{ .TypeName }} represents the {{ .YANGPath }} YANG schema element.
 type {{ .TypeName }} struct {
-	parent ygot.PathStruct
+	parent ygnmi.PathStruct
 }
 
 {{- if .GenerateWildcardPaths }}
 
 // {{ .TypeName }}{{ .WildcardSuffix }} represents the wildcard version of the {{ .YANGPath }} YANG schema element.
 type {{ .TypeName }}{{ .WildcardSuffix }} struct {
-	parent ygot.PathStruct
+	parent ygnmi.PathStruct
 }
 {{- end }}
 `)
@@ -641,7 +642,7 @@ type {{ .TypeName }}{{ .WildcardSuffix }} struct {
 {{- end }}
 func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{ .ChildPkgAccessor }}{{ .TypeName }} {
 	return &{{ .ChildPkgAccessor }}{{ .TypeName }}{
-		{{ .Struct.PathBaseTypeName }}: ygot.New{{ .Struct.PathBaseTypeName }}(
+		{{ .Struct.PathBaseTypeName }}: ygnmi.New{{ .Struct.PathBaseTypeName }}(
 			[]string{ {{- .RelPathList -}} },
 			map[string]interface{}{ {{- .KeyEntriesStr -}} },
 			n,
@@ -670,7 +671,7 @@ func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{
 // {{ .MethodName }} sets {{ .TypeName }}'s key "{{ .KeySchemaName }}" to the specified value.
 // {{ .KeyParamDocStr }}
 func (n *{{ .TypeName }}) {{ .MethodName }}({{ .KeyParamName }} {{ .KeyParamType }}) *{{ .TypeName }} {
-	ygot.ModifyKey(n.NodePath, "{{ .KeySchemaName }}", {{ .KeyParamName }})
+	ygnmi.ModifyKey(n.NodePath, "{{ .KeySchemaName }}", {{ .KeyParamName }})
 	return n
 }
 `)
@@ -796,8 +797,8 @@ func writeHeader(yangFiles, includePaths []string, packageName string, cg *GenCo
 		YANGFiles:               yangFiles,
 		IncludePaths:            includePaths,
 		SchemaStructPkgAlias:    schemaStructPkgAlias,
-		PathBaseTypeName:        ygot.PathBaseTypeName,
-		PathStructInterfaceName: ygot.PathStructInterfaceName,
+		PathBaseTypeName:        ygnmi.PathBaseTypeName,
+		PathStructInterfaceName: ygnmi.PathStructInterfaceName,
 		FakeRootTypeName:        yang.CamelCase(cg.FakeRootName),
 	}
 	// Create an ordered list of imports to include in the header.
@@ -843,9 +844,9 @@ func getStructData(directory *ygen.ParsedDirectory, pathStructSuffix string, gen
 	return goPathStructData{
 		TypeName:                directory.Name + pathStructSuffix,
 		YANGPath:                directory.Path,
-		PathBaseTypeName:        ygot.PathBaseTypeName,
-		FakeRootBaseTypeName:    ygot.FakeRootBaseTypeName,
-		PathStructInterfaceName: ygot.PathStructInterfaceName,
+		PathBaseTypeName:        ygnmi.PathBaseTypeName,
+		FakeRootBaseTypeName:    ygnmi.FakeRootBaseTypeName,
+		PathStructInterfaceName: ygnmi.PathStructInterfaceName,
 		WildcardSuffix:          WildcardSuffix,
 		GenerateWildcardPaths:   generateWildcardPaths,
 	}
@@ -956,8 +957,8 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 				structData := goPathStructData{
 					TypeName:                leafTypeName,
 					YANGPath:                field.YANGDetails.Path,
-					PathBaseTypeName:        ygot.PathBaseTypeName,
-					PathStructInterfaceName: ygot.PathStructInterfaceName,
+					PathBaseTypeName:        ygnmi.PathBaseTypeName,
+					PathStructInterfaceName: ygnmi.PathStructInterfaceName,
 					WildcardSuffix:          WildcardSuffix,
 					GenerateWildcardPaths:   generateWildcardPaths,
 				}
@@ -1147,7 +1148,7 @@ func generateChildConstructorsForListBuilderFormat(methodBuf *strings.Builder, b
 	}
 	keyN := len(keyParams)
 
-	// Initialize ygot.NodePath's key list with wildcard values.
+	// Initialize ygnmi.NodePath's key list with wildcard values.
 	var keyEntryStrs []string
 	for i := 0; i != keyN; i++ {
 		keyEntryStrs = append(keyEntryStrs, fmt.Sprintf(`"%s": "*"`, keyParams[i].name))
@@ -1258,7 +1259,7 @@ func generateChildConstructorsForList(methodBuf *strings.Builder, keys map[strin
 			keyEntryStrs = append(keyEntryStrs, fmt.Sprintf(`"%s": "*"`, param.name))
 			anySuffixes = append(anySuffixes, WildcardSuffix+param.varName)
 		}
-		// Create the string for the method parameter list, docstrings, and ygot.NodePath's key list.
+		// Create the string for the method parameter list, docstrings, and ygnmi.NodePath's key list.
 		fieldData.KeyParamListStr = strings.Join(paramListStrs, ", ")
 		fieldData.KeyParamDocStrs = paramDocStrs
 		fieldData.KeyEntriesStr = strings.Join(keyEntryStrs, ", ")

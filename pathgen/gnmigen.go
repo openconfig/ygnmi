@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/ygen"
-	"github.com/openconfig/ygot/ygot"
 )
 
 type gnmiStruct struct {
@@ -57,7 +57,7 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		PathStructName:          pathStructName,
 		GoTypeName:              node.GoTypeName,
 		GoStructTypeName:        node.SubsumingGoStructName,
-		PathBaseTypeName:        ygot.PathBaseTypeName,
+		PathBaseTypeName:        ygnmi.PathBaseTypeName,
 		GoFieldName:             node.GoFieldName,
 		SchemaStructPkgAccessor: "oc.",
 		IsState:                 true,
@@ -148,7 +148,7 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
 		{{ .IsScalar }},
-		ygot.New{{ .PathBaseTypeName }}(
+		ygnmi.New{{ .PathBaseTypeName }}(
 			[]string{ {{- .RelPathList -}} },
 			nil,
 			n.parent,
@@ -186,7 +186,7 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
 		{{ .IsScalar }},
-		ygot.New{{ .PathBaseTypeName }}(
+		ygnmi.New{{ .PathBaseTypeName }}(
 			[]string{ {{- .RelPathList -}} },
 			nil,
 			n.parent,

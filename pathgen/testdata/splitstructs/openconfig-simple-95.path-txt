@@ -20,10 +20,10 @@ import (
 
 // Parent_Child_Two represents the /openconfig-simple/parent/child/state/two YANG schema element.
 type Parent_Child_Two struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
 
 // Parent_Child_TwoAny represents the wildcard version of the /openconfig-simple/parent/child/state/two YANG schema element.
 type Parent_Child_TwoAny struct {
-	*ygot.NodePath
+	*ygnmi.NodePath
 }
