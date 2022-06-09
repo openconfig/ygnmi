@@ -172,6 +172,7 @@ func (lq *leafBaseQuery[T]) pathStruct() PathStruct {
 }
 
 // subPaths returns the path structs used for creating the gNMI subscription.
+// A leaf query must subscribe to the schema path, so this returns the pathStruct().
 func (lq *leafBaseQuery[T]) subPaths() []PathStruct {
 	return []PathStruct{lq.ps}
 }
