@@ -339,6 +339,47 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
 			YANGPath:              "/",
 		},
 		want: `
+// Batch contains a collection of paths.
+type Batch struct {
+    paths []ygnmi.PathStruct
+}
+
+// AddPaths adds the paths to the batch.
+func (b *Batch) AddPaths(paths ...ygnmi.PathStruct) *Batch {
+    b.paths = append(b.paths, paths...)
+    return b
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (b *Batch) State() ygnmi.SingletonQuery[*Root] {
+    return ygnmi.NewNonLeafSingletonQuery[*Root](
+        "Root",
+        true,
+        ygnmi.NewDeviceRootBase(),
+        b.paths,
+        &ytypes.Schema{
+            Root:       &oc.Root{},
+            SchemaTree: oc.SchemaTree,
+            Unmarshal:  oc.Unmarshal,
+        },
+    )
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (b *Batch) Config() ygnmi.SingletonQuery[*oc.Root] {
+    return ygnmi.NewNonLeafSingletonQuery[*oc.Root](
+        "Root",
+        false,
+        ygnmi.NewDeviceRootBase(),
+        b.paths,
+        &ytypes.Schema{
+            Root:       &oc.Root{},
+            SchemaTree: oc.SchemaTree,
+            Unmarshal:  oc.Unmarshal,
+        },
+    )
+}
+
 // State returns a Query that can be used in gNMI operations.
 func (n *Root) State() ygnmi.SingletonQuery[*Root] {
 	return ygnmi.NewNonLeafSingletonQuery[*Root](

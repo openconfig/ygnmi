@@ -658,7 +658,11 @@ func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{
 	// path struct object. In the unified model, leaves are not path structs
 	// because with path compression, a leaf path may be a state or config path.
 	goUnifiedLeafPathChildConstructorTemplate = mustTemplate("unifiedchildConstructor", `
-// {{ .MethodName }} corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// {{ .MethodName }} ({{ .YANGNodeType }}): {{ .YANGDescription }}
+// 	Defining module:      "{{ .DefiningModuleName }}"
+// 	Instantiating module: "{{ .InstantiatingModuleName }}"
+// 	Path from parent:     "{{ .RelPath }}"
+// 	Path from root:       "{{ .AbsPath }}"
 func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{ .ChildPkgAccessor }}{{ .TypeName }} {
 	return &{{ .ChildPkgAccessor }}{{ .TypeName }}{
 		{{ .Struct.PathBaseTypeName }}: ygnmi.New{{ .Struct.PathBaseTypeName }}(
@@ -1064,7 +1068,7 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 
 	// When generating unified path structs (one set for both state and config),
 	// a leaf struct could be either state or config, so replace state with a wildcard.
-	if unified && (field.Type == ygen.LeafNode || field.Type == ygen.LeafListNode) {
+	if unified && len(field.ShadowMappedPaths) > 0 && (field.Type == ygen.LeafNode || field.Type == ygen.LeafListNode) {
 		path[0] = "*"
 		schemaPath = strings.ReplaceAll(schemaPath, "/state/", "/*/")
 	}

@@ -69,7 +69,7 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		WildcardSuffix:          WildcardSuffix,
 		FakeRootName:            fakeRootName,
 	}
-
+	var b strings.Builder
 	if node.SubsumingGoStructName == fakeRootName {
 		if err := batchTemplate.Execute(&b, tmplStruct); err != nil {
 			return "", err
@@ -84,7 +84,6 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		}
 	}
 
-	var b strings.Builder
 	if err := tmpl.Execute(&b, tmplStruct); err != nil {
 		return "", err
 	}
@@ -283,7 +282,6 @@ func (b *Batch) State() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// Any state-only paths will be silently ignored.
 func (b *Batch) Config() ygnmi.{{ .SingletonTypeName }}[*oc.Root] {
     return ygnmi.NewNonLeaf{{ .SingletonTypeName }}[*oc.Root](
         "{{ .GoStructTypeName }}",

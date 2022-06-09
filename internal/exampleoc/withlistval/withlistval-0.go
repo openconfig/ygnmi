@@ -561,7 +561,11 @@ type Model_MultiKeyPathAny struct {
 	*ygnmi.NodePath
 }
 
-// Key1 corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Key1 (leaf):
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "*/key1"
+// 	Path from root:       "/model/b/multi-key/*/key1"
 func (n *Model_MultiKeyPath) Key1() *Model_MultiKey_Key1Path {
 	return &Model_MultiKey_Key1Path{
 		NodePath: ygnmi.NewNodePath(
@@ -573,7 +577,11 @@ func (n *Model_MultiKeyPath) Key1() *Model_MultiKey_Key1Path {
 	}
 }
 
-// Key1 corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Key1 (leaf):
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "*/key1"
+// 	Path from root:       "/model/b/multi-key/*/key1"
 func (n *Model_MultiKeyPathAny) Key1() *Model_MultiKey_Key1PathAny {
 	return &Model_MultiKey_Key1PathAny{
 		NodePath: ygnmi.NewNodePath(
@@ -585,7 +593,11 @@ func (n *Model_MultiKeyPathAny) Key1() *Model_MultiKey_Key1PathAny {
 	}
 }
 
-// Key2 corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Key2 (leaf):
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "*/key2"
+// 	Path from root:       "/model/b/multi-key/*/key2"
 func (n *Model_MultiKeyPath) Key2() *Model_MultiKey_Key2Path {
 	return &Model_MultiKey_Key2Path{
 		NodePath: ygnmi.NewNodePath(
@@ -597,7 +609,11 @@ func (n *Model_MultiKeyPath) Key2() *Model_MultiKey_Key2Path {
 	}
 }
 
-// Key2 corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Key2 (leaf):
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "*/key2"
+// 	Path from root:       "/model/b/multi-key/*/key2"
 func (n *Model_MultiKeyPathAny) Key2() *Model_MultiKey_Key2PathAny {
 	return &Model_MultiKey_Key2PathAny{
 		NodePath: ygnmi.NewNodePath(
@@ -957,7 +973,11 @@ type Model_SingleKeyPathAny struct {
 	*ygnmi.NodePath
 }
 
-// Key corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Key (leaf):
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "*/key"
+// 	Path from root:       "/model/a/single-key/*/key"
 func (n *Model_SingleKeyPath) Key() *Model_SingleKey_KeyPath {
 	return &Model_SingleKey_KeyPath{
 		NodePath: ygnmi.NewNodePath(
@@ -969,7 +989,11 @@ func (n *Model_SingleKeyPath) Key() *Model_SingleKey_KeyPath {
 	}
 }
 
-// Key corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Key (leaf):
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "*/key"
+// 	Path from root:       "/model/a/single-key/*/key"
 func (n *Model_SingleKeyPathAny) Key() *Model_SingleKey_KeyPathAny {
 	return &Model_SingleKey_KeyPathAny{
 		NodePath: ygnmi.NewNodePath(
@@ -981,7 +1005,11 @@ func (n *Model_SingleKeyPathAny) Key() *Model_SingleKey_KeyPathAny {
 	}
 }
 
-// Value corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Value (leaf):
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "*/value"
+// 	Path from root:       "/model/a/single-key/*/value"
 func (n *Model_SingleKeyPath) Value() *Model_SingleKey_ValuePath {
 	return &Model_SingleKey_ValuePath{
 		NodePath: ygnmi.NewNodePath(
@@ -993,7 +1021,11 @@ func (n *Model_SingleKeyPath) Value() *Model_SingleKey_ValuePath {
 	}
 }
 
-// Value corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Value (leaf):
+// 	Defining module:      "openconfig-withlistval"
+// 	Instantiating module: "openconfig-withlistval"
+// 	Path from parent:     "*/value"
+// 	Path from root:       "/model/a/single-key/*/value"
 func (n *Model_SingleKeyPathAny) Value() *Model_SingleKey_ValuePathAny {
 	return &Model_SingleKey_ValuePathAny{
 		NodePath: ygnmi.NewNodePath(

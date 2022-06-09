@@ -665,7 +665,11 @@ type Parent_ChildPathAny struct {
 	*ygnmi.NodePath
 }
 
-// Four corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Four (leaf):
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "*/four"
+// 	Path from root:       "/parent/child/*/four"
 func (n *Parent_ChildPath) Four() *Parent_Child_FourPath {
 	return &Parent_Child_FourPath{
 		NodePath: ygnmi.NewNodePath(
@@ -677,7 +681,11 @@ func (n *Parent_ChildPath) Four() *Parent_Child_FourPath {
 	}
 }
 
-// Four corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Four (leaf):
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "*/four"
+// 	Path from root:       "/parent/child/*/four"
 func (n *Parent_ChildPathAny) Four() *Parent_Child_FourPathAny {
 	return &Parent_Child_FourPathAny{
 		NodePath: ygnmi.NewNodePath(
@@ -689,7 +697,11 @@ func (n *Parent_ChildPathAny) Four() *Parent_Child_FourPathAny {
 	}
 }
 
-// One corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// One (leaf):
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "*/one"
+// 	Path from root:       "/parent/child/*/one"
 func (n *Parent_ChildPath) One() *Parent_Child_OnePath {
 	return &Parent_Child_OnePath{
 		NodePath: ygnmi.NewNodePath(
@@ -701,7 +713,11 @@ func (n *Parent_ChildPath) One() *Parent_Child_OnePath {
 	}
 }
 
-// One corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// One (leaf):
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "*/one"
+// 	Path from root:       "/parent/child/*/one"
 func (n *Parent_ChildPathAny) One() *Parent_Child_OnePathAny {
 	return &Parent_Child_OnePathAny{
 		NodePath: ygnmi.NewNodePath(
@@ -713,7 +729,11 @@ func (n *Parent_ChildPathAny) One() *Parent_Child_OnePathAny {
 	}
 }
 
-// Three corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Three (leaf):
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "*/three"
+// 	Path from root:       "/parent/child/*/three"
 func (n *Parent_ChildPath) Three() *Parent_Child_ThreePath {
 	return &Parent_Child_ThreePath{
 		NodePath: ygnmi.NewNodePath(
@@ -725,7 +745,11 @@ func (n *Parent_ChildPath) Three() *Parent_Child_ThreePath {
 	}
 }
 
-// Three corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Three (leaf):
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "*/three"
+// 	Path from root:       "/parent/child/*/three"
 func (n *Parent_ChildPathAny) Three() *Parent_Child_ThreePathAny {
 	return &Parent_Child_ThreePathAny{
 		NodePath: ygnmi.NewNodePath(
@@ -737,11 +761,15 @@ func (n *Parent_ChildPathAny) Three() *Parent_Child_ThreePathAny {
 	}
 }
 
-// Two corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Two (leaf):
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/two"
+// 	Path from root:       "/parent/child/state/two"
 func (n *Parent_ChildPath) Two() *Parent_Child_TwoPath {
 	return &Parent_Child_TwoPath{
 		NodePath: ygnmi.NewNodePath(
-			[]string{"*", "two"},
+			[]string{"state", "two"},
 			map[string]interface{}{},
 			n,
 		),
@@ -749,11 +777,15 @@ func (n *Parent_ChildPath) Two() *Parent_Child_TwoPath {
 	}
 }
 
-// Two corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Two (leaf):
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/two"
+// 	Path from root:       "/parent/child/state/two"
 func (n *Parent_ChildPathAny) Two() *Parent_Child_TwoPathAny {
 	return &Parent_Child_TwoPathAny{
 		NodePath: ygnmi.NewNodePath(
-			[]string{"*", "two"},
+			[]string{"state", "two"},
 			map[string]interface{}{},
 			n,
 		),
@@ -969,7 +1001,11 @@ type RemoteContainerPathAny struct {
 	*ygnmi.NodePath
 }
 
-// ALeaf corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// ALeaf (leaf):
+// 	Defining module:      "openconfig-remote"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "*/a-leaf"
+// 	Path from root:       "/remote-container/*/a-leaf"
 func (n *RemoteContainerPath) ALeaf() *RemoteContainer_ALeafPath {
 	return &RemoteContainer_ALeafPath{
 		NodePath: ygnmi.NewNodePath(
@@ -981,7 +1017,11 @@ func (n *RemoteContainerPath) ALeaf() *RemoteContainer_ALeafPath {
 	}
 }
 
-// ALeaf corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// ALeaf (leaf):
+// 	Defining module:      "openconfig-remote"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "*/a-leaf"
+// 	Path from root:       "/remote-container/*/a-leaf"
 func (n *RemoteContainerPathAny) ALeaf() *RemoteContainer_ALeafPathAny {
 	return &RemoteContainer_ALeafPathAny{
 		NodePath: ygnmi.NewNodePath(

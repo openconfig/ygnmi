@@ -141,6 +141,9 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 	if !q.isLeaf() {
 		path = proto.Clone(unmarshalledData[0].Path).(*gpb.Path)
 		path.Elem = path.Elem[:len(queryPath.Elem)]
+		if path.Origin != queryPath.Origin {
+			path.Origin = queryPath.Origin
+		}
 		ret.Timestamp = LatestTimestamp(unmarshalledData)
 		ret.RecvTimestamp = LatestRecvTimestamp(unmarshalledData)
 	} else {

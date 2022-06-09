@@ -133,7 +133,6 @@ func (b *Batch) State() ygnmi.SingletonQuery[*oc.Root] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-// Any state-only paths will be silently ignored.
 func (b *Batch) Config() ygnmi.SingletonQuery[*oc.Root] {
 	return ygnmi.NewNonLeafSingletonQuery[*oc.Root](
 		"Root",
