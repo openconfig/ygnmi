@@ -69,7 +69,6 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		WildcardSuffix:          WildcardSuffix,
 		FakeRootName:            fakeRootName,
 	}
-	var b strings.Builder
 
 	tmpl := goGNMINonLeafTemplate
 	if node.IsLeaf {
@@ -79,6 +78,7 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		}
 	}
 
+	var b strings.Builder
 	if err := tmpl.Execute(&b, tmplStruct); err != nil {
 		return "", err
 	}

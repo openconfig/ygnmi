@@ -34,7 +34,7 @@ import (
 
 // subscribe create a gNMI SubscribeClient for the given query.
 func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.SubscriptionList_Mode) (_ gpb.GNMI_SubscribeClient, rerr error) {
-	subs := []*gpb.Subscription{}
+	var subs []*gpb.Subscription
 	for _, path := range q.subPaths() {
 		path, err := resolvePath(path)
 		if err != nil {

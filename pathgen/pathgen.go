@@ -1061,6 +1061,9 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 	schemaPath := field.YANGDetails.SchemaPath
 	path := make([]string, len(relPath))
 	copy(path, relPath)
+
+	// When generating unified path structs (one set for both state and config),
+	// a leaf struct could be either state or config, so replace state with a wildcard.
 	if unified && (field.Type == ygen.LeafNode || field.Type == ygen.LeafListNode) {
 		path[0] = "*"
 		schemaPath = strings.ReplaceAll(schemaPath, "/state/", "/*/")

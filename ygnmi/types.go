@@ -40,11 +40,11 @@ func NewLeafSingletonQuery[T any](parentDir string, state, scalar bool, ps PathS
 func NewNonLeafSingletonQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps PathStruct, subPaths []PathStruct, schema *ytypes.Schema) *NonLeafSingletonQuery[T] {
 	return &NonLeafSingletonQuery[T]{
 		nonLeafBaseQuery: nonLeafBaseQuery[T]{
-			dir:            dir,
-			state:          state,
-			ps:             ps,
-			yschema:        schema,
-			subPathStructs: subPaths,
+			dir:              dir,
+			state:            state,
+			ps:               ps,
+			yschema:          schema,
+			queryPathStructs: subPaths,
 		},
 	}
 }
@@ -171,7 +171,7 @@ func (lq *leafBaseQuery[T]) pathStruct() PathStruct {
 	return lq.ps
 }
 
-// subPaths returns the path struct containing the path for the Query.
+// subPaths returns the path structs used for creating the gNMI subscription.
 func (lq *leafBaseQuery[T]) subPaths() []PathStruct {
 	return []PathStruct{lq.ps}
 }
@@ -205,11 +205,14 @@ type NonLeafWildcardQuery[T ygot.ValidatedGoStruct] struct {
 func (lq *NonLeafWildcardQuery[T]) isWildcard() {}
 
 type nonLeafBaseQuery[T ygot.ValidatedGoStruct] struct {
-	dir            string
-	state          bool
-	ps             PathStruct
-	subPathStructs []PathStruct
-	yschema        *ytypes.Schema
+	dir   string
+	state bool
+	// ps is the path used for unmarshalling and schema validation.
+	ps PathStruct
+	// queryPathStructs are the paths used to for the gNMI subscription.
+	// They must be equal to or descendants of ps.
+	queryPathStructs []PathStruct
+	yschema          *ytypes.Schema
 }
 
 // extract casts the input GoStruct to the concrete type for the query.
@@ -253,12 +256,12 @@ func (lq *nonLeafBaseQuery[T]) pathStruct() PathStruct {
 	return lq.ps
 }
 
-// subPaths returns the path struct containing the path for the Query.
+// subPaths returns the path structs used for creating the gNMI subscription.
 func (lq *nonLeafBaseQuery[T]) subPaths() []PathStruct {
-	if len(lq.subPathStructs) == 0 {
+	if len(lq.queryPathStructs) == 0 {
 		return []PathStruct{lq.ps}
 	}
-	return lq.subPathStructs
+	return lq.queryPathStructs
 }
 
 // schema returns the schema used for unmarshalling.
