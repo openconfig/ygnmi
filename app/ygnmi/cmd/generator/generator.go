@@ -27,6 +27,7 @@ import (
 	"github.com/openconfig/goyang/pkg/yang"
 	"github.com/openconfig/ygnmi/pathgen"
 	"github.com/openconfig/ygot/genutil"
+	"github.com/openconfig/ygot/gogen"
 	"github.com/openconfig/ygot/ygen"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -154,29 +155,31 @@ func generateStructs(modules []string, schemaPath, version string) error {
 	}
 
 	// Perform the code generation.
-	cg := ygen.NewYANGCodeGenerator(&ygen.GeneratorConfig{
-		ParseOptions: ygen.ParseOpts{
-			ExcludeModules:        viper.GetStringSlice("exclude_modules"),
-			SkipEnumDeduplication: false,
-			YANGParseOptions: yang.Options{
-				IgnoreSubmoduleCircularDependencies: false,
+	cg := gogen.New(
+		version,
+		ygen.IROptions{
+			ParseOptions: ygen.ParseOpts{
+				ExcludeModules: viper.GetStringSlice("exclude_modules"),
+				YANGParseOptions: yang.Options{
+					IgnoreSubmoduleCircularDependencies: false,
+				},
+			},
+			TransformationOptions: ygen.TransformationOpts{
+				CompressBehaviour:                    cmp,
+				SkipEnumDeduplication:                false,
+				GenerateFakeRoot:                     true,
+				FakeRootName:                         "root",
+				ShortenEnumLeafNames:                 true,
+				EnumOrgPrefixesToTrim:                []string{"openconfig"},
+				UseDefiningModuleForTypedefEnumNames: false,
+				EnumerationsUseUnderscores:           true,
 			},
 		},
-		TransformationOptions: ygen.TransformationOpts{
-			CompressBehaviour:                    cmp,
-			IgnoreShadowSchemaPaths:              true,
-			GenerateFakeRoot:                     true,
-			FakeRootName:                         "root",
-			ShortenEnumLeafNames:                 true,
-			EnumOrgPrefixesToTrim:                []string{"openconfig"},
-			UseDefiningModuleForTypedefEnumNames: false,
-			EnumerationsUseUnderscores:           true,
-		},
-		Caller:              version,
-		PackageName:         path.Base(schemaPath),
-		GenerateJSONSchema:  true,
-		IncludeDescriptions: false,
-		GoOptions: ygen.GoOpts{
+		gogen.GoOpts{
+			PackageName:                         path.Base(schemaPath),
+			GenerateJSONSchema:                  true,
+			IncludeDescriptions:                 false,
+			IgnoreShadowSchemaPaths:             true,
 			YgotImportPath:                      viper.GetString("ygot_path"),
 			YtypesImportPath:                    viper.GetString("ytypes_path"),
 			GoyangImportPath:                    viper.GetString("goyang_path"),
@@ -194,8 +197,8 @@ func generateStructs(modules []string, schemaPath, version string) error {
 			IncludeModelData:                    false,
 			AppendEnumSuffixForSimpleUnionEnums: true,
 		},
-	})
-	generatedGoCode, errs := cg.GenerateGoCode(modules, viper.GetStringSlice("paths"))
+	)
+	generatedGoCode, errs := cg.Generate(modules, viper.GetStringSlice("paths"))
 	if errs != nil {
 		return fmt.Errorf("error generating GoStruct Code: %v", errs)
 	}
@@ -253,7 +256,7 @@ func writeFiles(dir string, out map[string]string) error {
 	return nil
 }
 
-func splitCodeByFileN(goCode *ygen.GeneratedGoCode, fileN int) (map[string]string, error) {
+func splitCodeByFileN(goCode *gogen.GeneratedCode, fileN int) (map[string]string, error) {
 	structN := len(goCode.Structs)
 	if fileN < 1 || fileN > structN {
 		return nil, fmt.Errorf("requested %d files, but must be between 1 and %d (number of schema structs)", fileN, structN)
