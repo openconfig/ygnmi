@@ -1057,9 +1057,13 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 	// not tests), these should be populated. Since these are just use for
 	// documentation, it is not critical that they are populated.
 
+	// Make copies of the path, to avoid modifying the directories.
+	schemaPath := field.YANGDetails.SchemaPath
+	path := make([]string, len(relPath))
+	copy(path, relPath)
 	if unified && (field.Type == ygen.LeafNode || field.Type == ygen.LeafListNode) {
-		relPath[0] = "*"
-		field.YANGDetails.SchemaPath = strings.ReplaceAll(field.YANGDetails.SchemaPath, "/state/", "/*/")
+		path[0] = "*"
+		schemaPath = strings.ReplaceAll(schemaPath, "/state/", "/*/")
 	}
 
 	fieldData := goPathFieldData{
@@ -1070,10 +1074,10 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 		YANGDescription:         strings.ReplaceAll(field.YANGDetails.Description, "\n", "\n// "),
 		DefiningModuleName:      field.YANGDetails.DefiningModule,
 		InstantiatingModuleName: field.YANGDetails.RootElementModule,
-		AbsPath:                 field.YANGDetails.SchemaPath,
+		AbsPath:                 schemaPath,
 		Struct:                  structData,
-		RelPath:                 strings.Join(relPath, `/`),
-		RelPathList:             `"` + strings.Join(relPath, `", "`) + `"`,
+		RelPath:                 strings.Join(path, `/`),
+		RelPathList:             `"` + strings.Join(path, `", "`) + `"`,
 		ChildPkgAccessor:        childPkgAccessor,
 	}
 

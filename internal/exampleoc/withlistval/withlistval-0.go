@@ -564,48 +564,48 @@ type Model_MultiKeyPathAny struct {
 // Key1 corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
 func (n *Model_MultiKeyPath) Key1() *Model_MultiKey_Key1Path {
 	return &Model_MultiKey_Key1Path{
-		parent: n,
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "key1"},
 			map[string]interface{}{},
 			n,
 		),
+		parent: n,
 	}
 }
 
 // Key1 corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
 func (n *Model_MultiKeyPathAny) Key1() *Model_MultiKey_Key1PathAny {
 	return &Model_MultiKey_Key1PathAny{
-		parent: n,
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "key1"},
 			map[string]interface{}{},
 			n,
 		),
+		parent: n,
 	}
 }
 
 // Key2 corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
 func (n *Model_MultiKeyPath) Key2() *Model_MultiKey_Key2Path {
 	return &Model_MultiKey_Key2Path{
-		parent: n,
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "key2"},
 			map[string]interface{}{},
 			n,
 		),
+		parent: n,
 	}
 }
 
 // Key2 corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
 func (n *Model_MultiKeyPathAny) Key2() *Model_MultiKey_Key2PathAny {
 	return &Model_MultiKey_Key2PathAny{
-		parent: n,
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "key2"},
 			map[string]interface{}{},
 			n,
 		),
+		parent: n,
 	}
 }
 
@@ -960,47 +960,47 @@ type Model_SingleKeyPathAny struct {
 // Key corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
 func (n *Model_SingleKeyPath) Key() *Model_SingleKey_KeyPath {
 	return &Model_SingleKey_KeyPath{
-		parent: n,
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "key"},
 			map[string]interface{}{},
 			n,
 		),
+		parent: n,
 	}
 }
 
 // Key corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
 func (n *Model_SingleKeyPathAny) Key() *Model_SingleKey_KeyPathAny {
 	return &Model_SingleKey_KeyPathAny{
-		parent: n,
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "key"},
 			map[string]interface{}{},
 			n,
 		),
+		parent: n,
 	}
 }
 
 // Value corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
 func (n *Model_SingleKeyPath) Value() *Model_SingleKey_ValuePath {
 	return &Model_SingleKey_ValuePath{
-		parent: n,
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "value"},
 			map[string]interface{}{},
 			n,
 		),
+		parent: n,
 	}
 }
 
 // Value corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
 func (n *Model_SingleKeyPathAny) Value() *Model_SingleKey_ValuePathAny {
 	return &Model_SingleKey_ValuePathAny{
-		parent: n,
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "value"},
 			map[string]interface{}{},
 			n,
 		),
+		parent: n,
 	}
 }

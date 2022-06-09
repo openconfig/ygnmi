@@ -1356,23 +1356,23 @@ type A_B_C_D_E_F_G_H_I_J_K_L_MPathAny struct {
 // Foo corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
 func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath {
 	return &A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath{
-		parent: n,
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "foo"},
 			map[string]interface{}{},
 			n,
 		),
+		parent: n,
 	}
 }
 
 // Foo corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
 func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny {
 	return &A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny{
-		parent: n,
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "foo"},
 			map[string]interface{}{},
 			n,
 		),
+		parent: n,
 	}
 }
