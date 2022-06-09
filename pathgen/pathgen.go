@@ -661,12 +661,12 @@ func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{
 // {{ .MethodName }} corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
 func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{ .ChildPkgAccessor }}{{ .TypeName }} {
 	return &{{ .ChildPkgAccessor }}{{ .TypeName }}{
-		parent: n,
 		{{ .Struct.PathBaseTypeName }}: ygnmi.New{{ .Struct.PathBaseTypeName }}(
 			[]string{ {{- .RelPathList -}} },
 			map[string]interface{}{ {{- .KeyEntriesStr -}} },
 			n,
 		),
+		parent: n,
 	}
 }
 `)
