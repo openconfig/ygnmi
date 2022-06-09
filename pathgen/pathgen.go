@@ -33,6 +33,7 @@ import (
 	"github.com/openconfig/goyang/pkg/yang"
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/genutil"
+	"github.com/openconfig/ygot/gogen"
 	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygen"
 	"github.com/openconfig/ygot/ygot"
@@ -70,6 +71,10 @@ const (
 	defaultYgnmiPath = "github.com/openconfig/ygnmi/ygmni"
 	// defaultYtypesPath is the import path for the ytypes library.
 	defaultYtypesPath = "github.com/openconfig/ygot/ytypes"
+
+	// yangTypeNameFlagKey is a custom flag for storing the YANG type's
+	// name for a YANG node.
+	yangTypeNameFlagKey = "YANG:typename"
 )
 
 // NewDefaultConfig creates a GenConfig with default configuration.
@@ -218,6 +223,20 @@ type GoImports struct {
 	YgnmiImportPath string
 }
 
+type goLangMapper struct {
+	*gogen.GoLangMapper
+}
+
+// PopulateFieldFlags populates extra field information for pathgen.
+func (goLangMapper) PopulateFieldFlags(nd ygen.NodeDetails, field *yang.Entry) map[string]string {
+	flags := map[string]string{}
+	if nd.Type == ygen.LeafNode || nd.Type == ygen.LeafListNode {
+		// Only leaf or leaf-list nodes can have type statements.
+		flags[yangTypeNameFlagKey] = field.Type.Name
+	}
+	return flags
+}
+
 // GeneratePathCode takes a slice of strings containing the path to a set of YANG
 // files which contain YANG modules, and a second slice of strings which
 // specifies the set of paths that are to be searched for associated models (e.g.,
@@ -250,9 +269,8 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 
 	opts := ygen.IROptions{
 		ParseOptions: ygen.ParseOpts{
-			YANGParseOptions:      cg.YANGParseOptions,
-			ExcludeModules:        cg.ExcludeModules,
-			SkipEnumDeduplication: cg.SkipEnumDeduplication,
+			YANGParseOptions: cg.YANGParseOptions,
+			ExcludeModules:   cg.ExcludeModules,
 		},
 		TransformationOptions: ygen.TransformationOpts{
 			CompressBehaviour:                    compressBehaviour,
@@ -262,6 +280,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 			EnumOrgPrefixesToTrim:                cg.EnumOrgPrefixesToTrim,
 			UseDefiningModuleForTypedefEnumNames: cg.UseDefiningModuleForTypedefEnumNames,
 			EnumerationsUseUnderscores:           true,
+			SkipEnumDeduplication:                cg.SkipEnumDeduplication,
 		},
 		NestedDirectories:                   false,
 		AbsoluteMapPaths:                    false,
@@ -269,7 +288,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 	}
 
 	var errs util.Errors
-	ir, err := ygen.GenerateIR(yangFiles, includePaths, ygen.NewGoLangMapper(true), opts)
+	ir, err := ygen.GenerateIR(yangFiles, includePaths, goLangMapper{GoLangMapper: gogen.NewGoLangMapper(true)}, opts)
 	if err != nil {
 		return nil, nil, util.AppendErr(errs, err)
 	}
@@ -751,8 +770,8 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 			}
 
 			var yangTypeName string
-			if field.YANGDetails.Type != nil {
-				yangTypeName = field.YANGDetails.Type.Name
+			if field.Flags != nil {
+				yangTypeName = field.Flags[yangTypeNameFlagKey]
 			}
 			nodeDataMap[pathStructName] = &NodeData{
 				GoTypeName:            goTypeName,
@@ -760,7 +779,7 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 				GoFieldName:           goFieldNameMap[fieldName],
 				SubsumingGoStructName: subsumingGoStructName,
 				IsLeaf:                isLeaf,
-				IsScalarField:         ygen.IsScalarField(field),
+				IsScalarField:         gogen.IsScalarField(field),
 				HasDefault:            isLeaf && (len(field.YANGDetails.Defaults) > 0 || mType.DefaultValue != nil),
 				YANGTypeName:          yangTypeName,
 				YANGPath:              field.YANGDetails.Path,
