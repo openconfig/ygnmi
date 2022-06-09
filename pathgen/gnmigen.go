@@ -70,6 +70,12 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		FakeRootName:            fakeRootName,
 	}
 
+	if node.SubsumingGoStructName == fakeRootName {
+		if err := batchTemplate.Execute(&b, tmplStruct); err != nil {
+			return "", err
+		}
+	}
+
 	tmpl := goGNMINonLeafTemplate
 	if node.IsLeaf {
 		tmpl = goGNMILeafTemplate
@@ -247,5 +253,49 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 	)
 }
 {{- end }}
+`)
+
+	batchTemplate = mustTemplate("batch", `
+// Batch contains a collection of paths.
+type Batch struct {
+    paths []ygnmi.PathStruct
+}
+
+// AddPaths adds the paths to the batch.
+func (b *Batch) AddPaths(paths ...ygnmi.PathStruct) *Batch {
+    b.paths = append(b.paths, paths...)
+    return b
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (b *Batch) State() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
+    return ygnmi.NewNonLeaf{{ .SingletonTypeName }}[{{ .GoTypeName }}](
+        "{{ .GoStructTypeName }}",
+        true,
+        ygnmi.NewDeviceRootBase(),
+        b.paths,
+        &ytypes.Schema{
+            Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
+            SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
+            Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
+        },
+    )
+}
+
+// Config returns a Query that can be used in gNMI operations.
+// Any state-only paths will be silently ignored.
+func (b *Batch) Config() ygnmi.{{ .SingletonTypeName }}[*oc.Root] {
+    return ygnmi.NewNonLeaf{{ .SingletonTypeName }}[*oc.Root](
+        "{{ .GoStructTypeName }}",
+        false,
+        ygnmi.NewDeviceRootBase(),
+        b.paths,
+        &ytypes.Schema{
+            Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
+            SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
+            Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
+        },
+    )
+}
 `)
 )

@@ -2226,6 +2226,42 @@ func TestDelete(t *testing.T) {
 	}
 }
 
+func TestBatch(t *testing.T) {
+	fakeGNMI, c := newClient(t)
+
+	tests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		paths                []ygnmi.PathStruct
+		wantSubscriptionPath []*gpb.Path
+		wantVal              *ygnmi.Value[*exampleoc.Root]
+		wantErr              string
+	}{{}}
+
+	for _, tt := range tests {
+		t.Run("nonleaf "+tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			b := &root.Batch{}
+			b.AddPaths(tt.paths...)
+
+			got, err := ygnmi.Lookup(context.Background(), c, b.State())
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Lookup() returned unexpected diff: %s", diff)
+			}
+			if err != nil {
+				return
+			}
+			checkJustReceived(t, got.RecvTimestamp)
+			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath...)
+			tt.wantVal.RecvTimestamp = got.RecvTimestamp
+
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Parent_Child]{}), protocmp.Transform()); diff != "" {
+				t.Errorf("Lookup() returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", diff, got.ComplianceErrors)
+			}
+		})
+	}
+}
+
 func newClient(t testing.TB) (*testutil.FakeGNMI, *ygnmi.Client) {
 	fakeGNMI, err := testutil.StartGNMI(0)
 	if err != nil {
