@@ -2602,11 +2602,13 @@ func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
 			StructBase: `
 // ContainerWithConfig_Leaflist represents the /root-module/container-with-config/state/leaflist YANG schema element.
 type ContainerWithConfig_Leaflist struct {
+	*ygnmi.NodePath
 	parent ygnmi.PathStruct
 }
 
 // ContainerWithConfig_LeaflistAny represents the wildcard version of the /root-module/container-with-config/state/leaflist YANG schema element.
 type ContainerWithConfig_LeaflistAny struct {
+	*ygnmi.NodePath
 	parent ygnmi.PathStruct
 }
 `,
@@ -2629,12 +2631,22 @@ type ContainerWithConfigAny struct {
 			ChildConstructors: `
 func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
 	return &ContainerWithConfig_Leaflist{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "leaflist"},
+			map[string]interface{}{},
+			n,
+		),
 		parent: n,
 	}
 }
 
 func (n *ContainerWithConfigAny) Leaflist() *ContainerWithConfig_LeaflistAny {
 	return &ContainerWithConfig_LeaflistAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "leaflist"},
+			map[string]interface{}{},
+			n,
+		),
 		parent: n,
 	}
 }
@@ -2647,6 +2659,7 @@ func (n *ContainerWithConfigAny) Leaflist() *ContainerWithConfig_LeaflistAny {
 			StructBase: `
 // ContainerWithConfig_Leaflist represents the /root-module/container-with-config/state/leaflist YANG schema element.
 type ContainerWithConfig_Leaflist struct {
+	*ygnmi.NodePath
 	parent ygnmi.PathStruct
 }
 `,
@@ -2664,6 +2677,11 @@ type ContainerWithConfig struct {
 			ChildConstructors: `
 func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
 	return &ContainerWithConfig_Leaflist{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "leaflist"},
+			map[string]interface{}{},
+			n,
+		),
 		parent: n,
 	}
 }
@@ -3244,12 +3262,22 @@ func (n *ContainerPathAny) Leaf() *Container_LeafPathAny {
 		wantMethod: `
 func (n *ContainerPath) Leaf() *Container_LeafPath {
 	return &Container_LeafPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*"},
+			map[string]interface{}{},
+			n,
+		),
 		parent: n,
 	}
 }
 
 func (n *ContainerPathAny) Leaf() *Container_LeafPathAny {
 	return &Container_LeafPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*"},
+			map[string]interface{}{},
+			n,
+		),
 		parent: n,
 	}
 }

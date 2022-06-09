@@ -79,6 +79,7 @@ func (n *APath) State() ygnmi.SingletonQuery[*oc.A] {
 		"A",
 		true,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -107,6 +108,7 @@ func (n *APath) Config() ygnmi.ConfigQuery[*oc.A] {
 		"A",
 		false,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -175,6 +177,7 @@ func (n *A_BPath) State() ygnmi.SingletonQuery[*oc.A_B] {
 		"A_B",
 		true,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -203,6 +206,7 @@ func (n *A_BPath) Config() ygnmi.ConfigQuery[*oc.A_B] {
 		"A_B",
 		false,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -271,6 +275,7 @@ func (n *A_B_CPath) State() ygnmi.SingletonQuery[*oc.A_B_C] {
 		"A_B_C",
 		true,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -299,6 +304,7 @@ func (n *A_B_CPath) Config() ygnmi.ConfigQuery[*oc.A_B_C] {
 		"A_B_C",
 		false,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -367,6 +373,7 @@ func (n *A_B_C_DPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D] {
 		"A_B_C_D",
 		true,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -395,6 +402,7 @@ func (n *A_B_C_DPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D] {
 		"A_B_C_D",
 		false,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -463,6 +471,7 @@ func (n *A_B_C_D_EPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E] {
 		"A_B_C_D_E",
 		true,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -491,6 +500,7 @@ func (n *A_B_C_D_EPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E] {
 		"A_B_C_D_E",
 		false,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -559,6 +569,7 @@ func (n *A_B_C_D_E_FPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F] {
 		"A_B_C_D_E_F",
 		true,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -587,6 +598,7 @@ func (n *A_B_C_D_E_FPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F] {
 		"A_B_C_D_E_F",
 		false,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -655,6 +667,7 @@ func (n *A_B_C_D_E_F_GPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F_G] {
 		"A_B_C_D_E_F_G",
 		true,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -683,6 +696,7 @@ func (n *A_B_C_D_E_F_GPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F_G] {
 		"A_B_C_D_E_F_G",
 		false,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -751,6 +765,7 @@ func (n *A_B_C_D_E_F_G_HPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F_G_H] 
 		"A_B_C_D_E_F_G_H",
 		true,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -779,6 +794,7 @@ func (n *A_B_C_D_E_F_G_HPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F_G_H] {
 		"A_B_C_D_E_F_G_H",
 		false,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -847,6 +863,7 @@ func (n *A_B_C_D_E_F_G_H_IPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F_G_H
 		"A_B_C_D_E_F_G_H_I",
 		true,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -875,6 +892,7 @@ func (n *A_B_C_D_E_F_G_H_IPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F_G_H_I
 		"A_B_C_D_E_F_G_H_I",
 		false,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -943,6 +961,7 @@ func (n *A_B_C_D_E_F_G_H_I_JPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F_G
 		"A_B_C_D_E_F_G_H_I_J",
 		true,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -971,6 +990,7 @@ func (n *A_B_C_D_E_F_G_H_I_JPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F_G_H
 		"A_B_C_D_E_F_G_H_I_J",
 		false,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -1039,6 +1059,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_KPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F
 		"A_B_C_D_E_F_G_H_I_J_K",
 		true,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -1067,6 +1088,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_KPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F_G
 		"A_B_C_D_E_F_G_H_I_J_K",
 		false,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -1135,6 +1157,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_LPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E
 		"A_B_C_D_E_F_G_H_I_J_K_L",
 		true,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -1163,6 +1186,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_LPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F
 		"A_B_C_D_E_F_G_H_I_J_K_L",
 		false,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -1187,11 +1211,13 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_LPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_
 
 // A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath represents the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo YANG schema element.
 type A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath struct {
+	*ygnmi.NodePath
 	parent ygnmi.PathStruct
 }
 
 // A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo YANG schema element.
 type A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny struct {
+	*ygnmi.NodePath
 	parent ygnmi.PathStruct
 }
 
@@ -1201,6 +1227,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D
 		"A_B_C_D_E_F_G_H_I_J_K_L_M",
 		true,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -1229,6 +1256,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E
 		"A_B_C_D_E_F_G_H_I_J_K_L_M",
 		false,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -1326,17 +1354,25 @@ type A_B_C_D_E_F_G_H_I_J_K_L_MPathAny struct {
 }
 
 // Foo corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
 func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath {
 	return &A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "foo"},
+			map[string]interface{}{},
+			n,
+		),
 		parent: n,
 	}
 }
 
 // Foo corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
 func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny {
 	return &A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "foo"},
+			map[string]interface{}{},
+			n,
+		),
 		parent: n,
 	}
 }

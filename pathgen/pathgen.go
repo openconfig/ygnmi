@@ -613,6 +613,7 @@ type {{ .TypeName }}{{ .WildcardSuffix }} struct {
 	goUnifiedLeafPathStructTemplate = mustTemplate("leaf-struct", `
 // {{ .TypeName }} represents the {{ .YANGPath }} YANG schema element.
 type {{ .TypeName }} struct {
+	*ygnmi.{{ .PathBaseTypeName }}
 	parent ygnmi.PathStruct
 }
 
@@ -620,6 +621,7 @@ type {{ .TypeName }} struct {
 
 // {{ .TypeName }}{{ .WildcardSuffix }} represents the wildcard version of the {{ .YANGPath }} YANG schema element.
 type {{ .TypeName }}{{ .WildcardSuffix }} struct {
+	*ygnmi.{{ .PathBaseTypeName }}
 	parent ygnmi.PathStruct
 }
 {{- end }}
@@ -657,9 +659,13 @@ func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{
 	// because with path compression, a leaf path may be a state or config path.
 	goUnifiedLeafPathChildConstructorTemplate = mustTemplate("unifiedchildConstructor", `
 // {{ .MethodName }} corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
-// Note: The returned struct does not implement the PathStruct interface.
 func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{ .ChildPkgAccessor }}{{ .TypeName }} {
 	return &{{ .ChildPkgAccessor }}{{ .TypeName }}{
+		{{ .Struct.PathBaseTypeName }}: ygnmi.New{{ .Struct.PathBaseTypeName }}(
+			[]string{ {{- .RelPathList -}} },
+			map[string]interface{}{ {{- .KeyEntriesStr -}} },
+			n,
+		),
 		parent: n,
 	}
 }
@@ -1050,6 +1056,19 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 	// Be nil-tolerant for these two attributes. In real deployments (i.e.
 	// not tests), these should be populated. Since these are just use for
 	// documentation, it is not critical that they are populated.
+
+	// Make copies of the path, to avoid modifying the directories.
+	schemaPath := field.YANGDetails.SchemaPath
+	path := make([]string, len(relPath))
+	copy(path, relPath)
+
+	// When generating unified path structs (one set for both state and config),
+	// a leaf struct could be either state or config, so replace state with a wildcard.
+	if unified && (field.Type == ygen.LeafNode || field.Type == ygen.LeafListNode) {
+		path[0] = "*"
+		schemaPath = strings.ReplaceAll(schemaPath, "/state/", "/*/")
+	}
+
 	fieldData := goPathFieldData{
 		MethodName:              goFieldName,
 		TypeName:                fieldTypeName,
@@ -1058,10 +1077,10 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 		YANGDescription:         strings.ReplaceAll(field.YANGDetails.Description, "\n", "\n// "),
 		DefiningModuleName:      field.YANGDetails.DefiningModule,
 		InstantiatingModuleName: field.YANGDetails.RootElementModule,
-		AbsPath:                 field.YANGDetails.SchemaPath,
+		AbsPath:                 schemaPath,
 		Struct:                  structData,
-		RelPath:                 strings.Join(relPath, `/`),
-		RelPathList:             `"` + strings.Join(relPath, `", "`) + `"`,
+		RelPath:                 strings.Join(path, `/`),
+		RelPathList:             `"` + strings.Join(path, `", "`) + `"`,
 		ChildPkgAccessor:        childPkgAccessor,
 	}
 

@@ -32,9 +32,12 @@ import (
 // AnyQuery is a generic gNMI query for wildcard or non-wildcard state or config paths.
 // Supported operations: Batch.
 type AnyQuery[T any] interface {
-	// pathStruct returns to path struct for this query.
+	// pathStruct returns to path struct used for unmarshalling and schema validation.
+	// This path must correspond to T (the parameterized type of the interface).
 	pathStruct() PathStruct
-	// fieldname returns the name of YANG directory schema entry.
+	// subPaths contains the paths to subscribe to, they must be descendants of pathStruct().
+	subPaths() []PathStruct
+	// dirName returns the name of YANG directory schema entry.
 	// For leaves, this is the parent entry.
 	dirName() string
 	// goStruct returns the struct that query should be unmarshalled into.

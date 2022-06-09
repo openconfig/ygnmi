@@ -98,6 +98,7 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 	if err := tmpl.Execute(&b, tmplStruct); err != nil {
 		return "", err
 	}
+
 	return b.String(), nil
 }
 
@@ -221,6 +222,7 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
 			SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,

@@ -112,6 +112,7 @@ func (n *RootPath) State() ygnmi.SingletonQuery[*oc.Root] {
 		"Root",
 		true,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -126,6 +127,7 @@ func (n *RootPath) Config() ygnmi.ConfigQuery[*oc.Root] {
 		"Root",
 		false,
 		n,
+		nil,
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
