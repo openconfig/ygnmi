@@ -477,7 +477,7 @@ type batchOp struct {
 	mode setOperation
 }
 
-// SetBatch allows multiple config operation to be applied in a single transaction.
+// SetBatch allows multiple Set operations to be applied in a single transaction.
 type SetBatch struct {
 	ops []*batchOp
 }
@@ -503,7 +503,7 @@ func (sb *SetBatch) Set(ctx context.Context, c *Client) (*Result, error) {
 	return responseToResult(resp), err
 }
 
-// BatchUpdate stores an update operation in the ConfigBatch.
+// BatchUpdate stores an update operation in the SetBatch.
 func BatchUpdate[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 	var setVal interface{} = val
 	if q.isLeaf() && q.isScalar() {
@@ -516,7 +516,7 @@ func BatchUpdate[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 	})
 }
 
-// BatchReplace stores an update operation in the ConfigBatch.
+// BatchReplace stores an update operation in the SetBatch.
 func BatchReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 	var setVal interface{} = val
 	if q.isLeaf() && q.isScalar() {
@@ -529,11 +529,10 @@ func BatchReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 	})
 }
 
-// BatchDelete stores an update operation in the ConfigBatch.
+// BatchDelete stores an update operation in the SetBatch.
 func BatchDelete[T any](sb *SetBatch, q ConfigQuery[T]) {
 	sb.ops = append(sb.ops, &batchOp{
 		path: q.pathStruct(),
-		val:  nil,
 		mode: deletePath,
 	})
 }

@@ -2448,20 +2448,20 @@ func TestSetBatch(t *testing.T) {
 
 			got, err := b.Set(context.Background(), client)
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
-				t.Fatalf("Delete() returned unexpected diff: %s", diff)
+				t.Fatalf("Set() returned unexpected diff: %s", diff)
 			}
 			if err != nil {
 				return
 			}
 			if diff := cmp.Diff(tt.wantRequest, setClient.requests[0], protocmp.Transform()); diff != "" {
-				t.Errorf("Delete() sent unexpected request (-want,+got):\n%s", diff)
+				t.Errorf("Set() sent unexpected request (-want,+got):\n%s", diff)
 			}
 			want := &ygnmi.Result{
 				RawResponse: tt.stubResponse,
 				Timestamp:   time.Unix(0, tt.stubResponse.GetTimestamp()),
 			}
 			if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
-				t.Errorf("Delete() returned unexpected value (-want,+got):\n%s", diff)
+				t.Errorf("Set() returned unexpected value (-want,+got):\n%s", diff)
 			}
 		})
 	}
