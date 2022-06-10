@@ -2343,10 +2343,12 @@ func TestBatchGet(t *testing.T) {
 			if tt.config {
 				query = b.Config()
 			}
-
 			got, err := ygnmi.Lookup(context.Background(), c, query)
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
 				t.Fatalf("Lookup() returned unexpected diff: %s", diff)
+			}
+			if err != nil {
+				return
 			}
 			checkJustReceived(t, got.RecvTimestamp)
 			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath...)
