@@ -24,6 +24,7 @@ import (
 
 	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygot/ytypes"
+	"google.golang.org/protobuf/encoding/prototext"
 
 	log "github.com/golang/glog"
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
@@ -468,4 +469,71 @@ func Delete[T any](ctx context.Context, c *Client, q ConfigQuery[T]) (*Result, e
 		return nil, fmt.Errorf("Delete(t) at path %s: %w", path, err)
 	}
 	return responseToResult(resp), nil
+}
+
+type batchOp struct {
+	path PathStruct
+	val  interface{}
+	mode setOperation
+}
+
+// SetBatch allows multiple config operation to be applied in a single transaction.
+type SetBatch struct {
+	ops []*batchOp
+}
+
+// Set performs the gnmi.Set request with all queued operations.
+func (sb *SetBatch) Set(ctx context.Context, c *Client) (*Result, error) {
+	req := &gpb.SetRequest{}
+	for _, op := range sb.ops {
+		path, err := resolvePath(op.path)
+		if err != nil {
+			return nil, err
+		}
+		if err := populateSetRequest(req, path, op.val, op.mode); err != nil {
+			return nil, err
+		}
+	}
+	req.Prefix = &gpb.Path{
+		Target: c.target,
+	}
+	log.V(1).Info(prettySetRequest(req))
+	resp, err := c.gnmiC.Set(ctx, req)
+	log.V(1).Infof("SetResponse:\n%s", prototext.Format(resp))
+	return responseToResult(resp), err
+}
+
+// BatchUpdate stores an update operation in the ConfigBatch.
+func BatchUpdate[T any](sb *SetBatch, q ConfigQuery[T], val T) {
+	var setVal interface{} = val
+	if q.isLeaf() && q.isScalar() {
+		setVal = &val
+	}
+	sb.ops = append(sb.ops, &batchOp{
+		path: q.pathStruct(),
+		val:  setVal,
+		mode: updatePath,
+	})
+}
+
+// BatchReplace stores an update operation in the ConfigBatch.
+func BatchReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
+	var setVal interface{} = val
+	if q.isLeaf() && q.isScalar() {
+		setVal = &val
+	}
+	sb.ops = append(sb.ops, &batchOp{
+		path: q.pathStruct(),
+		val:  setVal,
+		mode: replacePath,
+	})
+}
+
+// BatchDelete stores an update operation in the ConfigBatch.
+func BatchDelete[T any](sb *SetBatch, q ConfigQuery[T]) {
+	sb.ops = append(sb.ops, &batchOp{
+		path: q.pathStruct(),
+		val:  nil,
+		mode: deletePath,
+	})
 }
