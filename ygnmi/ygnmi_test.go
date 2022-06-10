@@ -2343,7 +2343,6 @@ func TestBatchGet(t *testing.T) {
 			if tt.config {
 				query = b.Config()
 			}
-
 			got, err := ygnmi.Lookup(context.Background(), c, query)
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
 				t.Fatalf("Lookup() returned unexpected diff: %s", diff)
@@ -2357,6 +2356,106 @@ func TestBatchGet(t *testing.T) {
 
 			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Root]{}), protocmp.Transform()); diff != "" {
 				t.Errorf("Lookup() returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", diff, got.ComplianceErrors)
+			}
+		})
+	}
+}
+
+func TestSetBatch(t *testing.T) {
+	setClient := &fakeGNMISetClient{}
+	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
+	if err != nil {
+		t.Fatalf("Unexpected error creating client: %v", err)
+	}
+	tests := []struct {
+		desc         string
+		addPaths     func(*ygnmi.SetBatch)
+		wantErr      string
+		wantRequest  *gpb.SetRequest
+		stubResponse *gpb.SetResponse
+		stubErr      error
+	}{{
+		desc: "leaf update replace delete",
+		addPaths: func(sb *ygnmi.SetBatch) {
+			ygnmi.BatchUpdate(sb, root.New().Parent().Child().One().Config(), "foo")
+			ygnmi.BatchReplace(sb, root.New().Parent().Child().One().Config(), "bar")
+			ygnmi.BatchDelete(sb, root.New().Parent().Child().One().Config())
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "parent/child/config/one"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("\"foo\"")}},
+			}},
+			Replace: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "parent/child/config/one"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("\"bar\"")}},
+			}},
+			Delete: []*gpb.Path{
+				testutil.GNMIPath(t, "parent/child/config/one"),
+			},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "non leaf update delete",
+		addPaths: func(sb *ygnmi.SetBatch) {
+			ygnmi.BatchUpdate(sb, root.New().Parent().Child().Config(), &exampleoc.Parent_Child{One: ygot.String("foo")})
+			ygnmi.BatchDelete(sb, root.New().Parent().Child().One().Config())
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "parent/child/"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("{\n  \"openconfig-simple:config\": {\n    \"one\": \"foo\"\n  }\n}")}},
+			}},
+			Delete: []*gpb.Path{
+				testutil.GNMIPath(t, "parent/child/config/one"),
+			},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "server error",
+		addPaths: func(sb *ygnmi.SetBatch) {
+			ygnmi.BatchDelete(sb, root.New().Parent().Child().One().Config())
+		},
+		stubErr: fmt.Errorf("fake"),
+		wantErr: "fake",
+	}}
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			setClient.Reset()
+			setClient.AddResponse(tt.stubResponse, tt.stubErr)
+			b := &ygnmi.SetBatch{}
+			tt.addPaths(b)
+
+			got, err := b.Set(context.Background(), client)
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Set() returned unexpected diff: %s", diff)
+			}
+			if err != nil {
+				return
+			}
+			if diff := cmp.Diff(tt.wantRequest, setClient.requests[0], protocmp.Transform()); diff != "" {
+				t.Errorf("Set() sent unexpected request (-want,+got):\n%s", diff)
+			}
+			want := &ygnmi.Result{
+				RawResponse: tt.stubResponse,
+				Timestamp:   time.Unix(0, tt.stubResponse.GetTimestamp()),
+			}
+			if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
+				t.Errorf("Set() returned unexpected value (-want,+got):\n%s", diff)
 			}
 		})
 	}
