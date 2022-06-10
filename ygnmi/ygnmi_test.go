@@ -2229,6 +2229,7 @@ func TestDelete(t *testing.T) {
 func TestBatchGet(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 	aLeafStatePath := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
+	aLeafConfigPath := testutil.GNMIPath(t, "/remote-container/config/a-leaf")
 	twoPath := testutil.GNMIPath(t, "/parent/child/state/two")
 	aLeafSubPath := testutil.GNMIPath(t, "/remote-container/*/a-leaf")
 
@@ -2248,6 +2249,9 @@ func TestBatchGet(t *testing.T) {
 				Update: []*gpb.Update{{
 					Path: aLeafStatePath,
 					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}, {
+					Path: aLeafConfigPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "config"}},
 				}, {
 					Path: twoPath,
 					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
@@ -2297,7 +2301,7 @@ func TestBatchGet(t *testing.T) {
 			Path:      testutil.GNMIPath(t, "/"),
 		}).SetVal(&exampleoc.Root{
 			RemoteContainer: &exampleoc.RemoteContainer{},
-			Parent:          &exampleoc.Parent{Child: &exampleoc.Parent_Child{Two: ygot.String("bar")}},
+			Parent:          &exampleoc.Parent{Child: &exampleoc.Parent_Child{}},
 		}),
 	}, {
 		desc: "non leaves",

@@ -141,9 +141,7 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 	if !q.isLeaf() {
 		path = proto.Clone(unmarshalledData[0].Path).(*gpb.Path)
 		path.Elem = path.Elem[:len(queryPath.Elem)]
-		if path.Origin != queryPath.Origin {
-			path.Origin = queryPath.Origin
-		}
+		path.Origin = queryPath.Origin
 		ret.Timestamp = LatestTimestamp(unmarshalledData)
 		ret.RecvTimestamp = LatestRecvTimestamp(unmarshalledData)
 	} else {
@@ -151,6 +149,14 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 		ret.RecvTimestamp = unmarshalledData[0].RecvTimestamp
 	}
 	ret.Path = path
+
+	// For non-leaf config queries, prune all state-only leaves.
+	if !q.isLeaf() && !q.isState() {
+		err := ygot.PruneConfigFalse(q.schema().SchemaTree[q.dirName()], goStruct)
+		if err != nil {
+			return ret, err
+		}
+	}
 	if val, ok := q.extract(goStruct); ok {
 		ret.SetVal(val)
 	}
