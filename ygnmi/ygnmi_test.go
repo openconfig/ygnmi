@@ -2430,14 +2430,6 @@ func TestSetBatch(t *testing.T) {
 		addPaths: func(sb *ygnmi.SetBatch) {
 			ygnmi.BatchDelete(sb, root.New().Parent().Child().One().Config())
 		},
-		wantRequest: &gpb.SetRequest{
-			Prefix: &gpb.Path{
-				Target: "dut",
-			},
-			Delete: []*gpb.Path{
-				testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf"),
-			},
-		},
 		stubErr: fmt.Errorf("fake"),
 		wantErr: "fake",
 	}}

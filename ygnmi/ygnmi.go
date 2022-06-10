@@ -477,7 +477,8 @@ type batchOp struct {
 	mode setOperation
 }
 
-// SetBatch allows multiple Set operations to be applied in a single transaction.
+// SetBatch allows multiple Set operations (Replace, Update, Delete) to be applied as part of a single Set transaction.
+// Use BatchUpdate, BatchReplace, BatchDelete to add operations, and then call the Set method to send the SetRequest.
 type SetBatch struct {
 	ops []*batchOp
 }
