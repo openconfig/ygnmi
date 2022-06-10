@@ -1067,7 +1067,7 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 	copy(path, relPath)
 
 	// When generating unified path structs (one set for both state and config),
-	// a leaf struct could be either state or config, so replace state with a wildcard.
+	// a leaf struct with a shadow path could be either state or config, so replace state with a wildcard.
 	if unified && len(field.ShadowMappedPaths) > 0 && (field.Type == ygen.LeafNode || field.Type == ygen.LeafListNode) {
 		path[0] = "*"
 		schemaPath = strings.ReplaceAll(schemaPath, "/state/", "/*/")

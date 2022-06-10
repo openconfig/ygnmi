@@ -2230,7 +2230,7 @@ func TestBatchGet(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 	aLeafStatePath := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
 	twoPath := testutil.GNMIPath(t, "/parent/child/state/two")
-	aLeafSubath := testutil.GNMIPath(t, "/remote-container/*/a-leaf")
+	aLeafSubPath := testutil.GNMIPath(t, "/remote-container/*/a-leaf")
 
 	tests := []struct {
 		desc                 string
@@ -2259,7 +2259,7 @@ func TestBatchGet(t *testing.T) {
 			root.New().Parent().Child().Two(),
 		},
 		wantSubscriptionPath: []*gpb.Path{
-			aLeafSubath,
+			aLeafSubPath,
 			twoPath,
 		},
 		wantVal: (&ygnmi.Value[*exampleoc.Root]{
@@ -2289,7 +2289,7 @@ func TestBatchGet(t *testing.T) {
 			root.New().Parent().Child().Two(),
 		},
 		wantSubscriptionPath: []*gpb.Path{
-			aLeafSubath,
+			aLeafSubPath,
 			twoPath,
 		},
 		wantVal: (&ygnmi.Value[*exampleoc.Root]{

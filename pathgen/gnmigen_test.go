@@ -340,6 +340,8 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
 		},
 		want: `
 // Batch contains a collection of paths.
+// Calling State() or Config() on the batch returns a query
+// that can use to Lookup, Watch, etc on multiple paths at once.
 type Batch struct {
     paths []ygnmi.PathStruct
 }
