@@ -3271,7 +3271,7 @@ func (n *ContainerPathAny) Leaf() *Container_LeafPathAny {
 func (n *ContainerPath) Leaf() *Container_LeafPath {
 	return &Container_LeafPath{
 		NodePath: ygnmi.NewNodePath(
-			[]string{"*"},
+			[]string{"leaf"},
 			map[string]interface{}{},
 			n,
 		),
@@ -3282,7 +3282,7 @@ func (n *ContainerPath) Leaf() *Container_LeafPath {
 func (n *ContainerPathAny) Leaf() *Container_LeafPathAny {
 	return &Container_LeafPathAny{
 		NodePath: ygnmi.NewNodePath(
-			[]string{"*"},
+			[]string{"leaf"},
 			map[string]interface{}{},
 			n,
 		),

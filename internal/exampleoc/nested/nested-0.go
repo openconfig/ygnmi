@@ -1353,11 +1353,15 @@ type A_B_C_D_E_F_G_H_I_J_K_L_MPathAny struct {
 	*ygnmi.NodePath
 }
 
-// Foo corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Foo (leaf):
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "state/foo"
+// 	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"
 func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath {
 	return &A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath{
 		NodePath: ygnmi.NewNodePath(
-			[]string{"*", "foo"},
+			[]string{"state", "foo"},
 			map[string]interface{}{},
 			n,
 		),
@@ -1365,11 +1369,15 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath
 	}
 }
 
-// Foo corresponds to an ambiguous path; use .Config() or .State() to get a resolved path for this leaf.
+// Foo (leaf):
+// 	Defining module:      "openconfig-nested"
+// 	Instantiating module: "openconfig-nested"
+// 	Path from parent:     "state/foo"
+// 	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"
 func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny {
 	return &A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny{
 		NodePath: ygnmi.NewNodePath(
-			[]string{"*", "foo"},
+			[]string{"state", "foo"},
 			map[string]interface{}{},
 			n,
 		),
