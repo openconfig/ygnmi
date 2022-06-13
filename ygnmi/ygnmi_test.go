@@ -2361,6 +2361,172 @@ func TestBatchGet(t *testing.T) {
 	}
 }
 
+func TestBatchWatch(t *testing.T) {
+	fakeGNMI, c := newClient(t)
+	aLeafStatePath := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
+	twoPath := testutil.GNMIPath(t, "/parent/child/state/two")
+	aLeafSubPath := testutil.GNMIPath(t, "/remote-container/*/a-leaf")
+
+	tests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		config               bool
+		paths                []ygnmi.PathStruct
+		wantSubscriptionPath []*gpb.Path
+		wantVal              *ygnmi.Value[*exampleoc.Root]
+		wantErr              string
+	}{{
+		desc: "predicate true",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: aLeafStatePath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}, {
+					Path: twoPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+				}},
+			}).Sync()
+		},
+		paths: []ygnmi.PathStruct{
+			root.New().RemoteContainer().ALeaf(),
+			root.New().Parent().Child().Two(),
+		},
+		wantSubscriptionPath: []*gpb.Path{
+			aLeafSubPath,
+			twoPath,
+		},
+		wantVal: (&ygnmi.Value[*exampleoc.Root]{
+			Timestamp: time.Unix(0, 100),
+			Path:      testutil.GNMIPath(t, "/"),
+		}).SetVal(&exampleoc.Root{
+			RemoteContainer: &exampleoc.RemoteContainer{ALeaf: ygot.String("foo")},
+			Parent:          &exampleoc.Parent{Child: &exampleoc.Parent_Child{Two: ygot.String("bar")}},
+		}),
+	}, {
+		desc: "predicate false true false",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: aLeafStatePath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: 101,
+				Update: []*gpb.Update{{
+					Path: twoPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+				}},
+			}).Notification(&gpb.Notification{
+				Timestamp: 102,
+				Update: []*gpb.Update{{
+					Path: twoPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "sample"}},
+				}},
+			})
+		},
+		paths: []ygnmi.PathStruct{
+			root.New().RemoteContainer().ALeaf(),
+			root.New().Parent().Child().Two(),
+		},
+		wantSubscriptionPath: []*gpb.Path{
+			aLeafSubPath,
+			twoPath,
+		},
+		wantVal: (&ygnmi.Value[*exampleoc.Root]{
+			Timestamp: time.Unix(0, 101),
+			Path:      testutil.GNMIPath(t, "/"),
+		}).SetVal(&exampleoc.Root{
+			RemoteContainer: &exampleoc.RemoteContainer{ALeaf: ygot.String("foo")},
+			Parent:          &exampleoc.Parent{Child: &exampleoc.Parent_Child{Two: ygot.String("bar")}},
+		}),
+	}, {
+		desc:   "predicate false",
+		config: true,
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: twoPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+				}},
+			}).Sync()
+		},
+		paths: []ygnmi.PathStruct{
+			root.New().RemoteContainer().ALeaf(),
+			root.New().Parent().Child().Two(),
+		},
+		wantSubscriptionPath: []*gpb.Path{
+			aLeafSubPath,
+			twoPath,
+		},
+		wantErr: "EOF",
+	}, {
+		desc: "non leaves",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: aLeafStatePath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}, {
+					Path: twoPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+				}},
+			}).Sync()
+		},
+		paths: []ygnmi.PathStruct{
+			root.New().RemoteContainer(),
+			root.New().Parent(),
+		},
+		wantSubscriptionPath: []*gpb.Path{
+			testutil.GNMIPath(t, "/remote-container"),
+			testutil.GNMIPath(t, "/parent"),
+		},
+		wantVal: (&ygnmi.Value[*exampleoc.Root]{
+			Timestamp: time.Unix(0, 100),
+			Path:      testutil.GNMIPath(t, "/"),
+		}).SetVal(&exampleoc.Root{
+			RemoteContainer: &exampleoc.RemoteContainer{ALeaf: ygot.String("foo")},
+			Parent:          &exampleoc.Parent{Child: &exampleoc.Parent_Child{Two: ygot.String("bar")}},
+		}),
+	}}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			b := &root.Batch{}
+			b.AddPaths(tt.paths...)
+			query := b.State()
+			if tt.config {
+				query = b.Config()
+			}
+
+			got, err := ygnmi.Watch(context.Background(), c, query, func(v *ygnmi.Value[*exampleoc.Root]) error {
+				if v, ok := v.Val(); ok && v.GetRemoteContainer().GetALeaf() == "foo" && v.GetParent().GetChild().GetTwo() == "bar" {
+					return nil
+				}
+				return ygnmi.Continue
+			}).Await()
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Watch() returned unexpected diff: %s", diff)
+			}
+			if err != nil {
+				return
+			}
+			checkJustReceived(t, got.RecvTimestamp)
+			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath...)
+			tt.wantVal.RecvTimestamp = got.RecvTimestamp
+
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Root]{}), protocmp.Transform()); diff != "" {
+				t.Errorf("Watch() returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", diff, got.ComplianceErrors)
+			}
+		})
+	}
+}
+
 func TestSetBatch(t *testing.T) {
 	setClient := &fakeGNMISetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
