@@ -2405,6 +2405,44 @@ func TestBatchWatch(t *testing.T) {
 			Parent:          &exampleoc.Parent{Child: &exampleoc.Parent_Child{Two: ygot.String("bar")}},
 		}),
 	}, {
+		desc: "predicate false true false",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: aLeafStatePath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: 101,
+				Update: []*gpb.Update{{
+					Path: twoPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+				}},
+			}).Notification(&gpb.Notification{
+				Timestamp: 102,
+				Update: []*gpb.Update{{
+					Path: twoPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+				}},
+			})
+		},
+		paths: []ygnmi.PathStruct{
+			root.New().RemoteContainer().ALeaf(),
+			root.New().Parent().Child().Two(),
+		},
+		wantSubscriptionPath: []*gpb.Path{
+			aLeafSubPath,
+			twoPath,
+		},
+		wantVal: (&ygnmi.Value[*exampleoc.Root]{
+			Timestamp: time.Unix(0, 101),
+			Path:      testutil.GNMIPath(t, "/"),
+		}).SetVal(&exampleoc.Root{
+			RemoteContainer: &exampleoc.RemoteContainer{ALeaf: ygot.String("foo")},
+			Parent:          &exampleoc.Parent{Child: &exampleoc.Parent_Child{Two: ygot.String("bar")}},
+		}),
+	}, {
 		desc:   "predicate false",
 		config: true,
 		stub: func(s *testutil.Stubber) {
