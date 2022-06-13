@@ -20,6 +20,7 @@ import (
 	"io"
 	"testing"
 
+	"github.com/openconfig/ygnmi/internal/exampleoc"
 	"github.com/openconfig/ygnmi/internal/exampleoc/root"
 	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygnmi/ygnmi"
@@ -28,24 +29,31 @@ import (
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
 )
 
+// subClient will send count notifications, then return EOF
+// if count > len(resp), the last notification is sent repeatedly
 type subClient struct {
 	gpb.GNMI_SubscribeClient
-	resp *gpb.SubscribeResponse
-	sent bool
+	resp  []*gpb.SubscribeResponse
+	count int
+	i     int
 }
 
 func (c *subClient) CloseSend() error { return nil }
 func (c *subClient) Send(*gpb.SubscribeRequest) error {
-	c.sent = false
+	c.i = 0
 	return nil
 }
 
 func (c *subClient) Recv() (*gpb.SubscribeResponse, error) {
-	if c.sent {
+	if c.i >= c.count {
 		return nil, io.EOF
 	}
-	c.sent = true
-	return c.resp, nil
+	idx := c.i
+	if idx >= len(c.resp) {
+		idx = len(c.resp) - 1
+	}
+	c.i += 1
+	return c.resp[idx], nil
 }
 
 type benchmarkClient struct {
@@ -58,14 +66,14 @@ func (c *benchmarkClient) Subscribe(ctx context.Context, opts ...grpc.CallOption
 }
 
 func BenchmarkGet(b *testing.B) {
-	bc := &benchmarkClient{sc: &subClient{}}
+	bc := &benchmarkClient{sc: &subClient{count: 1}}
 	c, err := ygnmi.NewClient(bc)
 	if err != nil {
 		b.Fatalf("failed to create client: %v", err)
 	}
 
 	setUpdate := func(path *gpb.Path, val *gpb.TypedValue) {
-		bc.sc.resp = &gpb.SubscribeResponse{
+		bc.sc.resp = []*gpb.SubscribeResponse{{
 			Response: &gpb.SubscribeResponse_Update{
 				Update: &gpb.Notification{
 					Update: []*gpb.Update{{
@@ -74,34 +82,124 @@ func BenchmarkGet(b *testing.B) {
 					}},
 				},
 			},
-		}
+		}}
 	}
 
 	b.Run("deeply nested leaf", func(b *testing.B) {
 		ctx := context.Background()
 		q := root.New().A().B().C().D().E().F().G().H().I().J().K().L().M().Foo().State()
 		setUpdate(testutil.GNMIPath(b, "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"), &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "sample"}})
+		var got string
 		for i := 0; i < b.N; i++ {
-			ygnmi.Get(ctx, c, q)
+			got, _ = ygnmi.Get(ctx, c, q)
+		}
+		b.StopTimer()
+		if got != "sample" {
+			b.Fatalf("Get unexpected result: got %v want %v", got, "sample")
 		}
 	})
 	b.Run("leaf update into root", func(b *testing.B) {
 		ctx := context.Background()
 		q := root.New().State()
 		setUpdate(testutil.GNMIPath(b, "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"), &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "sample"}})
+		var got *exampleoc.Root
 		for i := 0; i < b.N; i++ {
-			ygnmi.Get(ctx, c, q)
+			got, _ = ygnmi.Get(ctx, c, q)
+		}
+		b.StopTimer()
+		if got.GetA().GetB().GetC().GetD().GetE().GetF().GetG().GetH().GetI().GetJ().GetK().GetL().GetM().GetFoo() != "sample" {
+			b.Fatalf("Get unexpected result: got %v want %v", got, "sample")
 		}
 	})
 	b.Run("list", func(b *testing.B) {
 		ctx := context.Background()
 		q := root.New().Model().SingleKeyAny().State()
 		setUpdate(testutil.GNMIPath(b, "/model/a/single-key[key=\"foo\"]/state/value"), &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 1}})
+		var got []*exampleoc.Model_SingleKey
 		for i := 0; i < b.N; i++ {
-			got, _ := ygnmi.GetAll(ctx, c, q)
-			if *got[0].Value != 1 {
-				b.Fatalf("got %v want %v", *got[0].Value, 1)
-			}
+			got, _ = ygnmi.GetAll(ctx, c, q)
+		}
+		b.StopTimer()
+		if *got[0].Value != 1 {
+			b.Fatalf("got %v want %v", *got[0].Value, 1)
+		}
+	})
+}
+
+func BenchmarkWatch(b *testing.B) {
+	bc := &benchmarkClient{sc: &subClient{count: 100}}
+	c, err := ygnmi.NewClient(bc)
+	if err != nil {
+		b.Fatalf("failed to create client: %v", err)
+	}
+
+	setUpdate := func(path *gpb.Path, val *gpb.TypedValue) {
+		bc.sc.resp = []*gpb.SubscribeResponse{{
+			Response: &gpb.SubscribeResponse_Update{
+				Update: &gpb.Notification{
+					Update: []*gpb.Update{{
+						Path: path,
+						Val:  val,
+					}},
+				},
+			},
+		}, {
+			Response: &gpb.SubscribeResponse_SyncResponse{},
+		}, {
+			Response: &gpb.SubscribeResponse_Update{
+				Update: &gpb.Notification{
+					Update: []*gpb.Update{{
+						Path: path,
+						Val:  val,
+					}},
+				},
+			},
+		}}
+	}
+
+	b.Run("deeply nested leaf", func(b *testing.B) {
+		ctx := context.Background()
+		q := root.New().A().B().C().D().E().F().G().H().I().J().K().L().M().Foo().State()
+		setUpdate(testutil.GNMIPath(b, "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"), &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "sample"}})
+		var got *ygnmi.Value[string]
+		for i := 0; i < b.N; i++ {
+			got, _ = ygnmi.Watch(ctx, c, q, func(v *ygnmi.Value[string]) error {
+				return ygnmi.Continue
+			}).Await()
+		}
+		b.StopTimer()
+		if v, _ := got.Val(); v != "sample" {
+			b.Fatalf("Watch unexpected result: got %v want %v", v, "sample")
+		}
+	})
+	b.Run("leaf update into root", func(b *testing.B) {
+		ctx := context.Background()
+		q := root.New().State()
+		setUpdate(testutil.GNMIPath(b, "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"), &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "sample"}})
+		var got *ygnmi.Value[*exampleoc.Root]
+		for i := 0; i < b.N; i++ {
+			got, _ = ygnmi.Watch(ctx, c, q, func(v *ygnmi.Value[*exampleoc.Root]) error {
+				return ygnmi.Continue
+			}).Await()
+		}
+		b.StopTimer()
+		if v, _ := got.Val(); v.GetA().GetB().GetC().GetD().GetE().GetF().GetG().GetH().GetI().GetJ().GetK().GetL().GetM().GetFoo() != "sample" {
+			b.Fatalf("Watch unexpected result: got %v want %v", v, "sample")
+		}
+	})
+	b.Run("list", func(b *testing.B) {
+		ctx := context.Background()
+		q := root.New().Model().SingleKeyAny().State()
+		setUpdate(testutil.GNMIPath(b, "/model/a/single-key[key=\"foo\"]/state/value"), &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 1}})
+		var got *ygnmi.Value[*exampleoc.Model_SingleKey]
+		for i := 0; i < b.N; i++ {
+			got, _ = ygnmi.WatchAll(ctx, c, q, func(v *ygnmi.Value[*exampleoc.Model_SingleKey]) error {
+				return ygnmi.Continue
+			}).Await()
+		}
+		b.StopTimer()
+		if v, _ := got.Val(); *v.Value != 1 {
+			b.Fatalf("Watch unexpected result: got %v want %v", v.Value, 1)
 		}
 	})
 }
