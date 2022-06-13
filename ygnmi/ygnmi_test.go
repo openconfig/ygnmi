@@ -2423,7 +2423,7 @@ func TestBatchWatch(t *testing.T) {
 				Timestamp: 102,
 				Update: []*gpb.Update{{
 					Path: twoPath,
-					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "sample"}},
 				}},
 			})
 		},
