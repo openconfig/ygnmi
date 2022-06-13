@@ -29,13 +29,14 @@ import (
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
 )
 
-// subClient will send count notifications, then return EOF
-// if count > len(resp), the last notification is sent repeatedly
+// subClient will send numResponses notifications, then return EOF.
+// If numResponses > len(resp), the last notification is sent repeatedly.
 type subClient struct {
 	gpb.GNMI_SubscribeClient
-	resp  []*gpb.SubscribeResponse
-	count int
-	recvs int
+	resp []*gpb.SubscribeResponse
+	// numResponses is number of non-error responses to return (can be larger than len(resp)).
+	numResponses int
+	recvs        int
 }
 
 func (c *subClient) CloseSend() error { return nil }
@@ -45,7 +46,7 @@ func (c *subClient) Send(*gpb.SubscribeRequest) error {
 }
 
 func (c *subClient) Recv() (*gpb.SubscribeResponse, error) {
-	if c.recvs >= c.count {
+	if c.recvs >= c.numResponses {
 		return nil, io.EOF
 	}
 	idx := c.recvs
@@ -66,7 +67,7 @@ func (c *benchmarkClient) Subscribe(ctx context.Context, opts ...grpc.CallOption
 }
 
 func BenchmarkGet(b *testing.B) {
-	bc := &benchmarkClient{sc: &subClient{count: 1}}
+	bc := &benchmarkClient{sc: &subClient{numResponses: 1}}
 	c, err := ygnmi.NewClient(bc)
 	if err != nil {
 		b.Fatalf("failed to create client: %v", err)
@@ -127,7 +128,7 @@ func BenchmarkGet(b *testing.B) {
 }
 
 func BenchmarkWatch(b *testing.B) {
-	bc := &benchmarkClient{sc: &subClient{count: 100}}
+	bc := &benchmarkClient{sc: &subClient{numResponses: 100}}
 	c, err := ygnmi.NewClient(bc)
 	if err != nil {
 		b.Fatalf("failed to create client: %v", err)
