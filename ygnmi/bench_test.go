@@ -35,24 +35,24 @@ type subClient struct {
 	gpb.GNMI_SubscribeClient
 	resp  []*gpb.SubscribeResponse
 	count int
-	i     int
+	recvs int
 }
 
 func (c *subClient) CloseSend() error { return nil }
 func (c *subClient) Send(*gpb.SubscribeRequest) error {
-	c.i = 0
+	c.recvs = 0
 	return nil
 }
 
 func (c *subClient) Recv() (*gpb.SubscribeResponse, error) {
-	if c.i >= c.count {
+	if c.recvs >= c.count {
 		return nil, io.EOF
 	}
-	idx := c.i
+	idx := c.recvs
 	if idx >= len(c.resp) {
 		idx = len(c.resp) - 1
 	}
-	c.i += 1
+	c.recvs += 1
 	return c.resp[idx], nil
 }
 
@@ -121,7 +121,7 @@ func BenchmarkGet(b *testing.B) {
 		}
 		b.StopTimer()
 		if *got[0].Value != 1 {
-			b.Fatalf("got %v want %v", *got[0].Value, 1)
+			b.Fatalf("GetAll unexpected result: got %v want %v", *got[0].Value, 1)
 		}
 	})
 }
@@ -199,7 +199,7 @@ func BenchmarkWatch(b *testing.B) {
 		}
 		b.StopTimer()
 		if v, _ := got.Val(); *v.Value != 1 {
-			b.Fatalf("Watch unexpected result: got %v want %v", v.Value, 1)
+			b.Fatalf("WatchAll unexpected result: got %v want %v", v.Value, 1)
 		}
 	})
 }
