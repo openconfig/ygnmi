@@ -2359,6 +2359,21 @@ func TestBatchGet(t *testing.T) {
 			}
 		})
 	}
+	t.Run("immutable query", func(t *testing.T) {
+		fakeGNMI.Stub().Sync()
+		b := &root.Batch{}
+		b.AddPaths(root.New().Model())
+		q := b.State()
+		if _, err := ygnmi.Lookup(context.Background(), c, q); err != nil {
+			t.Fatal(err)
+		}
+		verifySubscriptionPathsSent(t, fakeGNMI, testutil.GNMIPath(t, "/model"))
+		b.AddPaths(root.New().A(), root.New().A().B())
+		if _, err := ygnmi.Lookup(context.Background(), c, q); err != nil {
+			t.Fatal(err)
+		}
+		verifySubscriptionPathsSent(t, fakeGNMI, testutil.GNMIPath(t, "/model"))
+	})
 }
 
 func TestBatchWatch(t *testing.T) {

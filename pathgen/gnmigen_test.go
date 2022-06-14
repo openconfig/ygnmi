@@ -353,6 +353,7 @@ func (b *Batch) AddPaths(paths ...ygnmi.PathStruct) *Batch {
 }
 
 // State returns a Query that can be used in gNMI operations.
+// The returned query is immutable, adding paths does not modify existing queries.
 func (b *Batch) State() ygnmi.SingletonQuery[*Root] {
 	queryPaths := make([]ygnmi.PathStruct, len(b.paths))
 	copy(queryPaths, b.paths)
@@ -370,6 +371,7 @@ func (b *Batch) State() ygnmi.SingletonQuery[*Root] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
+// The returned query is immutable, adding paths does not modify existing queries.
 func (b *Batch) Config() ygnmi.SingletonQuery[*oc.Root] {
 	queryPaths := make([]ygnmi.PathStruct, len(b.paths))
 	copy(queryPaths, b.paths)
