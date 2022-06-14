@@ -32,13 +32,13 @@ func ExampleLookup() {
 	path := root.New().Parent().Child()
 	val, err := ygnmi.Lookup(context.Background(), c, path.State())
 	if err != nil {
-		log.Fatalf("failed to lookup: %v", err)
+		log.Fatalf("Failed to Lookup: %v", err)
 	}
 
 	// Check if the value is present.
 	child, ok := val.Val()
 	if !ok {
-		log.Fatal("no value at path")
+		log.Fatal("No value at path")
 	}
 	fmt.Printf("Child: %v\n, RecvTimestamo %v", child, val.RecvTimestamp)
 }
@@ -50,7 +50,7 @@ func ExampleGet() {
 	path := root.New().Parent().Child()
 	child, err := ygnmi.Get(context.Background(), c, path.State())
 	if err != nil {
-		log.Fatalf("failed to lookup: %v", err)
+		log.Fatalf("Failed to Get: %v", err)
 	}
 
 	fmt.Printf("Child: %v\n", child)
@@ -82,12 +82,12 @@ func ExampleWatch() {
 	// Child is the last value received.
 	child, err := watcher.Await()
 	if err != nil {
-		log.Fatalf("failed to lookup: %v", err)
+		log.Fatalf("Failed to Watch: %v", err)
 	}
 	// Check if the value is present.
 	val, ok := child.Val()
 	if !ok {
-		log.Fatal("no value at path")
+		log.Fatal("No value at path")
 	}
 	fmt.Printf("Last Value: %v\n", val)
 }
@@ -107,12 +107,12 @@ func ExampleAwait() {
 	// Wait until the values at the path is equal to want.
 	child, err := ygnmi.Await(ctx, c, path.State(), want)
 	if err != nil {
-		log.Fatalf("failed to lookup: %v", err)
+		log.Fatalf("Failed to Await: %v", err)
 	}
 	// Check if the value is present.
 	val, ok := child.Val()
 	if !ok {
-		log.Fatal("no value at path")
+		log.Fatal("No value at path")
 	}
 	fmt.Printf("Last Value: %v\n", val)
 }
@@ -129,12 +129,13 @@ func ExampleCollect() {
 	collector := ygnmi.Collect(ctx, c, path.State())
 	vals, err := collector.Await()
 	if err != nil {
-		log.Fatalf("failed to lookup: %v", err)
+		log.Fatalf("Failed to Collect: %v", err)
 	}
 
-	fmt.Printf("Get %d values", len(vals))
+	fmt.Printf("Got %d values", len(vals))
 }
 
 func initClient() *ygnmi.Client {
+	// Initialize the client here.
 	return nil
 }
