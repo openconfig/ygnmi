@@ -269,12 +269,15 @@ func (b *Batch) AddPaths(paths ...ygnmi.PathStruct) *Batch {
 }
 
 // State returns a Query that can be used in gNMI operations.
+// The returned query is immutable, adding paths does not modify existing queries.
 func (b *Batch) State() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
+	queryPaths := make([]ygnmi.PathStruct, len(b.paths))
+	copy(queryPaths, b.paths)
     return ygnmi.NewNonLeaf{{ .SingletonTypeName }}[{{ .GoTypeName }}](
         "{{ .GoStructTypeName }}",
         true,
         ygnmi.NewDeviceRootBase(),
-        b.paths,
+        queryPaths,
         &ytypes.Schema{
             Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
             SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
@@ -284,12 +287,15 @@ func (b *Batch) State() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
+// The returned query is immutable, adding paths does not modify existing queries.
 func (b *Batch) Config() ygnmi.{{ .SingletonTypeName }}[*oc.Root] {
+	queryPaths := make([]ygnmi.PathStruct, len(b.paths))
+	copy(queryPaths, b.paths)
     return ygnmi.NewNonLeaf{{ .SingletonTypeName }}[*oc.Root](
         "{{ .GoStructTypeName }}",
         false,
         ygnmi.NewDeviceRootBase(),
-        b.paths,
+        queryPaths,
         &ytypes.Schema{
             Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
             SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
