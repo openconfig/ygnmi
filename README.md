@@ -1,4 +1,7 @@
 # ygnmi
+![Build Status](https://github.com/openconfig/ygnmi/workflows/Go/badge.svg?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/openconfig/ygnmi/badge.svg?branch=main)](https://coveralls.io/github/openconfig/ygnmi?branch=main)
+[![Go Reference](https://pkg.go.dev/badge/github.com/openconfig/ygnmi.svg)](https://pkg.go.dev/github.com/openconfig/ygnmi)
 ## Introduction
 
 ygnmi is a A Go gNMI client library based on [ygot](github.com/openconfig/ygot)-generated code. It includes a generator whose input is a set of YANG modules and output is ygot Go structs and a path library that can be used for making gNMI queries.
