@@ -41,15 +41,13 @@ Calling the generation with `--base_import_path=<somepath>/exampleoc` flag, will
 
 ## gNMI Client Library
 
-The ygnmi client library uses the generated code to 
-
-### Paths
-
-The PathStructs represent of 
+The ygnmi client library uses the generated code to perform schema compliant subscriptions and set gNMI RPCs. 
 
 ### Queries
 
-The ygnmi library uses generic queries to represent a gNMI path, the type, and schema. Queries should never be constructed directly, instead are returned by calling .Config() or .State() on the generated code. There are several query types that allow type safety when running operation. The relationship of the query types is:
+The ygnmi library uses generic queries to represent a gNMI path, the value type, and schema. Queries should never be constructed directly,
+instead are returned by calling .Config() or .State() on the generated code. There are several query types that allow type safety when running operation.
+=The relationship of the query types is:
 
 ![Query Diagram](doc/queries.svg)
 
@@ -57,7 +55,6 @@ The ygnmi library uses generic queries to represent a gNMI path, the type, and s
 * Config: Update, Replace, Delete, BatchUpdate, BatchReplace, BatchDelete
 * Wildcard: LookupAll, GetAll, WatchAll, CollectAll
 
-## Operations
 ## Additional Reference
 
 * See [ygot](github.com/openconfig/ygot) for more information on how YANG is mapped to Go code.
