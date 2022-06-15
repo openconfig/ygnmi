@@ -28,18 +28,18 @@ Note: the supported flags may evolve over time to include these options.
 
 ### Output
 
-Calling the generation with `--base_import_path=<somepath>/exampleoc` flag, will output:
+Calling the generation with `--base_import_path=<somepath>/exampleoc` flag will output:
 
 * exampleoc
     * This package contains the structs, enums, unions, and schema.
-    * These corresponding to **values** that can be returned or set.
+    * These correspond to **values** that can be returned or set.
 * exampleoc/\<module\>
-    * For every YANG module, that defines at least one container, there is a generate package.
+    * For every YANG module (that defines at least one container) one Go package is generated.
     * Each package contains PathStructs: structs that represent a gNMI **path** that can queried or set.
     * Each PathStruct has State() method that returns Query for path. It may also have a Config() method. 
 * exampleoc/root
-    * This package a special "fakeroot" that has 
-        * There is not YANG container that corresponds to this struct.
+    * This package contains a special "fakeroot" struct.
+        * It is called the fakeroot because there is not YANG container that corresponds to this struct.
     * The package also contains a batch struct.
 
 ## gNMI Client Library
