@@ -36,10 +36,10 @@ Calling the generation with `--base_import_path=<somepath>/exampleoc` flag will 
 * exampleoc/\<module\>
     * For every YANG module (that defines at least one container) one Go package is generated.
     * Each package contains PathStructs: structs that represent a gNMI **path** that can queried or set.
-    * Each PathStruct has State() method that returns Query for path. It may also have a Config() method. 
+    * Each PathStruct has a State() method that returns Query for path. It may also have a Config() method. 
 * exampleoc/root
     * This package contains a special "fakeroot" struct.
-        * It is called the fakeroot because there is not YANG container that corresponds to this struct.
+        * It is called the fakeroot because there is no YANG container that corresponds to this struct.
     * The package also contains a batch struct.
 
 ## gNMI Client Library
@@ -48,9 +48,9 @@ The ygnmi client library uses the generated code to perform schema compliant sub
 
 ### Queries
 
-The ygnmi library uses generic queries to represent a gNMI path, the value type, and schema. Queries should never be constructed directly,
-instead are returned by calling .Config() or .State() on the generated code. There are several query types that allow type safety when running operation.
-=The relationship of the query types is:
+The ygnmi library uses generic queries to represent a gNMI path, the value type, and schema. Queries should never be constructed directly.
+Instead, they are returned by calling .Config() or .State() on the generated code. There are several query types that allow type safety when running an operation.
+The relationship of the query types is:
 
 ![Query Diagram](doc/queries.svg)
 
