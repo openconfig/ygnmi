@@ -102,7 +102,7 @@ func generate(cmd *cobra.Command, args []string) error {
 		GenerateWildcardPaths: true,
 		TrimPackagePrefix:     viper.GetString("trim_prefix"),
 		SplitByModule:         true,
-		BaseImportPath:        viper.GetString("base_package_path"),
+		BasePackagePath:       viper.GetString("base_package_path"),
 		PackageSuffix:         "",
 		UnifyPathStructs:      true,
 		ExtraGenerators:       []pathgen.Generator{pathgen.GNMIGenerator},

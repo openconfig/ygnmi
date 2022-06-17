@@ -21,7 +21,7 @@ import (
 	"time"
 
 	"github.com/openconfig/ygnmi/internal/exampleoc"
-	"github.com/openconfig/ygnmi/internal/exampleoc/root"
+	"github.com/openconfig/ygnmi/internal/exampleoc/exampleocpath"
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/ygot"
 )
@@ -29,7 +29,7 @@ import (
 func ExampleLookup() {
 	c := initClient()
 	// Lookup a value at path.
-	path := root.New().Parent().Child()
+	path := exampleocpath.Root().Parent().Child()
 	val, err := ygnmi.Lookup(context.Background(), c, path.State())
 	if err != nil {
 		log.Fatalf("Failed to Lookup: %v", err)
@@ -47,7 +47,7 @@ func ExampleGet() {
 	c := initClient()
 	// Get a value at path.
 	// No metadata is returned, and an error is returned if not present.
-	path := root.New().Parent().Child()
+	path := exampleocpath.Root().Parent().Child()
 	child, err := ygnmi.Get(context.Background(), c, path.State())
 	if err != nil {
 		log.Fatalf("Failed to Get: %v", err)
@@ -59,7 +59,7 @@ func ExampleGet() {
 func ExampleWatch() {
 	c := initClient()
 	// Watch a path
-	path := root.New().Parent().Child()
+	path := exampleocpath.Root().Parent().Child()
 	// Use a context with a timeout, so that Watch doesn't continue indefinitely.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -94,7 +94,7 @@ func ExampleWatch() {
 
 func ExampleAwait() {
 	c := initClient()
-	path := root.New().Parent().Child()
+	path := exampleocpath.Root().Parent().Child()
 
 	// Use a context with a timeout, so that Await doesn't continue indefinitely.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -119,7 +119,7 @@ func ExampleAwait() {
 
 func ExampleCollect() {
 	c := initClient()
-	path := root.New().Parent().Child()
+	path := exampleocpath.Root().Parent().Child()
 
 	// Use a context with a timeout, so that Collect doesn't continue indefinitely.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -138,7 +138,7 @@ func ExampleCollect() {
 func ExampleLookupAll() {
 	c := initClient()
 	// LookupAll on the keys of the SingleKey list
-	path := root.New().Model().SingleKeyAny().Value()
+	path := exampleocpath.Root().Model().SingleKeyAny().Value()
 	vals, err := ygnmi.LookupAll(context.Background(), c, path.State())
 	if err != nil {
 		log.Fatalf("Failed to Lookup: %v", err)
@@ -155,7 +155,7 @@ func ExampleLookupAll() {
 func ExampleGetAll() {
 	c := initClient()
 	// Get on the keys of the SingleKey list
-	path := root.New().Model().SingleKeyAny().Value()
+	path := exampleocpath.Root().Model().SingleKeyAny().Value()
 	vals, err := ygnmi.GetAll(context.Background(), c, path.State())
 	if err != nil {
 		log.Fatalf("Failed to Lookup: %v", err)
@@ -172,7 +172,7 @@ func ExampleGetAll() {
 func ExampleWatchAll() {
 	c := initClient()
 	// Watch a path
-	path := root.New().Model().SingleKeyAny().Value()
+	path := exampleocpath.Root().Model().SingleKeyAny().Value()
 	// Use a context with a timeout, so that Watch doesn't continue indefinitely.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -208,7 +208,7 @@ func ExampleWatchAll() {
 
 func ExampleCollectAll() {
 	c := initClient()
-	path := root.New().Model().SingleKeyAny().Value()
+	path := exampleocpath.Root().Model().SingleKeyAny().Value()
 
 	// Use a context with a timeout, so that Collect doesn't continue indefinitely.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -227,9 +227,9 @@ func ExampleCollectAll() {
 func ExampleGet_batch() {
 	c := initClient()
 	// Create a new batch object and add paths to it.
-	b := new(root.Batch)
+	b := new(exampleocpath.Batch)
 	// Note: the AddPaths accepts paths not queries.
-	b.AddPaths(root.New().RemoteContainer().ALeaf(), root.New().Model().SingleKeyAny().Value())
+	b.AddPaths(exampleocpath.Root().RemoteContainer().ALeaf(), exampleocpath.Root().Model().SingleKeyAny().Value())
 	// Get the values of the paths in the paths, a Batch Query always returns the root object.
 	val, err := ygnmi.Get(context.Background(), c, b.State())
 	if err != nil {
@@ -242,9 +242,9 @@ func ExampleGet_batch() {
 func ExampleWatch_batch() {
 	c := initClient()
 	// Create a new batch object and add paths to it.
-	b := new(root.Batch)
+	b := new(exampleocpath.Batch)
 	// Note: the AddPaths accepts paths not queries.
-	b.AddPaths(root.New().RemoteContainer().ALeaf(), root.New().Model().SingleKeyAny().Value())
+	b.AddPaths(exampleocpath.Root().RemoteContainer().ALeaf(), exampleocpath.Root().Model().SingleKeyAny().Value())
 	// Watch all input path until they meet the desired condition.
 	_, err := ygnmi.Watch(context.Background(), c, b.State(), func(v *ygnmi.Value[*exampleoc.Root]) error {
 		val, ok := v.Val()
@@ -266,7 +266,7 @@ func ExampleWatch_batch() {
 func ExampleUpdate() {
 	c := initClient()
 	// Perform the Update request.
-	res, err := ygnmi.Update(context.Background(), c, root.New().Parent().Child().Three().Config(), exampleoc.Child_Three_TWO)
+	res, err := ygnmi.Update(context.Background(), c, exampleocpath.Root().Parent().Child().Three().Config(), exampleoc.Child_Three_TWO)
 	if err != nil {
 		log.Fatalf("Update failed: %v", err)
 	}
@@ -276,7 +276,7 @@ func ExampleUpdate() {
 func ExampleReplace() {
 	c := initClient()
 	// Perform the Replace request.
-	res, err := ygnmi.Replace(context.Background(), c, root.New().RemoteContainer().Config(), &exampleoc.RemoteContainer{ALeaf: ygot.String("foo")})
+	res, err := ygnmi.Replace(context.Background(), c, exampleocpath.Root().RemoteContainer().Config(), &exampleoc.RemoteContainer{ALeaf: ygot.String("foo")})
 	if err != nil {
 		log.Fatalf("Update failed: %v", err)
 	}
@@ -286,7 +286,7 @@ func ExampleReplace() {
 func ExampleDelete() {
 	c := initClient()
 	// Perform the Update request.
-	res, err := ygnmi.Delete(context.Background(), c, root.New().Parent().Child().One().Config())
+	res, err := ygnmi.Delete(context.Background(), c, exampleocpath.Root().Parent().Child().One().Config())
 	if err != nil {
 		log.Fatalf("Delete failed: %v", err)
 	}
@@ -298,9 +298,9 @@ func ExampleSetBatch_Set() {
 	b := new(ygnmi.SetBatch)
 
 	// Add set operations to a batch request.
-	ygnmi.BatchUpdate(b, root.New().Parent().Child().Three().Config(), exampleoc.Child_Three_TWO)
-	ygnmi.BatchDelete(b, root.New().Parent().Child().One().Config())
-	ygnmi.BatchReplace(b, root.New().RemoteContainer().Config(), &exampleoc.RemoteContainer{ALeaf: ygot.String("foo")})
+	ygnmi.BatchUpdate(b, exampleocpath.Root().Parent().Child().Three().Config(), exampleoc.Child_Three_TWO)
+	ygnmi.BatchDelete(b, exampleocpath.Root().Parent().Child().One().Config())
+	ygnmi.BatchReplace(b, exampleocpath.Root().RemoteContainer().Config(), &exampleoc.RemoteContainer{ALeaf: ygot.String("foo")})
 
 	// Perform the gnmi Set request.
 	res, err := b.Set(context.Background(), c)
@@ -309,7 +309,7 @@ func ExampleSetBatch_Set() {
 	}
 	fmt.Printf("Timestamp: %v", res.Timestamp)
 
-	root.New().Model().SingleKeyAny().Config()
+	exampleocpath.Root().Model().SingleKeyAny().Config()
 }
 
 func initClient() *ygnmi.Client {

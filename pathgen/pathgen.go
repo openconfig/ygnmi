@@ -173,8 +173,8 @@ type GenConfig struct {
 	SplitByModule bool
 	// TrimPackagePrefix is the prefix to trim from generated go package names.
 	TrimPackagePrefix string
-	// BaseImportPath is used to create to full import path of the generated go packages.
-	BaseImportPath string
+	// BasePackagePath is used to create to full import path of the generated go packages.
+	BasePackagePath string
 	// PackageString is the string to apppend to the generated Go package names.
 	PackageSuffix string
 	// UnifyPathStructs controls whether to generate both config and states in the same package.
@@ -805,7 +805,7 @@ func writeHeader(yangFiles, includePaths []string, packageName string, cg *GenCo
 	}
 	// Create an ordered list of imports to include in the header.
 	for dep := range genCode.Deps {
-		s.ExtraImports = append(s.ExtraImports, fmt.Sprintf("%s/%s", cg.BaseImportPath, dep))
+		s.ExtraImports = append(s.ExtraImports, fmt.Sprintf("%s/%s", cg.BasePackagePath, dep))
 	}
 	sort.Slice(s.ExtraImports, func(i, j int) bool { return s.ExtraImports[i] < s.ExtraImports[j] })
 
