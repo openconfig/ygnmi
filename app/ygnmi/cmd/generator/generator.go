@@ -31,8 +31,6 @@ import (
 	"github.com/openconfig/ygot/ygen"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-
-	log "github.com/golang/glog"
 )
 
 // New returns a new generator command.
@@ -45,40 +43,39 @@ func New() *cobra.Command {
 		Args:  cobra.MinimumNArgs(1),
 	}
 
-	generator.Flags().String("schema_struct_path", "", "The Go import path for the schema structs package. If struct generation is enabled, this defaults to base_import_path.")
+	generator.Flags().String("schema_struct_path", "", "The Go import path for the schema structs package. If struct generation is enabled, this defaults to base_package_path.")
 	generator.Flags().String("ygot_path", "github.com/openconfig/ygot/ygot", "The import path to use for ygot.")
 	generator.Flags().String("ygnmi_path", "github.com/openconfig/ygnmi/ygnmi", "The import path to use for ygnmi.")
 	generator.Flags().String("ytypes_path", "github.com/openconfig/ygot/ytypes", "The import path to use for ytypes.")
 	generator.Flags().String("goyang_path", "github.com/openconfig/goyang/pkg/yang", "The import path to use for goyang.")
-	generator.Flags().String("base_import_path", "", "This needs to be set to the import path of the output_dir.")
+	generator.Flags().String("base_package_path", "", "This needs to be set to the import path of the output_dir.")
+	generator.Flags().String("trim_prefix", "", "A prefix (if any) to trim from generated package names and enums")
 	generator.Flags().StringSlice("paths", nil, "Comma-separated list of paths to be recursively searched for included modules or submodules within the defined YANG modules.")
 	generator.Flags().StringSlice("exclude_modules", nil, "Comma-separated YANG modules to exclude from code generation.")
 	generator.Flags().String("output_dir", "", "The directory that the generated Go code should be written to. This directory is the base of the generated module packages. default (working dir)")
-	generator.Flags().Bool("generate_structs", true, "Generate structs and schema for YANG modules.")
 	generator.Flags().Int("structs_split_files_count", 1, "The number of files to split the generated schema structs into.")
 	generator.Flags().Int("pathstructs_split_files_count", 1, "The number of files to split the generated path structs into.")
+
+	generator.Flags().MarkHidden("schema_struct_path")
 
 	return generator
 }
 
-const (
-	rootPackageName = "root"
-)
-
 // generate runs the ygnmi PathStruct and optionally the ygot GoStruct generation.
 func generate(cmd *cobra.Command, args []string) error {
-	if viper.Get("base_import_path") == "" {
-		return fmt.Errorf("base_import_path must be set")
+	if viper.Get("base_package_path") == "" {
+		return fmt.Errorf("base_package_path must be set")
 	}
 
 	schemaStructPath := viper.GetString("schema_struct_path")
-	if viper.GetBool("generate_structs") {
-		if schemaStructPath == "" {
-			log.Info("schema_struct_path is unset, defaulting to base import path")
-			schemaStructPath = viper.GetString("base_import_path")
-		}
+	if schemaStructPath == "" {
+		schemaStructPath = viper.GetString("base_package_path")
 	}
+
 	version := "ygnmi version: " + cmd.Root().Version
+
+	importPath := strings.Split(viper.GetString("base_package_path"), "/")
+	rootPackageName := fmt.Sprintf("%spath", importPath[len(importPath)-1])
 
 	pcg := pathgen.GenConfig{
 		PackageName: rootPackageName,
@@ -92,7 +89,7 @@ func generate(cmd *cobra.Command, args []string) error {
 		ExcludeState:                         false,
 		SkipEnumDeduplication:                false,
 		ShortenEnumLeafNames:                 true,
-		EnumOrgPrefixesToTrim:                []string{"openconfig"},
+		EnumOrgPrefixesToTrim:                []string{viper.GetString("trim_prefix")},
 		UseDefiningModuleForTypedefEnumNames: false,
 		AppendEnumSuffixForSimpleUnionEnums:  true,
 		FakeRootName:                         "root",
@@ -103,9 +100,9 @@ func generate(cmd *cobra.Command, args []string) error {
 		},
 		GeneratingBinary:      version,
 		GenerateWildcardPaths: true,
-		TrimOCPackage:         true,
+		TrimPackagePrefix:     viper.GetString("trim_prefix"),
 		SplitByModule:         true,
-		BaseImportPath:        viper.GetString("base_import_path"),
+		BaseImportPath:        viper.GetString("base_package_path"),
 		PackageSuffix:         "",
 		UnifyPathStructs:      true,
 		ExtraGenerators:       []pathgen.Generator{pathgen.GNMIGenerator},
@@ -139,9 +136,6 @@ func generate(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	if !viper.GetBool("generate_structs") {
-		return nil
-	}
 
 	return generateStructs(args, schemaStructPath, version)
 }
@@ -168,7 +162,7 @@ func generateStructs(modules []string, schemaPath, version string) error {
 				GenerateFakeRoot:                     true,
 				FakeRootName:                         "root",
 				ShortenEnumLeafNames:                 true,
-				EnumOrgPrefixesToTrim:                []string{"openconfig"},
+				EnumOrgPrefixesToTrim:                []string{viper.GetString("trim_prefix")},
 				UseDefiningModuleForTypedefEnumNames: false,
 				EnumerationsUseUnderscores:           true,
 			},
