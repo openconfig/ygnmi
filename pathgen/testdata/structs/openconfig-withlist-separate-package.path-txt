@@ -58,9 +58,6 @@ type ModelAny struct {
 // 	Instantiating module: "openconfig-withlist"
 // 	Path from parent:     "b/multi-key"
 // 	Path from root:       "/model/b/multi-key"
-//
-// 	Key1 (wildcarded): uint32
-// 	Key2 (wildcarded): uint64
 func (n *Model) MultiKeyAny() *Model_MultiKeyAny {
 	return &Model_MultiKeyAny{
 		NodePath: ygnmi.NewNodePath(
@@ -76,9 +73,6 @@ func (n *Model) MultiKeyAny() *Model_MultiKeyAny {
 // 	Instantiating module: "openconfig-withlist"
 // 	Path from parent:     "b/multi-key"
 // 	Path from root:       "/model/b/multi-key"
-//
-// 	Key1 (wildcarded): uint32
-// 	Key2 (wildcarded): uint64
 func (n *ModelAny) MultiKeyAny() *Model_MultiKeyAny {
 	return &Model_MultiKeyAny{
 		NodePath: ygnmi.NewNodePath(
@@ -89,76 +83,18 @@ func (n *ModelAny) MultiKeyAny() *Model_MultiKeyAny {
 	}
 }
 
-// MultiKeyAnyKey2 (list): 
-// 	Defining module:      "openconfig-withlist"
-// 	Instantiating module: "openconfig-withlist"
-// 	Path from parent:     "b/multi-key"
-// 	Path from root:       "/model/b/multi-key"
-//
-// 	Key1: uint32
-// 	Key2 (wildcarded): uint64
-func (n *Model) MultiKeyAnyKey2(Key1 uint32) *Model_MultiKeyAny {
-	return &Model_MultiKeyAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"b", "multi-key"},
-			map[string]interface{}{"key1": Key1, "key2": "*"},
-			n,
-		),
-	}
+// WithKey1 sets Model_MultiKeyAny's key "key1" to the specified value.
+// Key1: uint32
+func (n *Model_MultiKeyAny) WithKey1(Key1 uint32) *Model_MultiKeyAny {
+	ygnmi.ModifyKey(n.NodePath, "key1", Key1)
+	return n
 }
 
-// MultiKeyAnyKey2 (list): 
-// 	Defining module:      "openconfig-withlist"
-// 	Instantiating module: "openconfig-withlist"
-// 	Path from parent:     "b/multi-key"
-// 	Path from root:       "/model/b/multi-key"
-//
-// 	Key1: uint32
-// 	Key2 (wildcarded): uint64
-func (n *ModelAny) MultiKeyAnyKey2(Key1 uint32) *Model_MultiKeyAny {
-	return &Model_MultiKeyAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"b", "multi-key"},
-			map[string]interface{}{"key1": Key1, "key2": "*"},
-			n,
-		),
-	}
-}
-
-// MultiKeyAnyKey1 (list): 
-// 	Defining module:      "openconfig-withlist"
-// 	Instantiating module: "openconfig-withlist"
-// 	Path from parent:     "b/multi-key"
-// 	Path from root:       "/model/b/multi-key"
-//
-// 	Key1 (wildcarded): uint32
-// 	Key2: uint64
-func (n *Model) MultiKeyAnyKey1(Key2 uint64) *Model_MultiKeyAny {
-	return &Model_MultiKeyAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"b", "multi-key"},
-			map[string]interface{}{"key1": "*", "key2": Key2},
-			n,
-		),
-	}
-}
-
-// MultiKeyAnyKey1 (list): 
-// 	Defining module:      "openconfig-withlist"
-// 	Instantiating module: "openconfig-withlist"
-// 	Path from parent:     "b/multi-key"
-// 	Path from root:       "/model/b/multi-key"
-//
-// 	Key1 (wildcarded): uint32
-// 	Key2: uint64
-func (n *ModelAny) MultiKeyAnyKey1(Key2 uint64) *Model_MultiKeyAny {
-	return &Model_MultiKeyAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"b", "multi-key"},
-			map[string]interface{}{"key1": "*", "key2": Key2},
-			n,
-		),
-	}
+// WithKey2 sets Model_MultiKeyAny's key "key2" to the specified value.
+// Key2: uint64
+func (n *Model_MultiKeyAny) WithKey2(Key2 uint64) *Model_MultiKeyAny {
+	ygnmi.ModifyKey(n.NodePath, "key2", Key2)
+	return n
 }
 
 // MultiKey (list): 
@@ -202,8 +138,6 @@ func (n *ModelAny) MultiKey(Key1 uint32, Key2 uint64) *Model_MultiKeyAny {
 // 	Instantiating module: "openconfig-withlist"
 // 	Path from parent:     "a/single-key"
 // 	Path from root:       "/model/a/single-key"
-//
-// 	Key (wildcarded): string
 func (n *Model) SingleKeyAny() *Model_SingleKeyAny {
 	return &Model_SingleKeyAny{
 		NodePath: ygnmi.NewNodePath(
@@ -219,8 +153,6 @@ func (n *Model) SingleKeyAny() *Model_SingleKeyAny {
 // 	Instantiating module: "openconfig-withlist"
 // 	Path from parent:     "a/single-key"
 // 	Path from root:       "/model/a/single-key"
-//
-// 	Key (wildcarded): string
 func (n *ModelAny) SingleKeyAny() *Model_SingleKeyAny {
 	return &Model_SingleKeyAny{
 		NodePath: ygnmi.NewNodePath(

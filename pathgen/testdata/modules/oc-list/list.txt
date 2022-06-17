@@ -71,6 +71,42 @@ func (n *Model_MultiKeyPathAny) WithKey2(Key2 uint64) *Model_MultiKeyPathAny {
 	return n
 }
 
+// MultiKey (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "b/multi-key"
+// 	Path from root:       "/model/b/multi-key"
+//
+// 	Key1: uint32
+// 	Key2: uint64
+func (n *ModelPath) MultiKey(Key1 uint32, Key2 uint64) *Model_MultiKeyPath {
+	return &Model_MultiKeyPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"b", "multi-key"},
+			map[string]interface{}{"key1": Key1, "key2": Key2},
+			n,
+		),
+	}
+}
+
+// MultiKey (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "b/multi-key"
+// 	Path from root:       "/model/b/multi-key"
+//
+// 	Key1: uint32
+// 	Key2: uint64
+func (n *ModelPathAny) MultiKey(Key1 uint32, Key2 uint64) *Model_MultiKeyPathAny {
+	return &Model_MultiKeyPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"b", "multi-key"},
+			map[string]interface{}{"key1": Key1, "key2": Key2},
+			n,
+		),
+	}
+}
+
 // SingleKeyAny (list): 
 // 	Defining module:      "openconfig-withlist"
 // 	Instantiating module: "openconfig-withlist"
@@ -101,11 +137,38 @@ func (n *ModelPathAny) SingleKeyAny() *Model_SingleKeyPathAny {
 	}
 }
 
-// WithKey sets Model_SingleKeyPathAny's key "key" to the specified value.
-// Key: string
-func (n *Model_SingleKeyPathAny) WithKey(Key string) *Model_SingleKeyPathAny {
-	ygnmi.ModifyKey(n.NodePath, "key", Key)
-	return n
+// SingleKey (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "a/single-key"
+// 	Path from root:       "/model/a/single-key"
+//
+// 	Key: string
+func (n *ModelPath) SingleKey(Key string) *Model_SingleKeyPath {
+	return &Model_SingleKeyPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"a", "single-key"},
+			map[string]interface{}{"key": Key},
+			n,
+		),
+	}
+}
+
+// SingleKey (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "a/single-key"
+// 	Path from root:       "/model/a/single-key"
+//
+// 	Key: string
+func (n *ModelPathAny) SingleKey(Key string) *Model_SingleKeyPathAny {
+	return &Model_SingleKeyPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"a", "single-key"},
+			map[string]interface{}{"key": Key},
+			n,
+		),
+	}
 }
 
 // Model_MultiKey_Key1Path represents the /openconfig-withlist/model/b/multi-key/state/key1 YANG schema element.

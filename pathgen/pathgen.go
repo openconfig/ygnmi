@@ -167,31 +167,8 @@ type GenConfig struct {
 	// included in the header of output files for debugging purposes. If a
 	// string is not specified, the location of the library is utilised.
 	GeneratingBinary string
-	// ListBuilderKeyThreshold means to use the builder API format instead
-	// of the key-combination API format for constructing list keys when
-	// the number of keys is at least the threshold value.
-	// 0 (default) means no threshold, i.e. always use the key-combination
-	// API format.
-	ListBuilderKeyThreshold uint
 	// GenerateWildcardPaths means to generate wildcard nodes and paths.
 	GenerateWildcardPaths bool
-	// SimplifyWildcardPaths causes non-builder-style generated wildcard
-	// nodes, where all key values are wildcards, to omit the [key="*"] in
-	// the generated path.
-	//
-	// e.g. For the following path node,
-	//
-	// list foo {
-	//  key "one two three";
-	// }
-	//
-	// "foo[one=*][two=*][three=*]" would be the string representation for
-	// all keys being wildcards when this flag is false, whereas simply
-	// "foo" when the flag is true. These two representations are
-	// equivalent per the gNMI specification.
-	// If any key is not a wildcard, then this flag doesn't apply, since
-	// all key values must now be specified in the path.
-	SimplifyWildcardPaths bool
 	// SplitByModule controls whether to generate a go package for each yang module.
 	SplitByModule bool
 	// TrimOCPackage controls whether to trim openconfig- from generated go package names.
@@ -327,11 +304,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 	for _, directoryPath := range ir.OrderedDirectoryPathsByName() {
 		directory := ir.Directories[directoryPath]
 
-		var listBuilderKeyThreshold uint
-		if cg.GenerateWildcardPaths {
-			listBuilderKeyThreshold = cg.ListBuilderKeyThreshold
-		}
-		structSnippet, es := generateDirectorySnippet(directory, ir.Directories, schemaStructPkgAccessor, cg.PathStructSuffix, listBuilderKeyThreshold, cg.GenerateWildcardPaths, cg.SimplifyWildcardPaths, cg.SplitByModule, cg.TrimOCPackage, cg.PackageName, cg.PackageSuffix, cg.UnifyPathStructs)
+		structSnippet, es := generateDirectorySnippet(directory, ir.Directories, schemaStructPkgAccessor, cg.PathStructSuffix, cg.GenerateWildcardPaths, cg.SplitByModule, cg.TrimOCPackage, cg.PackageName, cg.PackageSuffix, cg.UnifyPathStructs)
 		if es != nil {
 			errs = util.AppendErrs(errs, es)
 		}
@@ -913,8 +886,8 @@ type goPathFieldData struct {
 // the fields of the struct. directory is the parsed information of a schema
 // node, and directories is a map from path to a parsed schema node for all
 // directory nodes in the schema.
-func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[string]*ygen.ParsedDirectory, schemaStructPkgAccessor, pathStructSuffix string, listBuilderKeyThreshold uint,
-	generateWildcardPaths, simplifyWildcardPaths, splitByModule, trimOCPkg bool, pkgName, pkgSuffix string, unified bool) ([]GoPathStructCodeSnippet, util.Errors) {
+func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[string]*ygen.ParsedDirectory, schemaStructPkgAccessor, pathStructSuffix string,
+	generateWildcardPaths, splitByModule, trimOCPkg bool, pkgName, pkgSuffix string, unified bool) ([]GoPathStructCodeSnippet, util.Errors) {
 
 	var errs util.Errors
 	// structBuf is used to store the code associated with the struct defined for
@@ -970,7 +943,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 			}
 		}
 
-		if es := generateChildConstructors(&methodBuf, buildBuf, directory, fName, goFieldName, directories, schemaStructPkgAccessor, pathStructSuffix, listBuilderKeyThreshold, generateWildcardPaths, simplifyWildcardPaths, childPkgAccessor, unified); es != nil {
+		if es := generateChildConstructors(&methodBuf, buildBuf, directory, fName, goFieldName, directories, schemaStructPkgAccessor, pathStructSuffix, generateWildcardPaths, childPkgAccessor, unified); es != nil {
 			errs = util.AppendErrs(errs, es)
 		}
 
@@ -1061,7 +1034,7 @@ func longestPath(ss [][]string) []string {
 // type name of of the child path struct, and a map of all directories of the
 // whole schema keyed by their schema paths.
 func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.Builder, directory *ygen.ParsedDirectory, directoryFieldName string, goFieldName string, directories map[string]*ygen.ParsedDirectory, schemaStructPkgAccessor,
-	pathStructSuffix string, listBuilderKeyThreshold uint, generateWildcardPaths, simplifyWildcardPaths bool, childPkgAccessor string, unified bool) []error {
+	pathStructSuffix string, generateWildcardPaths bool, childPkgAccessor string, unified bool) []error {
 
 	field, ok := directory.Fields[directoryFieldName]
 	if !ok {
@@ -1124,14 +1097,13 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 		return nil
 		// Erroring out, on the other hand, is impractical due to their existence in the current OpenConfig models.
 		// return fmt.Errorf("generateChildConstructors: schemas containing keyless lists are unsupported, path: %s", field.Path())
-	case listBuilderKeyThreshold != 0 && uint(len(fieldDirectory.ListKeys)) >= listBuilderKeyThreshold:
-		// If the number of keys is equal to or over the builder API threshold,
-		// then use the builder API format to make the list path API less
-		// confusing for the user.
-		// The generated const
-		return generateChildConstructorsForListBuilderFormat(methodBuf, builderBuf, fieldDirectory.ListKeys, fieldDirectory.ListKeyYANGNames, fieldData, isUnderFakeRoot, schemaStructPkgAccessor)
 	default:
-		return generateChildConstructorsForList(methodBuf, fieldDirectory.ListKeys, fieldDirectory.ListKeyYANGNames, fieldData, isUnderFakeRoot, generateWildcardPaths, simplifyWildcardPaths, schemaStructPkgAccessor)
+		if generateWildcardPaths {
+			if errs := generateChildConstructorsForListBuilderFormat(methodBuf, builderBuf, fieldDirectory.ListKeys, fieldDirectory.ListKeyYANGNames, fieldData, isUnderFakeRoot, schemaStructPkgAccessor); len(errs) > 0 {
+				return errs
+			}
+		}
+		return generateChildConstructorsForList(methodBuf, fieldDirectory.ListKeys, fieldDirectory.ListKeyYANGNames, fieldData, isUnderFakeRoot, generateWildcardPaths, schemaStructPkgAccessor)
 	}
 }
 
@@ -1220,6 +1192,11 @@ func generateChildConstructorsForListBuilderFormat(methodBuf *strings.Builder, b
 		}
 	}
 
+	// Skip key builders for list with single key.
+	if keyN == 1 {
+		return errors
+	}
+
 	// Generate key-builder methods for the wildcard version of the PathStruct.
 	// Although non-wildcard PathStruct is unnecessary, it is kept for generation simplicity.
 	for i := 0; i != keyN; i++ {
@@ -1251,107 +1228,49 @@ func generateChildConstructorsForListBuilderFormat(methodBuf *strings.Builder, b
 // childConstructor template output information for if the node were a
 // container (which contains a subset of the basic information required for
 // the list constructor methods).
-func generateChildConstructorsForList(methodBuf *strings.Builder, keys map[string]*ygen.ListKey, keyNames []string, fieldData goPathFieldData, isUnderFakeRoot, generateWildcardPaths, simplifyWildcardPaths bool, schemaStructPkgAccessor string) []error {
+func generateChildConstructorsForList(methodBuf *strings.Builder, keys map[string]*ygen.ListKey, keyNames []string, fieldData goPathFieldData, isUnderFakeRoot, generateWildcardPaths bool, schemaStructPkgAccessor string) []error {
 	var errors []error
 	// List of function parameters as would appear in the method definition.
 	keyParams, err := makeKeyParams(keys, keyNames, schemaStructPkgAccessor)
 	if err != nil {
 		return append(errors, err)
 	}
-	keyN := len(keyParams)
-	combos := combinations(keyN)
 
-	// Names that are subject to change depending on which keys are
-	// wildcarded and whether the parent struct is a wildcard node.
-	baseMethodName := fieldData.MethodName
 	parentTypeName := fieldData.Struct.TypeName
 	wildcardParentTypeName := parentTypeName + WildcardSuffix
 	fieldTypeName := fieldData.TypeName
 	wildcardFieldTypeName := fieldTypeName + WildcardSuffix
 
-	// For each combination of parameter indices to be part of the method
-	// parameter list (i.e. NOT wildcarded).
-	for comboIndex, combo := range combos {
-		if !generateWildcardPaths && comboIndex != len(combos)-1 {
-			// All but the last combo contain wildcard paths.
-			continue
-		}
-		var paramListStrs, paramDocStrs, keyEntryStrs []string
-		var anySuffixes []string
+	var paramListStrs, paramDocStrs, keyEntryStrs []string
+	for _, param := range keyParams {
+		paramDocStrs = append(paramDocStrs, param.varName+": "+param.typeDocString)
+		paramListStrs = append(paramListStrs, fmt.Sprintf("%s %s", param.varName, param.typeName))
+		keyEntryStrs = append(keyEntryStrs, fmt.Sprintf(`"%s": %s`, param.name, param.varName))
+	}
+	// Create the string for the method parameter list, docstrings, and ygnmi.NodePath's key list.
+	fieldData.KeyParamListStr = strings.Join(paramListStrs, ", ")
+	fieldData.KeyParamDocStrs = paramDocStrs
+	fieldData.KeyEntriesStr = strings.Join(keyEntryStrs, ", ")
 
-		i := 0 // Loop through each parameter
-		for _, paramIndex := range combo {
-			// Add unselected parameters as a wildcard.
-			for ; i != paramIndex; i++ {
-				param := keyParams[i]
-				paramDocStrs = append(paramDocStrs, param.varName+" (wildcarded): "+param.typeDocString)
-				keyEntryStrs = append(keyEntryStrs, fmt.Sprintf(`"%s": "*"`, param.name))
-				anySuffixes = append(anySuffixes, WildcardSuffix+param.varName)
-			}
-			// Add selected parameters to the parameter list.
-			param := keyParams[paramIndex]
-			paramDocStrs = append(paramDocStrs, param.varName+": "+param.typeDocString)
-			paramListStrs = append(paramListStrs, fmt.Sprintf("%s %s", param.varName, param.typeName))
-			keyEntryStrs = append(keyEntryStrs, fmt.Sprintf(`"%s": %s`, param.name, param.varName))
-			i++
-		}
-		for ; i != keyN; i++ { // Handle edge case
-			param := keyParams[i]
-			paramDocStrs = append(paramDocStrs, param.varName+" (wildcarded): "+param.typeDocString)
-			keyEntryStrs = append(keyEntryStrs, fmt.Sprintf(`"%s": "*"`, param.name))
-			anySuffixes = append(anySuffixes, WildcardSuffix+param.varName)
-		}
-		// Create the string for the method parameter list, docstrings, and ygnmi.NodePath's key list.
-		fieldData.KeyParamListStr = strings.Join(paramListStrs, ", ")
-		fieldData.KeyParamDocStrs = paramDocStrs
-		fieldData.KeyEntriesStr = strings.Join(keyEntryStrs, ", ")
-		if simplifyWildcardPaths && comboIndex == 0 {
-			// The zeroth index has every key as a wildcard, so
-			// we can equivalently omit specifying any key values
-			// per the gNMI spec if the user prefers this
-			// alternative simplified format.
-			fieldData.KeyEntriesStr = ""
-		}
+	if err := goPathChildConstructorTemplate.Execute(methodBuf, fieldData); err != nil {
+		errors = append(errors, err)
+	}
 
-		// Add wildcard description suffixes to the base method name
-		// for wildcarded parameters.
-		fieldData.MethodName = baseMethodName + strings.Join(anySuffixes, "")
-		// By default, set the child type to be the wildcard version.
+	// The root node doesn't have a wildcard version of itself.
+	if isUnderFakeRoot {
+		return errors
+	}
+
+	if generateWildcardPaths {
+		// Generate child constructor method for wildcard version of parent struct.
+		fieldData.Struct.TypeName = wildcardParentTypeName
+		// Override the corner case for generating the non-wildcard child.
 		fieldData.TypeName = wildcardFieldTypeName
-
-		// Corner cases
-		switch {
-		case comboIndex == 0:
-			// When all keys are wildcarded, just use
-			// WildcardSuffix alone as the suffix.
-			fieldData.MethodName = baseMethodName + WildcardSuffix
-		case comboIndex == len(combos)-1:
-			// When all keys are not wildcarded, then the child
-			// type should be the non-wildcard version.
-			fieldData.TypeName = fieldTypeName
-		}
-
-		// Generate child constructor method for non-wildcard version of parent struct.
-		fieldData.Struct.TypeName = parentTypeName
 		if err := goPathChildConstructorTemplate.Execute(methodBuf, fieldData); err != nil {
 			errors = append(errors, err)
 		}
-
-		// The root node doesn't have a wildcard version of itself.
-		if isUnderFakeRoot {
-			continue
-		}
-
-		if generateWildcardPaths {
-			// Generate child constructor method for wildcard version of parent struct.
-			fieldData.Struct.TypeName = wildcardParentTypeName
-			// Override the corner case for generating the non-wildcard child.
-			fieldData.TypeName = wildcardFieldTypeName
-			if err := goPathChildConstructorTemplate.Execute(methodBuf, fieldData); err != nil {
-				errors = append(errors, err)
-			}
-		}
 	}
+
 	return errors
 }
 
@@ -1472,25 +1391,6 @@ func makeKeyParams(keys map[string]*ygen.ListKey, keyNames []string, schemaStruc
 		})
 	}
 	return keyParams, nil
-}
-
-// combinations returns the mathematical combinations of the numbers from 0 to n-1.
-// e.g. n = 2 -> []int{{}, {0}, {1}, {0, 1}}
-// It outputs combination(0) if n < 0.
-// Guarantees:
-// - Deterministic output.
-// - All numbers within a combination are in order.
-// - The first combination is the shortest (i.e. containing no numbers).
-// - The last combination is the longest (i.e. containing all numbers from 0 to n-1).
-func combinations(n int) [][]int {
-	cs := [][]int{{}}
-	for i := 0; i < n; i++ {
-		size := len(cs)
-		for j := 0; j != size; j++ {
-			cs = append(cs, append(append([]int{}, cs[j]...), i))
-		}
-	}
-	return cs
 }
 
 // getGoKeyNameMap returns a map of Go key names keyed by their schema names

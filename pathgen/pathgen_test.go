@@ -55,8 +55,6 @@ func TestGeneratePathCode(t *testing.T) {
 		inPreferOperationalState bool
 		// inExcludeState determines whether derived state leaves are excluded from the path-building methods.
 		inExcludeState bool
-		// inListBuilderKeyThreshold determines the minimum number of keys beyond which the builder API is used for building the paths.
-		inListBuilderKeyThreshold uint
 		// inShortenEnumLeafNames says whether the enum leaf names are shortened (i.e. module name removed) in the generated Go code corresponding to the generated path library.
 		inShortenEnumLeafNames bool
 		// inUseDefiningModuleForTypedefEnumNames uses the defining module name to prefix typedef enumerated types instead of the module where the typedef enumerated value is used.
@@ -65,7 +63,6 @@ func TestGeneratePathCode(t *testing.T) {
 		inGenerateWildcardPaths bool
 		inSchemaStructPkgPath   string
 		inPathStructSuffix      string
-		inSimplifyWildcardPaths bool
 		// checkYANGPath says whether to check for the YANG path in the NodeDataMap.
 		checkYANGPath bool
 		// wantStructsCodeFile is the path of the generated Go code that the output of the test should be compared to.
@@ -439,17 +436,6 @@ func TestGeneratePathCode(t *testing.T) {
 		inPathStructSuffix:                     "Path",
 		wantStructsCodeFile:                    filepath.Join(TestRoot, "testdata/structs/openconfig-withlist.path-txt"),
 	}, {
-		name:                                   "simple openconfig test with list, and inSimplifyWildcardPaths=true",
-		inFiles:                                []string{filepath.Join(datapath, "openconfig-withlist.yang")},
-		inPreferOperationalState:               true,
-		inShortenEnumLeafNames:                 true,
-		inUseDefiningModuleForTypedefEnumNames: true,
-		inGenerateWildcardPaths:                true,
-		inSchemaStructPkgPath:                  "",
-		inPathStructSuffix:                     "Path",
-		inSimplifyWildcardPaths:                true,
-		wantStructsCodeFile:                    filepath.Join(TestRoot, "testdata/structs/openconfig-withlist.simplifyallwc.path-txt"),
-	}, {
 		name:                                   "simple openconfig test with list without wildcard paths",
 		inFiles:                                []string{filepath.Join(datapath, "openconfig-withlist.yang")},
 		inPreferOperationalState:               true,
@@ -472,7 +458,6 @@ func TestGeneratePathCode(t *testing.T) {
 	}, {
 		name:                                   "simple openconfig test with list in builder API",
 		inFiles:                                []string{filepath.Join(datapath, "openconfig-withlist.yang")},
-		inListBuilderKeyThreshold:              2,
 		inPreferOperationalState:               true,
 		inShortenEnumLeafNames:                 true,
 		inUseDefiningModuleForTypedefEnumNames: true,
@@ -1080,11 +1065,9 @@ func TestGeneratePathCode(t *testing.T) {
 				cg.PathStructSuffix = tt.inPathStructSuffix
 				cg.PreferOperationalState = tt.inPreferOperationalState
 				cg.ExcludeState = tt.inExcludeState
-				cg.ListBuilderKeyThreshold = tt.inListBuilderKeyThreshold
 				cg.ShortenEnumLeafNames = tt.inShortenEnumLeafNames
 				cg.UseDefiningModuleForTypedefEnumNames = tt.inUseDefiningModuleForTypedefEnumNames
 				cg.GenerateWildcardPaths = tt.inGenerateWildcardPaths
-				cg.SimplifyWildcardPaths = tt.inSimplifyWildcardPaths
 				cg.PackageName = "ocstructs"
 
 				gotCode, gotNodeDataMap, err := cg.GeneratePathCode(tt.inFiles, tt.inIncludePaths)
@@ -1283,9 +1266,8 @@ func TestGeneratePathCodeSplitModules(t *testing.T) {
 		// inFiles is the set of inputFiles for the test.
 		inFiles []string
 		// inIncludePaths is the set of paths that should be searched for imports.
-		inIncludePaths            []string
-		inTrimOCPath              bool
-		inListBuilderKeyThreshold uint
+		inIncludePaths []string
+		inTrimOCPath   bool
 		// wantStructsCodeFileDir map from package name to want source file.
 		wantStructsCodeFiles map[string]string
 	}{{
@@ -1304,9 +1286,8 @@ func TestGeneratePathCodeSplitModules(t *testing.T) {
 			"device":     "testdata/modules/oc-simple-trim/device.txt",
 		},
 	}, {
-		name:                      "oc list builder API",
-		inFiles:                   []string{filepath.Join(datapath, "openconfig-withlist.yang")},
-		inListBuilderKeyThreshold: 1,
+		name:    "oc list builder API",
+		inFiles: []string{filepath.Join(datapath, "openconfig-withlist.yang")},
 		wantStructsCodeFiles: map[string]string{
 			"openconfigwithlistpath": "testdata/modules/oc-list/list.txt",
 			"device":                 "testdata/modules/oc-list/device.txt",
@@ -1335,7 +1316,6 @@ func TestGeneratePathCodeSplitModules(t *testing.T) {
 				cg.SplitByModule = true
 				cg.BaseImportPath = "example.com"
 				cg.TrimOCPackage = tt.inTrimOCPath
-				cg.ListBuilderKeyThreshold = tt.inListBuilderKeyThreshold
 
 				gotCode, _, err := cg.GeneratePathCode(tt.inFiles, tt.inIncludePaths)
 				if err != nil {
@@ -2206,122 +2186,6 @@ func (n *RootPath) List(Key1 string, Key2 oc.Binary, UnionKey oc.RootElementModu
 }
 `
 
-	wantListMethodsWildcardCommon = `
-// ListAnyKey2AnyUnionKey (list): 
-// 	Defining module:      "root-module"
-// 	Instantiating module: "root-module"
-// 	Path from parent:     "list-container/list"
-// 	Path from root:       "/list-container/list"
-//
-// 	Key1: string
-// 	Key2 (wildcarded): oc.Binary
-// 	UnionKey (wildcarded): [oc.UnionString, oc.Binary]
-func (n *RootPath) ListAnyKey2AnyUnionKey(Key1 string) *ListPathAny {
-	return &ListPathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"list-container", "list"},
-			map[string]interface{}{"key1": Key1, "key2": "*", "union-key": "*"},
-			n,
-		),
-	}
-}
-
-// ListAnyKey1AnyUnionKey (list): 
-// 	Defining module:      "root-module"
-// 	Instantiating module: "root-module"
-// 	Path from parent:     "list-container/list"
-// 	Path from root:       "/list-container/list"
-//
-// 	Key1 (wildcarded): string
-// 	Key2: oc.Binary
-// 	UnionKey (wildcarded): [oc.UnionString, oc.Binary]
-func (n *RootPath) ListAnyKey1AnyUnionKey(Key2 oc.Binary) *ListPathAny {
-	return &ListPathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"list-container", "list"},
-			map[string]interface{}{"key1": "*", "key2": Key2, "union-key": "*"},
-			n,
-		),
-	}
-}
-
-// ListAnyUnionKey (list): 
-// 	Defining module:      "root-module"
-// 	Instantiating module: "root-module"
-// 	Path from parent:     "list-container/list"
-// 	Path from root:       "/list-container/list"
-//
-// 	Key1: string
-// 	Key2: oc.Binary
-// 	UnionKey (wildcarded): [oc.UnionString, oc.Binary]
-func (n *RootPath) ListAnyUnionKey(Key1 string, Key2 oc.Binary) *ListPathAny {
-	return &ListPathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"list-container", "list"},
-			map[string]interface{}{"key1": Key1, "key2": Key2, "union-key": "*"},
-			n,
-		),
-	}
-}
-
-// ListAnyKey1AnyKey2 (list): 
-// 	Defining module:      "root-module"
-// 	Instantiating module: "root-module"
-// 	Path from parent:     "list-container/list"
-// 	Path from root:       "/list-container/list"
-//
-// 	Key1 (wildcarded): string
-// 	Key2 (wildcarded): oc.Binary
-// 	UnionKey: [oc.UnionString, oc.Binary]
-func (n *RootPath) ListAnyKey1AnyKey2(UnionKey oc.RootElementModule_List_UnionKey_Union) *ListPathAny {
-	return &ListPathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"list-container", "list"},
-			map[string]interface{}{"key1": "*", "key2": "*", "union-key": UnionKey},
-			n,
-		),
-	}
-}
-
-// ListAnyKey2 (list): 
-// 	Defining module:      "root-module"
-// 	Instantiating module: "root-module"
-// 	Path from parent:     "list-container/list"
-// 	Path from root:       "/list-container/list"
-//
-// 	Key1: string
-// 	Key2 (wildcarded): oc.Binary
-// 	UnionKey: [oc.UnionString, oc.Binary]
-func (n *RootPath) ListAnyKey2(Key1 string, UnionKey oc.RootElementModule_List_UnionKey_Union) *ListPathAny {
-	return &ListPathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"list-container", "list"},
-			map[string]interface{}{"key1": Key1, "key2": "*", "union-key": UnionKey},
-			n,
-		),
-	}
-}
-
-// ListAnyKey1 (list): 
-// 	Defining module:      "root-module"
-// 	Instantiating module: "root-module"
-// 	Path from parent:     "list-container/list"
-// 	Path from root:       "/list-container/list"
-//
-// 	Key1 (wildcarded): string
-// 	Key2: oc.Binary
-// 	UnionKey: [oc.UnionString, oc.Binary]
-func (n *RootPath) ListAnyKey1(Key2 oc.Binary, UnionKey oc.RootElementModule_List_UnionKey_Union) *ListPathAny {
-	return &ListPathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"list-container", "list"},
-			map[string]interface{}{"key1": "*", "key2": Key2, "union-key": UnionKey},
-			n,
-		),
-	}
-}
-`
-
 	// wantListMethods is the expected child constructor methods for the test list node.
 	wantListMethods = `
 // ListAny (list): 
@@ -2342,30 +2206,22 @@ func (n *RootPath) ListAny() *ListPathAny {
 		),
 	}
 }
-` + wantListMethodsWildcardCommon + wantListMethodsNonWildcard
 
-	// wantListMethodsSimplified is the expected child constructor methods for
-	// the test list node when SimplifyWildcardPaths=true.
-	wantListMethodsSimplified = `
-// ListAny (list): 
-// 	Defining module:      "root-module"
-// 	Instantiating module: "root-module"
-// 	Path from parent:     "list-container/list"
-// 	Path from root:       "/list-container/list"
-//
-// 	Key1 (wildcarded): string
-// 	Key2 (wildcarded): oc.Binary
-// 	UnionKey (wildcarded): [oc.UnionString, oc.Binary]
-func (n *RootPath) ListAny() *ListPathAny {
-	return &ListPathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"list-container", "list"},
-			map[string]interface{}{},
-			n,
-		),
-	}
+func (n *ListPathAny) WithKey1(Key1 string) *ListPathAny {
+	ygnmi.ModifyKey(n.NodePath, "key1", Key1)
+	return n
 }
-` + wantListMethodsWildcardCommon + wantListMethodsNonWildcard
+
+func (n *ListPathAny) WithKey2(Key2 oc.Binary) *ListPathAny {
+	ygnmi.ModifyKey(n.NodePath, "key2", Key2)
+	return n
+}
+
+func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_Union) *ListPathAny {
+	ygnmi.ModifyKey(n.NodePath, "union-key", UnionKey)
+	return n
+}
+` + wantListMethodsNonWildcard
 
 	// wantNonListMethods is the expected child constructor methods for
 	// non-list elements from the root.
@@ -2496,14 +2352,13 @@ func TestGenerateDirectorySnippet(t *testing.T) {
 	directories := getIR().Directories
 
 	tests := []struct {
-		name                      string
-		inDirectory               *ygen.ParsedDirectory
-		inListBuilderKeyThreshold uint
-		inPathStructSuffix        string
-		inSplitByModule           bool
-		inPackageName             string
-		inPackageSuffix           string
-		inUnifiedPath             bool
+		name               string
+		inDirectory        *ygen.ParsedDirectory
+		inPathStructSuffix string
+		inSplitByModule    bool
+		inPackageName      string
+		inPackageSuffix    string
+		inUnifiedPath      bool
 		// want may be omitted to skip testing.
 		want []GoPathStructCodeSnippet
 		// wantNoWildcard may be omitted to skip testing.
@@ -3061,13 +2916,12 @@ func (n *RootPath) ListWithState(Key float64) *rootmodulepath.ListWithStatePath 
 `,
 		}},
 	}, {
-		name:                      "fakeroot split by modules and builder API",
-		inDirectory:               directories["/root"],
-		inPathStructSuffix:        "Path",
-		inSplitByModule:           true,
-		inPackageName:             "device",
-		inPackageSuffix:           "path",
-		inListBuilderKeyThreshold: 1,
+		name:               "fakeroot split by modules and builder API",
+		inDirectory:        directories["/root"],
+		inPathStructSuffix: "Path",
+		inSplitByModule:    true,
+		inPackageName:      "device",
+		inPackageSuffix:    "path",
 		want: []GoPathStructCodeSnippet{{
 			PathStructName: "LeafPath",
 			StructBase: `
@@ -3114,11 +2968,31 @@ func (n *RootPath) ListAny() *rootmodulepath.ListPathAny {
 	}
 }
 
+func (n *RootPath) List(Key1 string, Key2 oc.Binary, UnionKey oc.RootElementModule_List_UnionKey_Union) *rootmodulepath.ListPath {
+	return &rootmodulepath.ListPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"list-container", "list"},
+			map[string]interface{}{"key1": Key1, "key2": Key2, "union-key": UnionKey},
+			n,
+		),
+	}
+}
+
 func (n *RootPath) ListWithStateAny() *rootmodulepath.ListWithStatePathAny {
 	return &rootmodulepath.ListWithStatePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": "*"},
+			n,
+		),
+	}
+}
+
+func (n *RootPath) ListWithState(Key float64) *rootmodulepath.ListWithStatePath {
+	return &rootmodulepath.ListWithStatePath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"list-container-with-state", "list-with-state"},
+			map[string]interface{}{"key": Key},
 			n,
 		),
 	}
@@ -3145,11 +3019,6 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 	ygnmi.ModifyKey(n.NodePath, "union-key", UnionKey)
 	return n
 }
-
-func (n *ListWithStatePathAny) WithKey(Key float64) *ListWithStatePathAny {
-	ygnmi.ModifyKey(n.NodePath, "key", Key)
-	return n
-}
 `,
 			Package:         "rootmodulepath",
 			ExtraGeneration: "",
@@ -3159,7 +3028,7 @@ func (n *ListWithStatePathAny) WithKey(Key float64) *ListWithStatePathAny {
 	for _, tt := range tests {
 		if tt.want != nil {
 			t.Run(tt.name, func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, "oc.", tt.inPathStructSuffix, tt.inListBuilderKeyThreshold, true, false, tt.inSplitByModule, false, tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, "oc.", tt.inPathStructSuffix, true, tt.inSplitByModule, false, tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}
@@ -3175,7 +3044,7 @@ func (n *ListWithStatePathAny) WithKey(Key float64) *ListWithStatePathAny {
 
 		if tt.wantNoWildcard != nil {
 			t.Run(tt.name+" no wildcard", func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, "oc.", tt.inPathStructSuffix, tt.inListBuilderKeyThreshold, false, false, tt.inSplitByModule, false, tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, "oc.", tt.inPathStructSuffix, false, tt.inSplitByModule, false, tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}
@@ -3195,19 +3064,17 @@ func TestGenerateChildConstructor(t *testing.T) {
 	directories := getIR().Directories
 
 	tests := []struct {
-		name                      string
-		inDirectory               *ygen.ParsedDirectory
-		inDirectories             map[string]*ygen.ParsedDirectory
-		inFieldName               string
-		inUniqueFieldName         string
-		inListBuilderKeyThreshold uint
-		inPathStructSuffix        string
-		inGenerateWildcardPaths   bool
-		inSimplifyWildcardPaths   bool
-		inUnifiedPaths            bool
-		inChildAccessor           string
-		testMethodDocComment      bool
-		wantMethod                string
+		name                    string
+		inDirectory             *ygen.ParsedDirectory
+		inDirectories           map[string]*ygen.ParsedDirectory
+		inFieldName             string
+		inUniqueFieldName       string
+		inPathStructSuffix      string
+		inGenerateWildcardPaths bool
+		inUnifiedPaths          bool
+		inChildAccessor         string
+		testMethodDocComment    bool
+		wantMethod              string
 		// testMethodDocComment determines whether the doc comments for methods are tested.
 		wantListBuilderAPI string
 	}{{
@@ -3397,53 +3264,29 @@ func (n *RootPath) ListWithState(Key float64) *ListWithStatePath {
 }
 `,
 	}, {
-		name:                    "root-level list methods",
+		name:                    "root-level list methods over key threshold -- should use builder API",
 		inDirectory:             directories["/root"],
 		inDirectories:           directories,
 		inFieldName:             "list",
 		inUniqueFieldName:       "List",
 		inPathStructSuffix:      "Path",
 		inGenerateWildcardPaths: true,
-		testMethodDocComment:    true,
-		wantMethod:              wantListMethods,
-	}, {
-		name:                      "root-level list methods with builder API threshold over the number of keys",
-		inDirectory:               directories["/root"],
-		inDirectories:             directories,
-		inFieldName:               "list",
-		inUniqueFieldName:         "List",
-		inListBuilderKeyThreshold: 4,
-		inPathStructSuffix:        "Path",
-		inGenerateWildcardPaths:   true,
-		testMethodDocComment:      true,
-		wantMethod:                wantListMethods,
-	}, {
-		name:                      "root-level list methods with builder API threshold over the number of keys, inSimplifyWildcardPaths=true",
-		inDirectory:               directories["/root"],
-		inDirectories:             directories,
-		inFieldName:               "list",
-		inUniqueFieldName:         "List",
-		inListBuilderKeyThreshold: 4,
-		inPathStructSuffix:        "Path",
-		inGenerateWildcardPaths:   true,
-		inSimplifyWildcardPaths:   true,
-		testMethodDocComment:      true,
-		wantMethod:                wantListMethodsSimplified,
-	}, {
-		name:                      "root-level list methods over key threshold -- should use builder API",
-		inDirectory:               directories["/root"],
-		inDirectories:             directories,
-		inFieldName:               "list",
-		inUniqueFieldName:         "List",
-		inListBuilderKeyThreshold: 3,
-		inPathStructSuffix:        "Path",
-		inGenerateWildcardPaths:   true,
 		wantMethod: `
 func (n *RootPath) ListAny() *ListPathAny {
 	return &ListPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": "*", "key2": "*", "union-key": "*"},
+			n,
+		),
+	}
+}
+
+func (n *RootPath) List(Key1 string, Key2 oc.Binary, UnionKey oc.RootElementModule_List_UnionKey_Union) *ListPath {
+	return &ListPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"list-container", "list"},
+			map[string]interface{}{"key1": Key1, "key2": Key2, "union-key": UnionKey},
 			n,
 		),
 	}
@@ -3477,7 +3320,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 		t.Run(tt.name, func(t *testing.T) {
 			var methodBuf strings.Builder
 			var builderBuf strings.Builder
-			if errs := generateChildConstructors(&methodBuf, &builderBuf, tt.inDirectory, tt.inFieldName, tt.inUniqueFieldName, tt.inDirectories, "oc.", tt.inPathStructSuffix, tt.inListBuilderKeyThreshold, tt.inGenerateWildcardPaths, tt.inSimplifyWildcardPaths, tt.inChildAccessor, tt.inUnifiedPaths); errs != nil {
+			if errs := generateChildConstructors(&methodBuf, &builderBuf, tt.inDirectory, tt.inFieldName, tt.inUniqueFieldName, tt.inDirectories, "oc.", tt.inPathStructSuffix, tt.inGenerateWildcardPaths, tt.inChildAccessor, tt.inUnifiedPaths); errs != nil {
 				t.Fatal(errs)
 			}
 
@@ -3688,39 +3531,6 @@ func TestMakeKeyParams(t *testing.T) {
 
 			if diff := errdiff.Check(err, tt.wantErrSubstring); diff != "" {
 				t.Errorf("func makeKeyParams, %v", diff)
-			}
-		})
-	}
-}
-
-func TestCombinations(t *testing.T) {
-	tests := []struct {
-		name string
-		in   int
-		want [][]int
-	}{{
-		name: "n = 0",
-		in:   0,
-		want: [][]int{{}},
-	}, {
-		name: "n = 1",
-		in:   1,
-		want: [][]int{{}, {0}},
-	}, {
-		name: "n = 2",
-		in:   2,
-		want: [][]int{{}, {0}, {1}, {0, 1}},
-	}, {
-		name: "n = 3",
-		in:   3,
-		want: [][]int{{}, {0}, {1}, {0, 1}, {2}, {0, 2}, {1, 2}, {0, 1, 2}},
-	}}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := combinations(tt.in)
-			if diff := cmp.Diff(tt.want, got); diff != "" {
-				t.Errorf("(-want, +got):\n%s", diff)
 			}
 		})
 	}
