@@ -182,8 +182,6 @@ func New() *DevicePath {
 // 	Instantiating module: "enum-module"
 // 	Path from parent:     "a-lists/a-list"
 // 	Path from root:       "/a-lists/a-list"
-//
-// 	Value (wildcarded): [UnionUint32, E_EnumTypes_Td_Enum]
 func (n *DevicePath) AListAny() *AListPathAny {
 	return &AListPathAny{
 		NodePath: ygnmi.NewNodePath(
@@ -216,8 +214,6 @@ func (n *DevicePath) AList(Value AList_Value_Union) *AListPath {
 // 	Instantiating module: "enum-module"
 // 	Path from parent:     "b-lists/b-list"
 // 	Path from root:       "/b-lists/b-list"
-//
-// 	Value (wildcarded): [UnionUint32, E_EnumTypes_Td_Enum]
 func (n *DevicePath) BListAny() *BListPathAny {
 	return &BListPathAny{
 		NodePath: ygnmi.NewNodePath(

@@ -57,9 +57,6 @@ type ModelPathAny struct {
 // 	Instantiating module: "openconfig-withlist"
 // 	Path from parent:     "b/multi-key"
 // 	Path from root:       "/model/b/multi-key"
-//
-// 	Key1 (wildcarded): uint32
-// 	Key2 (wildcarded): uint64
 func (n *ModelPath) MultiKeyAny() *Model_MultiKeyPathAny {
 	return &Model_MultiKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
@@ -75,9 +72,6 @@ func (n *ModelPath) MultiKeyAny() *Model_MultiKeyPathAny {
 // 	Instantiating module: "openconfig-withlist"
 // 	Path from parent:     "b/multi-key"
 // 	Path from root:       "/model/b/multi-key"
-//
-// 	Key1 (wildcarded): uint32
-// 	Key2 (wildcarded): uint64
 func (n *ModelPathAny) MultiKeyAny() *Model_MultiKeyPathAny {
 	return &Model_MultiKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
@@ -88,76 +82,18 @@ func (n *ModelPathAny) MultiKeyAny() *Model_MultiKeyPathAny {
 	}
 }
 
-// MultiKeyAnyKey2 (list): 
-// 	Defining module:      "openconfig-withlist"
-// 	Instantiating module: "openconfig-withlist"
-// 	Path from parent:     "b/multi-key"
-// 	Path from root:       "/model/b/multi-key"
-//
-// 	Key1: uint32
-// 	Key2 (wildcarded): uint64
-func (n *ModelPath) MultiKeyAnyKey2(Key1 uint32) *Model_MultiKeyPathAny {
-	return &Model_MultiKeyPathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"b", "multi-key"},
-			map[string]interface{}{"key1": Key1, "key2": "*"},
-			n,
-		),
-	}
+// WithKey1 sets Model_MultiKeyPathAny's key "key1" to the specified value.
+// Key1: uint32
+func (n *Model_MultiKeyPathAny) WithKey1(Key1 uint32) *Model_MultiKeyPathAny {
+	ygnmi.ModifyKey(n.NodePath, "key1", Key1)
+	return n
 }
 
-// MultiKeyAnyKey2 (list): 
-// 	Defining module:      "openconfig-withlist"
-// 	Instantiating module: "openconfig-withlist"
-// 	Path from parent:     "b/multi-key"
-// 	Path from root:       "/model/b/multi-key"
-//
-// 	Key1: uint32
-// 	Key2 (wildcarded): uint64
-func (n *ModelPathAny) MultiKeyAnyKey2(Key1 uint32) *Model_MultiKeyPathAny {
-	return &Model_MultiKeyPathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"b", "multi-key"},
-			map[string]interface{}{"key1": Key1, "key2": "*"},
-			n,
-		),
-	}
-}
-
-// MultiKeyAnyKey1 (list): 
-// 	Defining module:      "openconfig-withlist"
-// 	Instantiating module: "openconfig-withlist"
-// 	Path from parent:     "b/multi-key"
-// 	Path from root:       "/model/b/multi-key"
-//
-// 	Key1 (wildcarded): uint32
-// 	Key2: uint64
-func (n *ModelPath) MultiKeyAnyKey1(Key2 uint64) *Model_MultiKeyPathAny {
-	return &Model_MultiKeyPathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"b", "multi-key"},
-			map[string]interface{}{"key1": "*", "key2": Key2},
-			n,
-		),
-	}
-}
-
-// MultiKeyAnyKey1 (list): 
-// 	Defining module:      "openconfig-withlist"
-// 	Instantiating module: "openconfig-withlist"
-// 	Path from parent:     "b/multi-key"
-// 	Path from root:       "/model/b/multi-key"
-//
-// 	Key1 (wildcarded): uint32
-// 	Key2: uint64
-func (n *ModelPathAny) MultiKeyAnyKey1(Key2 uint64) *Model_MultiKeyPathAny {
-	return &Model_MultiKeyPathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"b", "multi-key"},
-			map[string]interface{}{"key1": "*", "key2": Key2},
-			n,
-		),
-	}
+// WithKey2 sets Model_MultiKeyPathAny's key "key2" to the specified value.
+// Key2: uint64
+func (n *Model_MultiKeyPathAny) WithKey2(Key2 uint64) *Model_MultiKeyPathAny {
+	ygnmi.ModifyKey(n.NodePath, "key2", Key2)
+	return n
 }
 
 // MultiKey (list): 
@@ -201,8 +137,6 @@ func (n *ModelPathAny) MultiKey(Key1 uint32, Key2 uint64) *Model_MultiKeyPathAny
 // 	Instantiating module: "openconfig-withlist"
 // 	Path from parent:     "a/single-key"
 // 	Path from root:       "/model/a/single-key"
-//
-// 	Key (wildcarded): string
 func (n *ModelPath) SingleKeyAny() *Model_SingleKeyPathAny {
 	return &Model_SingleKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
@@ -218,8 +152,6 @@ func (n *ModelPath) SingleKeyAny() *Model_SingleKeyPathAny {
 // 	Instantiating module: "openconfig-withlist"
 // 	Path from parent:     "a/single-key"
 // 	Path from root:       "/model/a/single-key"
-//
-// 	Key (wildcarded): string
 func (n *ModelPathAny) SingleKeyAny() *Model_SingleKeyPathAny {
 	return &Model_SingleKeyPathAny{
 		NodePath: ygnmi.NewNodePath(

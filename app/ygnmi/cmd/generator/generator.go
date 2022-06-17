@@ -101,16 +101,14 @@ func generate(cmd *cobra.Command, args []string) error {
 		YANGParseOptions: yang.Options{
 			IgnoreSubmoduleCircularDependencies: false,
 		},
-		GeneratingBinary:        version,
-		ListBuilderKeyThreshold: 2,
-		GenerateWildcardPaths:   true,
-		SimplifyWildcardPaths:   false,
-		TrimOCPackage:           true,
-		SplitByModule:           true,
-		BaseImportPath:          viper.GetString("base_import_path"),
-		PackageSuffix:           "",
-		UnifyPathStructs:        true,
-		ExtraGenerators:         []pathgen.Generator{pathgen.GNMIGenerator},
+		GeneratingBinary:      version,
+		GenerateWildcardPaths: true,
+		TrimOCPackage:         true,
+		SplitByModule:         true,
+		BaseImportPath:        viper.GetString("base_import_path"),
+		PackageSuffix:         "",
+		UnifyPathStructs:      true,
+		ExtraGenerators:       []pathgen.Generator{pathgen.GNMIGenerator},
 	}
 
 	pathCode, _, errs := pcg.GeneratePathCode(args, viper.GetStringSlice("paths"))

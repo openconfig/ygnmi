@@ -32,8 +32,6 @@ type BGPPathAny struct {
 // 	Instantiating module: "openconfig-camelcase"
 // 	Path from parent:     "neighbors/neighbor"
 // 	Path from root:       "/bgp/neighbors/neighbor"
-//
-// 	PeerIP (wildcarded): string
 func (n *BGPPath) NeighborAny() *BGP_NeighborPathAny {
 	return &BGP_NeighborPathAny{
 		NodePath: ygnmi.NewNodePath(
@@ -49,8 +47,6 @@ func (n *BGPPath) NeighborAny() *BGP_NeighborPathAny {
 // 	Instantiating module: "openconfig-camelcase"
 // 	Path from parent:     "neighbors/neighbor"
 // 	Path from root:       "/bgp/neighbors/neighbor"
-//
-// 	PeerIP (wildcarded): string
 func (n *BGPPathAny) NeighborAny() *BGP_NeighborPathAny {
 	return &BGP_NeighborPathAny{
 		NodePath: ygnmi.NewNodePath(
