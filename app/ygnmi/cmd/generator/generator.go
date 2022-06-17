@@ -48,7 +48,7 @@ func New() *cobra.Command {
 	generator.Flags().String("ygnmi_path", "github.com/openconfig/ygnmi/ygnmi", "The import path to use for ygnmi.")
 	generator.Flags().String("ytypes_path", "github.com/openconfig/ygot/ytypes", "The import path to use for ytypes.")
 	generator.Flags().String("goyang_path", "github.com/openconfig/goyang/pkg/yang", "The import path to use for goyang.")
-	generator.Flags().String("base_package_path", "", "This needs to be set to the import path of the output_dir.")
+	generator.Flags().String("base_package_path", "", "This needs to be set to the package path (module name + directories relative to go.mod file) of the output_dir.")
 	generator.Flags().String("trim_prefix", "", "A prefix (if any) to trim from generated package names and enums")
 	generator.Flags().StringSlice("paths", nil, "Comma-separated list of paths to be recursively searched for included modules or submodules within the defined YANG modules.")
 	generator.Flags().StringSlice("exclude_modules", nil, "Comma-separated YANG modules to exclude from code generation.")
