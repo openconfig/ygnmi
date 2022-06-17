@@ -1192,7 +1192,8 @@ func generateChildConstructorsForListBuilderFormat(methodBuf *strings.Builder, b
 		}
 	}
 
-	// Skip key builders for list with single key.
+	// A list with a single key doesn't need key builder methods because specifying
+	// all keys or no keys are the only ways to construct its keys.
 	if keyN == 1 {
 		return errors
 	}
@@ -1224,10 +1225,7 @@ func generateChildConstructorsForListBuilderFormat(methodBuf *strings.Builder, b
 }
 
 // generateChildConstructorsForList writes into methodBuf the child constructor
-// method snippets for the list represented by the list keys. fieldData contains the
-// childConstructor template output information for if the node were a
-// container (which contains a subset of the basic information required for
-// the list constructor methods).
+// for a list field, where all input keys are parameters to the constructor.
 func generateChildConstructorsForList(methodBuf *strings.Builder, keys map[string]*ygen.ListKey, keyNames []string, fieldData goPathFieldData, isUnderFakeRoot, generateWildcardPaths bool, schemaStructPkgAccessor string) []error {
 	var errors []error
 	// List of function parameters as would appear in the method definition.
