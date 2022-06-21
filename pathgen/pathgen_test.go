@@ -1267,7 +1267,7 @@ func TestGeneratePathCodeSplitModules(t *testing.T) {
 		inFiles []string
 		// inIncludePaths is the set of paths that should be searched for imports.
 		inIncludePaths []string
-		inTrimOCPath   bool
+		inTrimPrefix   string
 		// wantStructsCodeFileDir map from package name to want source file.
 		wantStructsCodeFiles map[string]string
 	}{{
@@ -1280,7 +1280,7 @@ func TestGeneratePathCodeSplitModules(t *testing.T) {
 	}, {
 		name:         "oc simple and trim",
 		inFiles:      []string{filepath.Join(datapath, "openconfig-simple.yang")},
-		inTrimOCPath: true,
+		inTrimPrefix: "openconfig",
 		wantStructsCodeFiles: map[string]string{
 			"simplepath": "testdata/modules/oc-simple-trim/simple.txt",
 			"device":     "testdata/modules/oc-simple-trim/device.txt",
@@ -1314,8 +1314,8 @@ func TestGeneratePathCodeSplitModules(t *testing.T) {
 				cg.PreferOperationalState = true
 				cg.GenerateWildcardPaths = true
 				cg.SplitByModule = true
-				cg.BaseImportPath = "example.com"
-				cg.TrimOCPackage = tt.inTrimOCPath
+				cg.BasePackagePath = "example.com"
+				cg.TrimPackageModulePrefix = tt.inTrimPrefix
 
 				gotCode, _, err := cg.GeneratePathCode(tt.inFiles, tt.inIncludePaths)
 				if err != nil {
@@ -2101,7 +2101,7 @@ func TestGetNodeDataMap(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, gotErrs := getNodeDataMap(tt.inIR, tt.inFakeRootName, tt.inSchemaStructPkgAccessor, tt.inPathStructSuffix, tt.inPackageName, tt.inPackageSuffix, tt.inSplitByModule, false)
+			got, gotErrs := getNodeDataMap(tt.inIR, tt.inFakeRootName, tt.inSchemaStructPkgAccessor, tt.inPathStructSuffix, tt.inPackageName, tt.inPackageSuffix, tt.inSplitByModule, "")
 			// TODO(wenbli): Enhance gNMI's errdiff with checking a slice of substrings and use here.
 			var gotErrStrs []string
 			for _, err := range gotErrs {
@@ -2327,8 +2327,8 @@ type RootPath struct {
 	*ygnmi.DeviceRootBase
 }
 
-// New returns a new path object from which YANG paths can be constructed.
-func New() *RootPath {
+// Root returns a root path object from which YANG paths can be constructed.
+func Root() *RootPath {
 	return &RootPath{ygnmi.NewDeviceRootBase()}
 }
 `
@@ -2341,8 +2341,8 @@ type RootPath struct {
 	*ygnmi.DeviceRootBase
 }
 
-// New returns a new path object from which YANG paths can be constructed.
-func New() *RootPath {
+// Root returns a root path object from which YANG paths can be constructed.
+func Root() *RootPath {
 	return &RootPath{ygnmi.NewDeviceRootBase()}
 }
 `
@@ -3028,7 +3028,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 	for _, tt := range tests {
 		if tt.want != nil {
 			t.Run(tt.name, func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, "oc.", tt.inPathStructSuffix, true, tt.inSplitByModule, false, tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, "oc.", tt.inPathStructSuffix, true, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}
@@ -3044,7 +3044,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 
 		if tt.wantNoWildcard != nil {
 			t.Run(tt.name+" no wildcard", func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, "oc.", tt.inPathStructSuffix, false, tt.inSplitByModule, false, tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, "oc.", tt.inPathStructSuffix, false, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}

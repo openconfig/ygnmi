@@ -202,8 +202,8 @@ type DevicePath struct {
 	*ygnmi.DeviceRootBase
 }
 
-// New returns a new path object from which YANG paths can be constructed.
-func New() *DevicePath {
+// Root returns a root path object from which YANG paths can be constructed.
+func Root() *DevicePath {
 	return &DevicePath{ygnmi.NewDeviceRootBase()}
 }
 

@@ -21,7 +21,7 @@ import (
 	"testing"
 
 	"github.com/openconfig/ygnmi/internal/exampleoc"
-	"github.com/openconfig/ygnmi/internal/exampleoc/root"
+	"github.com/openconfig/ygnmi/internal/exampleoc/exampleocpath"
 	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygnmi/ygnmi"
 	"google.golang.org/grpc"
@@ -88,7 +88,7 @@ func BenchmarkGet(b *testing.B) {
 
 	b.Run("deeply nested leaf", func(b *testing.B) {
 		ctx := context.Background()
-		q := root.New().A().B().C().D().E().F().G().H().I().J().K().L().M().Foo().State()
+		q := exampleocpath.Root().A().B().C().D().E().F().G().H().I().J().K().L().M().Foo().State()
 		setUpdate(testutil.GNMIPath(b, "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"), &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "sample"}})
 		var got string
 		for i := 0; i < b.N; i++ {
@@ -101,7 +101,7 @@ func BenchmarkGet(b *testing.B) {
 	})
 	b.Run("leaf update into root", func(b *testing.B) {
 		ctx := context.Background()
-		q := root.New().State()
+		q := exampleocpath.Root().State()
 		setUpdate(testutil.GNMIPath(b, "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"), &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "sample"}})
 		var got *exampleoc.Root
 		for i := 0; i < b.N; i++ {
@@ -114,7 +114,7 @@ func BenchmarkGet(b *testing.B) {
 	})
 	b.Run("list", func(b *testing.B) {
 		ctx := context.Background()
-		q := root.New().Model().SingleKeyAny().State()
+		q := exampleocpath.Root().Model().SingleKeyAny().State()
 		setUpdate(testutil.GNMIPath(b, "/model/a/single-key[key=\"foo\"]/state/value"), &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 1}})
 		var got []*exampleoc.Model_SingleKey
 		for i := 0; i < b.N; i++ {
@@ -160,7 +160,7 @@ func BenchmarkWatch(b *testing.B) {
 
 	b.Run("deeply nested leaf", func(b *testing.B) {
 		ctx := context.Background()
-		q := root.New().A().B().C().D().E().F().G().H().I().J().K().L().M().Foo().State()
+		q := exampleocpath.Root().A().B().C().D().E().F().G().H().I().J().K().L().M().Foo().State()
 		setUpdate(testutil.GNMIPath(b, "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"), &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "sample"}})
 		var got *ygnmi.Value[string]
 		for i := 0; i < b.N; i++ {
@@ -175,7 +175,7 @@ func BenchmarkWatch(b *testing.B) {
 	})
 	b.Run("leaf update into root", func(b *testing.B) {
 		ctx := context.Background()
-		q := root.New().State()
+		q := exampleocpath.Root().State()
 		setUpdate(testutil.GNMIPath(b, "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"), &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "sample"}})
 		var got *ygnmi.Value[*exampleoc.Root]
 		for i := 0; i < b.N; i++ {
@@ -190,7 +190,7 @@ func BenchmarkWatch(b *testing.B) {
 	})
 	b.Run("list", func(b *testing.B) {
 		ctx := context.Background()
-		q := root.New().Model().SingleKeyAny().State()
+		q := exampleocpath.Root().Model().SingleKeyAny().State()
 		setUpdate(testutil.GNMIPath(b, "/model/a/single-key[key=\"foo\"]/state/value"), &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 1}})
 		var got *ygnmi.Value[*exampleoc.Model_SingleKey]
 		for i := 0; i < b.N; i++ {

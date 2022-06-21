@@ -171,10 +171,10 @@ type GenConfig struct {
 	GenerateWildcardPaths bool
 	// SplitByModule controls whether to generate a go package for each yang module.
 	SplitByModule bool
-	// TrimOCPackage controls whether to trim openconfig- from generated go package names.
-	TrimOCPackage bool
-	// BaseImportPath is used to create to full import path of the generated go packages.
-	BaseImportPath string
+	// TrimPackageModulePrefix is the prefix to trim from generated go package names.
+	TrimPackageModulePrefix string
+	// BasePackagePath is used to create to full import path of the generated go packages.
+	BasePackagePath string
 	// PackageString is the string to apppend to the generated Go package names.
 	PackageSuffix string
 	// UnifyPathStructs controls whether to generate both config and states in the same package.
@@ -276,7 +276,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 	}
 
 	// Get NodeDataMap for the schema.
-	nodeDataMap, es := getNodeDataMap(ir, cg.FakeRootName, schemaStructPkgAccessor, cg.PathStructSuffix, cg.PackageName, cg.PackageSuffix, cg.SplitByModule, cg.TrimOCPackage)
+	nodeDataMap, es := getNodeDataMap(ir, cg.FakeRootName, schemaStructPkgAccessor, cg.PathStructSuffix, cg.PackageName, cg.PackageSuffix, cg.SplitByModule, cg.TrimPackageModulePrefix)
 	if es != nil {
 		errs = util.AppendErrs(errs, es)
 	}
@@ -304,7 +304,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 	for _, directoryPath := range ir.OrderedDirectoryPathsByName() {
 		directory := ir.Directories[directoryPath]
 
-		structSnippet, es := generateDirectorySnippet(directory, ir.Directories, schemaStructPkgAccessor, cg.PathStructSuffix, cg.GenerateWildcardPaths, cg.SplitByModule, cg.TrimOCPackage, cg.PackageName, cg.PackageSuffix, cg.UnifyPathStructs)
+		structSnippet, es := generateDirectorySnippet(directory, ir.Directories, schemaStructPkgAccessor, cg.PathStructSuffix, cg.GenerateWildcardPaths, cg.SplitByModule, cg.TrimPackageModulePrefix, cg.PackageName, cg.PackageSuffix, cg.UnifyPathStructs)
 		if es != nil {
 			errs = util.AppendErrs(errs, es)
 		}
@@ -351,13 +351,13 @@ var packageNameReplacePattern = regexp.MustCompile("[._-]")
 // a transformed version of the module that the directory belongs to is returned.
 // If trimOCPkg is true, "openconfig-" is remove from the package name.
 // fakeRootPkgName is the name of the package that contains just the fake root path struct.
-func goPackageName(rootModuleName string, splitByModule, trimOCPkg, isFakeRoot bool, pkgName, pkgSuffix string) string {
+func goPackageName(rootModuleName string, splitByModule, isFakeRoot bool, pkgName, trimPrefix, pkgSuffix string) string {
 	if !splitByModule || isFakeRoot {
 		return pkgName
 	}
 	name := rootModuleName
-	if trimOCPkg {
-		name = strings.TrimPrefix(name, "openconfig-")
+	if trimPrefix != "" {
+		name = strings.TrimPrefix(name, trimPrefix)
 	}
 
 	name = packageNameReplacePattern.ReplaceAllString(name, "")
@@ -570,8 +570,8 @@ type {{ .TypeName }} struct {
 	*ygnmi.{{ .FakeRootBaseTypeName }}
 }
 
-// New returns a new path object from which YANG paths can be constructed.
-func New() *{{ .TypeName }} {
+// Root returns a root path object from which YANG paths can be constructed.
+func Root() *{{ .TypeName }} {
 	return &{{ .TypeName }}{ygnmi.New{{- .FakeRootBaseTypeName }}()}
 }
 `)
@@ -688,7 +688,7 @@ func mustTemplate(name, src string) *template.Template {
 // parsed information.
 // packageName, splitByModule, and trimOCPackage are used to determine
 // the generated Go package name for the generated PathStructs.
-func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStructSuffix, packageName, packageSuffix string, splitByModule, trimOCPackage bool) (NodeDataMap, util.Errors) {
+func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStructSuffix, packageName, packageSuffix string, splitByModule bool, trimPrefix string) (NodeDataMap, util.Errors) {
 	nodeDataMap := NodeDataMap{}
 	var errs util.Errors
 	for _, dir := range ir.Directories {
@@ -705,7 +705,7 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 				HasDefault:            false,
 				YANGTypeName:          "",
 				YANGPath:              "/",
-				GoPathPackageName:     goPackageName(dir.RootElementModule, splitByModule, trimOCPackage, true, packageName, packageSuffix),
+				GoPathPackageName:     goPackageName(dir.RootElementModule, splitByModule, true, packageName, trimPrefix, packageSuffix),
 				DirectoryName:         dir.Path,
 			}
 		}
@@ -760,7 +760,7 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 				HasDefault:            isLeaf && (len(field.YANGDetails.Defaults) > 0 || mType.DefaultValue != nil),
 				YANGTypeName:          yangTypeName,
 				YANGPath:              field.YANGDetails.Path,
-				GoPathPackageName:     goPackageName(field.YANGDetails.RootElementModule, splitByModule, trimOCPackage, false, packageName, packageSuffix),
+				GoPathPackageName:     goPackageName(field.YANGDetails.RootElementModule, splitByModule, false, packageName, trimPrefix, packageSuffix),
 				DirectoryName:         field.YANGDetails.Path,
 			}
 			if isLeaf {
@@ -805,7 +805,7 @@ func writeHeader(yangFiles, includePaths []string, packageName string, cg *GenCo
 	}
 	// Create an ordered list of imports to include in the header.
 	for dep := range genCode.Deps {
-		s.ExtraImports = append(s.ExtraImports, fmt.Sprintf("%s/%s", cg.BaseImportPath, dep))
+		s.ExtraImports = append(s.ExtraImports, fmt.Sprintf("%s/%s", cg.BasePackagePath, dep))
 	}
 	sort.Slice(s.ExtraImports, func(i, j int) bool { return s.ExtraImports[i] < s.ExtraImports[j] })
 
@@ -887,7 +887,7 @@ type goPathFieldData struct {
 // node, and directories is a map from path to a parsed schema node for all
 // directory nodes in the schema.
 func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[string]*ygen.ParsedDirectory, schemaStructPkgAccessor, pathStructSuffix string,
-	generateWildcardPaths, splitByModule, trimOCPkg bool, pkgName, pkgSuffix string, unified bool) ([]GoPathStructCodeSnippet, util.Errors) {
+	generateWildcardPaths, splitByModule bool, trimPrefix, pkgName, pkgSuffix string, unified bool) ([]GoPathStructCodeSnippet, util.Errors) {
 
 	var errs util.Errors
 	// structBuf is used to store the code associated with the struct defined for
@@ -929,8 +929,8 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 		// Only the fake root could be importing a child path struct from another package.
 		// If it is, add that package as a dependency and set the accessor.
 		if directory.IsFakeRoot && (field.Type == ygen.ContainerNode || field.Type == ygen.ListNode) {
-			parentPackge := goPackageName(directory.RootElementModule, splitByModule, trimOCPkg, directory.IsFakeRoot, pkgName, pkgSuffix)
-			childPackage := goPackageName(field.YANGDetails.RootElementModule, splitByModule, trimOCPkg, false, pkgName, pkgSuffix)
+			parentPackge := goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix)
+			childPackage := goPackageName(field.YANGDetails.RootElementModule, splitByModule, false, pkgName, trimPrefix, pkgSuffix)
 			if parentPackge != childPackage {
 				deps[childPackage] = true
 				childPkgAccessor = childPackage + "."
@@ -977,7 +977,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 			leafSnippet := GoPathStructCodeSnippet{
 				PathStructName: leafTypeName,
 				StructBase:     buf.String(),
-				Package:        goPackageName(directory.RootElementModule, splitByModule, trimOCPkg, directory.IsFakeRoot, pkgName, pkgSuffix),
+				Package:        goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix),
 			}
 			snippets = append(snippets, leafSnippet)
 		}
@@ -990,7 +990,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 		PathStructName:    structData.TypeName,
 		StructBase:        structBuf.String(),
 		ChildConstructors: methodBuf.String(),
-		Package:           goPackageName(directory.RootElementModule, splitByModule, trimOCPkg, directory.IsFakeRoot, pkgName, pkgSuffix),
+		Package:           goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix),
 	}
 	for dep := range deps {
 		nonLeafSnippet.Deps = append(nonLeafSnippet.Deps, dep)
