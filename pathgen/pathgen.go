@@ -171,8 +171,8 @@ type GenConfig struct {
 	GenerateWildcardPaths bool
 	// SplitByModule controls whether to generate a go package for each yang module.
 	SplitByModule bool
-	// TrimPackagePrefix is the prefix to trim from generated go package names.
-	TrimPackagePrefix string
+	// TrimPackageModulePrefix is the prefix to trim from generated go package names.
+	TrimPackageModulePrefix string
 	// BasePackagePath is used to create to full import path of the generated go packages.
 	BasePackagePath string
 	// PackageString is the string to apppend to the generated Go package names.
@@ -276,7 +276,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 	}
 
 	// Get NodeDataMap for the schema.
-	nodeDataMap, es := getNodeDataMap(ir, cg.FakeRootName, schemaStructPkgAccessor, cg.PathStructSuffix, cg.PackageName, cg.PackageSuffix, cg.SplitByModule, cg.TrimPackagePrefix)
+	nodeDataMap, es := getNodeDataMap(ir, cg.FakeRootName, schemaStructPkgAccessor, cg.PathStructSuffix, cg.PackageName, cg.PackageSuffix, cg.SplitByModule, cg.TrimPackageModulePrefix)
 	if es != nil {
 		errs = util.AppendErrs(errs, es)
 	}
@@ -304,7 +304,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 	for _, directoryPath := range ir.OrderedDirectoryPathsByName() {
 		directory := ir.Directories[directoryPath]
 
-		structSnippet, es := generateDirectorySnippet(directory, ir.Directories, schemaStructPkgAccessor, cg.PathStructSuffix, cg.GenerateWildcardPaths, cg.SplitByModule, cg.TrimPackagePrefix, cg.PackageName, cg.PackageSuffix, cg.UnifyPathStructs)
+		structSnippet, es := generateDirectorySnippet(directory, ir.Directories, schemaStructPkgAccessor, cg.PathStructSuffix, cg.GenerateWildcardPaths, cg.SplitByModule, cg.TrimPackageModulePrefix, cg.PackageName, cg.PackageSuffix, cg.UnifyPathStructs)
 		if es != nil {
 			errs = util.AppendErrs(errs, es)
 		}

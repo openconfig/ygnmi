@@ -1315,7 +1315,7 @@ func TestGeneratePathCodeSplitModules(t *testing.T) {
 				cg.GenerateWildcardPaths = true
 				cg.SplitByModule = true
 				cg.BasePackagePath = "example.com"
-				cg.TrimPackagePrefix = tt.inTrimPrefix
+				cg.TrimPackageModulePrefix = tt.inTrimPrefix
 
 				gotCode, _, err := cg.GeneratePathCode(tt.inFiles, tt.inIncludePaths)
 				if err != nil {

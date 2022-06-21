@@ -18,7 +18,7 @@ set -e
 cd "$(dirname "$0")"
 
 go run ../../app/ygnmi generator \
-  --trim_prefix=openconfig \
+  --trim_module_prefix=openconfig \
   --base_package_path=github.com/openconfig/ygnmi/internal/exampleoc \
   ../../pathgen/testdata/yang/openconfig-simple.yang \
   ../../pathgen/testdata/yang/openconfig-withlistval.yang \
