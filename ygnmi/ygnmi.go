@@ -33,10 +33,10 @@ import (
 // AnyQuery is a generic gNMI query for wildcard or non-wildcard state or config paths.
 // Supported operations: Batch.
 type AnyQuery[T any] interface {
-	// pathStruct returns to path struct used for unmarshalling and schema validation.
+	// PathStruct returns to path struct used for unmarshalling and schema validation.
 	// This path must correspond to T (the parameterized type of the interface).
-	pathStruct() PathStruct
-	// subPaths contains the paths to subscribe to, they must be descendants of pathStruct().
+	PathStruct() PathStruct
+	// subPaths contains the paths to subscribe to, they must be descendants of PathStruct().
 	subPaths() []PathStruct
 	// dirName returns the name of YANG directory schema entry.
 	// For leaves, this is the parent entry.
@@ -305,7 +305,7 @@ func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]*Va
 	if err != nil {
 		return nil, fmt.Errorf("failed to receive to data: %w", err)
 	}
-	p, err := resolvePath(q.pathStruct())
+	p, err := resolvePath(q.PathStruct())
 	if err != nil {
 		return nil, fmt.Errorf("failed to resolve path: %w", err)
 	}
@@ -359,7 +359,7 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 	w := &Watcher[T]{
 		errCh: make(chan error, 1),
 	}
-	path, err := resolvePath(q.pathStruct())
+	path, err := resolvePath(q.PathStruct())
 	if err != nil {
 		w.errCh <- err
 		return w
@@ -511,7 +511,7 @@ func BatchUpdate[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 		setVal = &val
 	}
 	sb.ops = append(sb.ops, &batchOp{
-		path: q.pathStruct(),
+		path: q.PathStruct(),
 		val:  setVal,
 		mode: updatePath,
 	})
@@ -524,7 +524,7 @@ func BatchReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 		setVal = &val
 	}
 	sb.ops = append(sb.ops, &batchOp{
-		path: q.pathStruct(),
+		path: q.PathStruct(),
 		val:  setVal,
 		mode: replacePath,
 	})
@@ -533,7 +533,7 @@ func BatchReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 // BatchDelete stores an update operation in the SetBatch.
 func BatchDelete[T any](sb *SetBatch, q ConfigQuery[T]) {
 	sb.ops = append(sb.ops, &batchOp{
-		path: q.pathStruct(),
+		path: q.PathStruct(),
 		mode: deletePath,
 	})
 }
