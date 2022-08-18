@@ -82,7 +82,6 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 // the data is returned as-is and the second return value is true. If Delete paths are present in
 // the update, they are appended to the given data before the Update values. If deletesExpected
 // is false, however, any deletes received will cause an error.
-//nolint:deadcode // TODO(DanG100) remove this once this func is used
 func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bool) ([]*DataPoint, bool, error) {
 	res, err := sub.Recv()
 	if err != nil {
@@ -230,7 +229,7 @@ func receiveStream[T any](sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-ch
 
 // set configures the target at the query path.
 func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, op setOperation) (*gpb.SetResponse, *gpb.Path, error) {
-	path, err := resolvePath(q.pathStruct())
+	path, err := resolvePath(q.PathStruct())
 	if err != nil {
 		return nil, nil, err
 	}
