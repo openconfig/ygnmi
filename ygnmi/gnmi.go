@@ -217,12 +217,12 @@ func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bo
 
 // receiveAll receives data until the context deadline is reached, or when in
 // ONCE mode, a sync response is received.
-func receiveAll(sub gpb.GNMI_SubscribeClient, deletesExpected bool, mode gpb.SubscriptionList_Mode) (data []*DataPoint, err error) {
+func receiveAll(sub gpb.GNMI_SubscribeClient, deletesExpected bool) (data []*DataPoint, err error) {
 	for {
 		var sync bool
 		data, sync, err = receive(sub, data, deletesExpected)
 		if err != nil {
-			if mode == gpb.SubscriptionList_ONCE && err == io.EOF {
+			if err == io.EOF {
 				// TODO(wenbli): It is unclear whether "subscribe ONCE stream closed without sync_response"
 				// should be an error, so tolerate both scenarios.
 				// See https://github.com/openconfig/reference/pull/156
@@ -235,7 +235,7 @@ func receiveAll(sub gpb.GNMI_SubscribeClient, deletesExpected bool, mode gpb.Sub
 			}
 			return nil, fmt.Errorf("error receiving gNMI response: %w", err)
 		}
-		if mode == gpb.SubscriptionList_ONCE && sync {
+		if sync {
 			break
 		}
 	}

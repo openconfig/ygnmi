@@ -179,7 +179,7 @@ func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T], opts ...
 	if err != nil {
 		return nil, fmt.Errorf("failed to subscribe to path: %w", err)
 	}
-	data, err := receiveAll(sub, false, gpb.SubscriptionList_ONCE)
+	data, err := receiveAll(sub, false)
 	if err != nil {
 		return nil, fmt.Errorf("failed to receive to data: %w", err)
 	}
@@ -333,7 +333,7 @@ func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], opts .
 	if err != nil {
 		return nil, fmt.Errorf("failed to subscribe to path: %w", err)
 	}
-	data, err := receiveAll(sub, false, gpb.SubscriptionList_ONCE)
+	data, err := receiveAll(sub, false)
 	if err != nil {
 		return nil, fmt.Errorf("failed to receive to data: %w", err)
 	}
