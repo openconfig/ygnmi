@@ -33,7 +33,7 @@ import (
 )
 
 // subscribe create a gNMI SubscribeClient for the given query.
-func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.SubscriptionList_Mode) (_ gpb.GNMI_SubscribeClient, rerr error) {
+func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.SubscriptionList_Mode, o *opt) (_ gpb.GNMI_SubscribeClient, rerr error) {
 	var subs []*gpb.Subscription
 	for _, path := range q.subPaths() {
 		path, err := resolvePath(path)
@@ -45,7 +45,7 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 				Elem:   path.GetElem(),
 				Origin: path.GetOrigin(),
 			},
-			Mode: gpb.SubscriptionMode_TARGET_DEFINED,
+			Mode: o.mode,
 		})
 	}
 
@@ -61,10 +61,22 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 			},
 		},
 	}
+	if o.useGet && mode != gpb.SubscriptionList_ONCE {
+		return nil, fmt.Errorf("using gnmi.Get is only valid for ONCE subscriptions")
+	}
 
-	sub, err := c.gnmiC.Subscribe(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("gNMI failed to Subscribe: %w", err)
+	var sub gpb.GNMI_SubscribeClient
+	var err error
+	if o.useGet {
+		sub = &getSubscriber{
+			client: c.gnmiC,
+			ctx:    ctx,
+		}
+	} else {
+		sub, err = c.gnmiC.Subscribe(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("gNMI failed to Subscribe: %w", err)
+		}
 	}
 	defer closer.Close(&rerr, sub.CloseSend, "error closing gNMI send stream")
 
@@ -74,6 +86,50 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 	}
 
 	return sub, nil
+}
+
+// getSubscriber is an implementation of gpb.GNMI_SubscribeClient that uses gpb.Get.
+// Send() does the Get call and Recv returns the Get response.
+type getSubscriber struct {
+	gpb.GNMI_SubscribeClient
+	client gpb.GNMIClient
+	ctx    context.Context
+	notifs []*gpb.Notification
+}
+
+func (gs *getSubscriber) Send(req *gpb.SubscribeRequest) error {
+	getReq := &gpb.GetRequest{
+		Prefix:   req.GetSubscribe().GetPrefix(),
+		Encoding: gpb.Encoding_JSON_IETF,
+		Type:     gpb.GetRequest_CONFIG,
+	}
+	for _, sub := range req.GetSubscribe().GetSubscription() {
+		getReq.Path = append(getReq.Path, sub.GetPath())
+	}
+	log.V(1).Info(prototext.Format(getReq))
+	resp, err := gs.client.Get(gs.ctx, getReq)
+	if err != nil {
+		return err
+	}
+	gs.notifs = resp.GetNotification()
+	return nil
+}
+
+func (gs *getSubscriber) Recv() (*gpb.SubscribeResponse, error) {
+	if len(gs.notifs) == 0 {
+		return nil, io.EOF
+	}
+	resp := &gpb.SubscribeResponse{
+		Response: &gpb.SubscribeResponse_Update{
+			Update: gs.notifs[0],
+		},
+	}
+	gs.notifs = gs.notifs[1:]
+	return resp, nil
+}
+
+func (gs *getSubscriber) CloseSend() error {
+	return nil
 }
 
 // receive processes a single response from the subscription stream. If an "update" response is
