@@ -158,7 +158,7 @@ func resolveOpts(opts []Option) *opt {
 }
 
 // WithUseGet creates an option to use gnmi.Get instead of gnmi.Subscribe.
-// This can only be used on Get[All] and Lookup[All].
+// This can only be used on Get, GetAll, Lookup, and LookupAll.
 func WithUseGet() Option {
 	return func(o *opt) {
 		o.useGet = true
@@ -166,7 +166,7 @@ func WithUseGet() Option {
 }
 
 // WithSubscriptionMode creates to an option to use input instead of the default (TARGET_DEFINED).
-// This can only be used on Watch[All], Collect[All], Await.
+// This option is only relevant for Watch, WatchAll, Collect, CollectAll, Await.
 func WithSubscriptionMode(mode gpb.SubscriptionMode) Option {
 	return func(o *opt) {
 		o.mode = mode

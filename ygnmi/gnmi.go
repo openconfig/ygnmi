@@ -68,9 +68,14 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 	var sub gpb.GNMI_SubscribeClient
 	var err error
 	if o.useGet {
+		dt := gpb.GetRequest_CONFIG
+		if q.isState() {
+			dt = gpb.GetRequest_STATE
+		}
 		sub = &getSubscriber{
-			client: c.gnmiC,
-			ctx:    ctx,
+			client:   c.gnmiC,
+			ctx:      ctx,
+			dataType: dt,
 		}
 	} else {
 		sub, err = c.gnmiC.Subscribe(ctx)
@@ -79,8 +84,9 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 		}
 	}
 	defer closer.Close(&rerr, sub.CloseSend, "error closing gNMI send stream")
-
-	log.V(1).Info(prototext.Format(sr))
+	if !o.useGet {
+		log.V(1).Info(prototext.Format(sr))
+	}
 	if err := sub.Send(sr); err != nil {
 		return nil, fmt.Errorf("gNMI failed to Send(%+v): %w", sr, err)
 	}
@@ -92,16 +98,17 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 // Send() does the Get call and Recv returns the Get response.
 type getSubscriber struct {
 	gpb.GNMI_SubscribeClient
-	client gpb.GNMIClient
-	ctx    context.Context
-	notifs []*gpb.Notification
+	client   gpb.GNMIClient
+	ctx      context.Context
+	notifs   []*gpb.Notification
+	dataType gpb.GetRequest_DataType
 }
 
 func (gs *getSubscriber) Send(req *gpb.SubscribeRequest) error {
 	getReq := &gpb.GetRequest{
 		Prefix:   req.GetSubscribe().GetPrefix(),
 		Encoding: gpb.Encoding_JSON_IETF,
-		Type:     gpb.GetRequest_CONFIG,
+		Type:     gs.dataType,
 	}
 	for _, sub := range req.GetSubscribe().GetSubscription() {
 		getReq.Path = append(getReq.Path, sub.GetPath())

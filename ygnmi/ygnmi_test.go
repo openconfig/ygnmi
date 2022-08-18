@@ -424,6 +424,38 @@ func TestLookup(t *testing.T) {
 			}
 		})
 	}
+	t.Run("use get", func(t *testing.T) {
+		fakeGNMI.Stub().GetResponse(&gpb.GetResponse{
+			Notification: []*gpb.Notification{{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: leafPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"foo"`)}},
+				}},
+			}},
+		})
+		wantGetRequest := &gpb.GetRequest{
+			Encoding: gpb.Encoding_JSON_IETF,
+			Type:     gpb.GetRequest_STATE,
+			Prefix:   &gpb.Path{},
+			Path:     []*gpb.Path{leafPath},
+		}
+		wantVal := (&ygnmi.Value[string]{
+			Path:      leafPath,
+			Timestamp: time.Unix(0, 100),
+		}).SetVal("foo")
+
+		got, err := ygnmi.Lookup(context.Background(), c, exampleocpath.Root().RemoteContainer().ALeaf().State(), ygnmi.WithUseGet())
+		if err != nil {
+			t.Fatalf("Lookup() returned unexpected error: %v", err)
+		}
+		if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[string]{}), cmpopts.IgnoreFields(ygnmi.Value[string]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
+			t.Errorf("Lookup() returned unexpected diff: %s", diff)
+		}
+		if diff := cmp.Diff(wantGetRequest, fakeGNMI.GetRequests()[len(fakeGNMI.GetRequests())-1], protocmp.Transform()); diff != "" {
+			t.Errorf("Lookup() GetRequest different from expected: %s", diff)
+		}
+	})
 }
 
 func TestGet(t *testing.T) {
@@ -489,6 +521,35 @@ func TestGet(t *testing.T) {
 			}
 		})
 	}
+	t.Run("use get", func(t *testing.T) {
+		fakeGNMI.Stub().GetResponse(&gpb.GetResponse{
+			Notification: []*gpb.Notification{{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: testutil.GNMIPath(t, "/remote-container/config/a-leaf"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"foo"`)}},
+				}},
+			}},
+		})
+		wantGetRequest := &gpb.GetRequest{
+			Encoding: gpb.Encoding_JSON_IETF,
+			Type:     gpb.GetRequest_CONFIG,
+			Prefix:   &gpb.Path{},
+			Path:     []*gpb.Path{testutil.GNMIPath(t, "/remote-container/config/a-leaf")},
+		}
+		wantVal := "foo"
+
+		got, err := ygnmi.Get[string](context.Background(), c, exampleocpath.Root().RemoteContainer().ALeaf().Config(), ygnmi.WithUseGet())
+		if err != nil {
+			t.Fatalf("Get() returned unexpected error: %v", err)
+		}
+		if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[string]{}), cmpopts.IgnoreFields(ygnmi.Value[string]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
+			t.Errorf("Get() returned unexpected diff: %s", diff)
+		}
+		if diff := cmp.Diff(wantGetRequest, fakeGNMI.GetRequests()[len(fakeGNMI.GetRequests())-1], protocmp.Transform()); diff != "" {
+			t.Errorf("Get() GetRequest different from expected: %s", diff)
+		}
+	})
 }
 
 func TestWatch(t *testing.T) {
