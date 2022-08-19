@@ -218,8 +218,8 @@ func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bo
 	}
 }
 
-// receiveAll receives data until the context deadline is reached, or when in
-// ONCE mode, a sync response is received.
+// receiveAll receives data until the context deadline is reached, or when a sync response is received.
+// This func is only used when receiving data from a ONCE subscription.
 func receiveAll(sub gpb.GNMI_SubscribeClient, deletesExpected bool) (data []*DataPoint, err error) {
 	for {
 		var sync bool
