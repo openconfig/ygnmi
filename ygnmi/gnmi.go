@@ -33,7 +33,7 @@ import (
 )
 
 // subscribe create a gNMI SubscribeClient for the given query.
-func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.SubscriptionList_Mode) (_ gpb.GNMI_SubscribeClient, rerr error) {
+func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.SubscriptionList_Mode, o *opt) (_ gpb.GNMI_SubscribeClient, rerr error) {
 	var subs []*gpb.Subscription
 	for _, path := range q.subPaths() {
 		path, err := resolvePath(path)
@@ -45,7 +45,7 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 				Elem:   path.GetElem(),
 				Origin: path.GetOrigin(),
 			},
-			Mode: gpb.SubscriptionMode_TARGET_DEFINED,
+			Mode: o.mode,
 		})
 	}
 
@@ -61,19 +61,85 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 			},
 		},
 	}
+	if o.useGet && mode != gpb.SubscriptionList_ONCE {
+		return nil, fmt.Errorf("using gnmi.Get is only valid for ONCE subscriptions")
+	}
 
-	sub, err := c.gnmiC.Subscribe(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("gNMI failed to Subscribe: %w", err)
+	var sub gpb.GNMI_SubscribeClient
+	var err error
+	if o.useGet {
+		dt := gpb.GetRequest_CONFIG
+		if q.isState() {
+			dt = gpb.GetRequest_STATE
+		}
+		sub = &getSubscriber{
+			client:   c.gnmiC,
+			ctx:      ctx,
+			dataType: dt,
+		}
+	} else {
+		sub, err = c.gnmiC.Subscribe(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("gNMI failed to Subscribe: %w", err)
+		}
 	}
 	defer closer.Close(&rerr, sub.CloseSend, "error closing gNMI send stream")
-
-	log.V(1).Info(prototext.Format(sr))
+	if !o.useGet {
+		log.V(1).Info(prototext.Format(sr))
+	}
 	if err := sub.Send(sr); err != nil {
 		return nil, fmt.Errorf("gNMI failed to Send(%+v): %w", sr, err)
 	}
 
 	return sub, nil
+}
+
+// getSubscriber is an implementation of gpb.GNMI_SubscribeClient that uses gpb.Get.
+// Send() does the Get call and Recv returns the Get response.
+type getSubscriber struct {
+	gpb.GNMI_SubscribeClient
+	client   gpb.GNMIClient
+	ctx      context.Context
+	notifs   []*gpb.Notification
+	dataType gpb.GetRequest_DataType
+}
+
+// Send call gnmi.Get with a request equivalent to the SubscribeRequest.
+func (gs *getSubscriber) Send(req *gpb.SubscribeRequest) error {
+	getReq := &gpb.GetRequest{
+		Prefix:   req.GetSubscribe().GetPrefix(),
+		Encoding: gpb.Encoding_JSON_IETF,
+		Type:     gs.dataType,
+	}
+	for _, sub := range req.GetSubscribe().GetSubscription() {
+		getReq.Path = append(getReq.Path, sub.GetPath())
+	}
+	log.V(1).Info(prototext.Format(getReq))
+	resp, err := gs.client.Get(gs.ctx, getReq)
+	if err != nil {
+		return err
+	}
+	gs.notifs = resp.GetNotification()
+	return nil
+}
+
+// Recv returns the result of the Get request, returning io.EOF after resonpse are read.
+func (gs *getSubscriber) Recv() (*gpb.SubscribeResponse, error) {
+	if len(gs.notifs) == 0 {
+		return nil, io.EOF
+	}
+	resp := &gpb.SubscribeResponse{
+		Response: &gpb.SubscribeResponse_Update{
+			Update: gs.notifs[0],
+		},
+	}
+	gs.notifs = gs.notifs[1:]
+	return resp, nil
+}
+
+// CloseSend is noop implementation gRPC subscribe interface.
+func (gs *getSubscriber) CloseSend() error {
+	return nil
 }
 
 // receive processes a single response from the subscription stream. If an "update" response is
@@ -152,14 +218,14 @@ func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bo
 	}
 }
 
-// receiveAll receives data until the context deadline is reached, or when in
-// ONCE mode, a sync response is received.
-func receiveAll(sub gpb.GNMI_SubscribeClient, deletesExpected bool, mode gpb.SubscriptionList_Mode) (data []*DataPoint, err error) {
+// receiveAll receives data until the context deadline is reached, or when a sync response is received.
+// This func is only used when receiving data from a ONCE subscription.
+func receiveAll(sub gpb.GNMI_SubscribeClient, deletesExpected bool) (data []*DataPoint, err error) {
 	for {
 		var sync bool
 		data, sync, err = receive(sub, data, deletesExpected)
 		if err != nil {
-			if mode == gpb.SubscriptionList_ONCE && err == io.EOF {
+			if err == io.EOF {
 				// TODO(wenbli): It is unclear whether "subscribe ONCE stream closed without sync_response"
 				// should be an error, so tolerate both scenarios.
 				// See https://github.com/openconfig/reference/pull/156
@@ -172,7 +238,7 @@ func receiveAll(sub gpb.GNMI_SubscribeClient, deletesExpected bool, mode gpb.Sub
 			}
 			return nil, fmt.Errorf("error receiving gNMI response: %w", err)
 		}
-		if mode == gpb.SubscriptionList_ONCE && sync {
+		if sync {
 			break
 		}
 	}

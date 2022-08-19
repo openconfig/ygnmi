@@ -141,13 +141,46 @@ func NewClient(c gpb.GNMIClient, opts ...ClientOption) (*Client, error) {
 	return yc, nil
 }
 
+// Option can be used modify the behavior of the gNMI requests used by the ygnmi calls (Lookup, Await, etc.).
+type Option func(*opt)
+
+type opt struct {
+	useGet bool
+	mode   gpb.SubscriptionMode
+}
+
+// resolveOpts applies all the options and returns a struct containing the result.
+func resolveOpts(opts []Option) *opt {
+	o := &opt{}
+	for _, opt := range opts {
+		opt(o)
+	}
+	return o
+}
+
+// WithUseGet creates an option to use gnmi.Get instead of gnmi.Subscribe.
+// This can only be used on Get, GetAll, Lookup, and LookupAll.
+func WithUseGet() Option {
+	return func(o *opt) {
+		o.useGet = true
+	}
+}
+
+// WithSubscriptionMode creates to an option to use input instead of the default (TARGET_DEFINED).
+// This option is only relevant for Watch, WatchAll, Collect, CollectAll, Await which are STREAM subscriptions.
+func WithSubscriptionMode(mode gpb.SubscriptionMode) Option {
+	return func(o *opt) {
+		o.mode = mode
+	}
+}
+
 // Lookup fetches the value of a SingletonQuery with a ONCE subscription.
-func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (*Value[T], error) {
-	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_ONCE)
+func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T], opts ...Option) (*Value[T], error) {
+	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_ONCE, resolveOpts(opts))
 	if err != nil {
 		return nil, fmt.Errorf("failed to subscribe to path: %w", err)
 	}
-	data, err := receiveAll(sub, false, gpb.SubscriptionList_ONCE)
+	data, err := receiveAll(sub, false)
 	if err != nil {
 		return nil, fmt.Errorf("failed to receive to data: %w", err)
 	}
@@ -174,9 +207,9 @@ var (
 // Get fetches the value of a SingletonQuery with a ONCE subscription,
 // returning an error that wraps ErrNotPresent if the value is not present.
 // Use Lookup to get metadata and tolerate non-present data.
-func Get[T any](ctx context.Context, c *Client, q SingletonQuery[T]) (T, error) {
+func Get[T any](ctx context.Context, c *Client, q SingletonQuery[T], opts ...Option) (T, error) {
 	var zero T
-	val, err := Lookup(ctx, c, q)
+	val, err := Lookup(ctx, c, q, opts...)
 	if err != nil {
 		return zero, err
 	}
@@ -210,12 +243,12 @@ func (w *Watcher[T]) Await() (*Value[T], error) {
 // or a non-nil error on failure. Watch can also be stopped by setting a deadline on or canceling the context.
 // Calling Await on the returned Watcher waits for the subscription to complete.
 // It returns the last observed value and a boolean that indicates whether that value satisfies the predicate.
-func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func(*Value[T]) error) *Watcher[T] {
+func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func(*Value[T]) error, opts ...Option) *Watcher[T] {
 	w := &Watcher[T]{
 		errCh: make(chan error, 1),
 	}
 
-	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM)
+	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM, resolveOpts(opts))
 	if err != nil {
 		w.errCh <- err
 		return w
@@ -251,13 +284,13 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func
 // blocking until a value that is deep equal to the specified val is received
 // or the context is cancelled. To wait for a generic predicate, or to make a
 // non-blocking call, use the Watch method instead.
-func Await[T any](ctx context.Context, c *Client, q SingletonQuery[T], val T) (*Value[T], error) {
+func Await[T any](ctx context.Context, c *Client, q SingletonQuery[T], val T, opts ...Option) (*Value[T], error) {
 	w := Watch(ctx, c, q, func(v *Value[T]) error {
 		if v.present && reflect.DeepEqual(v.val, val) {
 			return nil
 		}
 		return Continue
-	})
+	}, opts...)
 	return w.Await()
 }
 
@@ -277,7 +310,7 @@ func (c *Collector[T]) Await() ([]*Value[T], error) {
 
 // Collect starts an asynchronous collection of the values at the query with a STREAM subscription.
 // Calling Await on the return Collection waits until the context is cancelled and returns the collected values.
-func Collect[T any](ctx context.Context, c *Client, q SingletonQuery[T]) *Collector[T] {
+func Collect[T any](ctx context.Context, c *Client, q SingletonQuery[T], opts ...Option) *Collector[T] {
 	collect := &Collector[T]{}
 	collect.w = Watch(ctx, c, q, func(v *Value[T]) error {
 		if !q.isLeaf() {
@@ -290,18 +323,18 @@ func Collect[T any](ctx context.Context, c *Client, q SingletonQuery[T]) *Collec
 		}
 		collect.data = append(collect.data, v)
 		return Continue
-	})
+	}, opts...)
 	return collect
 }
 
 // LookupAll fetches the values of a WildcardQuery with a ONCE subscription.
 // It returns an empty list if no values are present at the path.
-func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]*Value[T], error) {
-	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_ONCE)
+func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], opts ...Option) ([]*Value[T], error) {
+	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_ONCE, resolveOpts(opts))
 	if err != nil {
 		return nil, fmt.Errorf("failed to subscribe to path: %w", err)
 	}
-	data, err := receiveAll(sub, false, gpb.SubscriptionList_ONCE)
+	data, err := receiveAll(sub, false)
 	if err != nil {
 		return nil, fmt.Errorf("failed to receive to data: %w", err)
 	}
@@ -333,8 +366,8 @@ func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]*Va
 // GetAll fetches the value of a WildcardQuery with a ONCE subscription skipping any non-present paths.
 // It returns an error that wraps ErrNotPresent if no values were received.
 // Use LookupAll to also get metadata containing the returned paths.
-func GetAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]T, error) {
-	vals, err := LookupAll(ctx, c, q)
+func GetAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], opts ...Option) ([]T, error) {
+	vals, err := LookupAll(ctx, c, q, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -355,7 +388,7 @@ func GetAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) ([]T, err
 // or a non-nil error on failure. Watch can also be stopped by setting a deadline on or canceling the context.
 // Calling Await on the returned Watcher waits for the subscription to complete.
 // It returns the last observed value and a boolean that indicates whether that value satisfies the predicate.
-func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred func(*Value[T]) error) *Watcher[T] {
+func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred func(*Value[T]) error, opts ...Option) *Watcher[T] {
 	w := &Watcher[T]{
 		errCh: make(chan error, 1),
 	}
@@ -364,7 +397,7 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 		w.errCh <- err
 		return w
 	}
-	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM)
+	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM, resolveOpts(opts))
 	if err != nil {
 		w.errCh <- err
 		return w
@@ -411,7 +444,7 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 
 // CollectAll starts an asynchronous collection of the values at the query with a STREAM subscription.
 // Calling Await on the return Collection waits until the context is cancelled to elapse and returns the collected values.
-func CollectAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) *Collector[T] {
+func CollectAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], opts ...Option) *Collector[T] {
 	collect := &Collector[T]{}
 	collect.w = WatchAll(ctx, c, q, func(v *Value[T]) error {
 		if !q.isLeaf() {
@@ -424,7 +457,7 @@ func CollectAll[T any](ctx context.Context, c *Client, q WildcardQuery[T]) *Coll
 		}
 		collect.data = append(collect.data, v)
 		return Continue
-	})
+	}, opts...)
 	return collect
 }
 

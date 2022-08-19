@@ -424,6 +424,38 @@ func TestLookup(t *testing.T) {
 			}
 		})
 	}
+	t.Run("use get", func(t *testing.T) {
+		fakeGNMI.Stub().AppendGetResponse(&gpb.GetResponse{
+			Notification: []*gpb.Notification{{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: leafPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"foo"`)}},
+				}},
+			}},
+		})
+		wantGetRequest := &gpb.GetRequest{
+			Encoding: gpb.Encoding_JSON_IETF,
+			Type:     gpb.GetRequest_STATE,
+			Prefix:   &gpb.Path{},
+			Path:     []*gpb.Path{leafPath},
+		}
+		wantVal := (&ygnmi.Value[string]{
+			Path:      leafPath,
+			Timestamp: time.Unix(0, 100),
+		}).SetVal("foo")
+
+		got, err := ygnmi.Lookup(context.Background(), c, exampleocpath.Root().RemoteContainer().ALeaf().State(), ygnmi.WithUseGet())
+		if err != nil {
+			t.Fatalf("Lookup() returned unexpected error: %v", err)
+		}
+		if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[string]{}), cmpopts.IgnoreFields(ygnmi.Value[string]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
+			t.Errorf("Lookup() returned unexpected diff: %s", diff)
+		}
+		if diff := cmp.Diff(wantGetRequest, fakeGNMI.GetRequests()[0], protocmp.Transform()); diff != "" {
+			t.Errorf("Lookup() GetRequest different from expected: %s", diff)
+		}
+	})
 }
 
 func TestGet(t *testing.T) {
@@ -489,6 +521,35 @@ func TestGet(t *testing.T) {
 			}
 		})
 	}
+	t.Run("use get", func(t *testing.T) {
+		fakeGNMI.Stub().AppendGetResponse(&gpb.GetResponse{
+			Notification: []*gpb.Notification{{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: testutil.GNMIPath(t, "/remote-container/config/a-leaf"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"foo"`)}},
+				}},
+			}},
+		})
+		wantGetRequest := &gpb.GetRequest{
+			Encoding: gpb.Encoding_JSON_IETF,
+			Type:     gpb.GetRequest_CONFIG,
+			Prefix:   &gpb.Path{},
+			Path:     []*gpb.Path{testutil.GNMIPath(t, "/remote-container/config/a-leaf")},
+		}
+		wantVal := "foo"
+
+		got, err := ygnmi.Get[string](context.Background(), c, exampleocpath.Root().RemoteContainer().ALeaf().Config(), ygnmi.WithUseGet())
+		if err != nil {
+			t.Fatalf("Get() returned unexpected error: %v", err)
+		}
+		if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[string]{}), cmpopts.IgnoreFields(ygnmi.Value[string]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
+			t.Errorf("Get() returned unexpected diff: %s", diff)
+		}
+		if diff := cmp.Diff(wantGetRequest, fakeGNMI.GetRequests()[0], protocmp.Transform()); diff != "" {
+			t.Errorf("Get() GetRequest different from expected: %s", diff)
+		}
+	})
 }
 
 func TestWatch(t *testing.T) {
@@ -505,6 +566,8 @@ func TestWatch(t *testing.T) {
 		wantLastVal          *ygnmi.Value[string]
 		wantVals             []*ygnmi.Value[string]
 		wantErr              string
+		wantMode             gpb.SubscriptionMode
+		opts                 []ygnmi.Option
 	}{{
 		desc: "single notif and pred true",
 		stub: func(s *testutil.Stubber) {
@@ -517,6 +580,30 @@ func TestWatch(t *testing.T) {
 			}).Sync()
 		},
 		dur: time.Second,
+		wantVals: []*ygnmi.Value[string]{
+			(&ygnmi.Value[string]{
+				Timestamp: startTime,
+				Path:      path,
+			}).SetVal("foo")},
+		wantSubscriptionPath: path,
+		wantLastVal: (&ygnmi.Value[string]{
+			Timestamp: startTime,
+			Path:      path,
+		}).SetVal("foo"),
+	}, {
+		desc: "single notif and pred true with custom mode",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		dur:      time.Second,
+		opts:     []ygnmi.Option{ygnmi.WithSubscriptionMode(gpb.SubscriptionMode_ON_CHANGE)},
+		wantMode: gpb.SubscriptionMode_ON_CHANGE,
 		wantVals: []*ygnmi.Value[string]{
 			(&ygnmi.Value[string]{
 				Timestamp: startTime,
@@ -642,11 +729,12 @@ func TestWatch(t *testing.T) {
 					return nil
 				}
 				return ygnmi.Continue
-			})
+			}, tt.opts...)
 			val, err := w.Await()
 			if i < len(tt.wantVals) {
 				t.Errorf("Predicate received too few values: got %d, want %d", i, len(tt.wantVals))
 			}
+			verifySubscriptionModesSent(t, fakeGNMI, tt.wantMode)
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
 				t.Fatalf("Await() returned unexpected diff: %s", diff)
 			}
@@ -886,6 +974,8 @@ func TestAwait(t *testing.T) {
 		wantSubscriptionPath *gpb.Path
 		wantVal              *ygnmi.Value[string]
 		wantErr              string
+		wantMode             gpb.SubscriptionMode
+		opts                 []ygnmi.Option
 	}{{
 		desc: "value never equal",
 		stub: func(s *testutil.Stubber) {
@@ -917,13 +1007,33 @@ func TestAwait(t *testing.T) {
 			Timestamp: startTime,
 			Path:      path,
 		}).SetVal("foo"),
+	}, {
+		desc: "success with custom mode",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		dur:                  time.Second,
+		opts:                 []ygnmi.Option{ygnmi.WithSubscriptionMode(gpb.SubscriptionMode_ON_CHANGE)},
+		wantMode:             gpb.SubscriptionMode_ON_CHANGE,
+		wantSubscriptionPath: path,
+		wantVal: (&ygnmi.Value[string]{
+			Timestamp: startTime,
+			Path:      path,
+		}).SetVal("foo"),
 	}}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
 			ctx, cancel := context.WithTimeout(context.Background(), tt.dur)
 			defer cancel()
-			val, err := ygnmi.Await(ctx, client, lq, "foo")
+			val, err := ygnmi.Await(ctx, client, lq, "foo", tt.opts...)
+			verifySubscriptionModesSent(t, fakeGNMI, tt.wantMode)
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
 				t.Fatalf("Await() returned unexpected diff: %s", diff)
 			}
@@ -1033,6 +1143,8 @@ func TestCollect(t *testing.T) {
 		wantSubscriptionPath *gpb.Path
 		wantVals             []*ygnmi.Value[string]
 		wantErr              string
+		wantMode             gpb.SubscriptionMode
+		opts                 []ygnmi.Option
 	}{{
 		desc: "no values",
 		stub: func(s *testutil.Stubber) {
@@ -1076,13 +1188,45 @@ func TestCollect(t *testing.T) {
 				Path:      path,
 			}).SetVal("bar"),
 		},
+	}, {
+		desc: "multiple values and custom mode",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+				Update: []*gpb.Update{{
+					Path: path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+				}},
+			})
+		},
+		dur:                  100 * time.Millisecond,
+		wantSubscriptionPath: path,
+		opts:                 []ygnmi.Option{ygnmi.WithSubscriptionMode(gpb.SubscriptionMode_ON_CHANGE)},
+		wantMode:             gpb.SubscriptionMode_ON_CHANGE,
+		wantErr:              "EOF",
+		wantVals: []*ygnmi.Value[string]{
+			(&ygnmi.Value[string]{
+				Timestamp: startTime,
+				Path:      path,
+			}).SetVal("foo"),
+			(&ygnmi.Value[string]{
+				Timestamp: startTime.Add(time.Millisecond),
+				Path:      path,
+			}).SetVal("bar"),
+		},
 	}}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
 			ctx, cancel := context.WithTimeout(context.Background(), tt.dur)
 			defer cancel()
-			vals, err := ygnmi.Collect(ctx, client, lq).Await()
+			vals, err := ygnmi.Collect(ctx, client, lq, tt.opts...).Await()
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
 				t.Fatalf("Await() returned unexpected diff: %s", diff)
 			}
@@ -1424,6 +1568,38 @@ func TestLookupAll(t *testing.T) {
 			}
 		})
 	}
+	t.Run("use get", func(t *testing.T) {
+		fakeGNMI.Stub().AppendGetResponse(&gpb.GetResponse{
+			Notification: []*gpb.Notification{{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: leafPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"1"`)}},
+				}},
+			}},
+		})
+		wantGetRequest := &gpb.GetRequest{
+			Encoding: gpb.Encoding_JSON_IETF,
+			Type:     gpb.GetRequest_STATE,
+			Prefix:   &gpb.Path{},
+			Path:     []*gpb.Path{leafPath},
+		}
+		wantVal := []*ygnmi.Value[int64]{(&ygnmi.Value[int64]{
+			Path:      leafPath,
+			Timestamp: time.Unix(0, 100),
+		}).SetVal(1)}
+
+		got, err := ygnmi.LookupAll(context.Background(), c, lq, ygnmi.WithUseGet())
+		if err != nil {
+			t.Fatalf("LookupAll() returned unexpected error: %v", err)
+		}
+		if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[int64]{}), cmpopts.IgnoreFields(ygnmi.Value[int64]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
+			t.Errorf("LookupAll() returned unexpected diff: %s", diff)
+		}
+		if diff := cmp.Diff(wantGetRequest, fakeGNMI.GetRequests()[0], protocmp.Transform()); diff != "" {
+			t.Errorf("LookupAll() GetRequest different from expected: %s", diff)
+		}
+	})
 }
 
 func TestGetAll(t *testing.T) {
@@ -1475,6 +1651,35 @@ func TestGetAll(t *testing.T) {
 			}
 		})
 	}
+	t.Run("use get", func(t *testing.T) {
+		fakeGNMI.Stub().AppendGetResponse(&gpb.GetResponse{
+			Notification: []*gpb.Notification{{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: leafPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"1"`)}},
+				}},
+			}},
+		})
+		wantGetRequest := &gpb.GetRequest{
+			Encoding: gpb.Encoding_JSON_IETF,
+			Type:     gpb.GetRequest_STATE,
+			Prefix:   &gpb.Path{},
+			Path:     []*gpb.Path{leafPath},
+		}
+		wantVal := []int64{1}
+
+		got, err := ygnmi.GetAll(context.Background(), c, exampleocpath.Root().Model().SingleKeyAny().Value().State(), ygnmi.WithUseGet())
+		if err != nil {
+			t.Fatalf("Get() returned unexpected error: %v", err)
+		}
+		if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[string]{}), cmpopts.IgnoreFields(ygnmi.Value[string]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
+			t.Errorf("Get() returned unexpected diff: %s", diff)
+		}
+		if diff := cmp.Diff(wantGetRequest, fakeGNMI.GetRequests()[0], protocmp.Transform()); diff != "" {
+			t.Errorf("Get() GetRequest different from expected: %s", diff)
+		}
+	})
 }
 
 func TestWatchAll(t *testing.T) {
@@ -1493,6 +1698,8 @@ func TestWatchAll(t *testing.T) {
 		wantLastVal          *ygnmi.Value[int64]
 		wantVals             []*ygnmi.Value[int64]
 		wantErr              string
+		wantMode             gpb.SubscriptionMode
+		opts                 []ygnmi.Option
 	}{{
 		desc: "predicate not true",
 		dur:  time.Second,
@@ -1535,6 +1742,41 @@ func TestWatchAll(t *testing.T) {
 				}},
 			})
 		},
+		wantSubscriptionPath: leafQueryPath,
+		wantVals: []*ygnmi.Value[int64]{
+			(&ygnmi.Value[int64]{
+				Timestamp: startTime,
+				Path:      key10Path,
+			}).SetVal(100),
+			(&ygnmi.Value[int64]{
+				Timestamp: startTime.Add(time.Millisecond),
+				Path:      key11Path,
+			}).SetVal(101),
+		},
+		wantLastVal: (&ygnmi.Value[int64]{
+			Timestamp: startTime.Add(time.Millisecond),
+			Path:      key11Path,
+		}).SetVal(101),
+	}, {
+		desc: "predicate becomes true with custom mode",
+		dur:  time.Second,
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: key10Path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 100}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+				Update: []*gpb.Update{{
+					Path: key11Path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 101}},
+				}},
+			})
+		},
+		opts:                 []ygnmi.Option{ygnmi.WithSubscriptionMode(gpb.SubscriptionMode_ON_CHANGE)},
+		wantMode:             gpb.SubscriptionMode_ON_CHANGE,
 		wantSubscriptionPath: leafQueryPath,
 		wantVals: []*ygnmi.Value[int64]{
 			(&ygnmi.Value[int64]{
@@ -1634,7 +1876,7 @@ func TestWatchAll(t *testing.T) {
 					return nil
 				}
 				return ygnmi.Continue
-			})
+			}, tt.opts...)
 			val, err := w.Await()
 			if i < len(tt.wantVals) {
 				t.Errorf("Predicate received too few values: got %d, want %d", i, len(tt.wantVals))
@@ -1642,6 +1884,7 @@ func TestWatchAll(t *testing.T) {
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
 				t.Fatalf("Await() returned unexpected diff: %s", diff)
 			}
+			verifySubscriptionModesSent(t, fakeGNMI, tt.wantMode)
 			if val != nil {
 				checkJustReceived(t, val.RecvTimestamp)
 				tt.wantLastVal.RecvTimestamp = val.RecvTimestamp
@@ -1790,12 +2033,25 @@ func TestCollectAll(t *testing.T) {
 		wantSubscriptionPath *gpb.Path
 		wantVals             []*ygnmi.Value[int64]
 		wantErr              string
+		wantMode             gpb.SubscriptionMode
+		opts                 []ygnmi.Option
 	}{{
 		desc: "no values",
 		dur:  time.Second,
 		stub: func(s *testutil.Stubber) {
 			s.Sync()
 		},
+		wantErr:              "EOF",
+		wantSubscriptionPath: leafQueryPath,
+		wantVals:             nil,
+	}, {
+		desc: "no values with custom mode",
+		dur:  time.Second,
+		stub: func(s *testutil.Stubber) {
+			s.Sync()
+		},
+		opts:                 []ygnmi.Option{ygnmi.WithSubscriptionMode(gpb.SubscriptionMode_ON_CHANGE)},
+		wantMode:             gpb.SubscriptionMode_ON_CHANGE,
 		wantErr:              "EOF",
 		wantSubscriptionPath: leafQueryPath,
 		wantVals:             nil,
@@ -1836,10 +2092,11 @@ func TestCollectAll(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), tt.dur)
 			defer cancel()
 
-			vals, err := ygnmi.CollectAll(ctx, client, lq).Await()
+			vals, err := ygnmi.CollectAll(ctx, client, lq, tt.opts...).Await()
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
 				t.Fatalf("Await() returned unexpected diff: %s", diff)
 			}
+			verifySubscriptionModesSent(t, fakeGNMI, tt.wantMode)
 			for _, val := range vals {
 				checkJustReceived(t, val.RecvTimestamp)
 			}
@@ -2717,5 +2974,24 @@ func verifySubscriptionPathsSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, want
 	}
 	if diff := cmp.Diff(wantPaths, gotPaths, protocmp.Transform(), cmpopts.SortSlices(ygottestutil.PathLess)); diff != "" {
 		t.Errorf("Subscription paths (-want, +got):\n%s", diff)
+	}
+}
+
+// verifySubscriptionModesSent verifies the modes of the sent subscription requests is the same as wantModes.
+func verifySubscriptionModesSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, wantModes ...gpb.SubscriptionMode) {
+	t.Helper()
+	requests := fakeGNMI.Requests()
+	if len(requests) != 1 {
+		t.Errorf("Number of subscription requests sent is not 1: %v", requests)
+		return
+	}
+
+	var gotModes []gpb.SubscriptionMode
+	req := requests[0].GetSubscribe()
+	for _, sub := range req.GetSubscription() {
+		gotModes = append(gotModes, sub.Mode)
+	}
+	if diff := cmp.Diff(wantModes, gotModes, protocmp.Transform()); diff != "" {
+		t.Errorf("Subscription modes (-want, +got):\n%s", diff)
 	}
 }
