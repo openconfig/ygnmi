@@ -91,8 +91,8 @@ type getWrapper struct {
 	getRequests []*gpb.GetRequest
 }
 
-// Get is fake implement of gnmi Get.
-func (g *getWrapper) Get(ctx context.Context, req *gpb.GetRequest, opts ...grpc.CallOption) (*gpb.GetResponse, error) {
+// Get is fake implement of gnmi.Get, it returns the GetResponse contained in the stub.
+func (g *getWrapper) Get(ctx context.Context, req *gpb.GetRequest, _ ...grpc.CallOption) (*gpb.GetResponse, error) {
 	g.getRequests = append(g.getRequests, req)
 	if len(g.stub.getResponses) == 0 {
 		return nil, io.EOF
@@ -116,8 +116,8 @@ func (s *Stubber) Notification(n *gpb.Notification) *Stubber {
 	return s
 }
 
-// GetResponse appends the given GetResponse as a stub response.
-func (s *Stubber) GetResponse(gr *gpb.GetResponse) *Stubber {
+// AppendGetResponse appends the given GetResponse as a stub response.
+func (s *Stubber) AppendGetResponse(gr *gpb.GetResponse) *Stubber {
 	s.getResponses = append(s.getResponses, gr)
 	return s
 }

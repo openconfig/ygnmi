@@ -104,6 +104,7 @@ type getSubscriber struct {
 	dataType gpb.GetRequest_DataType
 }
 
+// Send call gnmi.Get with a request equivalent to the SubscribeRequest.
 func (gs *getSubscriber) Send(req *gpb.SubscribeRequest) error {
 	getReq := &gpb.GetRequest{
 		Prefix:   req.GetSubscribe().GetPrefix(),
@@ -122,6 +123,7 @@ func (gs *getSubscriber) Send(req *gpb.SubscribeRequest) error {
 	return nil
 }
 
+// Recv returns the result of the Get request, returning io.EOF after resonpse are read.
 func (gs *getSubscriber) Recv() (*gpb.SubscribeResponse, error) {
 	if len(gs.notifs) == 0 {
 		return nil, io.EOF
@@ -135,6 +137,7 @@ func (gs *getSubscriber) Recv() (*gpb.SubscribeResponse, error) {
 	return resp, nil
 }
 
+// CloseSend is noop implementation gRPC subscribe interface.
 func (gs *getSubscriber) CloseSend() error {
 	return nil
 }

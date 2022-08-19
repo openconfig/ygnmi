@@ -425,7 +425,7 @@ func TestLookup(t *testing.T) {
 		})
 	}
 	t.Run("use get", func(t *testing.T) {
-		fakeGNMI.Stub().GetResponse(&gpb.GetResponse{
+		fakeGNMI.Stub().AppendGetResponse(&gpb.GetResponse{
 			Notification: []*gpb.Notification{{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -452,7 +452,7 @@ func TestLookup(t *testing.T) {
 		if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[string]{}), cmpopts.IgnoreFields(ygnmi.Value[string]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
 			t.Errorf("Lookup() returned unexpected diff: %s", diff)
 		}
-		if diff := cmp.Diff(wantGetRequest, fakeGNMI.GetRequests()[len(fakeGNMI.GetRequests())-1], protocmp.Transform()); diff != "" {
+		if diff := cmp.Diff(wantGetRequest, fakeGNMI.GetRequests()[0], protocmp.Transform()); diff != "" {
 			t.Errorf("Lookup() GetRequest different from expected: %s", diff)
 		}
 	})
@@ -522,7 +522,7 @@ func TestGet(t *testing.T) {
 		})
 	}
 	t.Run("use get", func(t *testing.T) {
-		fakeGNMI.Stub().GetResponse(&gpb.GetResponse{
+		fakeGNMI.Stub().AppendGetResponse(&gpb.GetResponse{
 			Notification: []*gpb.Notification{{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -546,7 +546,7 @@ func TestGet(t *testing.T) {
 		if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[string]{}), cmpopts.IgnoreFields(ygnmi.Value[string]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
 			t.Errorf("Get() returned unexpected diff: %s", diff)
 		}
-		if diff := cmp.Diff(wantGetRequest, fakeGNMI.GetRequests()[len(fakeGNMI.GetRequests())-1], protocmp.Transform()); diff != "" {
+		if diff := cmp.Diff(wantGetRequest, fakeGNMI.GetRequests()[0], protocmp.Transform()); diff != "" {
 			t.Errorf("Get() GetRequest different from expected: %s", diff)
 		}
 	})
@@ -1569,7 +1569,7 @@ func TestLookupAll(t *testing.T) {
 		})
 	}
 	t.Run("use get", func(t *testing.T) {
-		fakeGNMI.Stub().GetResponse(&gpb.GetResponse{
+		fakeGNMI.Stub().AppendGetResponse(&gpb.GetResponse{
 			Notification: []*gpb.Notification{{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -1596,7 +1596,7 @@ func TestLookupAll(t *testing.T) {
 		if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[int64]{}), cmpopts.IgnoreFields(ygnmi.Value[int64]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
 			t.Errorf("LookupAll() returned unexpected diff: %s", diff)
 		}
-		if diff := cmp.Diff(wantGetRequest, fakeGNMI.GetRequests()[len(fakeGNMI.GetRequests())-1], protocmp.Transform()); diff != "" {
+		if diff := cmp.Diff(wantGetRequest, fakeGNMI.GetRequests()[0], protocmp.Transform()); diff != "" {
 			t.Errorf("LookupAll() GetRequest different from expected: %s", diff)
 		}
 	})
@@ -1652,7 +1652,7 @@ func TestGetAll(t *testing.T) {
 		})
 	}
 	t.Run("use get", func(t *testing.T) {
-		fakeGNMI.Stub().GetResponse(&gpb.GetResponse{
+		fakeGNMI.Stub().AppendGetResponse(&gpb.GetResponse{
 			Notification: []*gpb.Notification{{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -1676,7 +1676,7 @@ func TestGetAll(t *testing.T) {
 		if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[string]{}), cmpopts.IgnoreFields(ygnmi.Value[string]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
 			t.Errorf("Get() returned unexpected diff: %s", diff)
 		}
-		if diff := cmp.Diff(wantGetRequest, fakeGNMI.GetRequests()[len(fakeGNMI.GetRequests())-1], protocmp.Transform()); diff != "" {
+		if diff := cmp.Diff(wantGetRequest, fakeGNMI.GetRequests()[0], protocmp.Transform()); diff != "" {
 			t.Errorf("Get() GetRequest different from expected: %s", diff)
 		}
 	})
@@ -2986,12 +2986,12 @@ func verifySubscriptionModesSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, want
 		return
 	}
 
-	var gotPaths []gpb.SubscriptionMode
+	var gotModes []gpb.SubscriptionMode
 	req := requests[0].GetSubscribe()
 	for _, sub := range req.GetSubscription() {
-		gotPaths = append(gotPaths, sub.Mode)
+		gotModes = append(gotModes, sub.Mode)
 	}
-	if diff := cmp.Diff(wantModes, gotPaths, protocmp.Transform()); diff != "" {
-		t.Errorf("Subscription paths (-want, +got):\n%s", diff)
+	if diff := cmp.Diff(wantModes, gotModes, protocmp.Transform()); diff != "" {
+		t.Errorf("Subscription modes (-want, +got):\n%s", diff)
 	}
 }

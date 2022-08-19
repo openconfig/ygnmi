@@ -141,7 +141,7 @@ func NewClient(c gpb.GNMIClient, opts ...ClientOption) (*Client, error) {
 	return yc, nil
 }
 
-// Option can be used modify the behavior of the gNMI requests.
+// Option can be used modify the behavior of the gNMI requests used by the ygnmi calls (Lookup, Await, etc.).
 type Option func(*opt)
 
 type opt struct {
@@ -149,6 +149,7 @@ type opt struct {
 	mode   gpb.SubscriptionMode
 }
 
+// resolveOpts applies all the options and returns a struct containing the result.
 func resolveOpts(opts []Option) *opt {
 	o := &opt{}
 	for _, opt := range opts {
@@ -166,7 +167,7 @@ func WithUseGet() Option {
 }
 
 // WithSubscriptionMode creates to an option to use input instead of the default (TARGET_DEFINED).
-// This option is only relevant for Watch, WatchAll, Collect, CollectAll, Await.
+// This option is only relevant for Watch, WatchAll, Collect, CollectAll, Await which are STREAM subscriptions.
 func WithSubscriptionMode(mode gpb.SubscriptionMode) Option {
 	return func(o *opt) {
 		o.mode = mode
