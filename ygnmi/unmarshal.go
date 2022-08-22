@@ -128,7 +128,7 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 		return ret, nil
 	}
 
-	unmarshalledData, complianceErrs, err := unmarshal(data, q.schema().SchemaTree[q.dirName()], goStruct, queryPath, q.schema(), q.isLeaf(), !q.isState())
+	unmarshalledData, complianceErrs, err := unmarshal(data, q.schema().SchemaTree[q.dirName()], goStruct, queryPath, q.schema(), q.isLeaf(), !q.IsState())
 	ret.ComplianceErrors = complianceErrs
 	if err != nil {
 		return ret, err
@@ -151,7 +151,7 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 	ret.Path = path
 
 	// For non-leaf config queries, prune all state-only leaves.
-	if !q.isLeaf() && !q.isState() {
+	if !q.isLeaf() && !q.IsState() {
 		err := ygot.PruneConfigFalse(q.schema().SchemaTree[q.dirName()], goStruct)
 		if err != nil {
 			return ret, err

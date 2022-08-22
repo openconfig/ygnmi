@@ -69,7 +69,7 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 	var err error
 	if o.useGet {
 		dt := gpb.GetRequest_CONFIG
-		if q.isState() {
+		if q.IsState() {
 			dt = gpb.GetRequest_STATE
 		}
 		sub = &getSubscriber{
@@ -123,7 +123,7 @@ func (gs *getSubscriber) Send(req *gpb.SubscribeRequest) error {
 	return nil
 }
 
-// Recv returns the result of the Get request, returning io.EOF after resonpse are read.
+// Recv returns the result of the Get request, returning io.EOF after response are read.
 func (gs *getSubscriber) Recv() (*gpb.SubscribeResponse, error) {
 	if len(gs.notifs) == 0 {
 		return nil, io.EOF

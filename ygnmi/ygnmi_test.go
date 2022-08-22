@@ -425,7 +425,7 @@ func TestLookup(t *testing.T) {
 		})
 	}
 	t.Run("use get", func(t *testing.T) {
-		fakeGNMI.Stub().AppendGetResponse(&gpb.GetResponse{
+		fakeGNMI.Stub().GetResponse(&gpb.GetResponse{
 			Notification: []*gpb.Notification{{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -522,7 +522,7 @@ func TestGet(t *testing.T) {
 		})
 	}
 	t.Run("use get", func(t *testing.T) {
-		fakeGNMI.Stub().AppendGetResponse(&gpb.GetResponse{
+		fakeGNMI.Stub().GetResponse(&gpb.GetResponse{
 			Notification: []*gpb.Notification{{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -1569,7 +1569,7 @@ func TestLookupAll(t *testing.T) {
 		})
 	}
 	t.Run("use get", func(t *testing.T) {
-		fakeGNMI.Stub().AppendGetResponse(&gpb.GetResponse{
+		fakeGNMI.Stub().GetResponse(&gpb.GetResponse{
 			Notification: []*gpb.Notification{{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -1652,7 +1652,7 @@ func TestGetAll(t *testing.T) {
 		})
 	}
 	t.Run("use get", func(t *testing.T) {
-		fakeGNMI.Stub().AppendGetResponse(&gpb.GetResponse{
+		fakeGNMI.Stub().GetResponse(&gpb.GetResponse{
 			Notification: []*gpb.Notification{{
 				Timestamp: 100,
 				Update: []*gpb.Update{{

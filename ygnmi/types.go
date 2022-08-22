@@ -161,8 +161,8 @@ func (lq *leafBaseQuery[T]) isLeaf() bool {
 	return true
 }
 
-// isState returns if the Query is for a state or config path.
-func (lq *leafBaseQuery[T]) isState() bool {
+// IsState returns if the Query is for a state or config path.
+func (lq *leafBaseQuery[T]) IsState() bool {
 	return lq.state
 }
 
@@ -247,8 +247,8 @@ func (lq *nonLeafBaseQuery[T]) isScalar() bool {
 	return false
 }
 
-// isState returns if the Query is for a state or config path.
-func (lq *nonLeafBaseQuery[T]) isState() bool {
+// IsState returns if the Query is for a state or config path.
+func (lq *nonLeafBaseQuery[T]) IsState() bool {
 	return lq.state
 }
 

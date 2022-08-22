@@ -47,8 +47,8 @@ type AnyQuery[T any] interface {
 	// extract is used for leaves to return the field from the parent GoStruct.
 	// For non-leaves, this casts the GoStruct to the concrete type.
 	extract(ygot.ValidatedGoStruct) (T, bool)
-	// isState returns if the path for this query is a state node.
-	isState() bool
+	// IsState returns if the path for this query is a state node.
+	IsState() bool
 	// isLeaf returns if the path for this query is a leaf.
 	isLeaf() bool
 	// isScalar returns whether the type (T) for this path is a pointer field (*T) in the parent GoStruct.
