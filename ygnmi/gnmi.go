@@ -123,7 +123,7 @@ func (gs *getSubscriber) Send(req *gpb.SubscribeRequest) error {
 	return nil
 }
 
-// Recv returns the result of the Get request, returning io.EOF after response are read.
+// Recv returns the result of the Get request, returning io.EOF after all responses are read.
 func (gs *getSubscriber) Recv() (*gpb.SubscribeResponse, error) {
 	if len(gs.notifs) == 0 {
 		return nil, io.EOF
