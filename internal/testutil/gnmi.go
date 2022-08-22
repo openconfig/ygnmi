@@ -30,9 +30,9 @@ import (
 
 // FakeGNMI is a running fake GNMI server.
 type FakeGNMI struct {
-	agent      *gnmi.Agent
-	stub       *Stubber
-	getWrapper *getWrapper
+	agent         *gnmi.Agent
+	stub          *Stubber
+	clientWrapper *clientWithGetter
 }
 
 // StartGNMI launches a new fake GNMI server on the given port
@@ -51,9 +51,9 @@ func StartGNMI(port int) (*FakeGNMI, error) {
 	}
 	stub := &Stubber{gen: gen}
 	return &FakeGNMI{
-		agent:      agent,
-		stub:       stub,
-		getWrapper: &getWrapper{stub: stub},
+		agent:         agent,
+		stub:          stub,
+		clientWrapper: &clientWithGetter{stub: stub},
 	}, nil
 }
 
@@ -64,8 +64,8 @@ func (g *FakeGNMI) Dial(ctx context.Context, opts ...grpc.DialOption) (gpb.GNMIC
 	if err != nil {
 		return nil, errors.Wrapf(err, "DialContext(%s, %v)", g.agent.Address(), opts)
 	}
-	g.getWrapper.GNMIClient = gpb.NewGNMIClient(conn)
-	return g.getWrapper, nil
+	g.clientWrapper.GNMIClient = gpb.NewGNMIClient(conn)
+	return g.clientWrapper, nil
 }
 
 // Stub reset the stubbed responses to empty and returns a handle to add new ones.
@@ -81,18 +81,18 @@ func (g *FakeGNMI) Requests() []*gpb.SubscribeRequest {
 
 // GetRequests returns the set of GetRequests sent to the gNMI server.
 func (g *FakeGNMI) GetRequests() []*gpb.GetRequest {
-	return g.getWrapper.getRequests
+	return g.clientWrapper.getRequests
 }
 
-// getWrapper adds gNMI Get functionality to a GNMI client.
-type getWrapper struct {
+// clientWithGetter adds gNMI Get functionality to a GNMI client.
+type clientWithGetter struct {
 	gpb.GNMIClient
 	stub        *Stubber
 	getRequests []*gpb.GetRequest
 }
 
-// Get is fake implement of gnmi.Get, it returns the GetResponse contained in the stub.
-func (g *getWrapper) Get(ctx context.Context, req *gpb.GetRequest, _ ...grpc.CallOption) (*gpb.GetResponse, error) {
+// Get is a fake implementation of gnmi.Get, it returns the GetResponse contained in the stub.
+func (g *clientWithGetter) Get(ctx context.Context, req *gpb.GetRequest, _ ...grpc.CallOption) (*gpb.GetResponse, error) {
 	g.getRequests = append(g.getRequests, req)
 	if len(g.stub.getResponses) == 0 {
 		return nil, io.EOF
@@ -116,8 +116,8 @@ func (s *Stubber) Notification(n *gpb.Notification) *Stubber {
 	return s
 }
 
-// AppendGetResponse appends the given GetResponse as a stub response.
-func (s *Stubber) AppendGetResponse(gr *gpb.GetResponse) *Stubber {
+// GetResponse appends the given GetResponse as a stub response.
+func (s *Stubber) GetResponse(gr *gpb.GetResponse) *Stubber {
 	s.getResponses = append(s.getResponses, gr)
 	return s
 }
