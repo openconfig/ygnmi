@@ -2799,6 +2799,81 @@ func TestBatchWatch(t *testing.T) {
 	}
 }
 
+func TestCustomRootBatch(t *testing.T) {
+	fakeGNMI, c := newClient(t)
+	twoPath := testutil.GNMIPath(t, "/parent/child/state/two")
+
+	tests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		paths                []ygnmi.PathStruct
+		wantSubscriptionPath []*gpb.Path
+		wantVal              *ygnmi.Value[*exampleoc.Parent]
+		wantAddErr           string
+		wantLookupErr        string
+	}{{
+		desc: "not prefix",
+		stub: func(s *testutil.Stubber) {},
+		paths: []ygnmi.PathStruct{
+			exampleocpath.Root().Model(),
+		},
+		wantAddErr: "is not a prefix",
+	}, {
+		desc: "success",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: twoPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		paths: []ygnmi.PathStruct{
+			exampleocpath.Root().Parent().Child().Two(),
+		},
+		wantSubscriptionPath: []*gpb.Path{
+			twoPath,
+		},
+		wantVal: (&ygnmi.Value[*exampleoc.Parent]{
+			Timestamp: time.Unix(0, 100),
+			Path:      testutil.GNMIPath(t, "/parent"),
+		}).SetVal(&exampleoc.Parent{
+			Child: &exampleoc.Parent_Child{
+				Two: ygot.String("foo"),
+			},
+		}),
+	}}
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			b := ygnmi.NewBatch(exampleocpath.Root().Parent().State())
+			err := b.AddPaths(tt.paths...)
+			if diff := errdiff.Substring(err, tt.wantAddErr); diff != "" {
+				t.Fatalf("AddPaths returned unexpected diff: %s", diff)
+			}
+			if err != nil {
+				return
+			}
+			got, gotErr := ygnmi.Lookup(context.Background(), c, b.Query())
+			if diff := errdiff.Substring(gotErr, tt.wantLookupErr); diff != "" {
+				t.Fatalf("Watch() returned unexpected diff: %s", diff)
+			}
+			if gotErr != nil {
+				return
+			}
+			checkJustReceived(t, got.RecvTimestamp)
+			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath...)
+			tt.wantVal.RecvTimestamp = got.RecvTimestamp
+
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Parent]{}), protocmp.Transform()); diff != "" {
+				t.Errorf("Watch() returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", diff, got.ComplianceErrors)
+			}
+		})
+	}
+
+}
+
 func TestSetBatch(t *testing.T) {
 	setClient := &fakeGNMISetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
