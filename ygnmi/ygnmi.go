@@ -22,6 +22,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygot/ytypes"
 	"google.golang.org/protobuf/encoding/prototext"
@@ -569,4 +570,52 @@ func BatchDelete[T any](sb *SetBatch, q ConfigQuery[T]) {
 		path: q.PathStruct(),
 		mode: deletePath,
 	})
+}
+
+// Batch contains a collection of paths.
+// Calling State() or Config() on the batch returns a query
+// that can be used to Lookup, Watch, etc on multiple paths at once.
+type Batch[T ygot.ValidatedGoStruct] struct {
+	root  SingletonQuery[T]
+	paths []PathStruct
+}
+
+// NewBatch creates a batch object. All paths in the batch must be children of the root query.
+func NewBatch[T ygot.ValidatedGoStruct](root SingletonQuery[T]) *Batch[T] {
+	return &Batch[T]{
+		root: root,
+	}
+}
+
+// AddPaths adds the paths to the batch. Paths must be children of the root.
+func (b *Batch[T]) AddPaths(paths ...PathStruct) error {
+	root, _, err := ResolvePath(b.root.PathStruct())
+	if err != nil {
+		return err
+	}
+	for _, path := range paths {
+		p, _, err := ResolvePath(path)
+		if err != nil {
+			return err
+		}
+		if !util.PathMatchesQuery(p, root) {
+			return fmt.Errorf("root path %v is not a prefix of %v", root, p)
+		}
+	}
+	b.paths = append(b.paths, paths...)
+	return nil
+}
+
+// Query returns a Query that can be used in gNMI operations.
+// The returned query is immutable, adding paths does not modify existing queries.
+func (b *Batch[T]) Query() SingletonQuery[T] {
+	queryPaths := make([]PathStruct, len(b.paths))
+	copy(queryPaths, b.paths)
+	return NewNonLeafSingletonQuery[T](
+		b.root.dirName(),
+		b.root.IsState(),
+		b.root.PathStruct(),
+		queryPaths,
+		b.root.schema(),
+	)
 }
