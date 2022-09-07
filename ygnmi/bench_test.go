@@ -20,8 +20,8 @@ import (
 	"io"
 	"testing"
 
-	"github.com/openconfig/ygnmi/internal/exampleoc"
-	"github.com/openconfig/ygnmi/internal/exampleoc/exampleocpath"
+	"github.com/openconfig/ygnmi/exampleoc"
+	"github.com/openconfig/ygnmi/exampleoc/exampleocpath"
 	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygnmi/ygnmi"
 	"google.golang.org/grpc"
