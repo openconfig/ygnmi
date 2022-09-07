@@ -28,10 +28,10 @@ Imported modules were sourced from:
 package exampleocpath
 
 import (
-	oc "github.com/openconfig/ygnmi/internal/exampleoc"
-	"github.com/openconfig/ygnmi/internal/exampleoc/nested"
-	"github.com/openconfig/ygnmi/internal/exampleoc/simple"
-	"github.com/openconfig/ygnmi/internal/exampleoc/withlistval"
+	oc "github.com/openconfig/ygnmi/exampleoc"
+	"github.com/openconfig/ygnmi/exampleoc/nested"
+	"github.com/openconfig/ygnmi/exampleoc/simple"
+	"github.com/openconfig/ygnmi/exampleoc/withlistval"
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/ytypes"
 )

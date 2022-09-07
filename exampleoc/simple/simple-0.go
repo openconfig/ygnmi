@@ -30,7 +30,7 @@ package simple
 import (
 	"reflect"
 
-	oc "github.com/openconfig/ygnmi/internal/exampleoc"
+	oc "github.com/openconfig/ygnmi/exampleoc"
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygot/ytypes"
