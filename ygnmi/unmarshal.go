@@ -204,11 +204,11 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 			continue
 		}
 
+		dpPathStr := pathToString(dp.Path)
 		// 1a. Check for path compliance by doing a prefix-match, since
 		// the given datapoint must be a descendant of the query.
 		if !util.PathMatchesQuery(dp.Path, queryPath) {
 			var pathErr error
-			dpPathStr := pathToString(dp.Path)
 			switch {
 			//nolint:staticcheck // ignore deprecated check
 			case len(dp.Path.Elem) == 0 && len(dp.Path.Element) > 0:
@@ -227,7 +227,7 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 		// root, we check that the path, including the list key,
 		// corresponds to an actual schema element.
 		if _, _, err := ytypes.GetOrCreateNode(schema.RootSchema(), schema.Root, dp.Path, gcopts...); err != nil {
-			pathUnmarshalErrs = append(pathUnmarshalErrs, &TelemetryError{Path: dp.Path, Value: dp.Value, Err: err})
+			pathUnmarshalErrs = append(pathUnmarshalErrs, &TelemetryError{Path: dp.Path, Value: dp.Value, Err: fmt.Errorf("path %q is invalid and cannot be matched to a generated GoStruct field: %v", dpPathStr, err)})
 			continue
 		}
 		// The structSchema passed in here is assumed to be the unzipped
@@ -244,7 +244,7 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 			if err := ytypes.DeleteNode(structSchema, structPtr, relPath, dopts...); err == nil {
 				unmarshalledDatapoints = append(unmarshalledDatapoints, dp)
 			} else {
-				errs.Add(err)
+				errs.Add(fmt.Errorf("path %q cannot be deleted: %v", dpPathStr, err))
 			}
 		} else {
 			sopts := []ytypes.SetNodeOpt{&ytypes.InitMissingElements{}, &ytypes.TolerateJSONInconsistencies{}}
@@ -255,7 +255,7 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 			if err := ytypes.SetNode(structSchema, structPtr, relPath, dp.Value, sopts...); err == nil {
 				unmarshalledDatapoints = append(unmarshalledDatapoints, dp)
 			} else {
-				typeUnmarshalErrs = append(typeUnmarshalErrs, &TelemetryError{Path: dp.Path, Value: dp.Value, Err: err})
+				typeUnmarshalErrs = append(typeUnmarshalErrs, &TelemetryError{Path: dp.Path, Value: dp.Value, Err: fmt.Errorf("datapoint path %q (value %v) cannot be unmarshalled: %v", dpPathStr, dp.Value, err)})
 			}
 		}
 	}
