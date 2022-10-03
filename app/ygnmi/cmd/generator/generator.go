@@ -55,7 +55,6 @@ func New() *cobra.Command {
 	generator.Flags().String("output_dir", "", "The directory that the generated Go code should be written to. This directory is the base of the generated module packages. default (working dir)")
 	generator.Flags().Int("structs_split_files_count", 1, "The number of files to split the generated schema structs into.")
 	generator.Flags().Int("pathstructs_split_files_count", 1, "The number of files to split the generated path structs into.")
-	generator.Flags().Bool("generate_leaf_setters", true, "If set to true, setters for YANG leaves are generated within the GoStruct code.")
 
 	generator.Flags().MarkHidden("schema_struct_path")
 
@@ -185,7 +184,7 @@ func generateStructs(modules []string, schemaPath, version string) error {
 			GenerateAppendMethod:                true,
 			GenerateLeafGetters:                 true,
 			GeneratePopulateDefault:             true,
-			GenerateLeafSetters:                 viper.GetBool("generate_leaf_setters"),
+			GenerateLeafSetters:                 true,
 			ValidateFunctionName:                "Validate",
 			GenerateSimpleUnions:                true,
 			IncludeModelData:                    false,
