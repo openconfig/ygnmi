@@ -16,7 +16,6 @@ package pathgen
 
 import (
 	"flag"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -1090,9 +1089,9 @@ func TestGeneratePathCode(t *testing.T) {
 				}
 			}
 
-			wantCodeBytes, rferr := ioutil.ReadFile(tt.wantStructsCodeFile)
+			wantCodeBytes, rferr := os.ReadFile(tt.wantStructsCodeFile)
 			if rferr != nil {
-				t.Fatalf("ioutil.ReadFile(%q) error: %v", tt.wantStructsCodeFile, rferr)
+				t.Fatalf("os.ReadFile(%q) error: %v", tt.wantStructsCodeFile, rferr)
 			}
 
 			wantCode := string(wantCodeBytes)
@@ -1228,9 +1227,9 @@ func TestGeneratePathCodeSplitFiles(t *testing.T) {
 
 			var wantCode []string
 			for _, codeFile := range tt.wantStructsCodeFiles {
-				wantCodeBytes, rferr := ioutil.ReadFile(codeFile)
+				wantCodeBytes, rferr := os.ReadFile(codeFile)
 				if rferr != nil {
-					t.Fatalf("ioutil.ReadFile(%q) error: %v", tt.wantStructsCodeFiles, rferr)
+					t.Fatalf("os.ReadFile(%q) error: %v", tt.wantStructsCodeFiles, rferr)
 				}
 				wantCode = append(wantCode, string(wantCodeBytes))
 			}
@@ -1333,9 +1332,9 @@ func TestGeneratePathCodeSplitModules(t *testing.T) {
 
 			wantCode := map[string]string{}
 			for pkg, codeFile := range tt.wantStructsCodeFiles {
-				wantCodeBytes, rferr := ioutil.ReadFile(codeFile)
+				wantCodeBytes, rferr := os.ReadFile(codeFile)
 				if rferr != nil {
-					t.Fatalf("ioutil.ReadFile(%q) error: %v", tt.wantStructsCodeFiles, rferr)
+					t.Fatalf("os.ReadFile(%q) error: %v", tt.wantStructsCodeFiles, rferr)
 				}
 				wantCode[pkg] = string(wantCodeBytes)
 			}
@@ -2122,27 +2121,30 @@ func TestGetNodeDataMap(t *testing.T) {
 
 // trimDocComments removes doc comments from the input code snippet string.
 // Example:
-//   // foo does bar
-//   func foo() {
-//     // baz is need to do boo.
-//     baz()
-//   }
 //
-//   // foo2 does bar2
-//   func foo2() {
-//     // baz2 is need to do boo2.
-//     baz2()
-//   }
+//	// foo does bar
+//	func foo() {
+//	  // baz is need to do boo.
+//	  baz()
+//	}
+//
+//	// foo2 does bar2
+//	func foo2() {
+//	  // baz2 is need to do boo2.
+//	  baz2()
+//	}
+//
 // After:
-//   func foo() {
-//     // baz is need to do boo.
-//     baz()
-//   }
 //
-//   func foo2() {
-//     // baz2 is need to do boo2.
-//     baz2()
-//   }
+//	func foo() {
+//	  // baz is need to do boo.
+//	  baz()
+//	}
+//
+//	func foo2() {
+//	  // baz2 is need to do boo2.
+//	  baz2()
+//	}
 func trimDocComments(snippet string) string {
 	var b strings.Builder
 	for i, line := range strings.Split(snippet, "\n") {

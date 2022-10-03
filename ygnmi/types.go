@@ -202,7 +202,7 @@ type NonLeafWildcardQuery[T ygot.ValidatedGoStruct] struct {
 	nonLeafBaseQuery[T]
 }
 
-// isNonWildcard prevents this struct from being used where a non-wildcard path is expected.
+// IsWildcard prevents this struct from being used where a non-wildcard path is expected.
 func (lq *NonLeafWildcardQuery[T]) IsWildcard() {}
 
 type nonLeafBaseQuery[T ygot.ValidatedGoStruct] struct {
