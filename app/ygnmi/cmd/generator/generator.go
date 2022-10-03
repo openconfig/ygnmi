@@ -17,7 +17,6 @@ package generator
 
 import (
 	"fmt"
-	"io/ioutil"
 	"math"
 	"os"
 	"path"
@@ -34,6 +33,7 @@ import (
 )
 
 // New returns a new generator command.
+//
 //nolint:errcheck
 func New() *cobra.Command {
 	generator := &cobra.Command{
@@ -119,7 +119,7 @@ func generate(cmd *cobra.Command, args []string) error {
 			if err := os.MkdirAll(filepath.Join(viper.GetString("output_dir"), packageName), 0755); err != nil {
 				return fmt.Errorf("failed to create directory for package %q: %w", packageName, err)
 			}
-			if err := ioutil.WriteFile(path, []byte(code.String()), 0644); err != nil {
+			if err := os.WriteFile(path, []byte(code.String()), 0644); err != nil {
 				return err
 			}
 			continue
