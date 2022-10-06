@@ -305,7 +305,7 @@ func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, op setO
 	if q.isLeaf() && q.isScalar() {
 		setVal = &val
 	}
-	if err := populateSetRequest(req, path, setVal, op); err != nil {
+	if err := populateSetRequest(req, path, setVal, op, !q.IsState()); err != nil {
 		return nil, nil, err
 	}
 
@@ -330,7 +330,7 @@ const (
 )
 
 // populateSetRequest fills a SetResponse for a val and operation type.
-func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op setOperation) error {
+func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op setOperation, preferShadowPath bool) error {
 	if req == nil {
 		return fmt.Errorf("cannot populate a nil SetRequest")
 	}
@@ -341,7 +341,7 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op
 	case replacePath, updatePath:
 		// Since the GoStructs are generated using preferOperationalState, we
 		// need to turn on preferShadowPath to prefer marshalling config paths.
-		js, err := ygot.Marshal7951(val, ygot.JSONIndent("  "), &ygot.RFC7951JSONConfig{AppendModuleName: true, PreferShadowPath: true})
+		js, err := ygot.Marshal7951(val, ygot.JSONIndent("  "), &ygot.RFC7951JSONConfig{AppendModuleName: true, PreferShadowPath: preferShadowPath})
 		if err != nil {
 			return fmt.Errorf("could not encode value into JSON format: %w", err)
 		}
