@@ -506,9 +506,10 @@ func Delete[T any](ctx context.Context, c *Client, q ConfigQuery[T]) (*Result, e
 }
 
 type batchOp struct {
-	path PathStruct
-	val  interface{}
-	mode setOperation
+	path   PathStruct
+	val    interface{}
+	mode   setOperation
+	config bool
 }
 
 // SetBatch allows multiple Set operations (Replace, Update, Delete) to be applied as part of a single Set transaction.
@@ -525,7 +526,7 @@ func (sb *SetBatch) Set(ctx context.Context, c *Client) (*Result, error) {
 		if err != nil {
 			return nil, err
 		}
-		if err := populateSetRequest(req, path, op.val, op.mode); err != nil {
+		if err := populateSetRequest(req, path, op.val, op.mode, op.config); err != nil {
 			return nil, err
 		}
 	}
@@ -545,9 +546,10 @@ func BatchUpdate[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 		setVal = &val
 	}
 	sb.ops = append(sb.ops, &batchOp{
-		path: q.PathStruct(),
-		val:  setVal,
-		mode: updatePath,
+		path:   q.PathStruct(),
+		val:    setVal,
+		mode:   updatePath,
+		config: !q.IsState(),
 	})
 }
 
@@ -558,17 +560,19 @@ func BatchReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 		setVal = &val
 	}
 	sb.ops = append(sb.ops, &batchOp{
-		path: q.PathStruct(),
-		val:  setVal,
-		mode: replacePath,
+		path:   q.PathStruct(),
+		val:    setVal,
+		mode:   replacePath,
+		config: !q.IsState(),
 	})
 }
 
 // BatchDelete stores an update operation in the SetBatch.
 func BatchDelete[T any](sb *SetBatch, q ConfigQuery[T]) {
 	sb.ops = append(sb.ops, &batchOp{
-		path: q.PathStruct(),
-		mode: deletePath,
+		path:   q.PathStruct(),
+		mode:   deletePath,
+		config: !q.IsState(),
 	})
 }
 
