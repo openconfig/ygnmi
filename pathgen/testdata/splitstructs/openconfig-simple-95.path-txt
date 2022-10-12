@@ -18,12 +18,42 @@ import (
 	"github.com/openconfig/ygot/ytypes"
 )
 
-// Parent_Child_Two represents the /openconfig-simple/parent/child/state/two YANG schema element.
-type Parent_Child_Two struct {
+// RemoteContainer represents the /openconfig-simple/remote-container YANG schema element.
+type RemoteContainer struct {
 	*ygnmi.NodePath
 }
 
-// Parent_Child_TwoAny represents the wildcard version of the /openconfig-simple/parent/child/state/two YANG schema element.
-type Parent_Child_TwoAny struct {
+// RemoteContainerAny represents the wildcard version of the /openconfig-simple/remote-container YANG schema element.
+type RemoteContainerAny struct {
 	*ygnmi.NodePath
+}
+
+// ALeaf (leaf): 
+// 	Defining module:      "openconfig-remote"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/a-leaf"
+// 	Path from root:       "/remote-container/state/a-leaf"
+func (n *RemoteContainer) ALeaf() *RemoteContainer_ALeaf {
+	return &RemoteContainer_ALeaf{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "a-leaf"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
+// ALeaf (leaf): 
+// 	Defining module:      "openconfig-remote"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "state/a-leaf"
+// 	Path from root:       "/remote-container/state/a-leaf"
+func (n *RemoteContainerAny) ALeaf() *RemoteContainer_ALeafAny {
+	return &RemoteContainer_ALeafAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "a-leaf"},
+			map[string]interface{}{},
+			n,
+		),
+	}
 }

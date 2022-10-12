@@ -98,6 +98,16 @@ func (n *ParentPathAny) Child() *Parent_ChildPathAny {
 	}
 }
 
+// Parent_Child_FivePath represents the /openconfig-simple/parent/child/config/five YANG schema element.
+type Parent_Child_FivePath struct {
+	*ygnmi.NodePath
+}
+
+// Parent_Child_FivePathAny represents the wildcard version of the /openconfig-simple/parent/child/config/five YANG schema element.
+type Parent_Child_FivePathAny struct {
+	*ygnmi.NodePath
+}
+
 // Parent_Child_FourPath represents the /openconfig-simple/parent/child/config/four YANG schema element.
 type Parent_Child_FourPath struct {
 	*ygnmi.NodePath
@@ -115,6 +125,16 @@ type Parent_Child_OnePath struct {
 
 // Parent_Child_OnePathAny represents the wildcard version of the /openconfig-simple/parent/child/config/one YANG schema element.
 type Parent_Child_OnePathAny struct {
+	*ygnmi.NodePath
+}
+
+// Parent_Child_SixPath represents the /openconfig-simple/parent/child/config/six YANG schema element.
+type Parent_Child_SixPath struct {
+	*ygnmi.NodePath
+}
+
+// Parent_Child_SixPathAny represents the wildcard version of the /openconfig-simple/parent/child/config/six YANG schema element.
+type Parent_Child_SixPathAny struct {
 	*ygnmi.NodePath
 }
 
@@ -136,6 +156,36 @@ type Parent_ChildPath struct {
 // Parent_ChildPathAny represents the wildcard version of the /openconfig-simple/parent/child YANG schema element.
 type Parent_ChildPathAny struct {
 	*ygnmi.NodePath
+}
+
+// Five (leaf): 
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "config/five"
+// 	Path from root:       "/parent/child/config/five"
+func (n *Parent_ChildPath) Five() *Parent_Child_FivePath {
+	return &Parent_Child_FivePath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"config", "five"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
+// Five (leaf): 
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "config/five"
+// 	Path from root:       "/parent/child/config/five"
+func (n *Parent_ChildPathAny) Five() *Parent_Child_FivePathAny {
+	return &Parent_Child_FivePathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"config", "five"},
+			map[string]interface{}{},
+			n,
+		),
+	}
 }
 
 // Four (leaf): 
@@ -192,6 +242,36 @@ func (n *Parent_ChildPathAny) One() *Parent_Child_OnePathAny {
 	return &Parent_Child_OnePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"config", "one"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
+// Six (leaf-list): 
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "config/six"
+// 	Path from root:       "/parent/child/config/six"
+func (n *Parent_ChildPath) Six() *Parent_Child_SixPath {
+	return &Parent_Child_SixPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"config", "six"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
+// Six (leaf-list): 
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "config/six"
+// 	Path from root:       "/parent/child/config/six"
+func (n *Parent_ChildPathAny) Six() *Parent_Child_SixPathAny {
+	return &Parent_Child_SixPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"config", "six"},
 			map[string]interface{}{},
 			n,
 		),

@@ -17,13 +17,3 @@ import (
 	"github.com/openconfig/ygnmi/ygmni"
 	"github.com/openconfig/ygot/ytypes"
 )
-
-// RemoteContainer_ALeaf represents the /openconfig-simple/remote-container/state/a-leaf YANG schema element.
-type RemoteContainer_ALeaf struct {
-	*ygnmi.NodePath
-}
-
-// RemoteContainer_ALeafAny represents the wildcard version of the /openconfig-simple/remote-container/state/a-leaf YANG schema element.
-type RemoteContainer_ALeafAny struct {
-	*ygnmi.NodePath
-}
