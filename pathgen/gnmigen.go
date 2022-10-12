@@ -42,11 +42,21 @@ type gnmiStruct struct {
 	RelPath                 string
 	DefiningModuleName      string
 	InstantiatingModuleName string
+	SpecialConvertFunc      string
 }
 
 const (
 	// TODO(DanG100): pass options into custom generators and remove this.
-	fakeRootName = "Root"
+	fakeRootName    = "Root"
+	binarySliceFunc = `
+func(in []oc.Binary) []float32 {
+	converted := make([]float32, 0, len(in))
+	for _, binary := range in {
+		converted = append(converted, ygot.BinaryToFloat32(binary))
+	}
+	return converted
+}(ret)
+`
 )
 
 // GNMIGenerator is a plugin generator for generating ygnmi query objects.
@@ -73,6 +83,19 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 	if node.SubsumingGoStructName == fakeRootName {
 		if err := batchTemplate.Execute(&b, tmplStruct); err != nil {
 			return "", err
+		}
+	}
+
+	if node.YANGTypeName == "ieeefloat32" {
+		switch node.LocalGoTypeName {
+		case "Binary":
+			tmplStruct.GoTypeName = "float32"
+			tmplStruct.SpecialConvertFunc = "ygot.BinaryToFloat32(ret)"
+		case "[]Binary":
+			tmplStruct.GoTypeName = "[]float32"
+			tmplStruct.SpecialConvertFunc = binarySliceFunc
+		default:
+			return "", fmt.Errorf("ieeefloat32 is expected to be a binary, got %q", node.LocalGoTypeName)
 		}
 	}
 
@@ -168,7 +191,12 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 			}
 			return *ret, true
 			{{- else }}
+			{{- if .SpecialConvertFunc }}
+			converted := {{ .SpecialConvertFunc }}
+			return converted, !reflect.ValueOf(ret).IsZero()
+			{{- else}}
 			return ret, !reflect.ValueOf(ret).IsZero()
+			{{- end }}
 			{{- end}}
 		},
 		func() ygot.ValidatedGoStruct { return new({{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}) },
@@ -206,7 +234,12 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 			}
 			return *ret, true
 			{{- else }}
+			{{- if .SpecialConvertFunc }}
+			converted := {{ .SpecialConvertFunc }}
+			return converted, !reflect.ValueOf(ret).IsZero()
+			{{- else}}
 			return ret, !reflect.ValueOf(ret).IsZero()
+			{{- end }}
 			{{- end}}
 		},
 		func() ygot.ValidatedGoStruct { return new({{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}) },

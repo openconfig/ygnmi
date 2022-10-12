@@ -6,6 +6,20 @@ module openconfig-simple {
 
   import openconfig-remote { prefix "ocr"; }
 
+  typedef ieeefloat32 {
+    type binary {
+      length "4";
+    }
+    description
+      "An IEEE 32-bit floating point number. The format of this number
+      is of the form:
+        1-bit  sign
+        8-bit  exponent
+        23-bit fraction
+      The floating point value is calculated using:
+        (-1)**S * 2**(Exponent-127) * (1+Fraction)";
+  }
+
   grouping parent-config {
     leaf one { type string; }
     leaf three {
@@ -16,6 +30,12 @@ module openconfig-simple {
     }
     leaf four {
       type binary;
+    }
+    leaf five {
+      type ieeefloat32;
+    }
+    leaf-list six {
+      type ieeefloat32;
     }
   }
 
