@@ -47,16 +47,7 @@ type gnmiStruct struct {
 
 const (
 	// TODO(DanG100): pass options into custom generators and remove this.
-	fakeRootName    = "Root"
-	binarySliceFunc = `
-func(in []oc.Binary) []float32 {
-	converted := make([]float32, 0, len(in))
-	for _, binary := range in {
-		converted = append(converted, ygot.BinaryToFloat32(binary))
-	}
-	return converted
-}(ret)
-`
+	fakeRootName = "Root"
 )
 
 var packagesSeen = map[string]bool{}
