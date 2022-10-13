@@ -78,6 +78,14 @@ func (n *ParentPathAny) Child() *Parent_ChildPathAny {
 	}
 }
 
+func binarySliceToFloatSlice(in []oc.Binary) []float32 {
+	converted := make([]float32, 0, len(in))
+	for _, binary := range in {
+		converted = append(converted, ygot.BinaryToFloat32(binary))
+	}
+	return converted
+}
+
 // State returns a Query that can be used in gNMI operations.
 func (n *ParentPath) State() ygnmi.SingletonQuery[*oc.Parent] {
 	return ygnmi.NewNonLeafSingletonQuery[*oc.Parent](
@@ -136,14 +144,14 @@ func (n *ParentPathAny) Config() ygnmi.WildcardQuery[*oc.Parent] {
 	)
 }
 
-// Parent_Child_FourPath represents the /openconfig-simple/parent/child/state/four YANG schema element.
-type Parent_Child_FourPath struct {
+// Parent_Child_FivePath represents the /openconfig-simple/parent/child/state/five YANG schema element.
+type Parent_Child_FivePath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
 }
 
-// Parent_Child_FourPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/four YANG schema element.
-type Parent_Child_FourPathAny struct {
+// Parent_Child_FivePathAny represents the wildcard version of the /openconfig-simple/parent/child/state/five YANG schema element.
+type Parent_Child_FivePathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
 }
@@ -198,6 +206,122 @@ func (n *Parent_ChildPathAny) Config() ygnmi.WildcardQuery[*oc.Parent_Child] {
 		"Parent_Child",
 		false,
 		n,
+		&ytypes.Schema{
+			Root:       &oc.Root{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+//
+//	Defining module:      "openconfig-simple"
+//	Instantiating module: "openconfig-simple"
+//	Path from parent:     "state/five"
+//	Path from root:       "/parent/child/state/five"
+func (n *Parent_Child_FivePath) State() ygnmi.SingletonQuery[float32] {
+	return ygnmi.NewLeafSingletonQuery[float32](
+		"Parent_Child",
+		true,
+		false,
+		ygnmi.NewNodePath(
+			[]string{"state", "five"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) (float32, bool) {
+			ret := gs.(*oc.Parent_Child).Five
+			return ygot.BinaryToFloat32(ret), !reflect.ValueOf(ret).IsZero()
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
+		&ytypes.Schema{
+			Root:       &oc.Root{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+//
+//	Defining module:      "openconfig-simple"
+//	Instantiating module: "openconfig-simple"
+//	Path from parent:     "state/five"
+//	Path from root:       "/parent/child/state/five"
+func (n *Parent_Child_FivePathAny) State() ygnmi.WildcardQuery[float32] {
+	return ygnmi.NewLeafWildcardQuery[float32](
+		"Parent_Child",
+		true,
+		false,
+		ygnmi.NewNodePath(
+			[]string{"state", "five"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) (float32, bool) {
+			ret := gs.(*oc.Parent_Child).Five
+			return ygot.BinaryToFloat32(ret), !reflect.ValueOf(ret).IsZero()
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
+		&ytypes.Schema{
+			Root:       &oc.Root{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+//
+//	Defining module:      "openconfig-simple"
+//	Instantiating module: "openconfig-simple"
+//	Path from parent:     "config/five"
+//	Path from root:       "/parent/child/config/five"
+func (n *Parent_Child_FivePath) Config() ygnmi.ConfigQuery[float32] {
+	return ygnmi.NewLeafConfigQuery[float32](
+		"Parent_Child",
+		false,
+		false,
+		ygnmi.NewNodePath(
+			[]string{"config", "five"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) (float32, bool) {
+			ret := gs.(*oc.Parent_Child).Five
+			return ygot.BinaryToFloat32(ret), !reflect.ValueOf(ret).IsZero()
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
+		&ytypes.Schema{
+			Root:       &oc.Root{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+//
+//	Defining module:      "openconfig-simple"
+//	Instantiating module: "openconfig-simple"
+//	Path from parent:     "config/five"
+//	Path from root:       "/parent/child/config/five"
+func (n *Parent_Child_FivePathAny) Config() ygnmi.WildcardQuery[float32] {
+	return ygnmi.NewLeafWildcardQuery[float32](
+		"Parent_Child",
+		false,
+		false,
+		ygnmi.NewNodePath(
+			[]string{"config", "five"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) (float32, bool) {
+			ret := gs.(*oc.Parent_Child).Five
+			return ygot.BinaryToFloat32(ret), !reflect.ValueOf(ret).IsZero()
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -458,6 +582,122 @@ func (n *Parent_Child_OnePathAny) Config() ygnmi.WildcardQuery[string] {
 //
 //	Defining module:      "openconfig-simple"
 //	Instantiating module: "openconfig-simple"
+//	Path from parent:     "state/six"
+//	Path from root:       "/parent/child/state/six"
+func (n *Parent_Child_SixPath) State() ygnmi.SingletonQuery[[]float32] {
+	return ygnmi.NewLeafSingletonQuery[[]float32](
+		"Parent_Child",
+		true,
+		false,
+		ygnmi.NewNodePath(
+			[]string{"state", "six"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) ([]float32, bool) {
+			ret := gs.(*oc.Parent_Child).Six
+			return binarySliceToFloatSlice(ret), !reflect.ValueOf(ret).IsZero()
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
+		&ytypes.Schema{
+			Root:       &oc.Root{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+//
+//	Defining module:      "openconfig-simple"
+//	Instantiating module: "openconfig-simple"
+//	Path from parent:     "state/six"
+//	Path from root:       "/parent/child/state/six"
+func (n *Parent_Child_SixPathAny) State() ygnmi.WildcardQuery[[]float32] {
+	return ygnmi.NewLeafWildcardQuery[[]float32](
+		"Parent_Child",
+		true,
+		false,
+		ygnmi.NewNodePath(
+			[]string{"state", "six"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) ([]float32, bool) {
+			ret := gs.(*oc.Parent_Child).Six
+			return binarySliceToFloatSlice(ret), !reflect.ValueOf(ret).IsZero()
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
+		&ytypes.Schema{
+			Root:       &oc.Root{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+//
+//	Defining module:      "openconfig-simple"
+//	Instantiating module: "openconfig-simple"
+//	Path from parent:     "config/six"
+//	Path from root:       "/parent/child/config/six"
+func (n *Parent_Child_SixPath) Config() ygnmi.ConfigQuery[[]float32] {
+	return ygnmi.NewLeafConfigQuery[[]float32](
+		"Parent_Child",
+		false,
+		false,
+		ygnmi.NewNodePath(
+			[]string{"config", "six"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) ([]float32, bool) {
+			ret := gs.(*oc.Parent_Child).Six
+			return binarySliceToFloatSlice(ret), !reflect.ValueOf(ret).IsZero()
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
+		&ytypes.Schema{
+			Root:       &oc.Root{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+//
+//	Defining module:      "openconfig-simple"
+//	Instantiating module: "openconfig-simple"
+//	Path from parent:     "config/six"
+//	Path from root:       "/parent/child/config/six"
+func (n *Parent_Child_SixPathAny) Config() ygnmi.WildcardQuery[[]float32] {
+	return ygnmi.NewLeafWildcardQuery[[]float32](
+		"Parent_Child",
+		false,
+		false,
+		ygnmi.NewNodePath(
+			[]string{"config", "six"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) ([]float32, bool) {
+			ret := gs.(*oc.Parent_Child).Six
+			return binarySliceToFloatSlice(ret), !reflect.ValueOf(ret).IsZero()
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
+		&ytypes.Schema{
+			Root:       &oc.Root{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+//
+//	Defining module:      "openconfig-simple"
+//	Instantiating module: "openconfig-simple"
 //	Path from parent:     "state/three"
 //	Path from root:       "/parent/child/state/three"
 func (n *Parent_Child_ThreePath) State() ygnmi.SingletonQuery[oc.E_Child_Three] {
@@ -636,6 +876,18 @@ func (n *Parent_Child_TwoPathAny) State() ygnmi.WildcardQuery[string] {
 	)
 }
 
+// Parent_Child_FourPath represents the /openconfig-simple/parent/child/state/four YANG schema element.
+type Parent_Child_FourPath struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// Parent_Child_FourPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/four YANG schema element.
+type Parent_Child_FourPathAny struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
 // Parent_Child_OnePath represents the /openconfig-simple/parent/child/state/one YANG schema element.
 type Parent_Child_OnePath struct {
 	*ygnmi.NodePath
@@ -644,6 +896,18 @@ type Parent_Child_OnePath struct {
 
 // Parent_Child_OnePathAny represents the wildcard version of the /openconfig-simple/parent/child/state/one YANG schema element.
 type Parent_Child_OnePathAny struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// Parent_Child_SixPath represents the /openconfig-simple/parent/child/state/six YANG schema element.
+type Parent_Child_SixPath struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// Parent_Child_SixPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/six YANG schema element.
+type Parent_Child_SixPathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
 }
@@ -680,6 +944,40 @@ type Parent_ChildPath struct {
 // Parent_ChildPathAny represents the wildcard version of the /openconfig-simple/parent/child YANG schema element.
 type Parent_ChildPathAny struct {
 	*ygnmi.NodePath
+}
+
+// Five (leaf):
+//
+//	Defining module:      "openconfig-simple"
+//	Instantiating module: "openconfig-simple"
+//	Path from parent:     "*/five"
+//	Path from root:       "/parent/child/*/five"
+func (n *Parent_ChildPath) Five() *Parent_Child_FivePath {
+	return &Parent_Child_FivePath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "five"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+}
+
+// Five (leaf):
+//
+//	Defining module:      "openconfig-simple"
+//	Instantiating module: "openconfig-simple"
+//	Path from parent:     "*/five"
+//	Path from root:       "/parent/child/*/five"
+func (n *Parent_ChildPathAny) Five() *Parent_Child_FivePathAny {
+	return &Parent_Child_FivePathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "five"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
 }
 
 // Four (leaf):
@@ -743,6 +1041,40 @@ func (n *Parent_ChildPathAny) One() *Parent_Child_OnePathAny {
 	return &Parent_Child_OnePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "one"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+}
+
+// Six (leaf-list):
+//
+//	Defining module:      "openconfig-simple"
+//	Instantiating module: "openconfig-simple"
+//	Path from parent:     "*/six"
+//	Path from root:       "/parent/child/*/six"
+func (n *Parent_ChildPath) Six() *Parent_Child_SixPath {
+	return &Parent_Child_SixPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "six"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+}
+
+// Six (leaf-list):
+//
+//	Defining module:      "openconfig-simple"
+//	Instantiating module: "openconfig-simple"
+//	Path from parent:     "*/six"
+//	Path from root:       "/parent/child/*/six"
+func (n *Parent_ChildPathAny) Six() *Parent_Child_SixPathAny {
+	return &Parent_Child_SixPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "six"},
 			map[string]interface{}{},
 			n,
 		),

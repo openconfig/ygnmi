@@ -58,3 +58,43 @@ func (n *Device) RemoteContainer() *RemoteContainer {
 		),
 	}
 }
+
+// Parent represents the /openconfig-simple/parent YANG schema element.
+type Parent struct {
+	*ygnmi.NodePath
+}
+
+// ParentAny represents the wildcard version of the /openconfig-simple/parent YANG schema element.
+type ParentAny struct {
+	*ygnmi.NodePath
+}
+
+// Child (container): 
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "child"
+// 	Path from root:       "/parent/child"
+func (n *Parent) Child() *Parent_Child {
+	return &Parent_Child{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"child"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
+// Child (container): 
+// 	Defining module:      "openconfig-simple"
+// 	Instantiating module: "openconfig-simple"
+// 	Path from parent:     "child"
+// 	Path from root:       "/parent/child"
+func (n *ParentAny) Child() *Parent_ChildAny {
+	return &Parent_ChildAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"child"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}

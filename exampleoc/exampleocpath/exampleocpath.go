@@ -33,6 +33,7 @@ import (
 	"github.com/openconfig/ygnmi/exampleoc/simple"
 	"github.com/openconfig/ygnmi/exampleoc/withlistval"
 	"github.com/openconfig/ygnmi/ygnmi"
+	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygot/ytypes"
 )
 
@@ -158,6 +159,14 @@ func (b *Batch) Config() ygnmi.SingletonQuery[*oc.Root] {
 			Unmarshal:  oc.Unmarshal,
 		},
 	)
+}
+
+func binarySliceToFloatSlice(in []oc.Binary) []float32 {
+	converted := make([]float32, 0, len(in))
+	for _, binary := range in {
+		converted = append(converted, ygot.BinaryToFloat32(binary))
+	}
+	return converted
 }
 
 // State returns a Query that can be used in gNMI operations.
