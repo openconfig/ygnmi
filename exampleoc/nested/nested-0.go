@@ -76,6 +76,14 @@ func (n *APathAny) B() *A_BPathAny {
 	}
 }
 
+func binarySliceToFloatSlice(in []oc.Binary) []float32 {
+	converted := make([]float32, 0, len(in))
+	for _, binary := range in {
+		converted = append(converted, ygot.BinaryToFloat32(binary))
+	}
+	return converted
+}
+
 // State returns a Query that can be used in gNMI operations.
 func (n *APath) State() ygnmi.SingletonQuery[*oc.A] {
 	return ygnmi.NewNonLeafSingletonQuery[*oc.A](

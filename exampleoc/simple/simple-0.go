@@ -78,6 +78,14 @@ func (n *ParentPathAny) Child() *Parent_ChildPathAny {
 	}
 }
 
+func binarySliceToFloatSlice(in []oc.Binary) []float32 {
+	converted := make([]float32, 0, len(in))
+	for _, binary := range in {
+		converted = append(converted, ygot.BinaryToFloat32(binary))
+	}
+	return converted
+}
+
 // State returns a Query that can be used in gNMI operations.
 func (n *ParentPath) State() ygnmi.SingletonQuery[*oc.Parent] {
 	return ygnmi.NewNonLeafSingletonQuery[*oc.Parent](
@@ -224,8 +232,7 @@ func (n *Parent_Child_FivePath) State() ygnmi.SingletonQuery[float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) (float32, bool) {
 			ret := gs.(*oc.Parent_Child).Five
-			converted := ygot.BinaryToFloat32(ret)
-			return converted, !reflect.ValueOf(ret).IsZero()
+			return ygot.BinaryToFloat32(ret), !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		&ytypes.Schema{
@@ -254,8 +261,7 @@ func (n *Parent_Child_FivePathAny) State() ygnmi.WildcardQuery[float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) (float32, bool) {
 			ret := gs.(*oc.Parent_Child).Five
-			converted := ygot.BinaryToFloat32(ret)
-			return converted, !reflect.ValueOf(ret).IsZero()
+			return ygot.BinaryToFloat32(ret), !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		&ytypes.Schema{
@@ -284,8 +290,7 @@ func (n *Parent_Child_FivePath) Config() ygnmi.ConfigQuery[float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) (float32, bool) {
 			ret := gs.(*oc.Parent_Child).Five
-			converted := ygot.BinaryToFloat32(ret)
-			return converted, !reflect.ValueOf(ret).IsZero()
+			return ygot.BinaryToFloat32(ret), !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		&ytypes.Schema{
@@ -314,8 +319,7 @@ func (n *Parent_Child_FivePathAny) Config() ygnmi.WildcardQuery[float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) (float32, bool) {
 			ret := gs.(*oc.Parent_Child).Five
-			converted := ygot.BinaryToFloat32(ret)
-			return converted, !reflect.ValueOf(ret).IsZero()
+			return ygot.BinaryToFloat32(ret), !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		&ytypes.Schema{
@@ -592,16 +596,7 @@ func (n *Parent_Child_SixPath) State() ygnmi.SingletonQuery[[]float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) ([]float32, bool) {
 			ret := gs.(*oc.Parent_Child).Six
-			converted :=
-				func(in []oc.Binary) []float32 {
-					converted := make([]float32, 0, len(in))
-					for _, binary := range in {
-						converted = append(converted, ygot.BinaryToFloat32(binary))
-					}
-					return converted
-				}(ret)
-
-			return converted, !reflect.ValueOf(ret).IsZero()
+			return binarySliceToFloatSlice(ret), !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		&ytypes.Schema{
@@ -630,16 +625,7 @@ func (n *Parent_Child_SixPathAny) State() ygnmi.WildcardQuery[[]float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) ([]float32, bool) {
 			ret := gs.(*oc.Parent_Child).Six
-			converted :=
-				func(in []oc.Binary) []float32 {
-					converted := make([]float32, 0, len(in))
-					for _, binary := range in {
-						converted = append(converted, ygot.BinaryToFloat32(binary))
-					}
-					return converted
-				}(ret)
-
-			return converted, !reflect.ValueOf(ret).IsZero()
+			return binarySliceToFloatSlice(ret), !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		&ytypes.Schema{
@@ -668,16 +654,7 @@ func (n *Parent_Child_SixPath) Config() ygnmi.ConfigQuery[[]float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) ([]float32, bool) {
 			ret := gs.(*oc.Parent_Child).Six
-			converted :=
-				func(in []oc.Binary) []float32 {
-					converted := make([]float32, 0, len(in))
-					for _, binary := range in {
-						converted = append(converted, ygot.BinaryToFloat32(binary))
-					}
-					return converted
-				}(ret)
-
-			return converted, !reflect.ValueOf(ret).IsZero()
+			return binarySliceToFloatSlice(ret), !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		&ytypes.Schema{
@@ -706,16 +683,7 @@ func (n *Parent_Child_SixPathAny) Config() ygnmi.WildcardQuery[[]float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) ([]float32, bool) {
 			ret := gs.(*oc.Parent_Child).Six
-			converted :=
-				func(in []oc.Binary) []float32 {
-					converted := make([]float32, 0, len(in))
-					for _, binary := range in {
-						converted = append(converted, ygot.BinaryToFloat32(binary))
-					}
-					return converted
-				}(ret)
-
-			return converted, !reflect.ValueOf(ret).IsZero()
+			return binarySliceToFloatSlice(ret), !reflect.ValueOf(ret).IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		&ytypes.Schema{

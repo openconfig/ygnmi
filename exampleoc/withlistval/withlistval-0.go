@@ -196,6 +196,14 @@ func (n *ModelPathAny) SingleKey(Key string) *Model_SingleKeyPathAny {
 	}
 }
 
+func binarySliceToFloatSlice(in []oc.Binary) []float32 {
+	converted := make([]float32, 0, len(in))
+	for _, binary := range in {
+		converted = append(converted, ygot.BinaryToFloat32(binary))
+	}
+	return converted
+}
+
 // State returns a Query that can be used in gNMI operations.
 func (n *ModelPath) State() ygnmi.SingletonQuery[*oc.Model] {
 	return ygnmi.NewNonLeafSingletonQuery[*oc.Model](

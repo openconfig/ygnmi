@@ -139,6 +139,14 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 			DirectoryName:         "Container",
 		},
 		want: `
+func binarySliceToFloatSlice(in []oc.Binary) []float32 {
+	converted := make([]float32, 0, len(in))
+	for _, binary := range in {
+		converted = append(converted, ygot.BinaryToFloat32(binary))
+	}
+	return converted
+}
+
 // State returns a Query that can be used in gNMI operations.
 // 	Defining module:      "root-module"
 // 	Instantiating module: "root-module"

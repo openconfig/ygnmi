@@ -59,6 +59,8 @@ func(in []oc.Binary) []float32 {
 `
 )
 
+var packagesSeen = map[string]bool{}
+
 // GNMIGenerator is a plugin generator for generating ygnmi query objects.
 // Note: GNMIGenerator requires that PreferOperationalState be true when generating PathStructs.
 // TODO(DanG100): pass schema from parent to child.
@@ -85,15 +87,21 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 			return "", err
 		}
 	}
+	if !packagesSeen[node.GoPathPackageName] {
+		packagesSeen[node.GoPathPackageName] = true
+		if err := oncePerPackageTmpl.Execute(&b, struct{}{}); err != nil {
+			return "", err
+		}
+	}
 
 	if node.YANGTypeName == "ieeefloat32" {
 		switch node.LocalGoTypeName {
 		case "Binary":
 			tmplStruct.GoTypeName = "float32"
-			tmplStruct.SpecialConvertFunc = "ygot.BinaryToFloat32(ret)"
+			tmplStruct.SpecialConvertFunc = "ygot.BinaryToFloat32"
 		case "[]Binary":
 			tmplStruct.GoTypeName = "[]float32"
-			tmplStruct.SpecialConvertFunc = binarySliceFunc
+			tmplStruct.SpecialConvertFunc = "binarySliceToFloatSlice"
 		default:
 			return "", fmt.Errorf("ieeefloat32 is expected to be a binary, got %q", node.LocalGoTypeName)
 		}
@@ -192,8 +200,7 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 			return *ret, true
 			{{- else }}
 			{{- if .SpecialConvertFunc }}
-			converted := {{ .SpecialConvertFunc }}
-			return converted, !reflect.ValueOf(ret).IsZero()
+			return {{ .SpecialConvertFunc }}(ret), !reflect.ValueOf(ret).IsZero()
 			{{- else}}
 			return ret, !reflect.ValueOf(ret).IsZero()
 			{{- end }}
@@ -235,8 +242,7 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 			return *ret, true
 			{{- else }}
 			{{- if .SpecialConvertFunc }}
-			converted := {{ .SpecialConvertFunc }}
-			return converted, !reflect.ValueOf(ret).IsZero()
+			return {{ .SpecialConvertFunc }}(ret), !reflect.ValueOf(ret).IsZero()
 			{{- else}}
 			return ret, !reflect.ValueOf(ret).IsZero()
 			{{- end }}
@@ -335,6 +341,15 @@ func (b *Batch) Config() ygnmi.{{ .SingletonTypeName }}[*oc.Root] {
             Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
         },
     )
+}
+`)
+	oncePerPackageTmpl = mustTemplate("once-per-package", `
+func binarySliceToFloatSlice(in []oc.Binary) []float32 {
+	converted := make([]float32, 0, len(in))
+	for _, binary := range in {
+		converted = append(converted, ygot.BinaryToFloat32(binary))
+	}
+	return converted
 }
 `)
 )
