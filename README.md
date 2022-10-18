@@ -56,7 +56,7 @@ ygnmi paths mimic with gNMI paths with a few transformations applied.
 4. List keys can be specified several ways:
     1. Fully by specifying all keys: `protocols/protocol[identifier=BGP][name=test]` -> `Protocol(oc.PolicyTypes_INSTALL_PROTOCOL_TYPE_BGP, "test")`
     2. Specifying no keys: `protocols/protocol[identifier=*][name=*]` -> `ProtocolAny()`
-    3. Specifying some keys: `protocols/protocol[identifier=BGP][name=*]` -> `ProtocolAny().WithIdentified(oc.PolicyTypes_INSTALL_PROTOCOL_TYPE_BGP)`
+    3. Specifying some keys: `protocols/protocol[identifier=BGP][name=*]` -> `ProtocolAny().WithIdentifier(oc.PolicyTypes_INSTALL_PROTOCOL_TYPE_BGP)`
 5. State or Config are specified at the end: `interface[name=eth0]/state/name` -> `Interface("eth0").Name().State()`
 
 Examples:
