@@ -112,6 +112,19 @@ func (v *Value[T]) IsPresent() bool {
 	return v.present
 }
 
+// String returns a user-readable string for the value.
+func (v *Value[T]) String() string {
+	path, err := ygot.PathToString(v.Path)
+	if err != nil {
+		path = v.Path.String()
+	}
+	val := "(not present)"
+	if v.present {
+		val = fmt.Sprintf("%+v", v.val)
+	}
+	return fmt.Sprintf("path: %s\nvalue: %s", path, val)
+}
+
 // Client is used to perform gNMI requests.
 type Client struct {
 	gnmiC  gpb.GNMIClient
