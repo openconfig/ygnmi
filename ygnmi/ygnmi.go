@@ -118,9 +118,9 @@ func (v *Value[T]) String() string {
 	if err != nil {
 		path = v.Path.String()
 	}
-	val := fmt.Sprintf("%+v", v.val)
-	if !v.present {
-		val = "(not present)"
+	val := "(not present)"
+	if v.present {
+		val = fmt.Sprintf("%+v", v.val)
 	}
 	return fmt.Sprintf("path: %s\nvalue: %s", path, val)
 }
@@ -211,12 +211,6 @@ func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T], opts ...
 	return val, nil
 }
 
-// LookupConfig fetches the value of a ConfigQuery with a ONCE subscription.
-// Note: This is a workaround for Go's type inference not working for this use case and may be removed in a subsequent release.
-func LookupConfig[T any](ctx context.Context, c *Client, q ConfigQuery[T], opts ...Option) (*Value[T], error) {
-	return Lookup[T](ctx, c, q, opts...)
-}
-
 var (
 	// ErrNotPresent is returned by Get when there are no a values at a path.
 	ErrNotPresent = fmt.Errorf("value not present")
@@ -238,14 +232,6 @@ func Get[T any](ctx context.Context, c *Client, q SingletonQuery[T], opts ...Opt
 		return zero, fmt.Errorf("path %s: %w", val.Path.String(), ErrNotPresent)
 	}
 	return ret, nil
-}
-
-// GetConfig fetches the value of a ConfigQuery with a ONCE subscription,
-// returning an error that wraps ErrNotPresent if the value is not present.
-// Use LookupConfig to get metadata and tolerate non-present data.
-// Note: This is a workaround for Go's type inference not working for this use case and may be removed in a subsequent release.
-func GetConfig[T any](ctx context.Context, c *Client, q ConfigQuery[T], opts ...Option) (T, error) {
-	return Get[T](ctx, c, q, opts...)
 }
 
 // Watcher represents an ongoing watch of telemetry values.
