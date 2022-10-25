@@ -987,15 +987,16 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 	if len(errs) == 0 {
 		errs = nil
 	}
+
 	nonLeafSnippet := GoPathStructCodeSnippet{
-		PathStructName:    structData.TypeName,
-		StructBase:        structBuf.String(),
-		ChildConstructors: methodBuf.String(),
-		Package:           goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix),
+		PathStructName: structData.TypeName,
+		StructBase:     structBuf.String(),
+		Package:        goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix),
 	}
 	for dep := range deps {
 		nonLeafSnippet.Deps = append(nonLeafSnippet.Deps, dep)
 	}
+
 	snippets = append(snippets, nonLeafSnippet)
 
 	for pkg, build := range listBuilderAPIBufs {
@@ -1007,6 +1008,13 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 			})
 		}
 	}
+
+	if directory.Type == ygen.List && len(directory.ListKeys) == 0 {
+		return snippets, errs
+	}
+
+	snippets[0].ChildConstructors = methodBuf.String()
+
 	return snippets, errs
 }
 
