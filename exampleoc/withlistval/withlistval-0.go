@@ -718,16 +718,46 @@ func (n *Model_MultiKeyPathAny) Key2() *Model_MultiKey_Key2PathAny {
 	}
 }
 
-// Model_NoKey_KeyPath represents the /openconfig-withlistval/model/c/no-key/state/key YANG schema element.
-type Model_NoKey_KeyPath struct {
+// Model_NoKeyPath represents the /openconfig-withlistval/model/c/no-key YANG schema element.
+type Model_NoKeyPath struct {
 	*ygnmi.NodePath
-	parent ygnmi.PathStruct
 }
 
-// Model_NoKey_KeyPathAny represents the wildcard version of the /openconfig-withlistval/model/c/no-key/state/key YANG schema element.
-type Model_NoKey_KeyPathAny struct {
+// Model_NoKeyPathAny represents the wildcard version of the /openconfig-withlistval/model/c/no-key YANG schema element.
+type Model_NoKeyPathAny struct {
 	*ygnmi.NodePath
-	parent ygnmi.PathStruct
+}
+
+// Foo (container):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "foo"
+//	Path from root:       "/model/c/no-key/foo"
+func (n *Model_NoKeyPath) Foo() *Model_NoKey_FooPath {
+	return &Model_NoKey_FooPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"foo"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
+// Foo (container):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "foo"
+//	Path from root:       "/model/c/no-key/foo"
+func (n *Model_NoKeyPathAny) Foo() *Model_NoKey_FooPathAny {
+	return &Model_NoKey_FooPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"foo"},
+			map[string]interface{}{},
+			n,
+		),
+	}
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -759,15 +789,56 @@ func (n *Model_NoKeyPathAny) State() ygnmi.WildcardQuery[*oc.Model_NoKey] {
 	)
 }
 
+// Model_NoKey_Foo_KeyPath represents the /openconfig-withlistval/model/c/no-key/foo/state/key YANG schema element.
+type Model_NoKey_Foo_KeyPath struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// Model_NoKey_Foo_KeyPathAny represents the wildcard version of the /openconfig-withlistval/model/c/no-key/foo/state/key YANG schema element.
+type Model_NoKey_Foo_KeyPathAny struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *Model_NoKey_FooPath) State() ygnmi.SingletonQuery[*oc.Model_NoKey_Foo] {
+	return ygnmi.NewNonLeafSingletonQuery[*oc.Model_NoKey_Foo](
+		"Model_NoKey_Foo",
+		true,
+		n,
+		nil,
+		&ytypes.Schema{
+			Root:       &oc.Root{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *Model_NoKey_FooPathAny) State() ygnmi.WildcardQuery[*oc.Model_NoKey_Foo] {
+	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_NoKey_Foo](
+		"Model_NoKey_Foo",
+		true,
+		n,
+		&ytypes.Schema{
+			Root:       &oc.Root{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		},
+	)
+}
+
 // State returns a Query that can be used in gNMI operations.
 //
 //	Defining module:      "openconfig-withlistval"
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "state/key"
-//	Path from root:       "/model/c/no-key/state/key"
-func (n *Model_NoKey_KeyPath) State() ygnmi.SingletonQuery[string] {
+//	Path from root:       "/model/c/no-key/foo/state/key"
+func (n *Model_NoKey_Foo_KeyPath) State() ygnmi.SingletonQuery[string] {
 	return ygnmi.NewLeafSingletonQuery[string](
-		"Model_NoKey",
+		"Model_NoKey_Foo",
 		true,
 		true,
 		ygnmi.NewNodePath(
@@ -776,14 +847,14 @@ func (n *Model_NoKey_KeyPath) State() ygnmi.SingletonQuery[string] {
 			n.parent,
 		),
 		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.Model_NoKey).Key
+			ret := gs.(*oc.Model_NoKey_Foo).Key
 			if ret == nil {
 				var zero string
 				return zero, false
 			}
 			return *ret, true
 		},
-		func() ygot.ValidatedGoStruct { return new(oc.Model_NoKey) },
+		func() ygot.ValidatedGoStruct { return new(oc.Model_NoKey_Foo) },
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -797,10 +868,10 @@ func (n *Model_NoKey_KeyPath) State() ygnmi.SingletonQuery[string] {
 //	Defining module:      "openconfig-withlistval"
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "state/key"
-//	Path from root:       "/model/c/no-key/state/key"
-func (n *Model_NoKey_KeyPathAny) State() ygnmi.WildcardQuery[string] {
+//	Path from root:       "/model/c/no-key/foo/state/key"
+func (n *Model_NoKey_Foo_KeyPathAny) State() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewLeafWildcardQuery[string](
-		"Model_NoKey",
+		"Model_NoKey_Foo",
 		true,
 		true,
 		ygnmi.NewNodePath(
@@ -809,14 +880,14 @@ func (n *Model_NoKey_KeyPathAny) State() ygnmi.WildcardQuery[string] {
 			n.parent,
 		),
 		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.Model_NoKey).Key
+			ret := gs.(*oc.Model_NoKey_Foo).Key
 			if ret == nil {
 				var zero string
 				return zero, false
 			}
 			return *ret, true
 		},
-		func() ygot.ValidatedGoStruct { return new(oc.Model_NoKey) },
+		func() ygot.ValidatedGoStruct { return new(oc.Model_NoKey_Foo) },
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -830,10 +901,10 @@ func (n *Model_NoKey_KeyPathAny) State() ygnmi.WildcardQuery[string] {
 //	Defining module:      "openconfig-withlistval"
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "state/value"
-//	Path from root:       "/model/c/no-key/state/value"
-func (n *Model_NoKey_ValuePath) State() ygnmi.SingletonQuery[int64] {
+//	Path from root:       "/model/c/no-key/foo/state/value"
+func (n *Model_NoKey_Foo_ValuePath) State() ygnmi.SingletonQuery[int64] {
 	return ygnmi.NewLeafSingletonQuery[int64](
-		"Model_NoKey",
+		"Model_NoKey_Foo",
 		true,
 		true,
 		ygnmi.NewNodePath(
@@ -842,14 +913,14 @@ func (n *Model_NoKey_ValuePath) State() ygnmi.SingletonQuery[int64] {
 			n.parent,
 		),
 		func(gs ygot.ValidatedGoStruct) (int64, bool) {
-			ret := gs.(*oc.Model_NoKey).Value
+			ret := gs.(*oc.Model_NoKey_Foo).Value
 			if ret == nil {
 				var zero int64
 				return zero, false
 			}
 			return *ret, true
 		},
-		func() ygot.ValidatedGoStruct { return new(oc.Model_NoKey) },
+		func() ygot.ValidatedGoStruct { return new(oc.Model_NoKey_Foo) },
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -863,10 +934,10 @@ func (n *Model_NoKey_ValuePath) State() ygnmi.SingletonQuery[int64] {
 //	Defining module:      "openconfig-withlistval"
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "state/value"
-//	Path from root:       "/model/c/no-key/state/value"
-func (n *Model_NoKey_ValuePathAny) State() ygnmi.WildcardQuery[int64] {
+//	Path from root:       "/model/c/no-key/foo/state/value"
+func (n *Model_NoKey_Foo_ValuePathAny) State() ygnmi.WildcardQuery[int64] {
 	return ygnmi.NewLeafWildcardQuery[int64](
-		"Model_NoKey",
+		"Model_NoKey_Foo",
 		true,
 		true,
 		ygnmi.NewNodePath(
@@ -875,14 +946,14 @@ func (n *Model_NoKey_ValuePathAny) State() ygnmi.WildcardQuery[int64] {
 			n.parent,
 		),
 		func(gs ygot.ValidatedGoStruct) (int64, bool) {
-			ret := gs.(*oc.Model_NoKey).Value
+			ret := gs.(*oc.Model_NoKey_Foo).Value
 			if ret == nil {
 				var zero int64
 				return zero, false
 			}
 			return *ret, true
 		},
-		func() ygot.ValidatedGoStruct { return new(oc.Model_NoKey) },
+		func() ygot.ValidatedGoStruct { return new(oc.Model_NoKey_Foo) },
 		&ytypes.Schema{
 			Root:       &oc.Root{},
 			SchemaTree: oc.SchemaTree,
@@ -891,25 +962,25 @@ func (n *Model_NoKey_ValuePathAny) State() ygnmi.WildcardQuery[int64] {
 	)
 }
 
-// Model_NoKey_ValuePath represents the /openconfig-withlistval/model/c/no-key/state/value YANG schema element.
-type Model_NoKey_ValuePath struct {
+// Model_NoKey_Foo_ValuePath represents the /openconfig-withlistval/model/c/no-key/foo/state/value YANG schema element.
+type Model_NoKey_Foo_ValuePath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
 }
 
-// Model_NoKey_ValuePathAny represents the wildcard version of the /openconfig-withlistval/model/c/no-key/state/value YANG schema element.
-type Model_NoKey_ValuePathAny struct {
+// Model_NoKey_Foo_ValuePathAny represents the wildcard version of the /openconfig-withlistval/model/c/no-key/foo/state/value YANG schema element.
+type Model_NoKey_Foo_ValuePathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
 }
 
-// Model_NoKeyPath represents the /openconfig-withlistval/model/c/no-key YANG schema element.
-type Model_NoKeyPath struct {
+// Model_NoKey_FooPath represents the /openconfig-withlistval/model/c/no-key/foo YANG schema element.
+type Model_NoKey_FooPath struct {
 	*ygnmi.NodePath
 }
 
-// Model_NoKeyPathAny represents the wildcard version of the /openconfig-withlistval/model/c/no-key YANG schema element.
-type Model_NoKeyPathAny struct {
+// Model_NoKey_FooPathAny represents the wildcard version of the /openconfig-withlistval/model/c/no-key/foo YANG schema element.
+type Model_NoKey_FooPathAny struct {
 	*ygnmi.NodePath
 }
 
@@ -918,9 +989,9 @@ type Model_NoKeyPathAny struct {
 //	Defining module:      "openconfig-withlistval"
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "state/key"
-//	Path from root:       "/model/c/no-key/state/key"
-func (n *Model_NoKeyPath) Key() *Model_NoKey_KeyPath {
-	return &Model_NoKey_KeyPath{
+//	Path from root:       "/model/c/no-key/foo/state/key"
+func (n *Model_NoKey_FooPath) Key() *Model_NoKey_Foo_KeyPath {
+	return &Model_NoKey_Foo_KeyPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "key"},
 			map[string]interface{}{},
@@ -935,9 +1006,9 @@ func (n *Model_NoKeyPath) Key() *Model_NoKey_KeyPath {
 //	Defining module:      "openconfig-withlistval"
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "state/key"
-//	Path from root:       "/model/c/no-key/state/key"
-func (n *Model_NoKeyPathAny) Key() *Model_NoKey_KeyPathAny {
-	return &Model_NoKey_KeyPathAny{
+//	Path from root:       "/model/c/no-key/foo/state/key"
+func (n *Model_NoKey_FooPathAny) Key() *Model_NoKey_Foo_KeyPathAny {
+	return &Model_NoKey_Foo_KeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "key"},
 			map[string]interface{}{},
@@ -952,9 +1023,9 @@ func (n *Model_NoKeyPathAny) Key() *Model_NoKey_KeyPathAny {
 //	Defining module:      "openconfig-withlistval"
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "state/value"
-//	Path from root:       "/model/c/no-key/state/value"
-func (n *Model_NoKeyPath) Value() *Model_NoKey_ValuePath {
-	return &Model_NoKey_ValuePath{
+//	Path from root:       "/model/c/no-key/foo/state/value"
+func (n *Model_NoKey_FooPath) Value() *Model_NoKey_Foo_ValuePath {
+	return &Model_NoKey_Foo_ValuePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "value"},
 			map[string]interface{}{},
@@ -969,9 +1040,9 @@ func (n *Model_NoKeyPath) Value() *Model_NoKey_ValuePath {
 //	Defining module:      "openconfig-withlistval"
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "state/value"
-//	Path from root:       "/model/c/no-key/state/value"
-func (n *Model_NoKeyPathAny) Value() *Model_NoKey_ValuePathAny {
-	return &Model_NoKey_ValuePathAny{
+//	Path from root:       "/model/c/no-key/foo/state/value"
+func (n *Model_NoKey_FooPathAny) Value() *Model_NoKey_Foo_ValuePathAny {
+	return &Model_NoKey_Foo_ValuePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "value"},
 			map[string]interface{}{},
