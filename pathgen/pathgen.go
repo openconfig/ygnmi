@@ -1090,14 +1090,10 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 	case field.Type != ygen.ListNode:
 		return generateChildConstructorsForLeafOrContainer(methodBuf, fieldData, isUnderFakeRoot, generateWildcardPaths, unified, field.Type == ygen.LeafNode || field.Type == ygen.LeafListNode)
 	case len(fieldDirectory.ListKeys) == 0:
-		// TODO(wenbli): keyless lists as a path are not supported by gNMI, but this
-		// library is currently intended for gNMI, so need to decide on a long-term solution.
-
-		// As a short-term solution, we just need to prevent the user from accessing any node in the keyless list's subtree.
-		// Here, we simply skip generating the child constructor, such that its subtree is unreachable.
+		if errs := generateChildConstructorsForListBuilderFormat(methodBuf, builderBuf, fieldDirectory.ListKeys, fieldDirectory.ListKeyYANGNames, fieldData, isUnderFakeRoot, schemaStructPkgAccessor); len(errs) > 0 {
+			return errs
+		}
 		return nil
-		// Erroring out, on the other hand, is impractical due to their existence in the current OpenConfig models.
-		// return fmt.Errorf("generateChildConstructors: schemas containing keyless lists are unsupported, path: %s", field.Path())
 	default:
 		if generateWildcardPaths {
 			if errs := generateChildConstructorsForListBuilderFormat(methodBuf, builderBuf, fieldDirectory.ListKeys, fieldDirectory.ListKeyYANGNames, fieldData, isUnderFakeRoot, schemaStructPkgAccessor); len(errs) > 0 {
@@ -1330,7 +1326,7 @@ type keyParam struct {
 //	  docstring out: ["string", "[oc.Binary, oc.UnionUint64]"]
 func makeKeyParams(keys map[string]*ygen.ListKey, keyNames []string, schemaStructPkgAccessor string) ([]keyParam, error) {
 	if len(keys) == 0 {
-		return nil, fmt.Errorf("makeKeyParams: invalid list - has no key; cannot process param list string")
+		return nil, nil
 	}
 
 	// Create parameter list *in order* of keys, which should be in schema order.
