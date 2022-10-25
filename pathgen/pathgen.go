@@ -997,6 +997,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 		nonLeafSnippet.Deps = append(nonLeafSnippet.Deps, dep)
 	}
 
+	nonLeafIdx := len(snippets)
 	snippets = append(snippets, nonLeafSnippet)
 
 	for pkg, build := range listBuilderAPIBufs {
@@ -1013,7 +1014,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 		return snippets, errs
 	}
 
-	snippets[0].ChildConstructors = methodBuf.String()
+	snippets[nonLeafIdx].ChildConstructors = methodBuf.String()
 
 	return snippets, errs
 }

@@ -1254,40 +1254,6 @@ type A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny struct {
 	parent ygnmi.PathStruct
 }
 
-// Foo (leaf):
-//
-//	Defining module:      "openconfig-nested"
-//	Instantiating module: "openconfig-nested"
-//	Path from parent:     "state/foo"
-//	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"
-func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath {
-	return &A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"state", "foo"},
-			map[string]interface{}{},
-			n,
-		),
-		parent: n,
-	}
-}
-
-// Foo (leaf):
-//
-//	Defining module:      "openconfig-nested"
-//	Instantiating module: "openconfig-nested"
-//	Path from parent:     "state/foo"
-//	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"
-func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny {
-	return &A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"state", "foo"},
-			map[string]interface{}{},
-			n,
-		),
-		parent: n,
-	}
-}
-
 // State returns a Query that can be used in gNMI operations.
 func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F_G_H_I_J_K_L_M] {
 	return ygnmi.NewNonLeafSingletonQuery[*oc.A_B_C_D_E_F_G_H_I_J_K_L_M](
@@ -1420,4 +1386,38 @@ type A_B_C_D_E_F_G_H_I_J_K_L_MPath struct {
 // A_B_C_D_E_F_G_H_I_J_K_L_MPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m YANG schema element.
 type A_B_C_D_E_F_G_H_I_J_K_L_MPathAny struct {
 	*ygnmi.NodePath
+}
+
+// Foo (leaf):
+//
+//	Defining module:      "openconfig-nested"
+//	Instantiating module: "openconfig-nested"
+//	Path from parent:     "state/foo"
+//	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"
+func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath {
+	return &A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "foo"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+}
+
+// Foo (leaf):
+//
+//	Defining module:      "openconfig-nested"
+//	Instantiating module: "openconfig-nested"
+//	Path from parent:     "state/foo"
+//	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"
+func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny {
+	return &A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "foo"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
 }

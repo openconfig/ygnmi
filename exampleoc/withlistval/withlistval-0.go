@@ -306,74 +306,6 @@ type Model_MultiKey_Key1PathAny struct {
 	parent ygnmi.PathStruct
 }
 
-// Key1 (leaf):
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "*/key1"
-//	Path from root:       "/model/b/multi-key/*/key1"
-func (n *Model_MultiKeyPath) Key1() *Model_MultiKey_Key1Path {
-	return &Model_MultiKey_Key1Path{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"*", "key1"},
-			map[string]interface{}{},
-			n,
-		),
-		parent: n,
-	}
-}
-
-// Key1 (leaf):
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "*/key1"
-//	Path from root:       "/model/b/multi-key/*/key1"
-func (n *Model_MultiKeyPathAny) Key1() *Model_MultiKey_Key1PathAny {
-	return &Model_MultiKey_Key1PathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"*", "key1"},
-			map[string]interface{}{},
-			n,
-		),
-		parent: n,
-	}
-}
-
-// Key2 (leaf):
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "*/key2"
-//	Path from root:       "/model/b/multi-key/*/key2"
-func (n *Model_MultiKeyPath) Key2() *Model_MultiKey_Key2Path {
-	return &Model_MultiKey_Key2Path{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"*", "key2"},
-			map[string]interface{}{},
-			n,
-		),
-		parent: n,
-	}
-}
-
-// Key2 (leaf):
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "*/key2"
-//	Path from root:       "/model/b/multi-key/*/key2"
-func (n *Model_MultiKeyPathAny) Key2() *Model_MultiKey_Key2PathAny {
-	return &Model_MultiKey_Key2PathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"*", "key2"},
-			map[string]interface{}{},
-			n,
-		),
-		parent: n,
-	}
-}
-
 // State returns a Query that can be used in gNMI operations.
 func (n *Model_MultiKeyPath) State() ygnmi.SingletonQuery[*oc.Model_MultiKey] {
 	return ygnmi.NewNonLeafSingletonQuery[*oc.Model_MultiKey](
@@ -718,6 +650,74 @@ type Model_MultiKeyPathAny struct {
 	*ygnmi.NodePath
 }
 
+// Key1 (leaf):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "*/key1"
+//	Path from root:       "/model/b/multi-key/*/key1"
+func (n *Model_MultiKeyPath) Key1() *Model_MultiKey_Key1Path {
+	return &Model_MultiKey_Key1Path{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "key1"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+}
+
+// Key1 (leaf):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "*/key1"
+//	Path from root:       "/model/b/multi-key/*/key1"
+func (n *Model_MultiKeyPathAny) Key1() *Model_MultiKey_Key1PathAny {
+	return &Model_MultiKey_Key1PathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "key1"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+}
+
+// Key2 (leaf):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "*/key2"
+//	Path from root:       "/model/b/multi-key/*/key2"
+func (n *Model_MultiKeyPath) Key2() *Model_MultiKey_Key2Path {
+	return &Model_MultiKey_Key2Path{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "key2"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+}
+
+// Key2 (leaf):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "*/key2"
+//	Path from root:       "/model/b/multi-key/*/key2"
+func (n *Model_MultiKeyPathAny) Key2() *Model_MultiKey_Key2PathAny {
+	return &Model_MultiKey_Key2PathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "key2"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+}
+
 // Model_NoKeyPath represents the /openconfig-withlistval/model/c/no-key YANG schema element.
 type Model_NoKeyPath struct {
 	*ygnmi.NodePath
@@ -767,74 +767,6 @@ type Model_NoKey_Foo_KeyPath struct {
 type Model_NoKey_Foo_KeyPathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Key (leaf):
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "state/key"
-//	Path from root:       "/model/c/no-key/foo/state/key"
-func (n *Model_NoKey_FooPath) Key() *Model_NoKey_Foo_KeyPath {
-	return &Model_NoKey_Foo_KeyPath{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"state", "key"},
-			map[string]interface{}{},
-			n,
-		),
-		parent: n,
-	}
-}
-
-// Key (leaf):
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "state/key"
-//	Path from root:       "/model/c/no-key/foo/state/key"
-func (n *Model_NoKey_FooPathAny) Key() *Model_NoKey_Foo_KeyPathAny {
-	return &Model_NoKey_Foo_KeyPathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"state", "key"},
-			map[string]interface{}{},
-			n,
-		),
-		parent: n,
-	}
-}
-
-// Value (leaf):
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "state/value"
-//	Path from root:       "/model/c/no-key/foo/state/value"
-func (n *Model_NoKey_FooPath) Value() *Model_NoKey_Foo_ValuePath {
-	return &Model_NoKey_Foo_ValuePath{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"state", "value"},
-			map[string]interface{}{},
-			n,
-		),
-		parent: n,
-	}
-}
-
-// Value (leaf):
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "state/value"
-//	Path from root:       "/model/c/no-key/foo/state/value"
-func (n *Model_NoKey_FooPathAny) Value() *Model_NoKey_Foo_ValuePathAny {
-	return &Model_NoKey_Foo_ValuePathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"state", "value"},
-			map[string]interface{}{},
-			n,
-		),
-		parent: n,
-	}
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -1020,6 +952,74 @@ type Model_NoKey_FooPathAny struct {
 	*ygnmi.NodePath
 }
 
+// Key (leaf):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "state/key"
+//	Path from root:       "/model/c/no-key/foo/state/key"
+func (n *Model_NoKey_FooPath) Key() *Model_NoKey_Foo_KeyPath {
+	return &Model_NoKey_Foo_KeyPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "key"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+}
+
+// Key (leaf):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "state/key"
+//	Path from root:       "/model/c/no-key/foo/state/key"
+func (n *Model_NoKey_FooPathAny) Key() *Model_NoKey_Foo_KeyPathAny {
+	return &Model_NoKey_Foo_KeyPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "key"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+}
+
+// Value (leaf):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "state/value"
+//	Path from root:       "/model/c/no-key/foo/state/value"
+func (n *Model_NoKey_FooPath) Value() *Model_NoKey_Foo_ValuePath {
+	return &Model_NoKey_Foo_ValuePath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "value"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+}
+
+// Value (leaf):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "state/value"
+//	Path from root:       "/model/c/no-key/foo/state/value"
+func (n *Model_NoKey_FooPathAny) Value() *Model_NoKey_Foo_ValuePathAny {
+	return &Model_NoKey_Foo_ValuePathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "value"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+}
+
 // Model_SingleKey_KeyPath represents the /openconfig-withlistval/model/a/single-key/state/key YANG schema element.
 type Model_SingleKey_KeyPath struct {
 	*ygnmi.NodePath
@@ -1030,74 +1030,6 @@ type Model_SingleKey_KeyPath struct {
 type Model_SingleKey_KeyPathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Key (leaf):
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "*/key"
-//	Path from root:       "/model/a/single-key/*/key"
-func (n *Model_SingleKeyPath) Key() *Model_SingleKey_KeyPath {
-	return &Model_SingleKey_KeyPath{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"*", "key"},
-			map[string]interface{}{},
-			n,
-		),
-		parent: n,
-	}
-}
-
-// Key (leaf):
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "*/key"
-//	Path from root:       "/model/a/single-key/*/key"
-func (n *Model_SingleKeyPathAny) Key() *Model_SingleKey_KeyPathAny {
-	return &Model_SingleKey_KeyPathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"*", "key"},
-			map[string]interface{}{},
-			n,
-		),
-		parent: n,
-	}
-}
-
-// Value (leaf):
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "*/value"
-//	Path from root:       "/model/a/single-key/*/value"
-func (n *Model_SingleKeyPath) Value() *Model_SingleKey_ValuePath {
-	return &Model_SingleKey_ValuePath{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"*", "value"},
-			map[string]interface{}{},
-			n,
-		),
-		parent: n,
-	}
-}
-
-// Value (leaf):
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "*/value"
-//	Path from root:       "/model/a/single-key/*/value"
-func (n *Model_SingleKeyPathAny) Value() *Model_SingleKey_ValuePathAny {
-	return &Model_SingleKey_ValuePathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"*", "value"},
-			map[string]interface{}{},
-			n,
-		),
-		parent: n,
-	}
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -1442,4 +1374,72 @@ type Model_SingleKeyPath struct {
 // Model_SingleKeyPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key YANG schema element.
 type Model_SingleKeyPathAny struct {
 	*ygnmi.NodePath
+}
+
+// Key (leaf):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "*/key"
+//	Path from root:       "/model/a/single-key/*/key"
+func (n *Model_SingleKeyPath) Key() *Model_SingleKey_KeyPath {
+	return &Model_SingleKey_KeyPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "key"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+}
+
+// Key (leaf):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "*/key"
+//	Path from root:       "/model/a/single-key/*/key"
+func (n *Model_SingleKeyPathAny) Key() *Model_SingleKey_KeyPathAny {
+	return &Model_SingleKey_KeyPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "key"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+}
+
+// Value (leaf):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "*/value"
+//	Path from root:       "/model/a/single-key/*/value"
+func (n *Model_SingleKeyPath) Value() *Model_SingleKey_ValuePath {
+	return &Model_SingleKey_ValuePath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "value"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+}
+
+// Value (leaf):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "*/value"
+//	Path from root:       "/model/a/single-key/*/value"
+func (n *Model_SingleKeyPathAny) Value() *Model_SingleKey_ValuePathAny {
+	return &Model_SingleKey_ValuePathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "value"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
 }
