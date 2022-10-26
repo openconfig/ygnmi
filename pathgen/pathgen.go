@@ -989,9 +989,10 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 	}
 
 	nonLeafSnippet := GoPathStructCodeSnippet{
-		PathStructName: structData.TypeName,
-		StructBase:     structBuf.String(),
-		Package:        goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix),
+		PathStructName:    structData.TypeName,
+		StructBase:        structBuf.String(),
+		ChildConstructors: methodBuf.String(),
+		Package:           goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix),
 	}
 	for dep := range deps {
 		nonLeafSnippet.Deps = append(nonLeafSnippet.Deps, dep)
@@ -1010,11 +1011,10 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 		}
 	}
 
+	// Since it is not possible for gNMI to refer to individual nodes underneath an unkeyed list, prevent constructing paths below a keyless list.
 	if directory.Type == ygen.List && len(directory.ListKeys) == 0 {
-		return snippets, errs
+		snippets[nonLeafIdx].ChildConstructors = ""
 	}
-
-	snippets[nonLeafIdx].ChildConstructors = methodBuf.String()
 
 	return snippets, errs
 }
@@ -1099,6 +1099,7 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 	case field.Type != ygen.ListNode:
 		return generateChildConstructorsForLeafOrContainer(methodBuf, fieldData, isUnderFakeRoot, generateWildcardPaths, unified, field.Type == ygen.LeafNode || field.Type == ygen.LeafListNode)
 	case len(fieldDirectory.ListKeys) == 0:
+		// Generate a single wildcard constructor for keyless-lists.
 		if errs := generateChildConstructorsForListBuilderFormat(methodBuf, builderBuf, fieldDirectory.ListKeys, fieldDirectory.ListKeyYANGNames, fieldData, isUnderFakeRoot, schemaStructPkgAccessor); len(errs) > 0 {
 			return errs
 		}
