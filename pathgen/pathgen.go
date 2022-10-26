@@ -987,6 +987,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 	if len(errs) == 0 {
 		errs = nil
 	}
+
 	nonLeafSnippet := GoPathStructCodeSnippet{
 		PathStructName:    structData.TypeName,
 		StructBase:        structBuf.String(),
@@ -996,6 +997,8 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 	for dep := range deps {
 		nonLeafSnippet.Deps = append(nonLeafSnippet.Deps, dep)
 	}
+
+	nonLeafIdx := len(snippets)
 	snippets = append(snippets, nonLeafSnippet)
 
 	for pkg, build := range listBuilderAPIBufs {
@@ -1007,6 +1010,12 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 			})
 		}
 	}
+
+	// Since it is not possible for gNMI to refer to individual nodes underneath an unkeyed list, prevent constructing paths below a keyless list.
+	if directory.Type == ygen.List && len(directory.ListKeys) == 0 {
+		snippets[nonLeafIdx].ChildConstructors = ""
+	}
+
 	return snippets, errs
 }
 
@@ -1090,14 +1099,11 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 	case field.Type != ygen.ListNode:
 		return generateChildConstructorsForLeafOrContainer(methodBuf, fieldData, isUnderFakeRoot, generateWildcardPaths, unified, field.Type == ygen.LeafNode || field.Type == ygen.LeafListNode)
 	case len(fieldDirectory.ListKeys) == 0:
-		// TODO(wenbli): keyless lists as a path are not supported by gNMI, but this
-		// library is currently intended for gNMI, so need to decide on a long-term solution.
-
-		// As a short-term solution, we just need to prevent the user from accessing any node in the keyless list's subtree.
-		// Here, we simply skip generating the child constructor, such that its subtree is unreachable.
+		// Generate a single wildcard constructor for keyless-lists.
+		if errs := generateChildConstructorsForListBuilderFormat(methodBuf, builderBuf, fieldDirectory.ListKeys, fieldDirectory.ListKeyYANGNames, fieldData, isUnderFakeRoot, schemaStructPkgAccessor); len(errs) > 0 {
+			return errs
+		}
 		return nil
-		// Erroring out, on the other hand, is impractical due to their existence in the current OpenConfig models.
-		// return fmt.Errorf("generateChildConstructors: schemas containing keyless lists are unsupported, path: %s", field.Path())
 	default:
 		if generateWildcardPaths {
 			if errs := generateChildConstructorsForListBuilderFormat(methodBuf, builderBuf, fieldDirectory.ListKeys, fieldDirectory.ListKeyYANGNames, fieldData, isUnderFakeRoot, schemaStructPkgAccessor); len(errs) > 0 {
@@ -1330,7 +1336,7 @@ type keyParam struct {
 //	  docstring out: ["string", "[oc.Binary, oc.UnionUint64]"]
 func makeKeyParams(keys map[string]*ygen.ListKey, keyNames []string, schemaStructPkgAccessor string) ([]keyParam, error) {
 	if len(keys) == 0 {
-		return nil, fmt.Errorf("makeKeyParams: invalid list - has no key; cannot process param list string")
+		return nil, nil
 	}
 
 	// Create parameter list *in order* of keys, which should be in schema order.
