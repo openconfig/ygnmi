@@ -533,9 +533,9 @@ func (sb *SetBatch) Set(ctx context.Context, c *Client) (*Result, error) {
 	req.Prefix = &gpb.Path{
 		Target: c.target,
 	}
-	log.V(1).Info(prettySetRequest(req))
+	log.V(2).Info(prettySetRequest(req))
 	resp, err := c.gnmiC.Set(ctx, req)
-	log.V(1).Infof("SetResponse:\n%s", prototext.Format(resp))
+	log.V(2).Infof("SetResponse:\n%s", prototext.Format(resp))
 	return responseToResult(resp), err
 }
 

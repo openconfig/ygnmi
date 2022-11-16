@@ -85,7 +85,7 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 	}
 	defer closer.Close(&rerr, sub.CloseSend, "error closing gNMI send stream")
 	if !o.useGet {
-		log.V(1).Info(prototext.Format(sr))
+		log.V(2).Info(prototext.Format(sr))
 	}
 	if err := sub.Send(sr); err != nil {
 		return nil, fmt.Errorf("gNMI failed to Send(%+v): %w", sr, err)
@@ -114,7 +114,7 @@ func (gs *getSubscriber) Send(req *gpb.SubscribeRequest) error {
 	for _, sub := range req.GetSubscribe().GetSubscription() {
 		getReq.Path = append(getReq.Path, sub.GetPath())
 	}
-	log.V(1).Info(prototext.Format(getReq))
+	log.V(2).Info(prototext.Format(getReq))
 	resp, err := gs.client.Get(gs.ctx, getReq)
 	if err != nil {
 		return err
@@ -312,9 +312,9 @@ func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, op setO
 	req.Prefix = &gpb.Path{
 		Target: c.target,
 	}
-	log.V(1).Info(prettySetRequest(req))
+	log.V(2).Info(prettySetRequest(req))
 	resp, err := c.gnmiC.Set(ctx, req)
-	log.V(1).Infof("SetResponse:\n%s", prototext.Format(resp))
+	log.V(2).Infof("SetResponse:\n%s", prototext.Format(resp))
 
 	return resp, path, err
 }
