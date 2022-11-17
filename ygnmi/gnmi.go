@@ -402,14 +402,22 @@ func prettySetRequest(setRequest *gpb.SetRequest) string {
 	return buf.String()
 }
 
+const (
+	// OriginOverride is the key to custom opt that sets the path origin.
+	OriginOverride = "origin-override"
+)
+
 func resolvePath(q PathStruct) (*gpb.Path, error) {
-	path, _, err := ResolvePath(q)
+	path, opts, err := ResolvePath(q)
 	if err != nil {
 		return nil, err
 	}
 	// TODO: remove when fixed https://github.com/openconfig/ygot/issues/615
 	if len(path.Elem) > 0 && path.Elem[0].Name != "meta" {
 		path.Origin = "openconfig"
+	}
+	if origin, ok := opts[OriginOverride]; ok {
+		path.Origin = origin.(string)
 	}
 
 	return path, nil

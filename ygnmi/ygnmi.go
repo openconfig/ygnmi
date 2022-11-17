@@ -593,12 +593,12 @@ func NewBatch[T ygot.ValidatedGoStruct](root SingletonQuery[T]) *Batch[T] {
 
 // AddPaths adds the paths to the batch. Paths must be children of the root.
 func (b *Batch[T]) AddPaths(paths ...PathStruct) error {
-	root, _, err := ResolvePath(b.root.PathStruct())
+	root, err := resolvePath(b.root.PathStruct())
 	if err != nil {
 		return err
 	}
 	for _, path := range paths {
-		p, _, err := ResolvePath(path)
+		p, err := resolvePath(path)
 		if err != nil {
 			return err
 		}
