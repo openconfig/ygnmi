@@ -131,7 +131,7 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 	}
 	if q.schema() == nil { // Handle dynamic queries.
 		val, _ := q.extract(nil)
-		var setVal interface{} = val
+		var setVal any = val
 		if q.isScalar() {
 			setVal = &val
 		}

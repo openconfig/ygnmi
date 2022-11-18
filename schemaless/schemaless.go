@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package dynamic allows the creation of dynamic (schema-less) queries.
-// The queries returned have numerous limitations and should be used for only limited use cases.
-// There are no safeguards to ensure compatibility of path and value.
-// Queries should be treated key-val pairs (not a tree structure), that is the path /a/b/c is not
-// a descendant of /a/b but rather an entirely different path. In other words, all paths are leaves
-// that contain blobs of data.
-package dynamic
+// Package schemaless allows the creation of schema-less queries.
+// Schema-less queries are that not associated with a YANG schema,
+// it is up to the user to ensure that validity of the path and the parameterized typed.
+// These queries have limited functionality compared to standard queries.
+// Unmarshaling only works if the gNMI server returns the value (or a list entry) in a single gpb.Update,
+// this is the standard behavior for leaves. For non-leaves, this can be resolved by requesting JSON encoding
+// (if supported by the server).
+package schemaless
 
 import (
 	"fmt"
@@ -97,6 +98,8 @@ func newQueryField[T any](path, origin string) (ygnmi.PathStruct, func(vgs ygot.
 		createFn = func(vgs ygot.ValidatedGoStruct) (T, bool) {
 			return reflect.New(paramType.Elem()).Interface().(T), true
 		}
+	case reflect.Chan, reflect.Func:
+		return nil, nil, false, fmt.Errorf("unsupported parameterize type: %s", paramType.Kind().String())
 	}
 	return ps, createFn, scalar, nil
 }

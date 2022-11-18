@@ -57,7 +57,7 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 				},
 				Subscription: subs,
 				Mode:         mode,
-				Encoding:     gpb.Encoding_PROTO,
+				Encoding:     o.encoding,
 			},
 		},
 	}

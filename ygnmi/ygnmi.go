@@ -146,13 +146,16 @@ func NewClient(c gpb.GNMIClient, opts ...ClientOption) (*Client, error) {
 type Option func(*opt)
 
 type opt struct {
-	useGet bool
-	mode   gpb.SubscriptionMode
+	useGet   bool
+	mode     gpb.SubscriptionMode
+	encoding gpb.Encoding
 }
 
 // resolveOpts applies all the options and returns a struct containing the result.
 func resolveOpts(opts []Option) *opt {
-	o := &opt{}
+	o := &opt{
+		encoding: gpb.Encoding_PROTO,
+	}
 	for _, opt := range opts {
 		opt(o)
 	}
@@ -167,11 +170,19 @@ func WithUseGet() Option {
 	}
 }
 
-// WithSubscriptionMode creates to an option to use input instead of the default (TARGET_DEFINED).
+// WithSubscriptionMode creates an option to use input instead of the default (TARGET_DEFINED).
 // This option is only relevant for Watch, WatchAll, Collect, CollectAll, Await which are STREAM subscriptions.
 func WithSubscriptionMode(mode gpb.SubscriptionMode) Option {
 	return func(o *opt) {
 		o.mode = mode
+	}
+}
+
+// WithEncoding creates an option to set the Encoding for all Subscribe or Get requests.
+// The default encoding is PROTO. This does not apply when using WithUseGet, whith uses JSON_IETF encoding.
+func WithEncoding(enc gpb.Encoding) Option {
+	return func(o *opt) {
+		o.encoding = enc
 	}
 }
 
