@@ -13,10 +13,11 @@
 // limitations under the License.
 
 // Package schemaless allows the creation of schema-less queries.
-// Schema-less queries are that not associated with a YANG schema,
-// it is up to the user to ensure that validity of the path and the parameterized typed.
-// These queries have limited functionality compared to standard queries.
-// Unmarshaling only works if the gNMI server returns the value (or a list entry) in a single gpb.Update,
+// Schema-less queries are not associated with a YANG schema,
+// the user is free to choose any serializable type for any particular path,
+// although the selection must be consistent to avoid runtime type mismatch.
+// These queries have limited functionality compared to standard queries:
+// unmarshaling only works if the gNMI server returns the value (or a list entry) in a single gpb.Update,
 // this is the standard behavior for leaves. For non-leaves, this can be resolved by requesting JSON encoding
 // (if supported by the server).
 package schemaless

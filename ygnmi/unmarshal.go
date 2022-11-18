@@ -129,14 +129,14 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 	if len(data) == 0 {
 		return ret, nil
 	}
-	if q.schema() == nil { // Handle dynamic queries.
+	if q.schema() == nil { // Handle schema-less queries.
 		val, _ := q.extract(nil)
 		var setVal any = val
 		if q.isScalar() {
 			setVal = &val
 		}
 
-		if err := unmarshalDynamic(data, setVal); err != nil {
+		if err := unmarshalSchemaless(data, setVal); err != nil {
 			return ret, err
 		}
 		ret.Timestamp = data[0].Timestamp
@@ -180,7 +180,7 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 	return ret, nil
 }
 
-func unmarshalDynamic(data []*DataPoint, val any) error {
+func unmarshalSchemaless(data []*DataPoint, val any) error {
 	switch {
 	case len(data) > 2:
 		return fmt.Errorf("got multiple datapoints for dynamic node")
