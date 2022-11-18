@@ -84,6 +84,36 @@ func TestGet(t *testing.T) {
 			t.Errorf("Lookup() returned unexpected diff: %s", diff)
 		}
 	})
+	t.Run("custom origin ", func(t *testing.T) {
+		path := testutil.GNMIPath(t, "/foo/bar")
+		path.Origin = "testorigin"
+
+		fakeGNMI.Stub().Notification(&gpb.Notification{
+			Timestamp: 100,
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "/foo/bar"),
+				Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonVal{
+					JsonVal: []byte(`{ "name": "test" }`),
+				}},
+			}},
+		}).Sync()
+		query, err := NewConfig[*dynamicData]("/foo/bar", "testorigin")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		want := &dynamicData{
+			Name: "test",
+		}
+
+		got, err := ygnmi.Get[*dynamicData](context.Background(), c, query)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("Lookup() returned unexpected diff: %s", diff)
+		}
+	})
 }
 
 func TestGetAll(t *testing.T) {

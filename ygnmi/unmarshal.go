@@ -129,7 +129,7 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 	if len(data) == 0 {
 		return ret, nil
 	}
-	if q.schema() == nil {
+	if q.schema() == nil { // Handle dynamic queries.
 		val, _ := q.extract(nil)
 		var setVal interface{} = val
 		if q.isScalar() {
@@ -190,6 +190,9 @@ func unmarshalDynamic(data []*DataPoint, val any) error {
 	rVal := reflect.ValueOf(val).Elem()
 	valType := reflect.TypeOf(val).Elem()
 	kind := valType.Kind()
+	if !rVal.CanSet() {
+		return fmt.Errorf("value not settable")
+	}
 
 	switch dataVal := data[0].Value.Value.(type) {
 	case *gpb.TypedValue_StringVal:
@@ -240,6 +243,8 @@ func unmarshalDynamic(data []*DataPoint, val any) error {
 		return json.Unmarshal(dataVal.JsonVal, val)
 	case *gpb.TypedValue_JsonIetfVal:
 		return json.Unmarshal(dataVal.JsonIetfVal, val)
+	default:
+		return fmt.Errorf("unsupported type: %T", dataVal)
 	}
 	return nil
 }
