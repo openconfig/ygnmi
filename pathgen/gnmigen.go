@@ -42,12 +42,15 @@ type gnmiStruct struct {
 	RelPath                 string
 	DefiningModuleName      string
 	InstantiatingModuleName string
+	SpecialConvertFunc      string
 }
 
 const (
 	// TODO(DanG100): pass options into custom generators and remove this.
 	fakeRootName = "Root"
 )
+
+var packagesSeen = map[string]bool{}
 
 // GNMIGenerator is a plugin generator for generating ygnmi query objects.
 // Note: GNMIGenerator requires that PreferOperationalState be true when generating PathStructs.
@@ -73,6 +76,25 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 	if node.SubsumingGoStructName == fakeRootName {
 		if err := batchTemplate.Execute(&b, tmplStruct); err != nil {
 			return "", err
+		}
+	}
+	if !packagesSeen[node.GoPathPackageName] {
+		packagesSeen[node.GoPathPackageName] = true
+		if err := oncePerPackageTmpl.Execute(&b, struct{}{}); err != nil {
+			return "", err
+		}
+	}
+
+	if node.YANGTypeName == "ieeefloat32" {
+		switch node.LocalGoTypeName {
+		case "Binary":
+			tmplStruct.GoTypeName = "float32"
+			tmplStruct.SpecialConvertFunc = "ygot.BinaryToFloat32"
+		case "[]Binary":
+			tmplStruct.GoTypeName = "[]float32"
+			tmplStruct.SpecialConvertFunc = "binarySliceToFloatSlice"
+		default:
+			return "", fmt.Errorf("ieeefloat32 is expected to be a binary, got %q", node.LocalGoTypeName)
 		}
 	}
 
@@ -168,7 +190,11 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 			}
 			return *ret, true
 			{{- else }}
+			{{- if .SpecialConvertFunc }}
+			return {{ .SpecialConvertFunc }}(ret), !reflect.ValueOf(ret).IsZero()
+			{{- else}}
 			return ret, !reflect.ValueOf(ret).IsZero()
+			{{- end }}
 			{{- end}}
 		},
 		func() ygot.ValidatedGoStruct { return new({{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}) },
@@ -206,7 +232,11 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 			}
 			return *ret, true
 			{{- else }}
+			{{- if .SpecialConvertFunc }}
+			return {{ .SpecialConvertFunc }}(ret), !reflect.ValueOf(ret).IsZero()
+			{{- else}}
 			return ret, !reflect.ValueOf(ret).IsZero()
+			{{- end }}
 			{{- end}}
 		},
 		func() ygot.ValidatedGoStruct { return new({{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}) },
@@ -302,6 +332,15 @@ func (b *Batch) Config() ygnmi.{{ .SingletonTypeName }}[*oc.Root] {
             Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
         },
     )
+}
+`)
+	oncePerPackageTmpl = mustTemplate("once-per-package", `
+func binarySliceToFloatSlice(in []oc.Binary) []float32 {
+	converted := make([]float32, 0, len(in))
+	for _, binary := range in {
+		converted = append(converted, ygot.BinaryToFloat32(binary))
+	}
+	return converted
 }
 `)
 )

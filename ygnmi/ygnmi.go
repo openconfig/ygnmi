@@ -112,6 +112,19 @@ func (v *Value[T]) IsPresent() bool {
 	return v.present
 }
 
+// String returns a user-readable string for the value.
+func (v *Value[T]) String() string {
+	path, err := ygot.PathToString(v.Path)
+	if err != nil {
+		path = v.Path.String()
+	}
+	val := "(not present)"
+	if v.present {
+		val = fmt.Sprintf("%+v", v.val)
+	}
+	return fmt.Sprintf("path: %s\nvalue: %s", path, val)
+}
+
 // Client is used to perform gNMI requests.
 type Client struct {
 	gnmiC  gpb.GNMIClient
@@ -146,13 +159,16 @@ func NewClient(c gpb.GNMIClient, opts ...ClientOption) (*Client, error) {
 type Option func(*opt)
 
 type opt struct {
-	useGet bool
-	mode   gpb.SubscriptionMode
+	useGet   bool
+	mode     gpb.SubscriptionMode
+	encoding gpb.Encoding
 }
 
 // resolveOpts applies all the options and returns a struct containing the result.
 func resolveOpts(opts []Option) *opt {
-	o := &opt{}
+	o := &opt{
+		encoding: gpb.Encoding_PROTO,
+	}
 	for _, opt := range opts {
 		opt(o)
 	}
@@ -167,11 +183,19 @@ func WithUseGet() Option {
 	}
 }
 
-// WithSubscriptionMode creates to an option to use input instead of the default (TARGET_DEFINED).
+// WithSubscriptionMode creates an option to use input instead of the default (TARGET_DEFINED).
 // This option is only relevant for Watch, WatchAll, Collect, CollectAll, Await which are STREAM subscriptions.
 func WithSubscriptionMode(mode gpb.SubscriptionMode) Option {
 	return func(o *opt) {
 		o.mode = mode
+	}
+}
+
+// WithEncoding creates an option to set the Encoding for all Subscribe or Get requests.
+// The default encoding is PROTO. This does not apply when using WithUseGet, whith uses JSON_IETF encoding.
+func WithEncoding(enc gpb.Encoding) Option {
+	return func(o *opt) {
+		o.encoding = enc
 	}
 }
 
@@ -593,12 +617,12 @@ func NewBatch[T ygot.ValidatedGoStruct](root SingletonQuery[T]) *Batch[T] {
 
 // AddPaths adds the paths to the batch. Paths must be children of the root.
 func (b *Batch[T]) AddPaths(paths ...PathStruct) error {
-	root, _, err := ResolvePath(b.root.PathStruct())
+	root, err := resolvePath(b.root.PathStruct())
 	if err != nil {
 		return err
 	}
 	for _, path := range paths {
-		p, _, err := ResolvePath(path)
+		p, err := resolvePath(path)
 		if err != nil {
 			return err
 		}

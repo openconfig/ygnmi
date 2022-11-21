@@ -129,3 +129,34 @@ func (s *Stubber) Sync() *Stubber {
 	})
 	return s
 }
+
+type SetClient struct {
+	gpb.GNMIClient
+	// Responses are the gNMI Responses to return from calls to Set.
+	Responses []*gpb.SetResponse
+	// Requests received by the client are stored in the slice.
+	Requests []*gpb.SetRequest
+	// ResponseErrs are the errors to return from calls to Set.
+	ResponseErrs []error
+	// i is index current index of the response and error to return.
+	i int
+}
+
+func (f *SetClient) Reset() {
+	f.Requests = nil
+	f.Responses = nil
+	f.ResponseErrs = nil
+	f.i = 0
+}
+
+func (f *SetClient) AddResponse(resp *gpb.SetResponse, err error) *SetClient {
+	f.Responses = append(f.Responses, resp)
+	f.ResponseErrs = append(f.ResponseErrs, err)
+	return f
+}
+
+func (f *SetClient) Set(_ context.Context, req *gpb.SetRequest, opts ...grpc.CallOption) (*gpb.SetResponse, error) {
+	defer func() { f.i++ }()
+	f.Requests = append(f.Requests, req)
+	return f.Responses[f.i], f.ResponseErrs[f.i]
+}

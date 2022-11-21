@@ -18,42 +18,22 @@ import (
 	"github.com/openconfig/ygot/ytypes"
 )
 
-// Parent represents the /openconfig-simple/parent YANG schema element.
-type Parent struct {
+// Parent_Child_Five represents the /openconfig-simple/parent/child/state/five YANG schema element.
+type Parent_Child_Five struct {
 	*ygnmi.NodePath
 }
 
-// ParentAny represents the wildcard version of the /openconfig-simple/parent YANG schema element.
-type ParentAny struct {
+// Parent_Child_FiveAny represents the wildcard version of the /openconfig-simple/parent/child/state/five YANG schema element.
+type Parent_Child_FiveAny struct {
 	*ygnmi.NodePath
 }
 
-// Child (container): 
-// 	Defining module:      "openconfig-simple"
-// 	Instantiating module: "openconfig-simple"
-// 	Path from parent:     "child"
-// 	Path from root:       "/parent/child"
-func (n *Parent) Child() *Parent_Child {
-	return &Parent_Child{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"child"},
-			map[string]interface{}{},
-			n,
-		),
-	}
+// Parent_Child_Four represents the /openconfig-simple/parent/child/state/four YANG schema element.
+type Parent_Child_Four struct {
+	*ygnmi.NodePath
 }
 
-// Child (container): 
-// 	Defining module:      "openconfig-simple"
-// 	Instantiating module: "openconfig-simple"
-// 	Path from parent:     "child"
-// 	Path from root:       "/parent/child"
-func (n *ParentAny) Child() *Parent_ChildAny {
-	return &Parent_ChildAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"child"},
-			map[string]interface{}{},
-			n,
-		),
-	}
+// Parent_Child_FourAny represents the wildcard version of the /openconfig-simple/parent/child/state/four YANG schema element.
+type Parent_Child_FourAny struct {
+	*ygnmi.NodePath
 }

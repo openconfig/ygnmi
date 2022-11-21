@@ -8,7 +8,7 @@ test:
 	go test -coverprofile=profile.cov -v ./...
 
 gen:
-	internal/exampleoc/gen.sh
+	exampleoc/gen.sh
 
 clean:
 	find internal/exampleoc -mindepth 1 -maxdepth 1 ! -name gen.go ! -name gen.sh -exec rm -r {} \+

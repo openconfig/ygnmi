@@ -171,6 +171,30 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "two",
 			},
+			"Parent_Child_FivePath": {
+				GoTypeName:            "Binary",
+				LocalGoTypeName:       "Binary",
+				GoFieldName:           "Five",
+				SubsumingGoStructName: "Parent_Child",
+				IsLeaf:                true,
+				YANGTypeName:          "ieeefloat32",
+				YANGPath:              "/openconfig-simple/parent/child/state/five",
+				GoPathPackageName:     "ocstructs",
+				YANGFieldName:         "five",
+				DirectoryName:         "/openconfig-simple/parent/child",
+			},
+			"Parent_Child_SixPath": {
+				GoTypeName:            "[]Binary",
+				LocalGoTypeName:       "[]Binary",
+				GoFieldName:           "Six",
+				SubsumingGoStructName: "Parent_Child",
+				IsLeaf:                true,
+				YANGTypeName:          "ieeefloat32",
+				YANGPath:              "/openconfig-simple/parent/child/state/six",
+				GoPathPackageName:     "ocstructs",
+				YANGFieldName:         "six",
+				DirectoryName:         "/openconfig-simple/parent/child",
+			},
 			"RemoteContainerPath": {
 				GoTypeName:            "*RemoteContainer",
 				LocalGoTypeName:       "*RemoteContainer",
@@ -292,6 +316,30 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "two",
 			},
+			"Parent_Child_FivePath": {
+				GoTypeName:            "Binary",
+				LocalGoTypeName:       "Binary",
+				GoFieldName:           "Five",
+				SubsumingGoStructName: "Parent_Child",
+				IsLeaf:                true,
+				YANGTypeName:          "ieeefloat32",
+				YANGPath:              "/openconfig-simple/parent/child/config/five",
+				GoPathPackageName:     "ocstructs",
+				YANGFieldName:         "five",
+				DirectoryName:         "/openconfig-simple/parent/child",
+			},
+			"Parent_Child_SixPath": {
+				GoTypeName:            "[]Binary",
+				LocalGoTypeName:       "[]Binary",
+				GoFieldName:           "Six",
+				SubsumingGoStructName: "Parent_Child",
+				IsLeaf:                true,
+				YANGTypeName:          "ieeefloat32",
+				YANGPath:              "/openconfig-simple/parent/child/config/six",
+				GoPathPackageName:     "ocstructs",
+				YANGFieldName:         "six",
+				DirectoryName:         "/openconfig-simple/parent/child",
+			},
 			"RemoteContainerPath": {
 				GoTypeName:            "*RemoteContainer",
 				LocalGoTypeName:       "*RemoteContainer",
@@ -398,6 +446,30 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "three",
+			},
+			"Parent_Child_FivePath": {
+				GoTypeName:            "Binary",
+				LocalGoTypeName:       "Binary",
+				GoFieldName:           "Five",
+				SubsumingGoStructName: "Parent_Child",
+				IsLeaf:                true,
+				YANGTypeName:          "ieeefloat32",
+				YANGPath:              "/openconfig-simple/parent/child/state/five",
+				GoPathPackageName:     "ocstructs",
+				YANGFieldName:         "five",
+				DirectoryName:         "/openconfig-simple/parent/child",
+			},
+			"Parent_Child_SixPath": {
+				GoTypeName:            "[]Binary",
+				LocalGoTypeName:       "[]Binary",
+				GoFieldName:           "Six",
+				SubsumingGoStructName: "Parent_Child",
+				IsLeaf:                true,
+				YANGTypeName:          "ieeefloat32",
+				YANGPath:              "/openconfig-simple/parent/child/state/six",
+				GoPathPackageName:     "ocstructs",
+				YANGFieldName:         "six",
+				DirectoryName:         "/openconfig-simple/parent/child",
 			},
 			"RemoteContainerPath": {
 				GoTypeName:            "*RemoteContainer",
@@ -1133,7 +1205,7 @@ func TestGeneratePathCodeSplitFiles(t *testing.T) {
 	}{{
 		name:                  "fileNumber is higher than total number of structs",
 		inFiles:               []string{filepath.Join(datapath, "openconfig-simple.yang")},
-		inFileNumber:          10,
+		inFileNumber:          1000,
 		inSchemaStructPkgPath: "",
 		wantErr:               true,
 	}, {
@@ -2250,6 +2322,16 @@ func (n *RootPath) ContainerWithConfig() *ContainerWithConfigPath {
 	}
 }
 
+func (n *RootPath) KeylessListAny() *KeylessListPathAny {
+	return &KeylessListPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"keyless-list-container", "keyless-list"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
 // Leaf returns from RootPath the path struct for its child "leaf".
 func (n *RootPath) Leaf() *LeafPath {
 	return &LeafPath{
@@ -2292,6 +2374,16 @@ func (n *RootPath) ContainerWithConfig() *rootmodulepath.ContainerWithConfigPath
 	return &rootmodulepath.ContainerWithConfigPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"container-with-config"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
+func (n *RootPath) KeylessListAny() *rootmodulepath.KeylessListPathAny {
+	return &rootmodulepath.KeylessListPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"keyless-list-container", "keyless-list"},
 			map[string]interface{}{},
 			n,
 		),
@@ -3037,6 +3129,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 
 				for i, s := range got {
 					got[i].ChildConstructors = trimDocComments(s.ChildConstructors)
+					t.Log(got[i])
 				}
 				if diff := cmp.Diff(tt.want, got); diff != "" {
 					t.Errorf("func generateDirectorySnippet mismatch (-want, +got): %s\n", diff)
@@ -3053,6 +3146,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 
 				for i, s := range got {
 					got[i].ChildConstructors = trimDocComments(s.ChildConstructors)
+					t.Log(got[i])
 				}
 				if diff := cmp.Diff(tt.wantNoWildcard, got); diff != "" {
 					t.Errorf("func generateDirectorySnippet mismatch (-want, +got):%s\n", diff)
@@ -3235,7 +3329,22 @@ func (n *ContainerWithConfigPathAny) Leaflist() *ContainerWithConfig_LeaflistPat
 		inPathStructSuffix:      "Path",
 		inGenerateWildcardPaths: true,
 		testMethodDocComment:    true,
-		wantMethod:              ``,
+		wantMethod: `
+// KeylessListAny (list): 
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "keyless-list-container/keyless-list"
+// 	Path from root:       "/keyless-list-container/keyless-list"
+func (n *RootPath) KeylessListAny() *KeylessListPathAny {
+	return &KeylessListPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"keyless-list-container", "keyless-list"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+`,
 	}, {
 		name:                    "list with state method",
 		inDirectory:             directories["/root"],
@@ -3350,10 +3459,9 @@ func TestMakeKeyParams(t *testing.T) {
 		wantKeyParams    []keyParam
 		wantErrSubstring string
 	}{{
-		name:             "empty listattr",
-		inKeys:           nil,
-		inKeyNames:       nil,
-		wantErrSubstring: "invalid list - has no key",
+		name:       "empty listattr",
+		inKeys:     nil,
+		inKeyNames: nil,
 	}, {
 		name: "simple string param",
 		inKeys: map[string]*ygen.ListKey{

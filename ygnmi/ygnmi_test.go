@@ -29,7 +29,6 @@ import (
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygot"
-	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 
@@ -2183,7 +2182,7 @@ func TestCollectAll(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	setClient := &fakeGNMISetClient{}
+	setClient := &testutil.SetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
 	if err != nil {
 		t.Fatalf("Unexpected error creating client: %v", err)
@@ -2282,7 +2281,7 @@ func TestUpdate(t *testing.T) {
 			if err != nil {
 				return
 			}
-			if diff := cmp.Diff(tt.wantRequest, setClient.requests[0], protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantRequest, setClient.Requests[0], protocmp.Transform()); diff != "" {
 				t.Errorf("Update() sent unexpected request (-want,+got):\n%s", diff)
 			}
 			want := &ygnmi.Result{
@@ -2297,7 +2296,7 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestReplace(t *testing.T) {
-	setClient := &fakeGNMISetClient{}
+	setClient := &testutil.SetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
 	if err != nil {
 		t.Fatalf("Unexpected error creating client: %v", err)
@@ -2396,7 +2395,7 @@ func TestReplace(t *testing.T) {
 			if err != nil {
 				return
 			}
-			if diff := cmp.Diff(tt.wantRequest, setClient.requests[0], protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantRequest, setClient.Requests[0], protocmp.Transform()); diff != "" {
 				t.Errorf("Replace() sent unexpected request (-want,+got):\n%s", diff)
 			}
 			want := &ygnmi.Result{
@@ -2411,7 +2410,7 @@ func TestReplace(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	setClient := &fakeGNMISetClient{}
+	setClient := &testutil.SetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
 	if err != nil {
 		t.Fatalf("Unexpected error creating client: %v", err)
@@ -2469,7 +2468,7 @@ func TestDelete(t *testing.T) {
 			if err != nil {
 				return
 			}
-			if diff := cmp.Diff(tt.wantRequest, setClient.requests[0], protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantRequest, setClient.Requests[0], protocmp.Transform()); diff != "" {
 				t.Errorf("Delete() sent unexpected request (-want,+got):\n%s", diff)
 			}
 			want := &ygnmi.Result{
@@ -2875,7 +2874,7 @@ func TestCustomRootBatch(t *testing.T) {
 }
 
 func TestSetBatch(t *testing.T) {
-	setClient := &fakeGNMISetClient{}
+	setClient := &testutil.SetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
 	if err != nil {
 		t.Fatalf("Unexpected error creating client: %v", err)
@@ -2960,7 +2959,7 @@ func TestSetBatch(t *testing.T) {
 			if err != nil {
 				return
 			}
-			if diff := cmp.Diff(tt.wantRequest, setClient.requests[0], protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantRequest, setClient.Requests[0], protocmp.Transform()); diff != "" {
 				t.Errorf("Set() sent unexpected request (-want,+got):\n%s", diff)
 			}
 			want := &ygnmi.Result{
@@ -2988,37 +2987,6 @@ func newClient(t testing.TB) (*testutil.FakeGNMI, *ygnmi.Client) {
 		t.Fatal(err)
 	}
 	return fakeGNMI, c
-}
-
-type fakeGNMISetClient struct {
-	gpb.GNMIClient
-	// responses are the gNMI responses to return from calls to Set.
-	responses []*gpb.SetResponse
-	// requests received by the client are stored in the slice.
-	requests []*gpb.SetRequest
-	// responseErrs are the errors to return from calls to Set.
-	responseErrs []error
-	// i is index current index of the response and error to return.
-	i int
-}
-
-func (f *fakeGNMISetClient) Reset() {
-	f.requests = nil
-	f.responses = nil
-	f.responseErrs = nil
-	f.i = 0
-}
-
-func (f *fakeGNMISetClient) AddResponse(resp *gpb.SetResponse, err error) *fakeGNMISetClient {
-	f.responses = append(f.responses, resp)
-	f.responseErrs = append(f.responseErrs, err)
-	return f
-}
-
-func (f *fakeGNMISetClient) Set(_ context.Context, req *gpb.SetRequest, opts ...grpc.CallOption) (*gpb.SetResponse, error) {
-	defer func() { f.i++ }()
-	f.requests = append(f.requests, req)
-	return f.responses[f.i], f.responseErrs[f.i]
 }
 
 // checkJustReceived checks that the received time is just before now.

@@ -67,6 +67,17 @@ module openconfig-withlistval {
           }
         }
       }
+      container c {
+        config false;
+        list no-key {
+          container foo {
+            container state {
+              config false;
+              uses single-key-config;
+            }
+          }
+        }
+      }
     }
   }
 

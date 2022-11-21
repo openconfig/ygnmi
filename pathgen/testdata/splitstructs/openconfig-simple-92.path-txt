@@ -18,12 +18,22 @@ import (
 	"github.com/openconfig/ygot/ytypes"
 )
 
-// Parent_Child_Four represents the /openconfig-simple/parent/child/state/four YANG schema element.
-type Parent_Child_Four struct {
+// Parent_Child_One represents the /openconfig-simple/parent/child/state/one YANG schema element.
+type Parent_Child_One struct {
 	*ygnmi.NodePath
 }
 
-// Parent_Child_FourAny represents the wildcard version of the /openconfig-simple/parent/child/state/four YANG schema element.
-type Parent_Child_FourAny struct {
+// Parent_Child_OneAny represents the wildcard version of the /openconfig-simple/parent/child/state/one YANG schema element.
+type Parent_Child_OneAny struct {
+	*ygnmi.NodePath
+}
+
+// Parent_Child_Six represents the /openconfig-simple/parent/child/state/six YANG schema element.
+type Parent_Child_Six struct {
+	*ygnmi.NodePath
+}
+
+// Parent_Child_SixAny represents the wildcard version of the /openconfig-simple/parent/child/state/six YANG schema element.
+type Parent_Child_SixAny struct {
 	*ygnmi.NodePath
 }
