@@ -80,6 +80,77 @@ The relationship of the query types is:
 * Config: Update, Replace, Delete, BatchUpdate, BatchReplace, BatchDelete
 * Wildcard: LookupAll, GetAll, WatchAll, CollectAll
 
+## Noncompliance Errors
+
+ygnmi detects and reports noncompliance errors in any data or paths it receives.
+As explained in greater detail below, there three kinds of noncompliance errors
+that ygnmi detects: *Path Noncompliance*, *Type Noncompliance*, and *Value
+Noncompliance*.
+
+### Noncompliance Reporting
+
+When executing a non-wildcard leaf query, every kind of noncompliance error is
+returned as a hard error from the ygnmi API call. However, when executing any
+other kind of query (i.e. a wildcard and/or non-leaf query), noncompliance
+errors are logged and made available for further inspection through the
+[`Compliance Errors` field](https://github.com/openconfig/ygnmi/blob/fc0ed1e49141ed7de0666c610906697d2f025d7f/ygnmi/ygnmi.go#L95)
+of the `ygnmi.Value` type.
+
+The reason for avoiding hard errors when executing a wildcard and/or non-leaf
+query is that the noncompliant data received in these cases is often unrelated
+to the data under test. The noncompliant data is often gathered only as a
+byproduct of querying for compliant data that the test *does* care about. For
+example, a test using `gnmi.Collect` may receive noncompliant Deletes when it
+cares test cares only about Updates; or a test using `gnmi.Get` on a container
+may receive noncompliant leaves unrelated to the leaves of interest.
+
+### Path Noncompliance
+
+Path noncompliance occurs when the path received from the system is invalid.
+This could be due to the path (a) not matching the query path, (b) referring to
+a node that doesn't exist in the YANG schema, or (c) being malformed due to
+using deprecated proto fields.
+
+**Node name mismatch**
+* Query: `/interfaces/interface[name="eth1"]/state/counters/in-octets`
+* Received: `/interfaces/interface[name="eth1"]/state/counters/out-octets`
+
+**Key name mismatch**
+* Query: `/interfaces/interface[name="eth1"]`
+* Received: `/interfaces/interface[name="eth2"]/state/counters/out-octets`
+
+**Non-existent path**
+* Query: `/interfaces/interface[name="eth1"]/state/counters`
+* Received: `/interfaces/interface[name="eth1"]/state/counters/bogus-field`
+
+### Type Noncompliance
+
+Type noncompliance occurs when the received path is valid, but the value cannot
+be unmarshalled into the `GoStruct` by `ygot`. This could be due to (a) the
+received type not matching what is defined in the YANG schema (e.g. received
+string instead of uint32), or (b) when an enum value doesn't match one of the
+values defined for that enum in the YANG schema.
+
+**Type mismatch**
+* Query: `/interfaces/interface[name="eth1"]`
+* Received: `/interfaces/interface[name="eth1"]/state/counters/out-octets, "foo"`
+
+### Value Noncompliance
+
+Value noncompliance occurs when the received path is valid and the type *can* be
+unmarshalled into the `GoStruct` by `ygot`, but validation of its value by
+`ygot` fails. This could be due to, for example, a string that doesn't match its
+regex as specified in its YANG schema, or a list key value that doesn't match
+the corresponding value in its path.
+
+**YANG Type Restriction noncompliance**
+* Query: `/interfaces/interface[name="\*"]`
+* Received: `/interfaces/interface[name="eth1"]/ethernet/state/mac-address, "zz:zz:zz:zz:zz:zz"`
+
+**YANG List Key value mismatch**
+* Query: `/interfaces/interface[name="eth1"]`
+* Received (or not received at all): `/interfaces/interface[name="eth1"]/ethernet/state/name, "eth2"`
+
 ## Additional Reference
 
 * See [ygot](github.com/openconfig/ygot) for more information on how YANG is mapped to Go code.
