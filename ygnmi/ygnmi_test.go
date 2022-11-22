@@ -26,11 +26,13 @@ import (
 	"github.com/openconfig/ygnmi/exampleoc"
 	"github.com/openconfig/ygnmi/exampleoc/exampleocpath"
 	"github.com/openconfig/ygnmi/internal/testutil"
+	"github.com/openconfig/ygnmi/schemaless"
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygot"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
 	ygottestutil "github.com/openconfig/ygot/testutil"
@@ -2181,6 +2183,10 @@ func TestCollectAll(t *testing.T) {
 	}
 }
 
+type testStruct struct {
+	Val string
+}
+
 func TestUpdate(t *testing.T) {
 	setClient := &testutil.SetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
@@ -2268,6 +2274,77 @@ func TestUpdate(t *testing.T) {
 		},
 		stubErr: fmt.Errorf("fake"),
 		wantErr: "fake",
+	}, {
+		desc: "leaf and prefer proto",
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
+			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Parent().Child().One().Config(), "10", ygnmi.WithSetPreferProtoEncoding())
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "parent/child/config/one"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "10"}},
+			}},
+		},
+	}, {
+		desc: "non leaf and prefer proto",
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
+			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Parent().Child().Config(), &exampleoc.Parent_Child{One: ygot.String("10")}, ygnmi.WithSetPreferProtoEncoding())
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "parent/child"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("{\n  \"openconfig-simple:config\": {\n    \"one\": \"10\"\n  }\n}")}},
+			}},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "fallback proto",
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
+			return ygnmi.Update(context.Background(), c, mustSchemaless[*gpb.CapabilityResponse](t, "/foo", "openconfig"), &gpb.CapabilityResponse{GNMIVersion: "1"}, ygnmi.WithSetFallbackEncoding())
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "foo"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_AnyVal{AnyVal: mustAnyNew(t, &gpb.CapabilityResponse{GNMIVersion: "1"})}},
+			}},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "fallback json",
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
+			return ygnmi.Update(context.Background(), c, mustSchemaless[*testStruct](t, "/foo", "openconfig"), &testStruct{Val: "test"}, ygnmi.WithSetFallbackEncoding())
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "foo"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonVal{JsonVal: []byte(`{"Val":"test"}`)}},
+			}},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
 	}}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
@@ -2293,6 +2370,22 @@ func TestUpdate(t *testing.T) {
 			}
 		})
 	}
+}
+
+func mustSchemaless[T any](t testing.TB, path, origin string) ygnmi.ConfigQuery[T] {
+	q, err := schemaless.NewConfig[T](path, origin)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return q
+}
+
+func mustAnyNew(t testing.TB, m proto.Message) *anypb.Any {
+	any, err := anypb.New(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return any
 }
 
 func TestReplace(t *testing.T) {

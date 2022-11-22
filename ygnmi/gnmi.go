@@ -16,6 +16,7 @@ package ygnmi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"strings"
@@ -26,6 +27,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	log "github.com/golang/glog"
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
@@ -294,7 +297,7 @@ func receiveStream[T any](sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-ch
 }
 
 // set configures the target at the query path.
-func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, op setOperation) (*gpb.SetResponse, *gpb.Path, error) {
+func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, op setOperation, opts ...Option) (*gpb.SetResponse, *gpb.Path, error) {
 	path, err := resolvePath(q.PathStruct())
 	if err != nil {
 		return nil, nil, err
@@ -305,7 +308,7 @@ func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, op setO
 	if q.isLeaf() && q.isScalar() {
 		setVal = &val
 	}
-	if err := populateSetRequest(req, path, setVal, op, !q.IsState()); err != nil {
+	if err := populateSetRequest(req, path, setVal, op, !q.IsState(), opts...); err != nil {
 		return nil, nil, err
 	}
 
@@ -330,25 +333,49 @@ const (
 )
 
 // populateSetRequest fills a SetResponse for a val and operation type.
-func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op setOperation, preferShadowPath bool) error {
+func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op setOperation, preferShadowPath bool, opts ...Option) error {
 	if req == nil {
 		return fmt.Errorf("cannot populate a nil SetRequest")
 	}
+	opt := resolveOpts(opts)
 
 	switch op {
 	case deletePath:
 		req.Delete = append(req.Delete, path)
 	case replacePath, updatePath:
-		// Since the GoStructs are generated using preferOperationalState, we
-		// need to turn on preferShadowPath to prefer marshalling config paths.
-		js, err := ygot.Marshal7951(val, ygot.JSONIndent("  "), &ygot.RFC7951JSONConfig{AppendModuleName: true, PreferShadowPath: preferShadowPath})
-		if err != nil {
-			return fmt.Errorf("could not encode value into JSON format: %w", err)
-		}
 		update := &gpb.Update{
 			Path: path,
-			Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: js}},
 		}
+		var typedVal *gpb.TypedValue
+		var err error
+		if opt.preferProto {
+			typedVal, err = ygot.EncodeTypedValue(val, gpb.Encoding_JSON_IETF, &ygot.RFC7951JSONConfig{AppendModuleName: true, PreferShadowPath: preferShadowPath})
+			update.Val = typedVal
+		} else {
+			typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{}}
+			// Since the GoStructs are generated using preferOperationalState, we
+			// need to turn on preferShadowPath to prefer marshalling config paths.
+			typedVal.Value.(*gpb.TypedValue_JsonIetfVal).JsonIetfVal, err = ygot.Marshal7951(val, ygot.JSONIndent("  "), &ygot.RFC7951JSONConfig{AppendModuleName: true, PreferShadowPath: preferShadowPath})
+		}
+		update.Val = typedVal
+		if err != nil && opt.setFallback {
+			if m, ok := val.(proto.Message); ok {
+				any, err := anypb.New(m)
+				if err != nil {
+					return fmt.Errorf("failed to marshal proto: %v", err)
+				}
+				update.Val = &gpb.TypedValue{Value: &gpb.TypedValue_AnyVal{AnyVal: any}}
+			} else {
+				b, err := json.Marshal(val)
+				if err != nil {
+					return fmt.Errorf("failed to marshal json: %v", err)
+				}
+				update.Val = &gpb.TypedValue{Value: &gpb.TypedValue_JsonVal{JsonVal: b}}
+			}
+		} else if err != nil {
+			return fmt.Errorf("failed to encode set request: %v", err)
+		}
+
 		if op == replacePath {
 			req.Replace = append(req.Replace, update)
 		} else {
