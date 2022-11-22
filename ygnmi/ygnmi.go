@@ -127,8 +127,9 @@ func (v *Value[T]) String() string {
 
 // Client is used to perform gNMI requests.
 type Client struct {
-	gnmiC  gpb.GNMIClient
-	target string
+	gnmiC               gpb.GNMIClient
+	target              string
+	requestDumpLogLevel log.Level
 }
 
 // ClientOption configures a client with custom options.
@@ -142,10 +143,20 @@ func WithTarget(t string) ClientOption {
 	}
 }
 
+// WithRequestDumpLogLevel overrides the default info logging level (1) for
+// gNMI request dumps. i.e. SetRequest, SubscribeRequest, GetRequest.
+func WithRequestDumpLogLevel(l log.Level) ClientOption {
+	return func(c *Client) error {
+		c.requestDumpLogLevel = l
+		return nil
+	}
+}
+
 // NewClient creates a new client with specified options.
 func NewClient(c gpb.GNMIClient, opts ...ClientOption) (*Client, error) {
 	yc := &Client{
-		gnmiC: c,
+		gnmiC:               c,
+		requestDumpLogLevel: 1,
 	}
 	for _, opt := range opts {
 		if err := opt(yc); err != nil {
@@ -557,9 +568,9 @@ func (sb *SetBatch) Set(ctx context.Context, c *Client) (*Result, error) {
 	req.Prefix = &gpb.Path{
 		Target: c.target,
 	}
-	log.V(2).Info(prettySetRequest(req))
+	log.V(c.requestDumpLogLevel).Info(prettySetRequest(req))
 	resp, err := c.gnmiC.Set(ctx, req)
-	log.V(2).Infof("SetResponse:\n%s", prototext.Format(resp))
+	log.V(c.requestDumpLogLevel).Infof("SetResponse:\n%s", prototext.Format(resp))
 	return responseToResult(resp), err
 }
 
