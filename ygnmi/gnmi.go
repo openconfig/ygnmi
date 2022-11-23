@@ -343,37 +343,37 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op
 	case deletePath:
 		req.Delete = append(req.Delete, path)
 	case replacePath, updatePath:
-		update := &gpb.Update{
-			Path: path,
-		}
 		var typedVal *gpb.TypedValue
 		var err error
 		if opt.preferProto {
 			typedVal, err = ygot.EncodeTypedValue(val, gpb.Encoding_JSON_IETF, &ygot.RFC7951JSONConfig{AppendModuleName: true, PreferShadowPath: preferShadowPath})
-			update.Val = typedVal
 		} else {
 			typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{}}
 			// Since the GoStructs are generated using preferOperationalState, we
 			// need to turn on preferShadowPath to prefer marshalling config paths.
 			typedVal.Value.(*gpb.TypedValue_JsonIetfVal).JsonIetfVal, err = ygot.Marshal7951(val, ygot.JSONIndent("  "), &ygot.RFC7951JSONConfig{AppendModuleName: true, PreferShadowPath: preferShadowPath})
 		}
-		update.Val = typedVal
-		if err != nil && opt.setFallback {
+
+		if err != nil && opt.setFallback && path.Origin != "openconfig" {
 			if m, ok := val.(proto.Message); ok {
 				any, err := anypb.New(m)
 				if err != nil {
 					return fmt.Errorf("failed to marshal proto: %v", err)
 				}
-				update.Val = &gpb.TypedValue{Value: &gpb.TypedValue_AnyVal{AnyVal: any}}
+				typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_AnyVal{AnyVal: any}}
 			} else {
 				b, err := json.Marshal(val)
 				if err != nil {
 					return fmt.Errorf("failed to marshal json: %v", err)
 				}
-				update.Val = &gpb.TypedValue{Value: &gpb.TypedValue_JsonVal{JsonVal: b}}
+				typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_JsonVal{JsonVal: b}}
 			}
 		} else if err != nil {
 			return fmt.Errorf("failed to encode set request: %v", err)
+		}
+		update := &gpb.Update{
+			Path: path,
+			Val:  typedVal,
 		}
 
 		if op == replacePath {

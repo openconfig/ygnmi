@@ -221,6 +221,7 @@ func WithSetPreferProtoEncoding() Option {
 }
 
 // WithSetFallbackEncoding creates an option that fallback to encoding SetRequests with JSON or an Any proto.
+// Fallback encoding is if the parameter is neither GoStruct nor a leaf for non OpenConfig paths.
 // This option is only relevant for Update and Replace.
 func WithSetFallbackEncoding() Option {
 	return func(o *opt) {

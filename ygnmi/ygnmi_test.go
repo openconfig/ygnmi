@@ -2308,7 +2308,7 @@ func TestUpdate(t *testing.T) {
 			},
 		},
 	}, {
-		desc: "fallback proto",
+		desc: "fallback oc path",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
 			return ygnmi.Update(context.Background(), c, mustSchemaless[*gpb.CapabilityResponse](t, "/foo", "openconfig"), &gpb.CapabilityResponse{GNMIVersion: "1"}, ygnmi.WithSetFallbackEncoding())
 		},
@@ -2326,17 +2326,37 @@ func TestUpdate(t *testing.T) {
 				Target: "dut",
 			},
 		},
+		wantErr: "failed to encode set request",
 	}, {
-		desc: "fallback json",
+		desc: "fallback proto",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Update(context.Background(), c, mustSchemaless[*testStruct](t, "/foo", "openconfig"), &testStruct{Val: "test"}, ygnmi.WithSetFallbackEncoding())
+			return ygnmi.Update(context.Background(), c, mustSchemaless[*gpb.CapabilityResponse](t, "/foo", ""), &gpb.CapabilityResponse{GNMIVersion: "1"}, ygnmi.WithSetFallbackEncoding())
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
 				Target: "dut",
 			},
 			Update: []*gpb.Update{{
-				Path: testutil.GNMIPath(t, "foo"),
+				Path: &gpb.Path{Elem: []*gpb.PathElem{{Name: "foo"}}},
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_AnyVal{AnyVal: mustAnyNew(t, &gpb.CapabilityResponse{GNMIVersion: "1"})}},
+			}},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "fallback json",
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
+			return ygnmi.Update(context.Background(), c, mustSchemaless[*testStruct](t, "/foo", ""), &testStruct{Val: "test"}, ygnmi.WithSetFallbackEncoding())
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Update: []*gpb.Update{{
+				Path: &gpb.Path{Elem: []*gpb.PathElem{{Name: "foo"}}},
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonVal{JsonVal: []byte(`{"Val":"test"}`)}},
 			}},
 		},
