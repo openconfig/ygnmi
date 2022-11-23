@@ -439,12 +439,13 @@ func resolvePath(q PathStruct) (*gpb.Path, error) {
 	if err != nil {
 		return nil, err
 	}
-	// TODO: remove when fixed https://github.com/openconfig/ygot/issues/615
-	if len(path.Elem) > 0 && path.Elem[0].Name != "meta" {
-		path.Origin = "openconfig"
-	}
 	if origin, ok := opts[OriginOverride]; ok {
 		path.Origin = origin.(string)
+	}
+
+	// TODO: remove when fixed https://github.com/openconfig/ygot/issues/615
+	if len(path.Elem) > 0 && path.Elem[0].Name != "meta" && path.Origin == "" {
+		path.Origin = "openconfig"
 	}
 
 	return path, nil
