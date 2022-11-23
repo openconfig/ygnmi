@@ -170,9 +170,11 @@ func NewClient(c gpb.GNMIClient, opts ...ClientOption) (*Client, error) {
 type Option func(*opt)
 
 type opt struct {
-	useGet   bool
-	mode     gpb.SubscriptionMode
-	encoding gpb.Encoding
+	useGet      bool
+	mode        gpb.SubscriptionMode
+	encoding    gpb.Encoding
+	preferProto bool
+	setFallback bool
 }
 
 // resolveOpts applies all the options and returns a struct containing the result.
@@ -207,6 +209,23 @@ func WithSubscriptionMode(mode gpb.SubscriptionMode) Option {
 func WithEncoding(enc gpb.Encoding) Option {
 	return func(o *opt) {
 		o.encoding = enc
+	}
+}
+
+// WithSetPreferProtoEncoding creates an option that prefers encoding SetRequest using proto encoding.
+// This option is only relevant for Update and Replace.
+func WithSetPreferProtoEncoding() Option {
+	return func(o *opt) {
+		o.preferProto = true
+	}
+}
+
+// WithSetFallbackEncoding creates an option that fallback to encoding SetRequests with JSON or an Any proto.
+// Fallback encoding is if the parameter is neither GoStruct nor a leaf for non OpenConfig paths.
+// This option is only relevant for Update and Replace.
+func WithSetFallbackEncoding() Option {
+	return func(o *opt) {
+		o.setFallback = true
 	}
 }
 
@@ -513,8 +532,8 @@ func responseToResult(resp *gpb.SetResponse) *Result {
 }
 
 // Update updates the configuration at the given query path with the val.
-func Update[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T) (*Result, error) {
-	resp, path, err := set(ctx, c, q, val, updatePath)
+func Update[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, opts ...Option) (*Result, error) {
+	resp, path, err := set(ctx, c, q, val, updatePath, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("Update(t) at path %s: %w", path, err)
 	}
@@ -522,8 +541,8 @@ func Update[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T) (*Re
 }
 
 // Replace replaces the configuration at the given query path with the val.
-func Replace[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T) (*Result, error) {
-	resp, path, err := set(ctx, c, q, val, replacePath)
+func Replace[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, opts ...Option) (*Result, error) {
+	resp, path, err := set(ctx, c, q, val, replacePath, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("Replace(t) at path %s: %w", path, err)
 	}
@@ -531,9 +550,9 @@ func Replace[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T) (*R
 }
 
 // Delete deletes the configuration at the given query path.
-func Delete[T any](ctx context.Context, c *Client, q ConfigQuery[T]) (*Result, error) {
+func Delete[T any](ctx context.Context, c *Client, q ConfigQuery[T], opts ...Option) (*Result, error) {
 	var t T
-	resp, path, err := set(ctx, c, q, t, deletePath)
+	resp, path, err := set(ctx, c, q, t, deletePath, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("Delete(t) at path %s: %w", path, err)
 	}
@@ -554,14 +573,14 @@ type SetBatch struct {
 }
 
 // Set performs the gnmi.Set request with all queued operations.
-func (sb *SetBatch) Set(ctx context.Context, c *Client) (*Result, error) {
+func (sb *SetBatch) Set(ctx context.Context, c *Client, opts ...Option) (*Result, error) {
 	req := &gpb.SetRequest{}
 	for _, op := range sb.ops {
 		path, err := resolvePath(op.path)
 		if err != nil {
 			return nil, err
 		}
-		if err := populateSetRequest(req, path, op.val, op.mode, op.config); err != nil {
+		if err := populateSetRequest(req, path, op.val, op.mode, op.config, opts...); err != nil {
 			return nil, err
 		}
 	}
