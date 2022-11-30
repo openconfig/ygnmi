@@ -4,7 +4,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/openconfig/ygnmi.svg)](https://pkg.go.dev/github.com/openconfig/ygnmi)
 ## Introduction
 
-ygnmi is a A Go gNMI client library based on [ygot](github.com/openconfig/ygot)-generated code. It includes a generator whose input is a set of YANG modules and output is ygot Go structs and a path library that can be used for making gNMI queries.
+ygnmi is a A Go gNMI client library based on [ygot](https://github.com/openconfig/ygot)-generated code. It includes a generator whose input is a set of YANG modules and output is ygot Go structs and a path library that can be used for making gNMI queries.
 
 The library supports querying telemetry and unmarshaling it into generated structs and setting config. Only gnmi.Subscribe and gnmi.Set RPC are supported by this library.
 
@@ -153,5 +153,5 @@ the corresponding value in its path.
 
 ## Additional Reference
 
-* See [ygot](github.com/openconfig/ygot) for more information on how YANG is mapped to Go code.
-* See [gNMI](github.com/openconfig/gnmi) and [gNMI Reference](https://github.com/openconfig/reference/tree/master/rpc/gnmi) for more information on the gNMI protocol and spec.
+* See [ygot](https://github.com/openconfig/ygot) for more information on how YANG is mapped to Go code.
+* See [gNMI](https://github.com/openconfig/gnmi) and [gNMI Reference](https://github.com/openconfig/reference/tree/master/rpc/gnmi) for more information on the gNMI protocol and spec.
