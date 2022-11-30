@@ -136,12 +136,16 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 			setVal = &val
 		}
 
-		if err := unmarshalSchemaless(data, setVal); err != nil {
+		delete, err := unmarshalSchemaless(data, setVal)
+		if err != nil {
 			return ret, err
 		}
 		ret.Timestamp = data[0].Timestamp
 		ret.RecvTimestamp = data[0].RecvTimestamp
-		ret.SetVal(val)
+		ret.Path = proto.Clone(data[0].Path).(*gpb.Path)
+		if !delete {
+			ret.SetVal(val)
+		}
 		return ret, nil
 	}
 
@@ -180,73 +184,78 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 	return ret, nil
 }
 
-func unmarshalSchemaless(data []*DataPoint, val any) error {
+// unmarshalSchemaless unmarshals the datapoint into the value, returning whether the datapoint was a delete.
+func unmarshalSchemaless(data []*DataPoint, val any) (bool, error) {
 	switch {
 	case len(data) > 2:
-		return fmt.Errorf("got multiple datapoints for dynamic node")
+		return false, fmt.Errorf("got multiple datapoints for schemaless node")
 	case len(data) == 2 && !data[1].Sync:
-		return fmt.Errorf("got multiple datapoints for dynamic node")
+		return false, fmt.Errorf("got multiple datapoints for schemaless node")
 	}
+	if data[0].Value == nil {
+		return true, nil
+	}
+
 	rVal := reflect.ValueOf(val).Elem()
 	valType := reflect.TypeOf(val).Elem()
 	kind := valType.Kind()
 	if !rVal.CanSet() {
-		return fmt.Errorf("value not settable")
+		return false, fmt.Errorf("value not settable")
 	}
 
 	switch dataVal := data[0].Value.Value.(type) {
 	case *gpb.TypedValue_StringVal:
 		if kind != reflect.String {
-			return fmt.Errorf("unmarshal err notification type %T, generic type %T", dataVal, val)
+			return false, fmt.Errorf("unmarshal err notification type %T, generic type %T", dataVal, val)
 		}
 		rVal.SetString(dataVal.StringVal)
 	case *gpb.TypedValue_AsciiVal:
 		if kind != reflect.String {
-			return fmt.Errorf("unmarshal err notification type %T, generic type %T", dataVal, val)
+			return false, fmt.Errorf("unmarshal err notification type %T, generic type %T", dataVal, val)
 		}
 		rVal.SetString(dataVal.AsciiVal)
 	case *gpb.TypedValue_IntVal:
 		if kind != reflect.Int && kind != reflect.Int64 {
-			return fmt.Errorf("unmarshal err notification type %T, generic type %T", dataVal, val)
+			return false, fmt.Errorf("unmarshal err notification type %T, generic type %T", dataVal, val)
 		}
 		rVal.SetInt(dataVal.IntVal)
 	case *gpb.TypedValue_UintVal:
 		if kind != reflect.Uint && kind != reflect.Uint64 {
-			return fmt.Errorf("unmarshal err notification type %T, generic type %T", dataVal, val)
+			return false, fmt.Errorf("unmarshal err notification type %T, generic type %T", dataVal, val)
 		}
 		rVal.SetUint(dataVal.UintVal)
 	case *gpb.TypedValue_BoolVal:
 		if kind != reflect.Bool {
-			return fmt.Errorf("unmarshal err notification type %T, generic type %T", dataVal, val)
+			return false, fmt.Errorf("unmarshal err notification type %T, generic type %T", dataVal, val)
 		}
 		rVal.SetBool(dataVal.BoolVal)
 	case *gpb.TypedValue_DoubleVal:
 		if kind != reflect.Float64 {
-			return fmt.Errorf("unmarshal err notification type %T, generic type %T", dataVal, val)
+			return false, fmt.Errorf("unmarshal err notification type %T, generic type %T", dataVal, val)
 		}
 		rVal.SetFloat(dataVal.DoubleVal)
 	case *gpb.TypedValue_LeaflistVal:
-		return fmt.Errorf("leaf lists not supported")
+		return false, fmt.Errorf("leaf lists not supported")
 	case *gpb.TypedValue_AnyVal:
 		msg, ok := val.(proto.Message)
 		if !ok {
-			return fmt.Errorf("unmarshal err notification %T parameter %s", val, kind.String())
+			return false, fmt.Errorf("unmarshal err notification %T parameter %s", val, kind.String())
 		}
-		return dataVal.AnyVal.UnmarshalTo(msg)
+		return false, dataVal.AnyVal.UnmarshalTo(msg)
 	case *gpb.TypedValue_ProtoBytes:
 		msg, ok := val.(proto.Message)
 		if !ok {
-			return fmt.Errorf("unmarshal err notification %T parameter %s", val, kind.String())
+			return false, fmt.Errorf("unmarshal err notification %T parameter %s", val, kind.String())
 		}
-		return proto.Unmarshal(dataVal.ProtoBytes, msg)
+		return false, proto.Unmarshal(dataVal.ProtoBytes, msg)
 	case *gpb.TypedValue_JsonVal:
-		return json.Unmarshal(dataVal.JsonVal, val)
+		return false, json.Unmarshal(dataVal.JsonVal, val)
 	case *gpb.TypedValue_JsonIetfVal:
-		return json.Unmarshal(dataVal.JsonIetfVal, val)
+		return false, json.Unmarshal(dataVal.JsonIetfVal, val)
 	default:
-		return fmt.Errorf("unsupported type: %T", dataVal)
+		return false, fmt.Errorf("unsupported type: %T", dataVal)
 	}
-	return nil
+	return false, nil
 }
 
 // unmarshal unmarshals a given slice of datapoints to its field given a
