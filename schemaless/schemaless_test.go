@@ -16,11 +16,16 @@ package schemaless
 
 import (
 	"context"
+	"errors"
+	"io"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygnmi/ygnmi"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
 )
@@ -183,6 +188,68 @@ func TestGetAll(t *testing.T) {
 			t.Errorf("Lookup() returned unexpected diff: %s", diff)
 		}
 	})
+}
+
+func TestWatchAll(t *testing.T) {
+	fakeGNMI, c := newClient(t)
+
+	fakeGNMI.Stub().Notification(&gpb.Notification{
+		Timestamp: 100,
+		Update: []*gpb.Update{{
+			Path: testutil.GNMIPath(t, "/foo/bar[name=test]"),
+			Val: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{
+				IntVal: 10,
+			}},
+		}, {
+			Path: testutil.GNMIPath(t, "/foo/bar[name=test2]"),
+			Val: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{
+				IntVal: 15,
+			}},
+		}},
+	}).Notification(&gpb.Notification{
+		Timestamp: 101,
+		Delete:    []*gpb.Path{testutil.GNMIPath(t, "/foo/bar[name=test]")},
+		Update: []*gpb.Update{{
+			Path: testutil.GNMIPath(t, "/foo/bar[name=test2]"),
+			Val: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{
+				IntVal: 20,
+			}},
+		}},
+	})
+	query, err := NewWildcard[int]("/foo/bar[name=*]", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []*ygnmi.Value[int]{
+		(&ygnmi.Value[int]{
+			Timestamp: time.Unix(0, 100),
+			Path:      testutil.GNMIPath(t, "/foo/bar[name=test]"),
+		}).SetVal(10),
+		(&ygnmi.Value[int]{
+			Timestamp: time.Unix(0, 100),
+			Path:      testutil.GNMIPath(t, "/foo/bar[name=test2]"),
+		}).SetVal(15),
+		(&ygnmi.Value[int]{
+			Timestamp: time.Unix(0, 101),
+			Path:      testutil.GNMIPath(t, "/foo/bar[name=test]"),
+		}),
+		(&ygnmi.Value[int]{
+			Timestamp: time.Unix(0, 101),
+			Path:      testutil.GNMIPath(t, "/foo/bar[name=test2]"),
+		}).SetVal(20),
+	}
+	var got []*ygnmi.Value[int]
+	_, err = ygnmi.WatchAll(context.Background(), c, query, func(v *ygnmi.Value[int]) error {
+		got = append(got, v)
+		return ygnmi.Continue
+	}).Await()
+	if err != nil && !errors.Is(err, io.EOF) {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(want, got, cmp.AllowUnexported(ygnmi.Value[int]{}), cmpopts.IgnoreFields(ygnmi.Value[int]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
+		t.Errorf("Lookup() returned unexpected diff: %s", diff)
+	}
+
 }
 
 func newClient(t testing.TB) (*testutil.FakeGNMI, *ygnmi.Client) {
