@@ -51,8 +51,13 @@ module openconfig-simple {
         config false;
         uses parent-config;
         leaf two { type string; }
+        leaf unsupported { type string; }
       }
     }
+  }
+
+  deviation '/parent/child/state/unsupported' {
+    deviate not-supported;
   }
 
   uses ocr:a-grouping;

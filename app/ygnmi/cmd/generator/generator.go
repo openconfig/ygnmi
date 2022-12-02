@@ -55,6 +55,7 @@ func New() *cobra.Command {
 	generator.Flags().String("output_dir", "", "The directory that the generated Go code should be written to. This directory is the base of the generated module packages. default (working dir)")
 	generator.Flags().Int("structs_split_files_count", 1, "The number of files to split the generated schema structs into.")
 	generator.Flags().Int("pathstructs_split_files_count", 1, "The number of files to split the generated path structs into.")
+	generator.Flags().Bool("ignore_deviate_notsupported", false, "If set to true, 'deviate not-supported' YANG statements are ignored, thus target nodes are retained in the generated code.")
 
 	generator.Flags().MarkHidden("schema_struct_path")
 
@@ -97,6 +98,9 @@ func generate(cmd *cobra.Command, args []string) error {
 		ExcludeModules:                       viper.GetStringSlice("exclude_modules"),
 		YANGParseOptions: yang.Options{
 			IgnoreSubmoduleCircularDependencies: false,
+			DeviateOptions: yang.DeviateOptions{
+				IgnoreDeviateNotSupported: viper.GetBool("ignore_deviate_notsupported"),
+			},
 		},
 		GeneratingBinary:        version,
 		GenerateWildcardPaths:   true,
@@ -154,6 +158,9 @@ func generateStructs(modules []string, schemaPath, version string) error {
 				ExcludeModules: viper.GetStringSlice("exclude_modules"),
 				YANGParseOptions: yang.Options{
 					IgnoreSubmoduleCircularDependencies: false,
+					DeviateOptions: yang.DeviateOptions{
+						IgnoreDeviateNotSupported: viper.GetBool("ignore_deviate_notsupported"),
+					},
 				},
 			},
 			TransformationOptions: ygen.TransformationOpts{

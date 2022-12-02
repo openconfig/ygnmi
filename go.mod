@@ -7,8 +7,8 @@ require (
 	github.com/google/go-cmp v0.5.8
 	github.com/openconfig/gnmi v0.0.0-20220920173703-480bf53a74d2
 	github.com/openconfig/gocloser v0.0.0-20220310182203-c6c950ed3b0b
-	github.com/openconfig/goyang v1.1.0
-	github.com/openconfig/ygot v0.25.3
+	github.com/openconfig/goyang v1.2.0
+	github.com/openconfig/ygot v0.25.4
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.11.0
