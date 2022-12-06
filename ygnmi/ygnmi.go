@@ -477,7 +477,7 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 					if _, ok := structs[pre]; !ok {
 						structs[pre] = q.goStruct()
 					}
-					val, err := unmarshalAndExtract[T](data, q, structs[pre])
+					val, err := unmarshalAndExtract[T](datapointGroups[pre], q, structs[pre])
 					if err != nil {
 						w.errCh <- err
 						return

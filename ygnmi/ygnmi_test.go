@@ -1946,6 +1946,9 @@ func TestWatchAll(t *testing.T) {
 				Update: []*gpb.Update{{
 					Path: key10Path,
 					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 100}},
+				}, {
+					Path: testutil.GNMIPath(t, "model/a/single-key[key=11]/state/key"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "test"}},
 				}},
 			}).Sync().Notification(&gpb.Notification{
 				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
@@ -1964,10 +1967,17 @@ func TestWatchAll(t *testing.T) {
 				Value: ygot.Int64(100),
 			}),
 			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+				Timestamp: startTime,
+				Path:      nonLeafKey11Path,
+			}).SetVal(&exampleoc.Model_SingleKey{
+				Key: ygot.String("test"),
+			}),
+			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
 				Timestamp: startTime.Add(time.Millisecond),
 				Path:      nonLeafKey11Path,
 			}).SetVal(&exampleoc.Model_SingleKey{
 				Value: ygot.Int64(101),
+				Key:   ygot.String("test"),
 			}),
 		},
 		wantLastVal: (&ygnmi.Value[*exampleoc.Model_SingleKey]{
@@ -1975,6 +1985,7 @@ func TestWatchAll(t *testing.T) {
 			Path:      nonLeafKey11Path,
 		}).SetVal(&exampleoc.Model_SingleKey{
 			Value: ygot.Int64(101),
+			Key:   ygot.String("test"),
 		}),
 	}}
 	for _, tt := range nonLeafTests {
@@ -1993,8 +2004,8 @@ func TestWatchAll(t *testing.T) {
 					t.Errorf("Predicate(%d) got unexpected input (-want,+got):\n %s\nComplianceErrors:\n%v", i, diff, v.ComplianceErrors)
 				}
 				val, present := v.Val()
-				key10Cond = key10Cond || (present && proto.Equal(v.Path, nonLeafKey10Path) && *val.Value == 100)
-				key11Cond = key11Cond || (present && proto.Equal(v.Path, nonLeafKey11Path) && *val.Value == 101)
+				key10Cond = key10Cond || (present && proto.Equal(v.Path, nonLeafKey10Path) && val.Value != nil && *val.Value == 100)
+				key11Cond = key11Cond || (present && proto.Equal(v.Path, nonLeafKey11Path) && val.Value != nil && *val.Value == 101)
 				i++
 				if key10Cond && key11Cond {
 					return nil
