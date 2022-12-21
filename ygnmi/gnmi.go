@@ -446,7 +446,7 @@ func resolvePath(q PathStruct) (*gpb.Path, error) {
 	}
 
 	// TODO: remove when fixed https://github.com/openconfig/ygot/issues/615
-	if len(path.Elem) > 0 && path.Elem[0].Name != "meta" && path.Origin == "" {
+	if path.Origin == "" && (len(path.Elem) == 0 || path.Elem[0].Name != "meta") {
 		path.Origin = "openconfig"
 	}
 
