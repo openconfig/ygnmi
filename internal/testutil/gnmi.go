@@ -99,13 +99,16 @@ func (g *clientWithGetter) Get(ctx context.Context, req *gpb.GetRequest, _ ...gr
 	}
 	resp := g.stub.getResponses[0]
 	g.stub.getResponses = g.stub.getResponses[1:]
-	return resp, nil
+	err := g.stub.getErrs[0]
+	g.stub.getErrs = g.stub.getErrs[1:]
+	return resp, err
 }
 
 // Stubber is a handle to add stubbed responses.
 type Stubber struct {
 	gen          *fpb.FixedGenerator
 	getResponses []*gpb.GetResponse
+	getErrs      []error
 }
 
 // Notification appends the given notification as a stub response.
@@ -117,8 +120,9 @@ func (s *Stubber) Notification(n *gpb.Notification) *Stubber {
 }
 
 // GetResponse appends the given GetResponse as a stub response.
-func (s *Stubber) GetResponse(gr *gpb.GetResponse) *Stubber {
+func (s *Stubber) GetResponse(gr *gpb.GetResponse, err error) *Stubber {
 	s.getResponses = append(s.getResponses, gr)
+	s.getErrs = append(s.getErrs, err)
 	return s
 }
 
