@@ -30,6 +30,8 @@ import (
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygot"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -425,36 +427,66 @@ func TestLookup(t *testing.T) {
 			}
 		})
 	}
-	t.Run("use get", func(t *testing.T) {
-		fakeGNMI.Stub().GetResponse(&gpb.GetResponse{
-			Notification: []*gpb.Notification{{
-				Timestamp: 100,
-				Update: []*gpb.Update{{
-					Path: leafPath,
-					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"foo"`)}},
-				}},
-			}},
-		})
-		wantGetRequest := &gpb.GetRequest{
-			Encoding: gpb.Encoding_JSON_IETF,
-			Type:     gpb.GetRequest_STATE,
-			Prefix:   &gpb.Path{},
-			Path:     []*gpb.Path{leafPath},
-		}
-		wantVal := (&ygnmi.Value[string]{
-			Path:      leafPath,
-			Timestamp: time.Unix(0, 100),
-		}).SetVal("foo")
 
-		got, err := ygnmi.Lookup(context.Background(), c, exampleocpath.Root().RemoteContainer().ALeaf().State(), ygnmi.WithUseGet())
-		if err != nil {
-			t.Fatalf("Lookup() returned unexpected error: %v", err)
-		}
-		if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[string]{}), cmpopts.IgnoreFields(ygnmi.Value[string]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
-			t.Errorf("Lookup() returned unexpected diff: %s", diff)
-		}
-		if diff := cmp.Diff(wantGetRequest, fakeGNMI.GetRequests()[0], protocmp.Transform()); diff != "" {
-			t.Errorf("Lookup() GetRequest different from expected: %s", diff)
+	t.Run("use get", func(t *testing.T) {
+		tests := []struct {
+			desc        string
+			stub        func(s *testutil.Stubber)
+			wantVal     *ygnmi.Value[string]
+			wantRequest *gpb.GetRequest
+			wantErr     string
+		}{{
+			desc: "success",
+			stub: func(s *testutil.Stubber) {
+				s.GetResponse(&gpb.GetResponse{
+					Notification: []*gpb.Notification{{
+						Timestamp: 100,
+						Update: []*gpb.Update{{
+							Path: leafPath,
+							Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"foo"`)}},
+						}},
+					}},
+				}, nil)
+			},
+			wantVal: (&ygnmi.Value[string]{
+				Path:      leafPath,
+				Timestamp: time.Unix(0, 100),
+			}).SetVal("foo"),
+			wantRequest: &gpb.GetRequest{
+				Encoding: gpb.Encoding_JSON_IETF,
+				Type:     gpb.GetRequest_STATE,
+				Prefix:   &gpb.Path{},
+				Path:     []*gpb.Path{leafPath},
+			},
+		}, {
+			desc: "not found error",
+			stub: func(s *testutil.Stubber) {
+				s.GetResponse(nil, status.Error(codes.NotFound, "test"))
+			},
+			wantVal: (&ygnmi.Value[string]{
+				Path: leafPath,
+			}),
+			wantRequest: &gpb.GetRequest{
+				Encoding: gpb.Encoding_JSON_IETF,
+				Type:     gpb.GetRequest_STATE,
+				Prefix:   &gpb.Path{},
+				Path:     []*gpb.Path{leafPath},
+			},
+		}}
+		for _, tt := range tests {
+			t.Run(tt.desc, func(t *testing.T) {
+				tt.stub(fakeGNMI.Stub())
+				got, err := ygnmi.Lookup(context.Background(), c, exampleocpath.Root().RemoteContainer().ALeaf().State(), ygnmi.WithUseGet())
+				if err != nil {
+					t.Fatalf("Lookup() returned unexpected error: %v", err)
+				}
+				if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[string]{}), cmpopts.IgnoreFields(ygnmi.Value[string]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
+					t.Errorf("Lookup() returned unexpected diff: %s", diff)
+				}
+				if diff := cmp.Diff(tt.wantRequest, fakeGNMI.GetRequests()[0], protocmp.Transform()); diff != "" {
+					t.Errorf("Lookup() GetRequest different from expected: %s", diff)
+				}
+			})
 		}
 	})
 }
@@ -531,7 +563,7 @@ func TestGet(t *testing.T) {
 					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"foo"`)}},
 				}},
 			}},
-		})
+		}, nil)
 		wantGetRequest := &gpb.GetRequest{
 			Encoding: gpb.Encoding_JSON_IETF,
 			Type:     gpb.GetRequest_CONFIG,
@@ -1578,7 +1610,7 @@ func TestLookupAll(t *testing.T) {
 					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"1"`)}},
 				}},
 			}},
-		})
+		}, nil)
 		wantGetRequest := &gpb.GetRequest{
 			Encoding: gpb.Encoding_JSON_IETF,
 			Type:     gpb.GetRequest_STATE,
@@ -1661,7 +1693,7 @@ func TestGetAll(t *testing.T) {
 					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"1"`)}},
 				}},
 			}},
-		})
+		}, nil)
 		wantGetRequest := &gpb.GetRequest{
 			Encoding: gpb.Encoding_JSON_IETF,
 			Type:     gpb.GetRequest_STATE,
