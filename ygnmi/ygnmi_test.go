@@ -1396,6 +1396,27 @@ func TestLookupAll(t *testing.T) {
 		wantVals:             nil,
 		wantSubscriptionPath: leafPath,
 	}, {
+		desc: "non compliant value",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: testutil.GNMIPath(t, "model/a/single-key[key=10]/state/value"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 10}},
+				}, {
+					Path: testutil.GNMIPath(t, "model/a/single-key[key=11]/state/fake-val"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 11}},
+				}},
+			}).Sync()
+		},
+		wantVals: []*ygnmi.Value[int64]{
+			(&ygnmi.Value[int64]{
+				Path:      testutil.GNMIPath(t, "model/a/single-key[key=10]/state/value"),
+				Timestamp: time.Unix(0, 100),
+			}).SetVal(10),
+		},
+		wantSubscriptionPath: leafPath,
+	}, {
 		desc: "success multiples value in same notification",
 		stub: func(s *testutil.Stubber) {
 			s.Notification(&gpb.Notification{
@@ -1575,6 +1596,35 @@ func TestLookupAll(t *testing.T) {
 		},
 		wantSubscriptionPath: nonLeafPath,
 	}, {
+		desc: "non compliant values",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: testutil.GNMIPath(t, "model/a/single-key[key=10]/state/value-fake"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 100}},
+				}, {
+					Path: testutil.GNMIPath(t, "model/a/single-key[key=10]/state/key"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "10"}},
+				}},
+			}).Sync()
+		},
+		wantVals: []*ygnmi.Value[*exampleoc.Model_SingleKey]{
+			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+				Path:      testutil.GNMIPath(t, "model/a/single-key[key=10]"),
+				Timestamp: time.Unix(0, 100),
+				ComplianceErrors: &ygnmi.ComplianceErrors{
+					PathErrors: []*ygnmi.TelemetryError{{
+						Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 100}},
+						Path:  testutil.GNMIPath(t, "model/a/single-key[key=10]/state/value-fake"),
+					}},
+				},
+			}).SetVal(&exampleoc.Model_SingleKey{
+				Key: ygot.String("10"),
+			}),
+		},
+		wantSubscriptionPath: nonLeafPath,
+	}, {
 		desc: "no values",
 		stub: func(s *testutil.Stubber) {
 			s.Sync()
@@ -1596,7 +1646,11 @@ func TestLookupAll(t *testing.T) {
 			for _, val := range got {
 				checkJustReceived(t, val.RecvTimestamp)
 			}
-			if diff := cmp.Diff(tt.wantVals, got, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Model_SingleKey]{}), cmpopts.IgnoreFields(ygnmi.Value[*exampleoc.Model_SingleKey]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantVals, got,
+				cmp.AllowUnexported(ygnmi.Value[*exampleoc.Model_SingleKey]{}),
+				cmpopts.IgnoreFields(ygnmi.TelemetryError{}, "Err"),
+				cmpopts.IgnoreFields(ygnmi.Value[*exampleoc.Model_SingleKey]{}, "RecvTimestamp"),
+				protocmp.Transform()); diff != "" {
 				t.Errorf("LookupAll() returned unexpected diff (-want,+got):\n%s", diff)
 			}
 		})
