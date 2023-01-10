@@ -428,67 +428,147 @@ func TestLookup(t *testing.T) {
 		})
 	}
 
-	t.Run("use get", func(t *testing.T) {
-		tests := []struct {
-			desc        string
-			stub        func(s *testutil.Stubber)
-			wantVal     *ygnmi.Value[string]
-			wantRequest *gpb.GetRequest
-			wantErr     string
-		}{{
-			desc: "success",
-			stub: func(s *testutil.Stubber) {
-				s.GetResponse(&gpb.GetResponse{
-					Notification: []*gpb.Notification{{
-						Timestamp: 100,
-						Update: []*gpb.Update{{
-							Path: leafPath,
-							Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"foo"`)}},
-						}},
+}
+
+func TestLookupWithGet(t *testing.T) {
+	fakeGNMI, c := newClient(t)
+	leafPath := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
+
+	tests := []struct {
+		desc        string
+		stub        func(s *testutil.Stubber)
+		wantVal     *ygnmi.Value[string]
+		wantRequest *gpb.GetRequest
+		wantErr     string
+	}{{
+		desc: "success",
+		stub: func(s *testutil.Stubber) {
+			s.GetResponse(&gpb.GetResponse{
+				Notification: []*gpb.Notification{{
+					Timestamp: 100,
+					Update: []*gpb.Update{{
+						Path: leafPath,
+						Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"foo"`)}},
 					}},
-				}, nil)
+				}},
+			}, nil)
+		},
+		wantVal: (&ygnmi.Value[string]{
+			Path:      leafPath,
+			Timestamp: time.Unix(0, 100),
+		}).SetVal("foo"),
+		wantRequest: &gpb.GetRequest{
+			Encoding: gpb.Encoding_JSON_IETF,
+			Type:     gpb.GetRequest_STATE,
+			Prefix:   &gpb.Path{},
+			Path:     []*gpb.Path{leafPath},
+		},
+	}, {
+		desc: "not found error",
+		stub: func(s *testutil.Stubber) {
+			s.GetResponse(nil, status.Error(codes.NotFound, "test"))
+		},
+		wantVal: (&ygnmi.Value[string]{
+			Path: leafPath,
+		}),
+		wantRequest: &gpb.GetRequest{
+			Encoding: gpb.Encoding_JSON_IETF,
+			Type:     gpb.GetRequest_STATE,
+			Prefix:   &gpb.Path{},
+			Path:     []*gpb.Path{leafPath},
+		},
+	}}
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			got, err := ygnmi.Lookup(context.Background(), c, exampleocpath.Root().RemoteContainer().ALeaf().State(), ygnmi.WithUseGet())
+			if err != nil {
+				t.Fatalf("Lookup() returned unexpected error: %v", err)
+			}
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[string]{}), cmpopts.IgnoreFields(ygnmi.Value[string]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
+				t.Errorf("Lookup() returned unexpected diff: %s", diff)
+			}
+			if diff := cmp.Diff(tt.wantRequest, fakeGNMI.GetRequests()[0], protocmp.Transform()); diff != "" {
+				t.Errorf("Lookup() GetRequest different from expected: %s", diff)
+			}
+		})
+	}
+
+	nonLeafPath := testutil.GNMIPath(t, "/parent/child")
+	nonLeafTests := []struct {
+		desc    string
+		stub    func(s *testutil.Stubber)
+		wantVal *ygnmi.Value[*exampleoc.Parent_Child]
+		wantErr string
+	}{{
+		desc: "single leaf",
+		stub: func(s *testutil.Stubber) {
+			s.GetResponse(&gpb.GetResponse{
+				Notification: []*gpb.Notification{{
+					Timestamp: 100,
+					Update: []*gpb.Update{{
+						Path: nonLeafPath,
+						Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`{"config": {"three": "ONE" }}`)}},
+					}},
+				}},
+			}, nil)
+		},
+		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+			Path:      nonLeafPath,
+			Timestamp: time.Unix(0, 100),
+		}).SetVal(&exampleoc.Parent_Child{Three: exampleoc.Child_Three_ONE}),
+	}, {
+		desc: "with extra value",
+		stub: func(s *testutil.Stubber) {
+			s.GetResponse(&gpb.GetResponse{
+				Notification: []*gpb.Notification{{
+					Timestamp: 100,
+					Update: []*gpb.Update{{
+						Path: nonLeafPath,
+						Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`{"config": {"three": "ONE", "ten": "ten" }}`)}},
+					}},
+				}},
+			}, nil)
+		},
+		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+			Path:      nonLeafPath,
+			Timestamp: time.Unix(0, 100),
+		}).SetVal(&exampleoc.Parent_Child{Three: exampleoc.Child_Three_ONE}),
+	}, {
+		desc: "with invalid type", // TODO: When partial unmarshaling of JSON is supports, this test case should have a value.
+		stub: func(s *testutil.Stubber) {
+			s.GetResponse(&gpb.GetResponse{
+				Notification: []*gpb.Notification{{
+					Timestamp: 100,
+					Update: []*gpb.Update{{
+						Path: nonLeafPath,
+						Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`{"config": {"three": "ONE", "one": 10 }}`)}},
+					}},
+				}},
+			}, nil)
+		},
+		wantVal: &ygnmi.Value[*exampleoc.Parent_Child]{
+			Path: nonLeafPath,
+			ComplianceErrors: &ygnmi.ComplianceErrors{
+				TypeErrors: []*ygnmi.TelemetryError{{
+					Path:  nonLeafPath,
+					Value: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`{"config": {"three": "ONE", "one": 10 }}`)}},
+				}},
 			},
-			wantVal: (&ygnmi.Value[string]{
-				Path:      leafPath,
-				Timestamp: time.Unix(0, 100),
-			}).SetVal("foo"),
-			wantRequest: &gpb.GetRequest{
-				Encoding: gpb.Encoding_JSON_IETF,
-				Type:     gpb.GetRequest_STATE,
-				Prefix:   &gpb.Path{},
-				Path:     []*gpb.Path{leafPath},
-			},
-		}, {
-			desc: "not found error",
-			stub: func(s *testutil.Stubber) {
-				s.GetResponse(nil, status.Error(codes.NotFound, "test"))
-			},
-			wantVal: (&ygnmi.Value[string]{
-				Path: leafPath,
-			}),
-			wantRequest: &gpb.GetRequest{
-				Encoding: gpb.Encoding_JSON_IETF,
-				Type:     gpb.GetRequest_STATE,
-				Prefix:   &gpb.Path{},
-				Path:     []*gpb.Path{leafPath},
-			},
-		}}
-		for _, tt := range tests {
-			t.Run(tt.desc, func(t *testing.T) {
-				tt.stub(fakeGNMI.Stub())
-				got, err := ygnmi.Lookup(context.Background(), c, exampleocpath.Root().RemoteContainer().ALeaf().State(), ygnmi.WithUseGet())
-				if err != nil {
-					t.Fatalf("Lookup() returned unexpected error: %v", err)
-				}
-				if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[string]{}), cmpopts.IgnoreFields(ygnmi.Value[string]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
-					t.Errorf("Lookup() returned unexpected diff: %s", diff)
-				}
-				if diff := cmp.Diff(tt.wantRequest, fakeGNMI.GetRequests()[0], protocmp.Transform()); diff != "" {
-					t.Errorf("Lookup() GetRequest different from expected: %s", diff)
-				}
-			})
-		}
-	})
+		},
+	}}
+	for _, tt := range nonLeafTests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			got, err := ygnmi.Lookup[*exampleoc.Parent_Child](context.Background(), c, exampleocpath.Root().Parent().Child().Config(), ygnmi.WithUseGet())
+			if err != nil {
+				t.Fatalf("Lookup() returned unexpected error: %v", err)
+			}
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Parent_Child]{}), cmpopts.IgnoreFields(ygnmi.TelemetryError{}, "Err"), cmpopts.IgnoreFields(ygnmi.Value[*exampleoc.Parent_Child]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
+				t.Errorf("Lookup() returned unexpected diff: %s", diff)
+			}
+		})
+	}
 }
 
 func TestGet(t *testing.T) {

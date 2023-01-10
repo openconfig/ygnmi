@@ -231,7 +231,8 @@ func WithSetFallbackEncoding() Option {
 
 // Lookup fetches the value of a SingletonQuery with a ONCE subscription.
 func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T], opts ...Option) (*Value[T], error) {
-	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_ONCE, resolveOpts(opts))
+	resolvedOpts := resolveOpts(opts)
+	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_ONCE, resolvedOpts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to subscribe to path: %w", err)
 	}
@@ -239,7 +240,7 @@ func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T], opts ...
 	if err != nil {
 		return nil, fmt.Errorf("failed to receive to data: %w", err)
 	}
-	val, err := unmarshalAndExtract[T](data, q, q.goStruct())
+	val, err := unmarshalAndExtract[T](data, q, q.goStruct(), resolvedOpts)
 	if err != nil {
 		return val, fmt.Errorf("failed to unmarshal data: %w", err)
 	}
@@ -303,7 +304,8 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func
 		errCh: make(chan error, 1),
 	}
 
-	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM, resolveOpts(opts))
+	resolvedOpts := resolveOpts(opts)
+	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM, resolvedOpts)
 	if err != nil {
 		w.errCh <- err
 		return w
@@ -316,7 +318,7 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func
 		for {
 			select {
 			case data := <-dataCh:
-				val, err := unmarshalAndExtract[T](data, q, gs)
+				val, err := unmarshalAndExtract[T](data, q, gs, resolvedOpts)
 				if err != nil {
 					w.errCh <- err
 					return
@@ -385,7 +387,8 @@ func Collect[T any](ctx context.Context, c *Client, q SingletonQuery[T], opts ..
 // LookupAll fetches the values of a WildcardQuery with a ONCE subscription.
 // It returns an empty list if no values are present at the path.
 func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], opts ...Option) ([]*Value[T], error) {
-	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_ONCE, resolveOpts(opts))
+	resolvedOpts := resolveOpts(opts)
+	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_ONCE, resolvedOpts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to subscribe to path: %w", err)
 	}
@@ -405,7 +408,7 @@ func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], opts .
 	var vals []*Value[T]
 	for _, prefix := range sortedPrefixes {
 		goStruct := q.goStruct()
-		v, err := unmarshalAndExtract[T](datapointGroups[prefix], q, goStruct)
+		v, err := unmarshalAndExtract[T](datapointGroups[prefix], q, goStruct, resolvedOpts)
 		if err != nil {
 			return nil, fmt.Errorf("failed to unmarshal data: %w", err)
 		}
@@ -454,7 +457,8 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 		w.errCh <- err
 		return w
 	}
-	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM, resolveOpts(opts))
+	resolvedOpts := resolveOpts(opts)
+	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM, resolvedOpts)
 	if err != nil {
 		w.errCh <- err
 		return w
@@ -479,7 +483,7 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 					if _, ok := structs[pre]; !ok {
 						structs[pre] = q.goStruct()
 					}
-					val, err := unmarshalAndExtract[T](datapointGroups[pre], q, structs[pre])
+					val, err := unmarshalAndExtract[T](datapointGroups[pre], q, structs[pre], resolvedOpts)
 					if err != nil {
 						w.errCh <- err
 						return
