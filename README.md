@@ -21,8 +21,8 @@ An example generation script is located at internal/exampleoc/gen.sh.
 
 Not all ygot generator flags are supported by ygnmi. Notably ygnmi makes two important assumptions about the generated code:
 
-1. Path compression is enabled.
-2. PreferOperationState is selected.
+1. Path compression (`compress_paths`) is enabled.
+2. `prefer_operational_state` is selected.
 
 Note: the supported flags may evolve over time to include these options.
 
@@ -30,13 +30,13 @@ Note: the supported flags may evolve over time to include these options.
 
 When path compression is enabled, the generated ygot Go structs make use of
 shadow path annotations, which allows every Go struct to represent either the
-"config view" or "state view" of a configuration. For example, when
-`-prefer_operational_state` is selected, the default view is the "state view"
-and the `PreferShadowPath` view is the "config view".
+"config view" or "state view" of a configuration. For example, when the
+`prefer_operational_state` generation option is selected, the default view is
+the "state view" and the `PreferShadowPath` view is the "config view".
 
 For an explanation on shadow paths and the `PreferShadowPath` option for ygot
 utilities, see [GoStruct Shadow
-Paths](https://github.com/openconfig/ygot/blob/master/docs/shadow_paths.md)
+Paths](https://github.com/openconfig/ygot/blob/master/docs/shadow_paths.md).
 
 ### Output
 
