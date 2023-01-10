@@ -26,6 +26,18 @@ Not all ygot generator flags are supported by ygnmi. Notably ygnmi makes two imp
 
 Note: the supported flags may evolve over time to include these options.
 
+### Shadow Paths
+
+When path compression is enabled, the generated ygot Go structs make use of
+shadow path annotations, which allows every Go struct to represent either the
+"config view" or "state view" of a configuration. For example, when
+`-prefer_operational_state` is selected, the default view is the "state view"
+and the `PreferShadowPath` view is the "config view".
+
+For an explanation on shadow paths and the `PreferShadowPath` option for ygot
+utilities, see [GoStruct Shadow
+Paths](https://github.com/openconfig/ygot/blob/master/docs/shadow_paths.md)
+
 ### Output
 
 Calling the generation with `--base_import_path=<somepath>/exampleoc` flag will output:
