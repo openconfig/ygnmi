@@ -118,7 +118,7 @@ func (c *ComplianceErrors) String() string {
 // NOTE: The datapoints are applied in order as they are in the input slice,
 // *NOT* in order of their timestamps. As such, in order to correctly support
 // Collect calls, the input data must be sorted in order of timestamps.
-func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.ValidatedGoStruct) (*Value[T], error) {
+func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.ValidatedGoStruct, opts *opt) (*Value[T], error) {
 	queryPath, err := resolvePath(q.PathStruct())
 	if err != nil {
 		return nil, err
@@ -149,7 +149,7 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 		return ret, nil
 	}
 
-	unmarshalledData, complianceErrs, err := unmarshal(data, q.schema().SchemaTree[q.dirName()], goStruct, queryPath, q.schema(), q.isLeaf(), !q.IsState())
+	unmarshalledData, complianceErrs, err := unmarshal(data, q.schema().SchemaTree[q.dirName()], goStruct, queryPath, q.schema(), q.isLeaf(), !q.IsState(), opts)
 	ret.ComplianceErrors = complianceErrs
 	if err != nil {
 		return ret, err
@@ -264,7 +264,7 @@ func unmarshalSchemaless(data []*DataPoint, val any) (bool, error) {
 // NOTE: The subset of datapoints includes datapoints that are value restriction noncompliant.
 // The second error slice are internal errors, while the returned
 // *ComplianceError stores the compliance errors.
-func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.ValidatedGoStruct, queryPath *gpb.Path, schema *ytypes.Schema, isLeaf, isConfig bool) ([]*DataPoint, *ComplianceErrors, error) {
+func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.ValidatedGoStruct, queryPath *gpb.Path, schema *ytypes.Schema, isLeaf, isConfig bool, opts *opt) ([]*DataPoint, *ComplianceErrors, error) {
 	queryPathStr := pathToString(queryPath)
 	if isLeaf {
 		switch {
@@ -345,6 +345,10 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 			sopts := []ytypes.SetNodeOpt{&ytypes.InitMissingElements{}, &ytypes.TolerateJSONInconsistencies{}}
 			if isConfig {
 				sopts = append(sopts, &ytypes.PreferShadowPath{})
+			}
+			// TODO: Fully support partial unmarshaling of JSON blobs.
+			if opts.useGet {
+				sopts = append(sopts, &ytypes.IgnoreExtraFields{})
 			}
 			// 2. Check for type compliance (since path should already be compliant).
 			if err := ytypes.SetNode(structSchema, structPtr, relPath, dp.Value, sopts...); err == nil {
