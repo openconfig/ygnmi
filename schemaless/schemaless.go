@@ -28,6 +28,7 @@ import (
 
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/ygot"
+	"github.com/openconfig/ygot/ytypes"
 )
 
 // NewConfig creates a config query for the given path and type. The path must be gNMI path.
@@ -45,7 +46,8 @@ func NewConfig[T any](path, origin string) (ygnmi.ConfigQuery[T], error) {
 			createFn,
 			func() ygot.ValidatedGoStruct {
 				return nil
-			}, nil),
+			},
+			func() *ytypes.Schema { return nil }),
 		nil
 }
 
@@ -64,7 +66,8 @@ func NewWildcard[T any](path, origin string) (ygnmi.WildcardQuery[T], error) {
 			createFn,
 			func() ygot.ValidatedGoStruct {
 				return nil
-			}, nil),
+			},
+			func() *ytypes.Schema { return nil }),
 		nil
 }
 

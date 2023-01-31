@@ -22,7 +22,7 @@ import (
 )
 
 // NewLeafSingletonQuery creates a new LeafSingletonQuery object.
-func NewLeafSingletonQuery[T any](parentDir string, state, scalar bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schema *ytypes.Schema) *LeafSingletonQuery[T] {
+func NewLeafSingletonQuery[T any](parentDir string, state, scalar bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema) *LeafSingletonQuery[T] {
 	return &LeafSingletonQuery[T]{
 		leafBaseQuery: leafBaseQuery[T]{
 			parentDir:  parentDir,
@@ -31,26 +31,26 @@ func NewLeafSingletonQuery[T any](parentDir string, state, scalar bool, ps PathS
 			scalar:     scalar,
 			extractFn:  extractFn,
 			goStructFn: goStructFn,
-			yschema:    schema,
+			yschemaFn:  schemaFn,
 		},
 	}
 }
 
 // NewNonLeafSingletonQuery creates a new NonLeafSingletonQuery object.
-func NewNonLeafSingletonQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps PathStruct, subPaths []PathStruct, schema *ytypes.Schema) *NonLeafSingletonQuery[T] {
+func NewNonLeafSingletonQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps PathStruct, subPaths []PathStruct, schemaFn func() *ytypes.Schema) *NonLeafSingletonQuery[T] {
 	return &NonLeafSingletonQuery[T]{
 		nonLeafBaseQuery: nonLeafBaseQuery[T]{
 			dir:              dir,
 			state:            state,
 			ps:               ps,
-			yschema:          schema,
+			yschemaFn:        schemaFn,
 			queryPathStructs: subPaths,
 		},
 	}
 }
 
 // NewLeafConfigQuery creates a new NewLeafConfigQuery object.
-func NewLeafConfigQuery[T any](parentDir string, state, scalar bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schema *ytypes.Schema) *LeafConfigQuery[T] {
+func NewLeafConfigQuery[T any](parentDir string, state, scalar bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema) *LeafConfigQuery[T] {
 	return &LeafConfigQuery[T]{
 		leafBaseQuery: leafBaseQuery[T]{
 			parentDir:  parentDir,
@@ -59,25 +59,25 @@ func NewLeafConfigQuery[T any](parentDir string, state, scalar bool, ps PathStru
 			scalar:     scalar,
 			extractFn:  extractFn,
 			goStructFn: goStructFn,
-			yschema:    schema,
+			yschemaFn:  schemaFn,
 		},
 	}
 }
 
 // NewNonLeafConfigQuery creates a new NewNonLeafConfigQuery object.
-func NewNonLeafConfigQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps PathStruct, subPaths []PathStruct, schema *ytypes.Schema) *NonLeafConfigQuery[T] {
+func NewNonLeafConfigQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps PathStruct, subPaths []PathStruct, schemaFn func() *ytypes.Schema) *NonLeafConfigQuery[T] {
 	return &NonLeafConfigQuery[T]{
 		nonLeafBaseQuery: nonLeafBaseQuery[T]{
-			dir:     dir,
-			state:   state,
-			ps:      ps,
-			yschema: schema,
+			dir:       dir,
+			state:     state,
+			ps:        ps,
+			yschemaFn: schemaFn,
 		},
 	}
 }
 
 // NewLeafWildcardQuery creates a new NewLeafWildcardQuery object.
-func NewLeafWildcardQuery[T any](parentDir string, state, scalar bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schema *ytypes.Schema) *LeafWildcardQuery[T] {
+func NewLeafWildcardQuery[T any](parentDir string, state, scalar bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema) *LeafWildcardQuery[T] {
 	return &LeafWildcardQuery[T]{
 		leafBaseQuery: leafBaseQuery[T]{
 			parentDir:  parentDir,
@@ -86,19 +86,19 @@ func NewLeafWildcardQuery[T any](parentDir string, state, scalar bool, ps PathSt
 			scalar:     scalar,
 			extractFn:  extractFn,
 			goStructFn: goStructFn,
-			yschema:    schema,
+			yschemaFn:  schemaFn,
 		},
 	}
 }
 
 // NewNonLeafWildcardQuery creates a new NewNonLeafWildcardQuery object.
-func NewNonLeafWildcardQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps PathStruct, schema *ytypes.Schema) *NonLeafWildcardQuery[T] {
+func NewNonLeafWildcardQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps PathStruct, schemaFn func() *ytypes.Schema) *NonLeafWildcardQuery[T] {
 	return &NonLeafWildcardQuery[T]{
 		nonLeafBaseQuery: nonLeafBaseQuery[T]{
-			dir:     dir,
-			state:   state,
-			ps:      ps,
-			yschema: schema,
+			dir:       dir,
+			state:     state,
+			ps:        ps,
+			yschemaFn: schemaFn,
 		},
 	}
 }
@@ -135,8 +135,8 @@ type leafBaseQuery[T any] struct {
 	extractFn ExtractFn[T]
 	// goStructFn initializes a new GoStruct for the given path.
 	goStructFn func() ygot.ValidatedGoStruct
-	// yschema is parsed YANG schema to use when unmarshalling data.
-	yschema *ytypes.Schema
+	// yschemaFn is parsed YANG schema to use when unmarshalling data.
+	yschemaFn func() *ytypes.Schema
 	// scalar is whether the type (T) for this path is a pointer field (*T) in the parent GoStruct.
 	scalar bool
 }
@@ -179,7 +179,7 @@ func (lq *leafBaseQuery[T]) subPaths() []PathStruct {
 
 // schema returns the schema used for unmarshalling.
 func (lq *leafBaseQuery[T]) schema() *ytypes.Schema {
-	return lq.yschema
+	return lq.yschemaFn()
 }
 
 // isScalar returns whether the type (T) for this path is a pointer field (*T) in the parent GoStruct.
@@ -213,7 +213,7 @@ type nonLeafBaseQuery[T ygot.ValidatedGoStruct] struct {
 	// queryPathStructs are the paths used to for the gNMI subscription.
 	// They must be equal to or descendants of ps.
 	queryPathStructs []PathStruct
-	yschema          *ytypes.Schema
+	yschemaFn        func() *ytypes.Schema
 }
 
 // extract casts the input GoStruct to the concrete type for the query.
@@ -267,7 +267,7 @@ func (lq *nonLeafBaseQuery[T]) subPaths() []PathStruct {
 
 // schema returns the schema used for unmarshalling.
 func (lq *nonLeafBaseQuery[T]) schema() *ytypes.Schema {
-	return lq.yschema
+	return lq.yschemaFn()
 }
 
 // LeafConfigQuery is implementation of ConfigQuery interface for leaf nodes.

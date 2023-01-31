@@ -680,6 +680,6 @@ func (b *Batch[T]) Query() SingletonQuery[T] {
 		b.root.IsState(),
 		b.root.PathStruct(),
 		queryPaths,
-		b.root.schema(),
+		b.root.schema,
 	)
 }

@@ -198,10 +198,12 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 			{{- end}}
 		},
 		func() ygot.ValidatedGoStruct { return new({{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}) },
-		&ytypes.Schema{
-			Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
-			SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
-			Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
+				SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
+				Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
+			}
 		},
 	)
 }
@@ -240,10 +242,12 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 			{{- end}}
 		},
 		func() ygot.ValidatedGoStruct { return new({{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}) },
-		&ytypes.Schema{
-			Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
-			SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
-			Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
+				SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
+				Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
+			}
 		},
 	)
 }
@@ -258,10 +262,12 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 		{{ .IsState }},
 		n,
 		nil,
-		&ytypes.Schema{
-			Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
-			SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
-			Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
+				SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
+				Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
+			}
 		},
 	)
 }
@@ -274,10 +280,12 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
 		n,
-		&ytypes.Schema{
-			Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
-			SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
-			Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
+				SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
+				Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
+			}
 		},
 	)
 }
@@ -308,11 +316,13 @@ func (b *Batch) State() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
         true,
         ygnmi.NewDeviceRootBase(),
         queryPaths,
-        &ytypes.Schema{
-            Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
-            SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
-            Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
-        },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
+				SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
+				Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
+			}
+		},
     )
 }
 
@@ -326,11 +336,13 @@ func (b *Batch) Config() ygnmi.{{ .SingletonTypeName }}[*oc.Root] {
         false,
         ygnmi.NewDeviceRootBase(),
         queryPaths,
-        &ytypes.Schema{
-            Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
-            SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
-            Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
-        },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
+				SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
+				Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
+			}
+		},
     )
 }
 `)
