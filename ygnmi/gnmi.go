@@ -347,7 +347,9 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op
 	case replacePath, updatePath:
 		var typedVal *gpb.TypedValue
 		var err error
-		if opt.preferProto {
+		if s, ok := val.(*string); ok && path.Origin == "cli" {
+			typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: *s}}
+		} else if opt.preferProto {
 			typedVal, err = ygot.EncodeTypedValue(val, gpb.Encoding_JSON_IETF, &ygot.RFC7951JSONConfig{AppendModuleName: true, PreferShadowPath: preferShadowPath})
 		} else {
 			typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{}}

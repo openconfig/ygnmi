@@ -3205,8 +3205,15 @@ func TestSetBatch(t *testing.T) {
 	}{{
 		desc: "leaf update replace delete",
 		addPaths: func(sb *ygnmi.SetBatch) {
+			cliPath, err := schemaless.NewConfig[string]("", "cli")
+			if err != nil {
+				t.Fatalf("Failed to create CLI ygnmi query: %v", err)
+			}
+			ygnmi.BatchUpdate(sb, cliPath, "hello, mercury")
 			ygnmi.BatchUpdate(sb, exampleocpath.Root().Parent().Child().One().Config(), "foo")
+			ygnmi.BatchReplace(sb, cliPath, "hello, venus")
 			ygnmi.BatchReplace(sb, exampleocpath.Root().Parent().Child().One().Config(), "bar")
+			ygnmi.BatchDelete(sb, cliPath)
 			ygnmi.BatchDelete(sb, exampleocpath.Root().Parent().Child().One().Config())
 		},
 		wantRequest: &gpb.SetRequest{
@@ -3214,14 +3221,21 @@ func TestSetBatch(t *testing.T) {
 				Target: "dut",
 			},
 			Update: []*gpb.Update{{
+				Path: &gpb.Path{Origin: "cli"},
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: "hello, mercury"}},
+			}, {
 				Path: testutil.GNMIPath(t, "parent/child/config/one"),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("\"foo\"")}},
 			}},
 			Replace: []*gpb.Update{{
+				Path: &gpb.Path{Origin: "cli"},
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: "hello, venus"}},
+			}, {
 				Path: testutil.GNMIPath(t, "parent/child/config/one"),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("\"bar\"")}},
 			}},
 			Delete: []*gpb.Path{
+				{Origin: "cli"},
 				testutil.GNMIPath(t, "parent/child/config/one"),
 			},
 		},
