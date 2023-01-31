@@ -22,6 +22,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/openconfig/ygnmi/internal/logutil"
 	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygot/ytypes"
@@ -593,7 +594,7 @@ func (sb *SetBatch) Set(ctx context.Context, c *Client, opts ...Option) (*Result
 	req.Prefix = &gpb.Path{
 		Target: c.target,
 	}
-	log.V(c.requestLogLevel).Info(prettySetRequest(req))
+	logutil.LogByLine(c.requestLogLevel, prettySetRequest(req))
 	resp, err := c.gnmiC.Set(ctx, req)
 	log.V(c.requestLogLevel).Infof("SetResponse:\n%s", prototext.Format(resp))
 	return responseToResult(resp), err

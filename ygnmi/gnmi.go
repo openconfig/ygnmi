@@ -22,6 +22,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/openconfig/ygnmi/internal/logutil"
 	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygot"
 	"google.golang.org/grpc/codes"
@@ -317,7 +318,7 @@ func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, op setO
 	req.Prefix = &gpb.Path{
 		Target: c.target,
 	}
-	log.V(c.requestLogLevel).Info(prettySetRequest(req))
+	logutil.LogByLine(c.requestLogLevel, prettySetRequest(req))
 	resp, err := c.gnmiC.Set(ctx, req)
 	log.V(c.requestLogLevel).Infof("SetResponse:\n%s", prototext.Format(resp))
 
