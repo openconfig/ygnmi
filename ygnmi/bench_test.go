@@ -17,6 +17,7 @@ package ygnmi_test
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"testing"
 
@@ -57,9 +58,40 @@ func (c *subClient) Recv() (*gpb.SubscribeResponse, error) {
 	return c.resp[idx], nil
 }
 
+type dynamicClient struct {
+	gpb.GNMI_SubscribeClient
+	respFn func(i int) []*gpb.SubscribeResponse
+	// numResponses is number of non-error responses to return (can be larger than len(resp)).
+	numResponses int
+	recvs        int
+	i            int
+	resps        []*gpb.SubscribeResponse
+}
+
+func (c *dynamicClient) CloseSend() error { return nil }
+func (c *dynamicClient) Send(*gpb.SubscribeRequest) error {
+	c.recvs = 0
+	c.resps = c.respFn(0)
+	return nil
+}
+
+func (c *dynamicClient) Recv() (*gpb.SubscribeResponse, error) {
+	if c.recvs >= c.numResponses {
+		return nil, io.EOF
+	}
+	if c.i >= len(c.resps) {
+		c.recvs += 1
+		c.i = 0
+		c.resps = c.respFn(c.recvs)
+	}
+	r := c.resps[c.i]
+	c.i += 1
+	return r, nil
+}
+
 type benchmarkClient struct {
 	gpb.GNMIClient
-	sc *subClient
+	sc gpb.GNMI_SubscribeClient
 }
 
 func (c *benchmarkClient) Subscribe(ctx context.Context, opts ...grpc.CallOption) (gpb.GNMI_SubscribeClient, error) {
@@ -67,14 +99,16 @@ func (c *benchmarkClient) Subscribe(ctx context.Context, opts ...grpc.CallOption
 }
 
 func BenchmarkGet(b *testing.B) {
-	bc := &benchmarkClient{sc: &subClient{numResponses: 1}}
+	sc := &subClient{numResponses: 1}
+
+	bc := &benchmarkClient{sc: sc}
 	c, err := ygnmi.NewClient(bc)
 	if err != nil {
 		b.Fatalf("failed to create client: %v", err)
 	}
 
 	setUpdate := func(path *gpb.Path, val *gpb.TypedValue) {
-		bc.sc.resp = []*gpb.SubscribeResponse{{
+		sc.resp = []*gpb.SubscribeResponse{{
 			Response: &gpb.SubscribeResponse_Update{
 				Update: &gpb.Notification{
 					Update: []*gpb.Update{{
@@ -128,14 +162,15 @@ func BenchmarkGet(b *testing.B) {
 }
 
 func BenchmarkWatch(b *testing.B) {
-	bc := &benchmarkClient{sc: &subClient{numResponses: 100}}
+	sc := &subClient{numResponses: 100}
+	bc := &benchmarkClient{sc: sc}
 	c, err := ygnmi.NewClient(bc)
 	if err != nil {
 		b.Fatalf("failed to create client: %v", err)
 	}
 
 	setUpdate := func(path *gpb.Path, val *gpb.TypedValue) {
-		bc.sc.resp = []*gpb.SubscribeResponse{{
+		sc.resp = []*gpb.SubscribeResponse{{
 			Response: &gpb.SubscribeResponse_Update{
 				Update: &gpb.Notification{
 					Update: []*gpb.Update{{
@@ -203,4 +238,36 @@ func BenchmarkWatch(b *testing.B) {
 			b.Fatalf("WatchAll unexpected result: got %v want %v", v.Value, 1)
 		}
 	})
+}
+
+func BenchmarkWatchAll(b *testing.B) {
+	sc := &dynamicClient{
+		numResponses: b.N,
+		respFn: func(i int) []*gpb.SubscribeResponse {
+			return []*gpb.SubscribeResponse{{
+				Response: &gpb.SubscribeResponse_Update{
+					Update: &gpb.Notification{
+						Update: []*gpb.Update{{
+							Path: testutil.GNMIPath(b, fmt.Sprintf("/model/a/single-key[key=\"%d\"]/state/value", i)),
+							Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: int64(i)}},
+						}},
+					},
+				},
+			}, {
+				Response: &gpb.SubscribeResponse_SyncResponse{},
+			}}
+		},
+	}
+
+	bc := &benchmarkClient{sc: sc}
+	c, err := ygnmi.NewClient(bc)
+	if err != nil {
+		b.Fatalf("failed to create client: %v", err)
+	}
+
+	ctx := context.Background()
+	q := exampleocpath.Root().Model().SingleKeyAny().State()
+	ygnmi.WatchAll(ctx, c, q, func(v *ygnmi.Value[*exampleoc.Model_SingleKey]) error {
+		return ygnmi.Continue
+	}).Await()
 }
