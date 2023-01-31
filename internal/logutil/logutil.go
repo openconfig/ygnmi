@@ -1,6 +1,7 @@
 package logutil
 
 import (
+	"bufio"
 	"strings"
 
 	log "github.com/golang/glog"
@@ -14,7 +15,9 @@ const (
 // LogByLine logs the message line-by-line, and splits lines as well given the
 // log limit.
 func LogByLine(logLevel log.Level, message string) {
-	for _, line := range strings.Split(message, "\n") {
+	scanner := bufio.NewScanner(strings.NewReader(message))
+	for scanner.Scan() {
+		line := scanner.Text()
 		length := len(line)
 		for startIndex := 0; startIndex < length; startIndex += logLimit {
 			endIndex := startIndex + logLimit
@@ -23,5 +26,8 @@ func LogByLine(logLevel log.Level, message string) {
 			}
 			log.V(logLevel).Info(line[startIndex:endIndex])
 		}
+	}
+	if err := scanner.Err(); err != nil {
+		log.Warningf("ygnmi/logutil: error while scanning log input: %v", err)
 	}
 }
