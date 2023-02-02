@@ -15,6 +15,7 @@
 package ygnmi
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/openconfig/ygot/ygot"
@@ -141,6 +142,19 @@ type leafBaseQuery[T any] struct {
 	scalar bool
 }
 
+// String returns gNMI path as string for the query.
+func (lq *leafBaseQuery[T]) String() string {
+	protoPath, _, err := ResolvePath(lq.ps)
+	if err != nil {
+		return fmt.Sprintf("invalid path: %v", err)
+	}
+	path, err := ygot.PathToString(protoPath)
+	if err != nil {
+		path = protoPath.String()
+	}
+	return path
+}
+
 // extract takes the parent GoStruct and returns the correct child field from it.
 func (lq *leafBaseQuery[T]) extract(gs ygot.ValidatedGoStruct) (T, bool) {
 	return lq.extractFn(gs)
@@ -214,6 +228,19 @@ type nonLeafBaseQuery[T ygot.ValidatedGoStruct] struct {
 	// They must be equal to or descendants of ps.
 	queryPathStructs []PathStruct
 	yschemaFn        func() *ytypes.Schema
+}
+
+// String returns gNMI path as string for the query.
+func (lq *nonLeafBaseQuery[T]) String() string {
+	protoPath, _, err := ResolvePath(lq.ps)
+	if err != nil {
+		return fmt.Sprintf("invalid path: %v", err)
+	}
+	path, err := ygot.PathToString(protoPath)
+	if err != nil {
+		path = protoPath.String()
+	}
+	return path
 }
 
 // extract casts the input GoStruct to the concrete type for the query.
