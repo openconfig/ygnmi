@@ -123,7 +123,7 @@ func (gs *getSubscriber) Send(req *gpb.SubscribeRequest) error {
 	if st, ok := status.FromError(err); ok && st.Code() == codes.NotFound { // Make this behave like Subscribe, where non-existent paths don't return values.
 		return nil
 	} else if err != nil {
-		return err
+		return fmt.Errorf("gNMI.Get request failed: %w", err)
 	}
 	gs.notifs = resp.GetNotification()
 	return nil

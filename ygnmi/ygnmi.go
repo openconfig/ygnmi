@@ -414,10 +414,10 @@ func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], opts .
 			return nil, fmt.Errorf("failed to unmarshal data: %w", err)
 		}
 		if v.ComplianceErrors != nil {
+			log.V(0).Infof("noncompliant data encountered while unmarshalling: %v", v.ComplianceErrors)
 			if q.isLeaf() {
 				continue
 			}
-			log.V(0).Infof("noncompliant data encountered while unmarshalling: %v", v.ComplianceErrors)
 		}
 		vals = append(vals, v)
 	}
