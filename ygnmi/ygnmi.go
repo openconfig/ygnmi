@@ -133,6 +133,11 @@ type Client struct {
 	requestLogLevel log.Level
 }
 
+// String returns a string representation of Client. This output is unstable.
+func (c *Client) String() string {
+	return fmt.Sprintf("ygnmi client (target: %q)", c.target)
+}
+
 // ClientOption configures a client with custom options.
 type ClientOption func(d *Client) error
 
