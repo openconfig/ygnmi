@@ -78,7 +78,7 @@ func (c *ComplianceErrors) String() string {
 		return ""
 	}
 	var b strings.Builder
-	b.WriteString("Noncompliance Errors by category (for explanation see https://github.com/openconfig/ygnmi#noncompliance-errors):")
+	b.WriteString("Noncompliance Errors by category (see https://github.com/openconfig/ygnmi#noncompliance-errors):")
 	b.WriteString("\nPath Noncompliance Errors:")
 	if len(c.PathErrors) != 0 {
 		for _, e := range c.PathErrors {

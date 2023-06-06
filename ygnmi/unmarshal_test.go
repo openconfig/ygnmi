@@ -15,7 +15,6 @@
 package ygnmi
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -956,7 +955,6 @@ func TestUnmarshal(t *testing.T) {
 				validateErrs = complianceErrs.ValidateErrors
 				// Validate documentation on error
 				if !strings.Contains(complianceErrs.String(), "https://github.com/openconfig/ygnmi#noncompliance-errors") {
-					fmt.Println(complianceErrs.String())
 					t.Errorf("ComplianceError String() didn't contain expected reference to documentation.")
 				}
 			}
