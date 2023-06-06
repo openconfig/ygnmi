@@ -15,6 +15,7 @@
 package ygnmi
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -952,6 +953,10 @@ func TestUnmarshal(t *testing.T) {
 				pathErrs = complianceErrs.PathErrors
 				typeErrs = complianceErrs.TypeErrors
 				validateErrs = complianceErrs.ValidateErrors
+				// Validate documentation on error
+				if !strings.Contains(complianceErrs.String(), "https://github.com/openconfig/ygnmi#noncompliance-errors") {
+					t.Errorf("ComplianceError String() didn't contain expected reference to documentation.")
+				}
 			}
 			if len(pathErrs) > 1 {
 				t.Fatalf("unmarshal: got more than one path unmarshal error: %v", pathErrs)
