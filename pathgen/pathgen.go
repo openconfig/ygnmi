@@ -911,13 +911,9 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 		StructBase:     structBuf.String(),
 		Package:        goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix),
 	}
-	errs = util.AppendErrs(errs, nonLeafSnippet.genExtras(nodeDataMap, directory, extraGens))
 
-	// Since it is not possible for gNMI to refer to individual nodes
-	// underneath an unkeyed list, prevent constructing paths that go below
-	// it by breaking the chain here.
-	switch {
-	case directory.Type == ygen.List && len(directory.ListKeys) == 0:
+	// Since it is not possible for gNMI to refer to individual nodes underneath an unkeyed list, prevent constructing paths below a keyless list.
+	if directory.Type == ygen.List && len(directory.ListKeys) == 0 {
 		return []GoPathStructCodeSnippet{nonLeafSnippet}, nil
 	}
 
