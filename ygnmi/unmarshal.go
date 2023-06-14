@@ -332,6 +332,9 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 		// root entry that all top-level schemas are connected to via their
 		// parent pointers. Therefore, we must remove that first element to
 		// obtain the sanitized path.
+
+		// TODO(wenbli): Support ordered maps.
+
 		relPath := util.TrimGNMIPathPrefix(dp.Path, util.PathStringToElements(structSchema.Path())[1:])
 		if dp.Value == nil {
 			var dopts []ytypes.DelNodeOpt

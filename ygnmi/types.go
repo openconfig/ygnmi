@@ -49,7 +49,7 @@ func NewLeafSingletonQuery[T any](parentDir string, state, scalar bool, ps PathS
 }
 
 // NewNonLeafSingletonQuery creates a new NonLeafSingletonQuery object.
-func NewNonLeafSingletonQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps PathStruct, subPaths []PathStruct, schemaFn func() *ytypes.Schema) *NonLeafSingletonQuery[T] {
+func NewNonLeafSingletonQuery[T any](dir string, state bool, ps PathStruct, subPaths []PathStruct, schemaFn func() *ytypes.Schema) *NonLeafSingletonQuery[T] {
 	return &NonLeafSingletonQuery[T]{
 		nonLeafBaseQuery: nonLeafBaseQuery[T]{
 			baseQuery: newBaseQuery[T](
@@ -81,7 +81,7 @@ func NewLeafConfigQuery[T any](parentDir string, state, scalar bool, ps PathStru
 }
 
 // NewNonLeafConfigQuery creates a new NewNonLeafConfigQuery object.
-func NewNonLeafConfigQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps PathStruct, subPaths []PathStruct, schemaFn func() *ytypes.Schema) *NonLeafConfigQuery[T] {
+func NewNonLeafConfigQuery[T any](dir string, state bool, ps PathStruct, subPaths []PathStruct, schemaFn func() *ytypes.Schema) *NonLeafConfigQuery[T] {
 	return &NonLeafConfigQuery[T]{
 		nonLeafBaseQuery: nonLeafBaseQuery[T]{
 			baseQuery: newBaseQuery[T](
@@ -112,7 +112,7 @@ func NewLeafWildcardQuery[T any](parentDir string, state, scalar bool, ps PathSt
 }
 
 // NewNonLeafWildcardQuery creates a new NewNonLeafWildcardQuery object.
-func NewNonLeafWildcardQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps PathStruct, schemaFn func() *ytypes.Schema) *NonLeafWildcardQuery[T] {
+func NewNonLeafWildcardQuery[T any](dir string, state bool, ps PathStruct, schemaFn func() *ytypes.Schema) *NonLeafWildcardQuery[T] {
 	return &NonLeafWildcardQuery[T]{
 		nonLeafBaseQuery: nonLeafBaseQuery[T]{
 			baseQuery: newBaseQuery[T](
@@ -232,7 +232,7 @@ func (lq *leafBaseQuery[T]) isScalar() bool {
 
 // NonLeafSingletonQuery is implementation of SingletonQuery interface for non-leaf nodes.
 // Note: Do not use this type directly, instead use the generated Path API.
-type NonLeafSingletonQuery[T ygot.ValidatedGoStruct] struct {
+type NonLeafSingletonQuery[T any] struct {
 	nonLeafBaseQuery[T]
 }
 
@@ -241,14 +241,14 @@ func (lq *NonLeafSingletonQuery[T]) IsSingleton() {}
 
 // NonLeafWildcardQuery is implementation of SingletonQuery interface for non-leaf nodes.
 // Note: Do not use this type directly, instead use the generated Path API.
-type NonLeafWildcardQuery[T ygot.ValidatedGoStruct] struct {
+type NonLeafWildcardQuery[T any] struct {
 	nonLeafBaseQuery[T]
 }
 
 // IsWildcard prevents this struct from being used where a non-wildcard path is expected.
 func (lq *NonLeafWildcardQuery[T]) IsWildcard() {}
 
-type nonLeafBaseQuery[T ygot.ValidatedGoStruct] struct {
+type nonLeafBaseQuery[T any] struct {
 	baseQuery[T]
 	// queryPathStructs are the paths used to for the gNMI subscription.
 	// They must be equal to or descendants of ps.
@@ -316,7 +316,7 @@ func (lq *LeafConfigQuery[T]) IsSingleton() {}
 
 // NonLeafConfigQuery is implementation of ConfigQuery interface for non-leaf nodes.
 // Note: Do not use this type directly, instead use the generated Path API.
-type NonLeafConfigQuery[T ygot.ValidatedGoStruct] struct {
+type NonLeafConfigQuery[T any] struct {
 	nonLeafBaseQuery[T]
 }
 

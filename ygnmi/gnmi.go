@@ -311,6 +311,7 @@ func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, op setO
 	if q.isLeaf() && q.isScalar() {
 		setVal = &val
 	}
+	// TODO(wenbli): Support ordered maps.
 	if err := populateSetRequest(req, path, setVal, op, !q.IsState(), opts...); err != nil {
 		return nil, nil, err
 	}

@@ -645,13 +645,13 @@ func BatchDelete[T any](sb *SetBatch, q ConfigQuery[T]) {
 // Batch contains a collection of paths.
 // Calling State() or Config() on the batch returns a query
 // that can be used to Lookup, Watch, etc on multiple paths at once.
-type Batch[T ygot.ValidatedGoStruct] struct {
+type Batch[T any] struct {
 	root  SingletonQuery[T]
 	paths []PathStruct
 }
 
 // NewBatch creates a batch object. All paths in the batch must be children of the root query.
-func NewBatch[T ygot.ValidatedGoStruct](root SingletonQuery[T]) *Batch[T] {
+func NewBatch[T any](root SingletonQuery[T]) *Batch[T] {
 	return &Batch[T]{
 		root: root,
 	}
