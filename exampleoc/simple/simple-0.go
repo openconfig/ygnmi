@@ -165,72 +165,6 @@ type Parent_Child_FivePathAny struct {
 }
 
 // State returns a Query that can be used in gNMI operations.
-func (n *Parent_ChildPath) State() ygnmi.SingletonQuery[*oc.Parent_Child] {
-	return ygnmi.NewNonLeafSingletonQuery[*oc.Parent_Child](
-		"Parent_Child",
-		true,
-		n,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// State returns a Query that can be used in gNMI operations.
-func (n *Parent_ChildPathAny) State() ygnmi.WildcardQuery[*oc.Parent_Child] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Parent_Child](
-		"Parent_Child",
-		true,
-		n,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// Config returns a Query that can be used in gNMI operations.
-func (n *Parent_ChildPath) Config() ygnmi.ConfigQuery[*oc.Parent_Child] {
-	return ygnmi.NewNonLeafConfigQuery[*oc.Parent_Child](
-		"Parent_Child",
-		false,
-		n,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// Config returns a Query that can be used in gNMI operations.
-func (n *Parent_ChildPathAny) Config() ygnmi.WildcardQuery[*oc.Parent_Child] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Parent_Child](
-		"Parent_Child",
-		false,
-		n,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// State returns a Query that can be used in gNMI operations.
 //
 //	Defining module:      "openconfig-simple"
 //	Instantiating module: "openconfig-simple"
@@ -352,6 +286,18 @@ func (n *Parent_Child_FivePathAny) Config() ygnmi.WildcardQuery[float32] {
 			}
 		},
 	)
+}
+
+// Parent_Child_FourPath represents the /openconfig-simple/parent/child/state/four YANG schema element.
+type Parent_Child_FourPath struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// Parent_Child_FourPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/four YANG schema element.
+type Parent_Child_FourPathAny struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -476,6 +422,18 @@ func (n *Parent_Child_FourPathAny) Config() ygnmi.WildcardQuery[oc.Binary] {
 			}
 		},
 	)
+}
+
+// Parent_Child_OnePath represents the /openconfig-simple/parent/child/state/one YANG schema element.
+type Parent_Child_OnePath struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// Parent_Child_OnePathAny represents the wildcard version of the /openconfig-simple/parent/child/state/one YANG schema element.
+type Parent_Child_OnePathAny struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -618,6 +576,18 @@ func (n *Parent_Child_OnePathAny) Config() ygnmi.WildcardQuery[string] {
 	)
 }
 
+// Parent_Child_SixPath represents the /openconfig-simple/parent/child/state/six YANG schema element.
+type Parent_Child_SixPath struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// Parent_Child_SixPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/six YANG schema element.
+type Parent_Child_SixPathAny struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
 // State returns a Query that can be used in gNMI operations.
 //
 //	Defining module:      "openconfig-simple"
@@ -740,6 +710,18 @@ func (n *Parent_Child_SixPathAny) Config() ygnmi.WildcardQuery[[]float32] {
 			}
 		},
 	)
+}
+
+// Parent_Child_ThreePath represents the /openconfig-simple/parent/child/state/three YANG schema element.
+type Parent_Child_ThreePath struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// Parent_Child_ThreePathAny represents the wildcard version of the /openconfig-simple/parent/child/state/three YANG schema element.
+type Parent_Child_ThreePathAny struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -866,6 +848,18 @@ func (n *Parent_Child_ThreePathAny) Config() ygnmi.WildcardQuery[oc.E_Child_Thre
 	)
 }
 
+// Parent_Child_TwoPath represents the /openconfig-simple/parent/child/state/two YANG schema element.
+type Parent_Child_TwoPath struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// Parent_Child_TwoPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/two YANG schema element.
+type Parent_Child_TwoPathAny struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
 // State returns a Query that can be used in gNMI operations.
 //
 //	Defining module:      "openconfig-simple"
@@ -934,66 +928,6 @@ func (n *Parent_Child_TwoPathAny) State() ygnmi.WildcardQuery[string] {
 			}
 		},
 	)
-}
-
-// Parent_Child_FourPath represents the /openconfig-simple/parent/child/state/four YANG schema element.
-type Parent_Child_FourPath struct {
-	*ygnmi.NodePath
-	parent ygnmi.PathStruct
-}
-
-// Parent_Child_FourPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/four YANG schema element.
-type Parent_Child_FourPathAny struct {
-	*ygnmi.NodePath
-	parent ygnmi.PathStruct
-}
-
-// Parent_Child_OnePath represents the /openconfig-simple/parent/child/state/one YANG schema element.
-type Parent_Child_OnePath struct {
-	*ygnmi.NodePath
-	parent ygnmi.PathStruct
-}
-
-// Parent_Child_OnePathAny represents the wildcard version of the /openconfig-simple/parent/child/state/one YANG schema element.
-type Parent_Child_OnePathAny struct {
-	*ygnmi.NodePath
-	parent ygnmi.PathStruct
-}
-
-// Parent_Child_SixPath represents the /openconfig-simple/parent/child/state/six YANG schema element.
-type Parent_Child_SixPath struct {
-	*ygnmi.NodePath
-	parent ygnmi.PathStruct
-}
-
-// Parent_Child_SixPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/six YANG schema element.
-type Parent_Child_SixPathAny struct {
-	*ygnmi.NodePath
-	parent ygnmi.PathStruct
-}
-
-// Parent_Child_ThreePath represents the /openconfig-simple/parent/child/state/three YANG schema element.
-type Parent_Child_ThreePath struct {
-	*ygnmi.NodePath
-	parent ygnmi.PathStruct
-}
-
-// Parent_Child_ThreePathAny represents the wildcard version of the /openconfig-simple/parent/child/state/three YANG schema element.
-type Parent_Child_ThreePathAny struct {
-	*ygnmi.NodePath
-	parent ygnmi.PathStruct
-}
-
-// Parent_Child_TwoPath represents the /openconfig-simple/parent/child/state/two YANG schema element.
-type Parent_Child_TwoPath struct {
-	*ygnmi.NodePath
-	parent ygnmi.PathStruct
-}
-
-// Parent_Child_TwoPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/two YANG schema element.
-type Parent_Child_TwoPathAny struct {
-	*ygnmi.NodePath
-	parent ygnmi.PathStruct
 }
 
 // Parent_ChildPath represents the /openconfig-simple/parent/child YANG schema element.
@@ -1210,6 +1144,72 @@ func (n *Parent_ChildPathAny) Two() *Parent_Child_TwoPathAny {
 	}
 }
 
+// State returns a Query that can be used in gNMI operations.
+func (n *Parent_ChildPath) State() ygnmi.SingletonQuery[*oc.Parent_Child] {
+	return ygnmi.NewNonLeafSingletonQuery[*oc.Parent_Child](
+		"Parent_Child",
+		true,
+		n,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *Parent_ChildPathAny) State() ygnmi.WildcardQuery[*oc.Parent_Child] {
+	return ygnmi.NewNonLeafWildcardQuery[*oc.Parent_Child](
+		"Parent_Child",
+		true,
+		n,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *Parent_ChildPath) Config() ygnmi.ConfigQuery[*oc.Parent_Child] {
+	return ygnmi.NewNonLeafConfigQuery[*oc.Parent_Child](
+		"Parent_Child",
+		false,
+		n,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *Parent_ChildPathAny) Config() ygnmi.WildcardQuery[*oc.Parent_Child] {
+	return ygnmi.NewNonLeafWildcardQuery[*oc.Parent_Child](
+		"Parent_Child",
+		false,
+		n,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
 // RemoteContainer_ALeafPath represents the /openconfig-simple/remote-container/state/a-leaf YANG schema element.
 type RemoteContainer_ALeafPath struct {
 	*ygnmi.NodePath
@@ -1220,72 +1220,6 @@ type RemoteContainer_ALeafPath struct {
 type RemoteContainer_ALeafPathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// State returns a Query that can be used in gNMI operations.
-func (n *RemoteContainerPath) State() ygnmi.SingletonQuery[*oc.RemoteContainer] {
-	return ygnmi.NewNonLeafSingletonQuery[*oc.RemoteContainer](
-		"RemoteContainer",
-		true,
-		n,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// State returns a Query that can be used in gNMI operations.
-func (n *RemoteContainerPathAny) State() ygnmi.WildcardQuery[*oc.RemoteContainer] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.RemoteContainer](
-		"RemoteContainer",
-		true,
-		n,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// Config returns a Query that can be used in gNMI operations.
-func (n *RemoteContainerPath) Config() ygnmi.ConfigQuery[*oc.RemoteContainer] {
-	return ygnmi.NewNonLeafConfigQuery[*oc.RemoteContainer](
-		"RemoteContainer",
-		false,
-		n,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// Config returns a Query that can be used in gNMI operations.
-func (n *RemoteContainerPathAny) Config() ygnmi.WildcardQuery[*oc.RemoteContainer] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.RemoteContainer](
-		"RemoteContainer",
-		false,
-		n,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -1470,4 +1404,70 @@ func (n *RemoteContainerPathAny) ALeaf() *RemoteContainer_ALeafPathAny {
 		),
 		parent: n,
 	}
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *RemoteContainerPath) State() ygnmi.SingletonQuery[*oc.RemoteContainer] {
+	return ygnmi.NewNonLeafSingletonQuery[*oc.RemoteContainer](
+		"RemoteContainer",
+		true,
+		n,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *RemoteContainerPathAny) State() ygnmi.WildcardQuery[*oc.RemoteContainer] {
+	return ygnmi.NewNonLeafWildcardQuery[*oc.RemoteContainer](
+		"RemoteContainer",
+		true,
+		n,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *RemoteContainerPath) Config() ygnmi.ConfigQuery[*oc.RemoteContainer] {
+	return ygnmi.NewNonLeafConfigQuery[*oc.RemoteContainer](
+		"RemoteContainer",
+		false,
+		n,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *RemoteContainerPathAny) Config() ygnmi.WildcardQuery[*oc.RemoteContainer] {
+	return ygnmi.NewNonLeafWildcardQuery[*oc.RemoteContainer](
+		"RemoteContainer",
+		false,
+		n,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
 }

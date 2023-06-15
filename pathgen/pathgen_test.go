@@ -3122,7 +3122,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 	for _, tt := range tests {
 		if tt.want != nil {
 			t.Run(tt.name, func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, "oc.", tt.inPathStructSuffix, true, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, nil, "oc.", tt.inPathStructSuffix, true, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}
@@ -3139,7 +3139,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 
 		if tt.wantNoWildcard != nil {
 			t.Run(tt.name+" no wildcard", func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, "oc.", tt.inPathStructSuffix, false, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, nil, "oc.", tt.inPathStructSuffix, false, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}
