@@ -57,6 +57,9 @@ type AnyQuery[T any] interface {
 	isScalar() bool
 	// schema returns the root schema used for unmarshalling.
 	schema() *ytypes.Schema
+	// compressInfo returns information about where the path points to an
+	// element that is compressed out (if applicable).
+	compressInfo() *CompressionInfo
 }
 
 // SingletonQuery is a non-wildcard gNMI query.
@@ -685,7 +688,10 @@ func (b *Batch[T]) Query() SingletonQuery[T] {
 		b.root.dirName(),
 		b.root.IsState(),
 		b.root.PathStruct(),
+		nil,
+		nil,
 		queryPaths,
 		b.root.schema,
+		b.root.compressInfo(),
 	)
 }

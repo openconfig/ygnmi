@@ -93,6 +93,8 @@ func (n *ParentPath) State() ygnmi.SingletonQuery[*oc.Parent] {
 		true,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -100,6 +102,7 @@ func (n *ParentPath) State() ygnmi.SingletonQuery[*oc.Parent] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -109,6 +112,8 @@ func (n *ParentPathAny) State() ygnmi.WildcardQuery[*oc.Parent] {
 		"Parent",
 		true,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -116,6 +121,7 @@ func (n *ParentPathAny) State() ygnmi.WildcardQuery[*oc.Parent] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -126,6 +132,8 @@ func (n *ParentPath) Config() ygnmi.ConfigQuery[*oc.Parent] {
 		false,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -133,6 +141,7 @@ func (n *ParentPath) Config() ygnmi.ConfigQuery[*oc.Parent] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -142,6 +151,8 @@ func (n *ParentPathAny) Config() ygnmi.WildcardQuery[*oc.Parent] {
 		"Parent",
 		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -149,6 +160,7 @@ func (n *ParentPathAny) Config() ygnmi.WildcardQuery[*oc.Parent] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1151,6 +1163,8 @@ func (n *Parent_ChildPath) State() ygnmi.SingletonQuery[*oc.Parent_Child] {
 		true,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1158,6 +1172,7 @@ func (n *Parent_ChildPath) State() ygnmi.SingletonQuery[*oc.Parent_Child] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1167,6 +1182,8 @@ func (n *Parent_ChildPathAny) State() ygnmi.WildcardQuery[*oc.Parent_Child] {
 		"Parent_Child",
 		true,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1174,6 +1191,7 @@ func (n *Parent_ChildPathAny) State() ygnmi.WildcardQuery[*oc.Parent_Child] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1184,6 +1202,8 @@ func (n *Parent_ChildPath) Config() ygnmi.ConfigQuery[*oc.Parent_Child] {
 		false,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1191,6 +1211,7 @@ func (n *Parent_ChildPath) Config() ygnmi.ConfigQuery[*oc.Parent_Child] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1200,6 +1221,8 @@ func (n *Parent_ChildPathAny) Config() ygnmi.WildcardQuery[*oc.Parent_Child] {
 		"Parent_Child",
 		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1207,6 +1230,7 @@ func (n *Parent_ChildPathAny) Config() ygnmi.WildcardQuery[*oc.Parent_Child] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1413,6 +1437,8 @@ func (n *RemoteContainerPath) State() ygnmi.SingletonQuery[*oc.RemoteContainer] 
 		true,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1420,6 +1446,7 @@ func (n *RemoteContainerPath) State() ygnmi.SingletonQuery[*oc.RemoteContainer] 
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1429,6 +1456,8 @@ func (n *RemoteContainerPathAny) State() ygnmi.WildcardQuery[*oc.RemoteContainer
 		"RemoteContainer",
 		true,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1436,6 +1465,7 @@ func (n *RemoteContainerPathAny) State() ygnmi.WildcardQuery[*oc.RemoteContainer
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1446,6 +1476,8 @@ func (n *RemoteContainerPath) Config() ygnmi.ConfigQuery[*oc.RemoteContainer] {
 		false,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1453,6 +1485,7 @@ func (n *RemoteContainerPath) Config() ygnmi.ConfigQuery[*oc.RemoteContainer] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1462,6 +1495,8 @@ func (n *RemoteContainerPathAny) Config() ygnmi.WildcardQuery[*oc.RemoteContaine
 		"RemoteContainer",
 		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1469,5 +1504,6 @@ func (n *RemoteContainerPathAny) Config() ygnmi.WildcardQuery[*oc.RemoteContaine
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }

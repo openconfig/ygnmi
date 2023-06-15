@@ -385,14 +385,17 @@ func (b *Batch) State() ygnmi.SingletonQuery[*Root] {
         "Root",
         true,
         ygnmi.NewDeviceRootBase(),
+	nil,
+	nil,
         queryPaths,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
+	func() *ytypes.Schema {
+		return &ytypes.Schema{
+			Root:       &oc.Root{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		}
+	},
+	nil,
     )
 }
 
@@ -405,14 +408,17 @@ func (b *Batch) Config() ygnmi.SingletonQuery[*oc.Root] {
         "Root",
         false,
         ygnmi.NewDeviceRootBase(),
+	nil,
+	nil,
         queryPaths,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
+	func() *ytypes.Schema {
+		return &ytypes.Schema{
+			Root:       &oc.Root{},
+			SchemaTree: oc.SchemaTree,
+			Unmarshal:  oc.Unmarshal,
+		}
+	},
+	nil,
     )
 }
 
@@ -423,6 +429,8 @@ func (n *Root) State() ygnmi.SingletonQuery[*Root] {
 		true,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -430,6 +438,7 @@ func (n *Root) State() ygnmi.SingletonQuery[*Root] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -440,6 +449,8 @@ func (n *Root) Config() ygnmi.ConfigQuery[*Root] {
 		false,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -447,6 +458,7 @@ func (n *Root) Config() ygnmi.ConfigQuery[*Root] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 `,

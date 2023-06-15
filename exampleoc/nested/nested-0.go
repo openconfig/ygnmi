@@ -91,6 +91,8 @@ func (n *APath) State() ygnmi.SingletonQuery[*oc.A] {
 		true,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -98,6 +100,7 @@ func (n *APath) State() ygnmi.SingletonQuery[*oc.A] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -107,6 +110,8 @@ func (n *APathAny) State() ygnmi.WildcardQuery[*oc.A] {
 		"A",
 		true,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -114,6 +119,7 @@ func (n *APathAny) State() ygnmi.WildcardQuery[*oc.A] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -124,6 +130,8 @@ func (n *APath) Config() ygnmi.ConfigQuery[*oc.A] {
 		false,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -131,6 +139,7 @@ func (n *APath) Config() ygnmi.ConfigQuery[*oc.A] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -140,6 +149,8 @@ func (n *APathAny) Config() ygnmi.WildcardQuery[*oc.A] {
 		"A",
 		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -147,6 +158,7 @@ func (n *APathAny) Config() ygnmi.WildcardQuery[*oc.A] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -199,6 +211,8 @@ func (n *A_BPath) State() ygnmi.SingletonQuery[*oc.A_B] {
 		true,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -206,6 +220,7 @@ func (n *A_BPath) State() ygnmi.SingletonQuery[*oc.A_B] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -215,6 +230,8 @@ func (n *A_BPathAny) State() ygnmi.WildcardQuery[*oc.A_B] {
 		"A_B",
 		true,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -222,6 +239,7 @@ func (n *A_BPathAny) State() ygnmi.WildcardQuery[*oc.A_B] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -232,6 +250,8 @@ func (n *A_BPath) Config() ygnmi.ConfigQuery[*oc.A_B] {
 		false,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -239,6 +259,7 @@ func (n *A_BPath) Config() ygnmi.ConfigQuery[*oc.A_B] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -248,6 +269,8 @@ func (n *A_BPathAny) Config() ygnmi.WildcardQuery[*oc.A_B] {
 		"A_B",
 		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -255,6 +278,7 @@ func (n *A_BPathAny) Config() ygnmi.WildcardQuery[*oc.A_B] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -307,6 +331,8 @@ func (n *A_B_CPath) State() ygnmi.SingletonQuery[*oc.A_B_C] {
 		true,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -314,6 +340,7 @@ func (n *A_B_CPath) State() ygnmi.SingletonQuery[*oc.A_B_C] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -323,6 +350,8 @@ func (n *A_B_CPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C] {
 		"A_B_C",
 		true,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -330,6 +359,7 @@ func (n *A_B_CPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -340,6 +370,8 @@ func (n *A_B_CPath) Config() ygnmi.ConfigQuery[*oc.A_B_C] {
 		false,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -347,6 +379,7 @@ func (n *A_B_CPath) Config() ygnmi.ConfigQuery[*oc.A_B_C] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -356,6 +389,8 @@ func (n *A_B_CPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C] {
 		"A_B_C",
 		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -363,6 +398,7 @@ func (n *A_B_CPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -415,6 +451,8 @@ func (n *A_B_C_DPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D] {
 		true,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -422,6 +460,7 @@ func (n *A_B_C_DPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -431,6 +470,8 @@ func (n *A_B_C_DPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D] {
 		"A_B_C_D",
 		true,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -438,6 +479,7 @@ func (n *A_B_C_DPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -448,6 +490,8 @@ func (n *A_B_C_DPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D] {
 		false,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -455,6 +499,7 @@ func (n *A_B_C_DPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -464,6 +509,8 @@ func (n *A_B_C_DPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D] {
 		"A_B_C_D",
 		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -471,6 +518,7 @@ func (n *A_B_C_DPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -523,6 +571,8 @@ func (n *A_B_C_D_EPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E] {
 		true,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -530,6 +580,7 @@ func (n *A_B_C_D_EPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -539,6 +590,8 @@ func (n *A_B_C_D_EPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D_E] {
 		"A_B_C_D_E",
 		true,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -546,6 +599,7 @@ func (n *A_B_C_D_EPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D_E] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -556,6 +610,8 @@ func (n *A_B_C_D_EPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E] {
 		false,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -563,6 +619,7 @@ func (n *A_B_C_D_EPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -572,6 +629,8 @@ func (n *A_B_C_D_EPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E] {
 		"A_B_C_D_E",
 		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -579,6 +638,7 @@ func (n *A_B_C_D_EPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -631,6 +691,8 @@ func (n *A_B_C_D_E_FPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F] {
 		true,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -638,6 +700,7 @@ func (n *A_B_C_D_E_FPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -647,6 +710,8 @@ func (n *A_B_C_D_E_FPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F] {
 		"A_B_C_D_E_F",
 		true,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -654,6 +719,7 @@ func (n *A_B_C_D_E_FPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -664,6 +730,8 @@ func (n *A_B_C_D_E_FPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F] {
 		false,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -671,6 +739,7 @@ func (n *A_B_C_D_E_FPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -680,6 +749,8 @@ func (n *A_B_C_D_E_FPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F] {
 		"A_B_C_D_E_F",
 		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -687,6 +758,7 @@ func (n *A_B_C_D_E_FPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -739,6 +811,8 @@ func (n *A_B_C_D_E_F_GPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F_G] {
 		true,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -746,6 +820,7 @@ func (n *A_B_C_D_E_F_GPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F_G] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -755,6 +830,8 @@ func (n *A_B_C_D_E_F_GPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_G] {
 		"A_B_C_D_E_F_G",
 		true,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -762,6 +839,7 @@ func (n *A_B_C_D_E_F_GPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_G] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -772,6 +850,8 @@ func (n *A_B_C_D_E_F_GPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F_G] {
 		false,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -779,6 +859,7 @@ func (n *A_B_C_D_E_F_GPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F_G] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -788,6 +869,8 @@ func (n *A_B_C_D_E_F_GPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_G] {
 		"A_B_C_D_E_F_G",
 		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -795,6 +878,7 @@ func (n *A_B_C_D_E_F_GPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_G] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -847,6 +931,8 @@ func (n *A_B_C_D_E_F_G_HPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F_G_H] 
 		true,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -854,6 +940,7 @@ func (n *A_B_C_D_E_F_G_HPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F_G_H] 
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -863,6 +950,8 @@ func (n *A_B_C_D_E_F_G_HPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_G_H
 		"A_B_C_D_E_F_G_H",
 		true,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -870,6 +959,7 @@ func (n *A_B_C_D_E_F_G_HPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_G_H
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -880,6 +970,8 @@ func (n *A_B_C_D_E_F_G_HPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F_G_H] {
 		false,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -887,6 +979,7 @@ func (n *A_B_C_D_E_F_G_HPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F_G_H] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -896,6 +989,8 @@ func (n *A_B_C_D_E_F_G_HPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_G_
 		"A_B_C_D_E_F_G_H",
 		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -903,6 +998,7 @@ func (n *A_B_C_D_E_F_G_HPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_G_
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -955,6 +1051,8 @@ func (n *A_B_C_D_E_F_G_H_IPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F_G_H
 		true,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -962,6 +1060,7 @@ func (n *A_B_C_D_E_F_G_H_IPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F_G_H
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -971,6 +1070,8 @@ func (n *A_B_C_D_E_F_G_H_IPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_G
 		"A_B_C_D_E_F_G_H_I",
 		true,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -978,6 +1079,7 @@ func (n *A_B_C_D_E_F_G_H_IPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_G
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -988,6 +1090,8 @@ func (n *A_B_C_D_E_F_G_H_IPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F_G_H_I
 		false,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -995,6 +1099,7 @@ func (n *A_B_C_D_E_F_G_H_IPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F_G_H_I
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1004,6 +1109,8 @@ func (n *A_B_C_D_E_F_G_H_IPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_
 		"A_B_C_D_E_F_G_H_I",
 		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1011,6 +1118,7 @@ func (n *A_B_C_D_E_F_G_H_IPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1063,6 +1171,8 @@ func (n *A_B_C_D_E_F_G_H_I_JPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F_G
 		true,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1070,6 +1180,7 @@ func (n *A_B_C_D_E_F_G_H_I_JPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F_G
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1079,6 +1190,8 @@ func (n *A_B_C_D_E_F_G_H_I_JPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F
 		"A_B_C_D_E_F_G_H_I_J",
 		true,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1086,6 +1199,7 @@ func (n *A_B_C_D_E_F_G_H_I_JPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1096,6 +1210,8 @@ func (n *A_B_C_D_E_F_G_H_I_JPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F_G_H
 		false,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1103,6 +1219,7 @@ func (n *A_B_C_D_E_F_G_H_I_JPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F_G_H
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1112,6 +1229,8 @@ func (n *A_B_C_D_E_F_G_H_I_JPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E_
 		"A_B_C_D_E_F_G_H_I_J",
 		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1119,6 +1238,7 @@ func (n *A_B_C_D_E_F_G_H_I_JPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E_
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1171,6 +1291,8 @@ func (n *A_B_C_D_E_F_G_H_I_J_KPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F
 		true,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1178,6 +1300,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_KPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1187,6 +1310,8 @@ func (n *A_B_C_D_E_F_G_H_I_J_KPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D_E
 		"A_B_C_D_E_F_G_H_I_J_K",
 		true,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1194,6 +1319,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_KPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D_E
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1204,6 +1330,8 @@ func (n *A_B_C_D_E_F_G_H_I_J_KPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F_G
 		false,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1211,6 +1339,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_KPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F_G
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1220,6 +1349,8 @@ func (n *A_B_C_D_E_F_G_H_I_J_KPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_
 		"A_B_C_D_E_F_G_H_I_J_K",
 		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1227,6 +1358,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_KPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1279,6 +1411,8 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_LPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E
 		true,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1286,6 +1420,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_LPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1295,6 +1430,8 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_LPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D
 		"A_B_C_D_E_F_G_H_I_J_K_L",
 		true,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1302,6 +1439,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_LPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1312,6 +1450,8 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_LPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F
 		false,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1319,6 +1459,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_LPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1328,6 +1469,8 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_LPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_
 		"A_B_C_D_E_F_G_H_I_J_K_L",
 		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1335,6 +1478,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_LPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1471,6 +1615,8 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D
 		true,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1478,6 +1624,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1487,6 +1634,8 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C
 		"A_B_C_D_E_F_G_H_I_J_K_L_M",
 		true,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1494,6 +1643,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1504,6 +1654,8 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E
 		false,
 		n,
 		nil,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1511,6 +1663,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1520,6 +1673,8 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_
 		"A_B_C_D_E_F_G_H_I_J_K_L_M",
 		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1527,5 +1682,6 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }

@@ -533,9 +533,9 @@ func TestGeneratePathCode(t *testing.T) {
 				YANGPath:              "/openconfig-orderedlist/model/ordered-lists/ordered-list",
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-orderedlist/model/ordered-lists/ordered-list",
-				CompressInfo: CompressionInfo{
-					PreRelPath:  []string{"openconfig-orderedlist:ordered-lists"},
-					PostRelPath: []string{"openconfig-orderedlist:ordered-list"},
+				CompressInfo: &CompressionInfo{
+					PreRelPathList:  `"openconfig-orderedlist:ordered-lists"`,
+					PostRelPathList: `"openconfig-orderedlist:ordered-list"`,
 				},
 			},
 			"Model_OrderedList_KeyPath": {
