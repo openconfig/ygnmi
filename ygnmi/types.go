@@ -22,16 +22,25 @@ import (
 	"github.com/openconfig/ygot/ytypes"
 )
 
+func newBaseQuery[T any](dir string, state bool, ps PathStruct, schemaFn func() *ytypes.Schema) baseQuery[T] {
+	return baseQuery[T]{
+		goStructName: dir,
+		state:        state,
+		ps:           ps,
+		yschemaFn:    schemaFn,
+	}
+}
+
 // NewLeafSingletonQuery creates a new LeafSingletonQuery object.
 func NewLeafSingletonQuery[T any](parentDir string, state, scalar bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema) *LeafSingletonQuery[T] {
 	return &LeafSingletonQuery[T]{
 		leafBaseQuery: leafBaseQuery[T]{
-			baseQuery: baseQuery[T]{
-				goStructName: parentDir,
-				state:        state,
-				ps:           ps,
-				yschemaFn:    schemaFn,
-			},
+			baseQuery: newBaseQuery[T](
+				parentDir,
+				state,
+				ps,
+				schemaFn,
+			),
 			scalar:     scalar,
 			extractFn:  extractFn,
 			goStructFn: goStructFn,
@@ -43,12 +52,12 @@ func NewLeafSingletonQuery[T any](parentDir string, state, scalar bool, ps PathS
 func NewNonLeafSingletonQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps PathStruct, subPaths []PathStruct, schemaFn func() *ytypes.Schema) *NonLeafSingletonQuery[T] {
 	return &NonLeafSingletonQuery[T]{
 		nonLeafBaseQuery: nonLeafBaseQuery[T]{
-			baseQuery: baseQuery[T]{
-				goStructName: dir,
-				state:        state,
-				ps:           ps,
-				yschemaFn:    schemaFn,
-			},
+			baseQuery: newBaseQuery[T](
+				dir,
+				state,
+				ps,
+				schemaFn,
+			),
 			queryPathStructs: subPaths,
 		},
 	}
@@ -58,12 +67,12 @@ func NewNonLeafSingletonQuery[T ygot.ValidatedGoStruct](dir string, state bool, 
 func NewLeafConfigQuery[T any](parentDir string, state, scalar bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema) *LeafConfigQuery[T] {
 	return &LeafConfigQuery[T]{
 		leafBaseQuery: leafBaseQuery[T]{
-			baseQuery: baseQuery[T]{
-				goStructName: parentDir,
-				state:        state,
-				ps:           ps,
-				yschemaFn:    schemaFn,
-			},
+			baseQuery: newBaseQuery[T](
+				parentDir,
+				state,
+				ps,
+				schemaFn,
+			),
 			scalar:     scalar,
 			extractFn:  extractFn,
 			goStructFn: goStructFn,
@@ -75,12 +84,12 @@ func NewLeafConfigQuery[T any](parentDir string, state, scalar bool, ps PathStru
 func NewNonLeafConfigQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps PathStruct, subPaths []PathStruct, schemaFn func() *ytypes.Schema) *NonLeafConfigQuery[T] {
 	return &NonLeafConfigQuery[T]{
 		nonLeafBaseQuery: nonLeafBaseQuery[T]{
-			baseQuery: baseQuery[T]{
-				goStructName: dir,
-				state:        state,
-				ps:           ps,
-				yschemaFn:    schemaFn,
-			},
+			baseQuery: newBaseQuery[T](
+				dir,
+				state,
+				ps,
+				schemaFn,
+			),
 		},
 	}
 }
@@ -89,12 +98,12 @@ func NewNonLeafConfigQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps 
 func NewLeafWildcardQuery[T any](parentDir string, state, scalar bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema) *LeafWildcardQuery[T] {
 	return &LeafWildcardQuery[T]{
 		leafBaseQuery: leafBaseQuery[T]{
-			baseQuery: baseQuery[T]{
-				goStructName: parentDir,
-				state:        state,
-				ps:           ps,
-				yschemaFn:    schemaFn,
-			},
+			baseQuery: newBaseQuery[T](
+				parentDir,
+				state,
+				ps,
+				schemaFn,
+			),
 			scalar:     scalar,
 			extractFn:  extractFn,
 			goStructFn: goStructFn,
@@ -106,12 +115,12 @@ func NewLeafWildcardQuery[T any](parentDir string, state, scalar bool, ps PathSt
 func NewNonLeafWildcardQuery[T ygot.ValidatedGoStruct](dir string, state bool, ps PathStruct, schemaFn func() *ytypes.Schema) *NonLeafWildcardQuery[T] {
 	return &NonLeafWildcardQuery[T]{
 		nonLeafBaseQuery: nonLeafBaseQuery[T]{
-			baseQuery: baseQuery[T]{
-				goStructName: dir,
-				state:        state,
-				ps:           ps,
-				yschemaFn:    schemaFn,
-			},
+			baseQuery: newBaseQuery[T](
+				dir,
+				state,
+				ps,
+				schemaFn,
+			),
 		},
 	}
 }
