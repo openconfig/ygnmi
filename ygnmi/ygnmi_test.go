@@ -51,8 +51,8 @@ func mustPath(s string) *gpb.Path {
 	return p
 }
 
-func getSampleOrderedMap(t *testing.T) *exampleoc.Model_OrderedList_OrderedMap {
-	om := &exampleoc.Model_OrderedList_OrderedMap{}
+func getSampleOrderedMap(t *testing.T) *exampleoc.Model_SingleKey_OrderedList_OrderedMap {
+	om := &exampleoc.Model_SingleKey_OrderedList_OrderedMap{}
 	ol, err := om.AppendNew("foo")
 	if err != nil {
 		t.Fatal(err)
@@ -71,6 +71,21 @@ func getSampleOrderedMap(t *testing.T) *exampleoc.Model_OrderedList_OrderedMap {
 	return om
 }
 
+func getSampleOrderedMapIncomplete(t *testing.T) *exampleoc.Model_SingleKey_OrderedList_OrderedMap {
+	om := &exampleoc.Model_SingleKey_OrderedList_OrderedMap{}
+	ol, err := om.AppendNew("foo")
+	if err != nil {
+		t.Fatal(err)
+	}
+	ol.SetValue(42)
+	ol, err = om.AppendNew("bar")
+	if err != nil {
+		t.Fatal(err)
+	}
+	ol.SetValue(43)
+	return om
+}
+
 func lookupCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVal *ygnmi.Value[T]) {
 	got, err := ygnmi.Lookup(context.Background(), c, inQuery)
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
@@ -83,7 +98,7 @@ func lookupCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Cl
 	checkJustReceived(t, got.RecvTimestamp)
 	wantVal.RecvTimestamp = got.RecvTimestamp
 
-	if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_OrderedList_OrderedMap{}), protocmp.Transform()); diff != "" {
+	if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_SingleKey_OrderedList_OrderedMap{}), protocmp.Transform()); diff != "" {
 		t.Errorf("Lookup(ctx, c, %v) returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", inQuery, diff, got.ComplianceErrors)
 	}
 }
@@ -96,11 +111,90 @@ func lookupWithGetCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *y
 	if err != nil {
 		return
 	}
-	if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_OrderedList_OrderedMap{}), cmpopts.IgnoreFields(ygnmi.Value[T]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
+	if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_SingleKey_OrderedList_OrderedMap{}), cmpopts.IgnoreFields(ygnmi.Value[T]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
 		t.Errorf("Lookup() returned unexpected diff (-want, +got):\n%s", diff)
 	}
 	if diff := cmp.Diff(wantRequest, fakeGNMI.GetRequests()[0], protocmp.Transform()); diff != "" {
 		t.Errorf("Lookup() GetRequest different from expected (-want, +got):\n%s", diff)
+	}
+}
+
+func getCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVal T) {
+	got, err := ygnmi.Get(context.Background(), c, inQuery)
+	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
+		t.Fatalf("Get(ctx, c, %v) returned unexpected diff: %s", inQuery, diff)
+	}
+	if err != nil {
+		return
+	}
+	verifySubscriptionPathsSent(t, fakeGNMI, wantSubscriptionPath)
+
+	if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(exampleoc.Model_SingleKey_OrderedList_OrderedMap{})); diff != "" {
+		t.Errorf("Get(ctx, c, %v) returned unexpected diff (-want,+got):\n %s", inQuery, diff)
+	}
+}
+
+func watchCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, duration time.Duration, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], inOpts []ygnmi.Option, valPred func(T) bool, wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantMode gpb.SubscriptionMode, wantVals []*ygnmi.Value[T], wantLastVal *ygnmi.Value[T]) {
+	i := 0
+	ctx, cancel := context.WithTimeout(context.Background(), duration)
+	defer cancel()
+	w := ygnmi.Watch(ctx, c, inQuery, func(v *ygnmi.Value[T]) error {
+		if i > len(wantVals) {
+			t.Fatalf("Predicate(%d) expected no more values but got: %+v", i, v)
+		}
+		if diff := cmp.Diff(wantVals[i], v, cmpopts.IgnoreFields(ygnmi.Value[T]{}, "RecvTimestamp"), cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_SingleKey_OrderedList_OrderedMap{}), protocmp.Transform()); diff != "" {
+			t.Errorf("Predicate(%d) got unexpected input (-want,+got):\n %s\nComplianceErrors:\n%v", i, diff, v.ComplianceErrors)
+		}
+		val, present := v.Val()
+		i++
+		if present && valPred(val) {
+			return nil
+		}
+		return ygnmi.Continue
+	}, inOpts...)
+	val, err := w.Await()
+	if i < len(wantVals) {
+		t.Errorf("Predicate received too few values: got %d, want %d", i, len(wantVals))
+	}
+	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
+		t.Fatalf("Await() returned unexpected diff: %s", diff)
+	}
+	if err != nil {
+		return
+	}
+	verifySubscriptionPathsSent(t, fakeGNMI, wantSubscriptionPath)
+	verifySubscriptionModesSent(t, fakeGNMI, wantMode)
+	if val != nil {
+		checkJustReceived(t, val.RecvTimestamp)
+		wantLastVal.RecvTimestamp = val.RecvTimestamp
+	}
+	if diff := cmp.Diff(wantLastVal, val, cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_SingleKey_OrderedList_OrderedMap{}), protocmp.Transform()); diff != "" {
+		t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
+	}
+}
+
+func lookupAllCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.WildcardQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVals []*ygnmi.Value[T], nonLeaf bool) {
+	got, err := ygnmi.LookupAll(context.Background(), c, inQuery)
+	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
+		t.Fatalf("LookupAll(ctx, c, %v) returned unexpected diff: %s", inQuery, diff)
+	}
+	if err != nil {
+		return
+	}
+	verifySubscriptionPathsSent(t, fakeGNMI, wantSubscriptionPath)
+	for _, val := range got {
+		checkJustReceived(t, val.RecvTimestamp)
+	}
+	copts := []cmp.Option{
+		cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_SingleKey_OrderedList_OrderedMap{}),
+		cmpopts.IgnoreFields(ygnmi.Value[T]{}, "RecvTimestamp"),
+		protocmp.Transform(),
+	}
+	if nonLeaf {
+		copts = append(copts, cmpopts.IgnoreFields(ygnmi.TelemetryError{}, "Err"))
+	}
+	if diff := cmp.Diff(wantVals, got, copts...); diff != "" {
+		t.Errorf("LookupAll() returned unexpected diff (-want,+got):\n%s", diff)
 	}
 }
 
@@ -470,7 +564,7 @@ func TestLookup(t *testing.T) {
 		fakeGNMI.Stub().Notification(&gpb.Notification{
 			Timestamp: 100,
 			Atomic:    true,
-			Prefix:    mustPath("/model/ordered-lists"),
+			Prefix:    mustPath("/model/a/single-key[key=foo]/ordered-lists"),
 			Update: []*gpb.Update{{
 				Path: mustPath(`ordered-list[key=foo]/config/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
@@ -503,11 +597,11 @@ func TestLookup(t *testing.T) {
 
 		lookupCheckFn(
 			t, fakeGNMI, c,
-			ygnmi.SingletonQuery[*exampleoc.Model_OrderedList_OrderedMap](exampleocpath.Root().Model().OrderedListAll().Config()),
+			ygnmi.SingletonQuery[*exampleoc.Model_SingleKey_OrderedList_OrderedMap](exampleocpath.Root().Model().SingleKey("foo").OrderedListAll().Config()),
 			"",
-			testutil.GNMIPath(t, "/model/ordered-lists"),
-			(&ygnmi.Value[*exampleoc.Model_OrderedList_OrderedMap]{
-				Path:      testutil.GNMIPath(t, "/model/ordered-lists"),
+			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
+			(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
+				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 				Timestamp: time.Unix(0, 100),
 			}).SetVal(getSampleOrderedMap(t)),
 		)
@@ -656,7 +750,7 @@ func TestLookupWithGet(t *testing.T) {
 			Notification: []*gpb.Notification{{
 				Timestamp: 100,
 				Atomic:    true,
-				Prefix:    mustPath("/model/ordered-lists"),
+				Prefix:    mustPath("/model/a/single-key[key=foo]/ordered-lists"),
 				Update: []*gpb.Update{{
 					Path: mustPath(""),
 					Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`{
@@ -690,16 +784,16 @@ func TestLookupWithGet(t *testing.T) {
 
 		lookupWithGetCheckFn(
 			t, fakeGNMI, c,
-			ygnmi.SingletonQuery[*exampleoc.Model_OrderedList_OrderedMap](exampleocpath.Root().Model().OrderedListAll().Config()),
+			ygnmi.SingletonQuery[*exampleoc.Model_SingleKey_OrderedList_OrderedMap](exampleocpath.Root().Model().SingleKey("foo").OrderedListAll().Config()),
 			"",
 			&gpb.GetRequest{
 				Encoding: gpb.Encoding_JSON_IETF,
 				Type:     gpb.GetRequest_CONFIG,
 				Prefix:   &gpb.Path{},
-				Path:     []*gpb.Path{testutil.GNMIPath(t, "/model/ordered-lists")},
+				Path:     []*gpb.Path{testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists")},
 			},
-			(&ygnmi.Value[*exampleoc.Model_OrderedList_OrderedMap]{
-				Path:      testutil.GNMIPath(t, "/model/ordered-lists"),
+			(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
+				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 				Timestamp: time.Unix(0, 100),
 			}).SetVal(getSampleOrderedMap(t)),
 		)
@@ -755,20 +849,10 @@ func TestGet(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			got, err := ygnmi.Get(context.Background(), c, lq)
-			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
-				t.Fatalf("Get(ctx, c, %v) returned unexpected diff: %s", lq, diff)
-			}
-			if err != nil {
-				return
-			}
-			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
-
-			if diff := cmp.Diff(tt.wantVal, got); diff != "" {
-				t.Errorf("Get(ctx, c, %v) returned unexpected diff (-want,+got):\n %s", lq, diff)
-			}
+			getCheckFn(t, fakeGNMI, c, lq, tt.wantErr, tt.wantSubscriptionPath, tt.wantVal)
 		})
 	}
+
 	t.Run("use get", func(t *testing.T) {
 		fakeGNMI.Stub().GetResponse(&gpb.GetResponse{
 			Notification: []*gpb.Notification{{
@@ -797,6 +881,49 @@ func TestGet(t *testing.T) {
 		if diff := cmp.Diff(wantGetRequest, fakeGNMI.GetRequests()[0], protocmp.Transform()); diff != "" {
 			t.Errorf("Get() GetRequest different from expected: %s", diff)
 		}
+	})
+
+	t.Run("success ordered map", func(t *testing.T) {
+		fakeGNMI.Stub().Notification(&gpb.Notification{
+			Timestamp: 100,
+			Atomic:    true,
+			Prefix:    mustPath("/model/a/single-key[key=foo]/ordered-lists"),
+			Update: []*gpb.Update{{
+				Path: mustPath(`ordered-list[key=foo]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: mustPath(`ordered-list[key=foo]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: mustPath(`ordered-list[key=foo]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+			}, {
+				Path: mustPath(`ordered-list[key=baz]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
+			}, {
+				Path: mustPath(`ordered-list[key=baz]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
+			}, {
+				Path: mustPath(`ordered-list[key=baz]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 44}},
+			}},
+		}).Sync()
+
+		getCheckFn(t, fakeGNMI, c,
+			exampleocpath.Root().Model().SingleKey("foo").OrderedListAll().State(),
+			"",
+			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
+			getSampleOrderedMap(t),
+		)
 	})
 }
 
@@ -961,38 +1088,16 @@ func TestWatch(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			i := 0
-			ctx, cancel := context.WithTimeout(context.Background(), tt.dur)
-			defer cancel()
-			w := ygnmi.Watch(ctx, client, lq, func(v *ygnmi.Value[string]) error {
-				if i > len(tt.wantVals) {
-					t.Fatalf("Predicate(%d) expected no more values but got: %+v", i, v)
-				}
-				if diff := cmp.Diff(tt.wantVals[i], v, cmpopts.IgnoreFields(ygnmi.Value[string]{}, "RecvTimestamp"), cmp.AllowUnexported(ygnmi.Value[string]{}), protocmp.Transform()); diff != "" {
-					t.Errorf("Predicate(%d) got unexpected input (-want,+got):\n %s\nComplianceErrors:\n%v", i, diff, v.ComplianceErrors)
-				}
-				val, present := v.Val()
-				i++
-				if present && val == "foo" {
-					return nil
-				}
-				return ygnmi.Continue
-			}, tt.opts...)
-			val, err := w.Await()
-			if i < len(tt.wantVals) {
-				t.Errorf("Predicate received too few values: got %d, want %d", i, len(tt.wantVals))
-			}
-			verifySubscriptionModesSent(t, fakeGNMI, tt.wantMode)
-			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
-				t.Fatalf("Await() returned unexpected diff: %s", diff)
-			}
-			if val != nil {
-				checkJustReceived(t, val.RecvTimestamp)
-				tt.wantLastVal.RecvTimestamp = val.RecvTimestamp
-			}
-			if diff := cmp.Diff(tt.wantLastVal, val, cmp.AllowUnexported(ygnmi.Value[string]{}), protocmp.Transform()); diff != "" {
-				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
-			}
+			watchCheckFn(t, fakeGNMI, tt.dur, client,
+				lq,
+				tt.opts,
+				func(val string) bool { return val == "foo" },
+				tt.wantErr,
+				tt.wantSubscriptionPath,
+				tt.wantMode,
+				tt.wantVals,
+				tt.wantLastVal,
+			)
 		})
 	}
 
@@ -1024,6 +1129,7 @@ func TestWatch(t *testing.T) {
 	nonLeafTests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
+		opts                 []ygnmi.Option
 		wantSubscriptionPath *gpb.Path
 		wantLastVal          *ygnmi.Value[*exampleoc.Parent_Child]
 		wantVals             []*ygnmi.Value[*exampleoc.Parent_Child]
@@ -1173,40 +1279,105 @@ func TestWatch(t *testing.T) {
 	for _, tt := range nonLeafTests {
 		t.Run("nonleaf "+tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			w := ygnmi.Watch(context.Background(), client, nonLeafQuery, func(v *ygnmi.Value[*exampleoc.Parent_Child]) error {
-				if len(tt.wantVals) == 0 {
-					t.Fatalf("Predicate expected no more values but got: %+v", v)
-				}
-				if diff := cmp.Diff(tt.wantVals[0], v, cmpopts.IgnoreFields(ygnmi.Value[*exampleoc.Parent_Child]{}, "RecvTimestamp"), cmp.AllowUnexported(ygnmi.Value[*exampleoc.Parent_Child]{}), protocmp.Transform()); diff != "" {
-					t.Errorf("Predicate got unexpected input (-want,+got):\n %s\nComplianceErrors:\n%v", diff, v.ComplianceErrors)
-				}
-				tt.wantVals = tt.wantVals[1:]
-				val, present := v.Val()
-				if present && val.One != nil && *val.One == "foo" && val.Three == exampleoc.Child_Three_ONE {
-					return nil
-				}
-				return ygnmi.Continue
-			})
-			val, err := w.Await()
-			if len(tt.wantVals) > 0 {
-				t.Errorf("Predicate received too few values, remaining: %+v", tt.wantVals)
-			}
-			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
-				t.Fatalf("Await() returned unexpected diff: %s", diff)
-			}
-			if err != nil {
-				return
-			}
-			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
-			if val != nil {
-				checkJustReceived(t, val.RecvTimestamp)
-				tt.wantLastVal.RecvTimestamp = val.RecvTimestamp
-			}
-			if diff := cmp.Diff(tt.wantLastVal, val, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Parent_Child]{}), protocmp.Transform()); diff != "" {
-				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
-			}
+			watchCheckFn(t, fakeGNMI, 2*time.Second, client,
+				nonLeafQuery,
+				tt.opts,
+				func(val *exampleoc.Parent_Child) bool {
+					return val.One != nil && *val.One == "foo" && val.Three == exampleoc.Child_Three_ONE
+				},
+				tt.wantErr,
+				tt.wantSubscriptionPath,
+				gpb.SubscriptionMode_TARGET_DEFINED,
+				tt.wantVals,
+				tt.wantLastVal,
+			)
 		})
 	}
+
+	t.Run("success ordered map", func(t *testing.T) {
+		fakeGNMI.Stub().Notification(&gpb.Notification{
+			Timestamp: startTime.UnixNano(),
+			Atomic:    true,
+			Prefix:    mustPath("/model/a/single-key[key=foo]/ordered-lists"),
+			Update: []*gpb.Update{{
+				Path: mustPath(`ordered-list[key=foo]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: mustPath(`ordered-list[key=foo]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: mustPath(`ordered-list[key=foo]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+			}},
+		}).Sync().Notification(&gpb.Notification{
+			Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+			Atomic:    true,
+			Prefix:    mustPath("/model/a/single-key[key=foo]/ordered-lists"),
+			Update: []*gpb.Update{{
+				Path: mustPath(`ordered-list[key=foo]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: mustPath(`ordered-list[key=foo]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: mustPath(`ordered-list[key=foo]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+			}, {
+				Path: mustPath(`ordered-list[key=baz]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
+			}, {
+				Path: mustPath(`ordered-list[key=baz]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
+			}, {
+				Path: mustPath(`ordered-list[key=baz]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 44}},
+			}},
+		})
+
+		want := getSampleOrderedMap(t)
+		watchCheckFn(t, fakeGNMI, 2*time.Second, client,
+			exampleocpath.Root().Model().SingleKey("foo").OrderedListAll().State(),
+			nil,
+			func(val *exampleoc.Model_SingleKey_OrderedList_OrderedMap) bool {
+				return cmp.Equal(val, want, cmp.AllowUnexported(exampleoc.Model_SingleKey_OrderedList_OrderedMap{}))
+			},
+			"",
+			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
+			gpb.SubscriptionMode_TARGET_DEFINED,
+			[]*ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
+				(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
+					Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
+					Timestamp: startTime,
+				}).SetVal(getSampleOrderedMapIncomplete(t)),
+				(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
+					Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
+					Timestamp: startTime.Add(time.Millisecond),
+				}).SetVal(getSampleOrderedMap(t)),
+			},
+			(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
+				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
+				Timestamp: startTime.Add(time.Millisecond),
+			}).SetVal(getSampleOrderedMap(t)),
+		)
+	})
 }
 
 func TestAwait(t *testing.T) {
@@ -1722,23 +1893,11 @@ func TestLookupAll(t *testing.T) {
 		wantErr:              "failed to receive to data",
 		wantSubscriptionPath: leafPath,
 	}}
+
 	for _, tt := range leafTests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			got, err := ygnmi.LookupAll(context.Background(), c, lq)
-			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
-				t.Fatalf("LookupAll(ctx, c, %v) returned unexpected diff: %s", lq, diff)
-			}
-			if err != nil {
-				return
-			}
-			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
-			for _, val := range got {
-				checkJustReceived(t, val.RecvTimestamp)
-			}
-			if diff := cmp.Diff(tt.wantVals, got, cmp.AllowUnexported(ygnmi.Value[int64]{}), cmpopts.IgnoreFields(ygnmi.Value[int64]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
-				t.Errorf("LookupAll() returned unexpected diff (-want,+got):\n%s", diff)
-			}
+			lookupAllCheckFn(t, fakeGNMI, c, lq, tt.wantErr, tt.wantSubscriptionPath, tt.wantVals, false)
 		})
 	}
 
@@ -1847,29 +2006,101 @@ func TestLookupAll(t *testing.T) {
 		wantVals:             nil,
 		wantSubscriptionPath: nonLeafPath,
 	}}
+
 	for _, tt := range nonLeafTests {
 		t.Run("nonLeaf "+tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			got, err := ygnmi.LookupAll(context.Background(), c, nonLeafQ)
-			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
-				t.Fatalf("LookupAll(ctx, c, %v) returned unexpected diff: %s", nonLeafQ, diff)
-			}
-			if err != nil {
-				return
-			}
-			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
-			for _, val := range got {
-				checkJustReceived(t, val.RecvTimestamp)
-			}
-			if diff := cmp.Diff(tt.wantVals, got,
-				cmp.AllowUnexported(ygnmi.Value[*exampleoc.Model_SingleKey]{}),
-				cmpopts.IgnoreFields(ygnmi.TelemetryError{}, "Err"),
-				cmpopts.IgnoreFields(ygnmi.Value[*exampleoc.Model_SingleKey]{}, "RecvTimestamp"),
-				protocmp.Transform()); diff != "" {
-				t.Errorf("LookupAll() returned unexpected diff (-want,+got):\n%s", diff)
-			}
+			lookupAllCheckFn(t, fakeGNMI, c, nonLeafQ, tt.wantErr, tt.wantSubscriptionPath, tt.wantVals, true)
 		})
 	}
+
+	t.Run("success ordered map", func(t *testing.T) {
+		fakeGNMI.Stub().Notification(&gpb.Notification{
+			Timestamp: 100,
+			Atomic:    true,
+			Prefix:    mustPath("/model/a/single-key[key=foo]/ordered-lists"),
+			Update: []*gpb.Update{{
+				Path: mustPath(`ordered-list[key=foo]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: mustPath(`ordered-list[key=foo]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: mustPath(`ordered-list[key=foo]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+			}, {
+				Path: mustPath(`ordered-list[key=baz]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
+			}, {
+				Path: mustPath(`ordered-list[key=baz]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
+			}, {
+				Path: mustPath(`ordered-list[key=baz]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 44}},
+			}},
+		}).Notification(&gpb.Notification{
+			Timestamp: 101,
+			Atomic:    true,
+			Prefix:    testutil.GNMIPath(t, "/model/a/single-key[key=bar]/ordered-lists"),
+			Update: []*gpb.Update{{
+				Path: mustPath(`ordered-list[key=foo]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: mustPath(`ordered-list[key=foo]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: mustPath(`ordered-list[key=foo]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/state/dne-value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+			}},
+		}).Sync()
+
+		lookupAllCheckFn(
+			t, fakeGNMI, c,
+			exampleocpath.Root().Model().SingleKeyAny().OrderedListAll().State(),
+			"",
+			testutil.GNMIPath(t, "/model/a/single-key[key=*]/ordered-lists"),
+			[]*ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
+				// In alphabetical order.
+				(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
+					Path:      testutil.GNMIPath(t, "/model/a/single-key[key=bar]/ordered-lists"),
+					Timestamp: time.Unix(0, 101),
+					ComplianceErrors: &ygnmi.ComplianceErrors{
+						PathErrors: []*ygnmi.TelemetryError{{
+							Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+							Path:  testutil.GNMIPath(t, "model/a/single-key[key=bar]/ordered-lists/ordered-list[key=bar]/state/dne-value"),
+						}},
+					},
+				}).SetVal(getSampleOrderedMapIncomplete(t)),
+				(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
+					Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
+					Timestamp: time.Unix(0, 100),
+				}).SetVal(getSampleOrderedMap(t)),
+			},
+			true,
+		)
+	})
+
 	t.Run("use get", func(t *testing.T) {
 		fakeGNMI.Stub().GetResponse(&gpb.GetResponse{
 			Notification: []*gpb.Notification{{
@@ -2589,7 +2820,7 @@ func TestUpdate(t *testing.T) {
 	}, {
 		desc: "YANG ordered list",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			om := &exampleoc.Model_OrderedList_OrderedMap{}
+			om := &exampleoc.Model_SingleKey_OrderedList_OrderedMap{}
 			ol, err := om.AppendNew("foo")
 			if err != nil {
 				t.Fatal(err)
@@ -2605,14 +2836,14 @@ func TestUpdate(t *testing.T) {
 				t.Fatal(err)
 			}
 			ol.SetValue(44)
-			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Model().OrderedListAll().Config(), om)
+			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Model().SingleKey("foo").OrderedListAll().Config(), om)
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
 				Target: "dut",
 			},
 			Update: []*gpb.Update{{
-				Path: testutil.GNMIPath(t, "/model/ordered-lists"),
+				Path: testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 				Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(removeWhitespace(`{
   "openconfig-withlistval:ordered-list": [
     {
@@ -2883,7 +3114,7 @@ func TestReplace(t *testing.T) {
 	}, {
 		desc: "YANG ordered list",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			om := &exampleoc.Model_OrderedList_OrderedMap{}
+			om := &exampleoc.Model_SingleKey_OrderedList_OrderedMap{}
 			ol, err := om.AppendNew("foo")
 			if err != nil {
 				t.Fatal(err)
@@ -2899,14 +3130,14 @@ func TestReplace(t *testing.T) {
 				t.Fatal(err)
 			}
 			ol.SetValue(44)
-			return ygnmi.Replace(context.Background(), c, exampleocpath.Root().Model().OrderedListAll().Config(), om)
+			return ygnmi.Replace(context.Background(), c, exampleocpath.Root().Model().SingleKey("foo").OrderedListAll().Config(), om)
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
 				Target: "dut",
 			},
 			Replace: []*gpb.Update{{
-				Path: testutil.GNMIPath(t, "/model/ordered-lists"),
+				Path: testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 				Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(removeWhitespace(`{
   "openconfig-withlistval:ordered-list": [
     {
@@ -3016,14 +3247,14 @@ func TestDelete(t *testing.T) {
 	}, {
 		desc: "YANG ordered list",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Delete(context.Background(), c, exampleocpath.Root().Model().OrderedListAll().Config())
+			return ygnmi.Delete(context.Background(), c, exampleocpath.Root().Model().SingleKey("foo").OrderedListAll().Config())
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
 				Target: "dut",
 			},
 			Delete: []*gpb.Path{
-				testutil.GNMIPath(t, "/model/ordered-lists"),
+				testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 			},
 		},
 		stubResponse: &gpb.SetResponse{

@@ -160,38 +160,6 @@ func (n *ModelPathAny) NoKeyAny() *Model_NoKeyPathAny {
 	}
 }
 
-// OrderedListAll (list):
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "ordered-lists/ordered-list"
-//	Path from root:       "/model/ordered-lists/ordered-list"
-func (n *ModelPath) OrderedListAll() *Model_OrderedListPath {
-	return &Model_OrderedListPath{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"ordered-lists"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-}
-
-// OrderedListAll (list):
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "ordered-lists/ordered-list"
-//	Path from root:       "/model/ordered-lists/ordered-list"
-func (n *ModelPathAny) OrderedListAll() *Model_OrderedListPathAny {
-	return &Model_OrderedListPathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"ordered-lists"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-}
-
 // SingleKeyAny (list):
 //
 //	Defining module:      "openconfig-withlistval"
@@ -1136,118 +1104,6 @@ func (n *Model_NoKey_FooPathAny) State() ygnmi.WildcardQuery[*oc.Model_NoKey_Foo
 	)
 }
 
-// Model_OrderedListPath represents the /openconfig-withlistval/model/ordered-lists/ordered-list YANG schema element.
-type Model_OrderedListPath struct {
-	*ygnmi.NodePath
-}
-
-// Model_OrderedListPathAny represents the wildcard version of the /openconfig-withlistval/model/ordered-lists/ordered-list YANG schema element.
-type Model_OrderedListPathAny struct {
-	*ygnmi.NodePath
-}
-
-// State returns a Query that can be used in gNMI operations.
-func (n *Model_OrderedListPath) State() ygnmi.SingletonQuery[*oc.Model_OrderedList_OrderedMap] {
-	return ygnmi.NewNonLeafSingletonQuery[*oc.Model_OrderedList_OrderedMap](
-		"Model",
-		true,
-		n,
-		func(gs ygot.ValidatedGoStruct) (*oc.Model_OrderedList_OrderedMap, bool) {
-			ret := gs.(*oc.Model).OrderedList
-			return ret, ret != nil
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.Model) },
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		&ygnmi.CompressionInfo{
-			PreRelPath:  []string{"openconfig-withlistval:ordered-lists"},
-			PostRelPath: []string{"openconfig-withlistval:ordered-list"},
-		},
-	)
-}
-
-// State returns a Query that can be used in gNMI operations.
-func (n *Model_OrderedListPathAny) State() ygnmi.WildcardQuery[*oc.Model_OrderedList_OrderedMap] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_OrderedList_OrderedMap](
-		"Model",
-		true,
-		n,
-		func(gs ygot.ValidatedGoStruct) (*oc.Model_OrderedList_OrderedMap, bool) {
-			ret := gs.(*oc.Model).OrderedList
-			return ret, ret != nil
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.Model) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		&ygnmi.CompressionInfo{
-			PreRelPath:  []string{"openconfig-withlistval:ordered-lists"},
-			PostRelPath: []string{"openconfig-withlistval:ordered-list"},
-		},
-	)
-}
-
-// Config returns a Query that can be used in gNMI operations.
-func (n *Model_OrderedListPath) Config() ygnmi.ConfigQuery[*oc.Model_OrderedList_OrderedMap] {
-	return ygnmi.NewNonLeafConfigQuery[*oc.Model_OrderedList_OrderedMap](
-		"Model",
-		false,
-		n,
-		func(gs ygot.ValidatedGoStruct) (*oc.Model_OrderedList_OrderedMap, bool) {
-			ret := gs.(*oc.Model).OrderedList
-			return ret, ret != nil
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.Model) },
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		&ygnmi.CompressionInfo{
-			PreRelPath:  []string{"openconfig-withlistval:ordered-lists"},
-			PostRelPath: []string{"openconfig-withlistval:ordered-list"},
-		},
-	)
-}
-
-// Config returns a Query that can be used in gNMI operations.
-func (n *Model_OrderedListPathAny) Config() ygnmi.WildcardQuery[*oc.Model_OrderedList_OrderedMap] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_OrderedList_OrderedMap](
-		"Model",
-		false,
-		n,
-		func(gs ygot.ValidatedGoStruct) (*oc.Model_OrderedList_OrderedMap, bool) {
-			ret := gs.(*oc.Model).OrderedList
-			return ret, ret != nil
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.Model) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		&ygnmi.CompressionInfo{
-			PreRelPath:  []string{"openconfig-withlistval:ordered-lists"},
-			PostRelPath: []string{"openconfig-withlistval:ordered-list"},
-		},
-	)
-}
-
 // Model_SingleKey_KeyPath represents the /openconfig-withlistval/model/a/single-key/state/key YANG schema element.
 type Model_SingleKey_KeyPath struct {
 	*ygnmi.NodePath
@@ -1596,6 +1452,38 @@ func (n *Model_SingleKeyPathAny) Key() *Model_SingleKey_KeyPathAny {
 	}
 }
 
+// OrderedListAll (list):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "ordered-lists/ordered-list"
+//	Path from root:       "/model/a/single-key/ordered-lists/ordered-list"
+func (n *Model_SingleKeyPath) OrderedListAll() *Model_SingleKey_OrderedListPath {
+	return &Model_SingleKey_OrderedListPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"ordered-lists"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
+// OrderedListAll (list):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "ordered-lists/ordered-list"
+//	Path from root:       "/model/a/single-key/ordered-lists/ordered-list"
+func (n *Model_SingleKeyPathAny) OrderedListAll() *Model_SingleKey_OrderedListPathAny {
+	return &Model_SingleKey_OrderedListPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"ordered-lists"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
 // Value (leaf):
 //
 //	Defining module:      "openconfig-withlistval"
@@ -1705,5 +1593,117 @@ func (n *Model_SingleKeyPathAny) Config() ygnmi.WildcardQuery[*oc.Model_SingleKe
 			}
 		},
 		nil,
+	)
+}
+
+// Model_SingleKey_OrderedListPath represents the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list YANG schema element.
+type Model_SingleKey_OrderedListPath struct {
+	*ygnmi.NodePath
+}
+
+// Model_SingleKey_OrderedListPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list YANG schema element.
+type Model_SingleKey_OrderedListPathAny struct {
+	*ygnmi.NodePath
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *Model_SingleKey_OrderedListPath) State() ygnmi.SingletonQuery[*oc.Model_SingleKey_OrderedList_OrderedMap] {
+	return ygnmi.NewNonLeafSingletonQuery[*oc.Model_SingleKey_OrderedList_OrderedMap](
+		"Model_SingleKey",
+		true,
+		n,
+		func(gs ygot.ValidatedGoStruct) (*oc.Model_SingleKey_OrderedList_OrderedMap, bool) {
+			ret := gs.(*oc.Model_SingleKey).OrderedList
+			return ret, ret != nil
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey) },
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		&ygnmi.CompressionInfo{
+			PreRelPath:  []string{"openconfig-withlistval:ordered-lists"},
+			PostRelPath: []string{"openconfig-withlistval:ordered-list"},
+		},
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *Model_SingleKey_OrderedListPathAny) State() ygnmi.WildcardQuery[*oc.Model_SingleKey_OrderedList_OrderedMap] {
+	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_SingleKey_OrderedList_OrderedMap](
+		"Model_SingleKey",
+		true,
+		n,
+		func(gs ygot.ValidatedGoStruct) (*oc.Model_SingleKey_OrderedList_OrderedMap, bool) {
+			ret := gs.(*oc.Model_SingleKey).OrderedList
+			return ret, ret != nil
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		&ygnmi.CompressionInfo{
+			PreRelPath:  []string{"openconfig-withlistval:ordered-lists"},
+			PostRelPath: []string{"openconfig-withlistval:ordered-list"},
+		},
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *Model_SingleKey_OrderedListPath) Config() ygnmi.ConfigQuery[*oc.Model_SingleKey_OrderedList_OrderedMap] {
+	return ygnmi.NewNonLeafConfigQuery[*oc.Model_SingleKey_OrderedList_OrderedMap](
+		"Model_SingleKey",
+		false,
+		n,
+		func(gs ygot.ValidatedGoStruct) (*oc.Model_SingleKey_OrderedList_OrderedMap, bool) {
+			ret := gs.(*oc.Model_SingleKey).OrderedList
+			return ret, ret != nil
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey) },
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		&ygnmi.CompressionInfo{
+			PreRelPath:  []string{"openconfig-withlistval:ordered-lists"},
+			PostRelPath: []string{"openconfig-withlistval:ordered-list"},
+		},
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *Model_SingleKey_OrderedListPathAny) Config() ygnmi.WildcardQuery[*oc.Model_SingleKey_OrderedList_OrderedMap] {
+	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_SingleKey_OrderedList_OrderedMap](
+		"Model_SingleKey",
+		false,
+		n,
+		func(gs ygot.ValidatedGoStruct) (*oc.Model_SingleKey_OrderedList_OrderedMap, bool) {
+			ret := gs.(*oc.Model_SingleKey).OrderedList
+			return ret, ret != nil
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		&ygnmi.CompressionInfo{
+			PreRelPath:  []string{"openconfig-withlistval:ordered-lists"},
+			PostRelPath: []string{"openconfig-withlistval:ordered-list"},
+		},
 	)
 }
