@@ -321,24 +321,25 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 			continue
 		}
 
-		dpPath := dp.Path
-		// Wrap the IETF JSON if compression info indicates since JSON unmarshal
-		// currently doesn't support unmarshalling at a compressed-out node.
-		// Skip wrapping for other encoding formats because the most likely other
-		// format -- scalars, doesn't need wrapping.
+		unmarshalPath := dp.Path
 		if compressInfo != nil && len(compressInfo.PreRelPath) > 0 && len(dp.Value.GetJsonIetfVal()) > 0 {
+			// When the path points to a node that's compressed out, then we must make the
+			// unmarshal target the parent since JSON unmarshal currently doesn't support
+			// unmarshalling at a compressed-out node.
+			// Skip wrapping for other encoding formats because scalars, the other format,
+			// doesn't need wrapping.
 			if err := wrapJSONIETF(dp.Value, compressInfo.PreRelPath); err != nil {
 				errs.Add(fmt.Errorf("failed to wrap received JSON: %v", err))
 			} else {
-				dpPath = proto.Clone(dp.Path).(*gpb.Path)
-				dpPath.Elem = dpPath.Elem[:len(dpPath.Elem)-len(compressInfo.PreRelPath)]
+				unmarshalPath = proto.Clone(dp.Path).(*gpb.Path)
+				unmarshalPath.Elem = unmarshalPath.Elem[:len(unmarshalPath.Elem)-len(compressInfo.PreRelPath)]
 			}
 		}
 
 		// 1b. Check for path compliance: by unmarshalling from the
 		// root, we check that the path, including the list key,
 		// corresponds to an actual schema element.
-		if _, _, err := ytypes.GetOrCreateNode(schema.RootSchema(), schema.Root, dpPath, gcopts...); err != nil {
+		if _, _, err := ytypes.GetOrCreateNode(schema.RootSchema(), schema.Root, unmarshalPath, gcopts...); err != nil {
 			pathUnmarshalErrs = append(pathUnmarshalErrs, &TelemetryError{Path: dp.Path, Value: dp.Value, Err: fmt.Errorf("path %q is invalid and cannot be matched to a generated GoStruct field: %v", dpPathStr, err)})
 			continue
 		}
@@ -348,7 +349,7 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 		// parent pointers. Therefore, we must remove that first element to
 		// obtain the sanitized path.
 
-		relPath := util.TrimGNMIPathPrefix(dpPath, util.PathStringToElements(structSchema.Path())[1:])
+		relPath := util.TrimGNMIPathPrefix(unmarshalPath, util.PathStringToElements(structSchema.Path())[1:])
 		if dp.Value == nil {
 			var dopts []ytypes.DelNodeOpt
 			if isConfig {

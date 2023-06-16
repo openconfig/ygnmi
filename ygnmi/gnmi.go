@@ -299,6 +299,15 @@ func receiveStream[T any](sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-ch
 	return dataCh, errCh
 }
 
+// removeRedundantModPrefix7951 removes any modName prefixes in the first layer
+// of the input JSON v.
+//
+// https://www.rfc-editor.org/rfc/rfc7951#section-4:
+//
+//	A namespace-qualified member name MUST be used for all members of a
+//	top-level JSON object and then also whenever the namespaces of the
+//	data node and its parent node are different.  In all other cases, the
+//	simple form of the member name MUST be used.
 func removeRedundantModPrefix7951(v any, modName string) any {
 	switch v := v.(type) {
 	case map[string]any:
@@ -326,11 +335,15 @@ func removeRedundantModPrefix7951(v any, modName string) any {
 	}
 }
 
+// wrapJSONIETFSinglePath wraps a single layer of JSON-IETF for the given
+// JSON input.
 func wrapJSONIETFSinglePath(v any, modName, pathName string) any {
 	return map[string]any{fmt.Sprintf("%s:%s", modName, pathName): removeRedundantModPrefix7951(v, modName)}
 }
 
 // wrapJSONIETF returns the input RFC7951 JSON wrapped in another layer.
+//
+// If the input TypedValue is not JSON_IETF, then an error is returned.
 func wrapJSONIETF(tv *gpb.TypedValue, qualifiedRelPath []string) error {
 	bs := tv.GetJsonIetfVal()
 	if len(bs) == 0 {
@@ -340,7 +353,8 @@ func wrapJSONIETF(tv *gpb.TypedValue, qualifiedRelPath []string) error {
 	if err := json.Unmarshal(bs, &jv); err != nil {
 		return fmt.Errorf("cannot unmarshal IETF JSON: %v", err)
 	}
-	for _, qualPathEle := range qualifiedRelPath {
+	for i := len(qualifiedRelPath) - 1; i >= 0; i-- {
+		qualPathEle := qualifiedRelPath[i]
 		ps := strings.Split(qualPathEle, ":")
 		if len(ps) != 2 {
 			return fmt.Errorf("ygnmi error: got unexpected qualified YANG name: %q", qualPathEle)
@@ -369,6 +383,9 @@ func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, op setO
 	if q.isLeaf() && q.isScalar() {
 		setVal = &val
 	} else if q.compressInfo() != nil && len(q.compressInfo().PostRelPath) > 0 {
+		// When the path struct points to a node that's compressed out,
+		// then we know that the type is a node lower than it should be
+		// as far as the JSON is concerned.
 		modifyTypedValueFn = func(tv *gpb.TypedValue) error { return wrapJSONIETF(tv, q.compressInfo().PostRelPath) }
 	}
 	if err := populateSetRequest(req, path, setVal, op, !q.IsState(), modifyTypedValueFn, opts...); err != nil {
