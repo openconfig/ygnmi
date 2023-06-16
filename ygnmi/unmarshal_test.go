@@ -719,7 +719,7 @@ func TestUnmarshal(t *testing.T) {
 
 	for _, tt := range passingTests {
 		t.Run(tt.name, func(t *testing.T) {
-			unmarshalledData, complianceErrs, err := unmarshal(tt.inData, tt.inStructSchema, tt.inStruct, tt.inQueryPath, schemaStruct(), tt.inLeaf, tt.inPreferShadowPath, &opt{})
+			unmarshalledData, complianceErrs, err := unmarshal(tt.inData, tt.inStructSchema, tt.inStruct, tt.inQueryPath, schemaStruct(), tt.inLeaf, tt.inPreferShadowPath, nil, &opt{})
 			if err != nil {
 				t.Fatalf("unmarshal: got error, want none: %v", err)
 			}
@@ -939,7 +939,7 @@ func TestUnmarshal(t *testing.T) {
 
 	for _, tt := range failingTests {
 		t.Run(tt.name, func(t *testing.T) {
-			unmarshalledData, complianceErrs, errs := unmarshal(tt.inData, tt.inStructSchema, tt.inStruct, tt.inQueryPath, schemaStruct(), tt.inLeaf, tt.inPreferShadowPath, &opt{})
+			unmarshalledData, complianceErrs, errs := unmarshal(tt.inData, tt.inStructSchema, tt.inStruct, tt.inQueryPath, schemaStruct(), tt.inLeaf, tt.inPreferShadowPath, nil, &opt{})
 			if errs != nil {
 				t.Fatalf("unmarshal: got more than one error: %v", errs)
 			}

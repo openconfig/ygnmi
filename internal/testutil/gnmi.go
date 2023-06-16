@@ -80,6 +80,8 @@ func (g *FakeGNMI) Requests() []*gpb.SubscribeRequest {
 }
 
 // GetRequests returns the set of GetRequests sent to the gNMI server.
+//
+// They're ordered in reverse time of request.
 func (g *FakeGNMI) GetRequests() []*gpb.GetRequest {
 	return g.clientWrapper.getRequests
 }
@@ -93,7 +95,7 @@ type clientWithGetter struct {
 
 // Get is a fake implementation of gnmi.Get, it returns the GetResponse contained in the stub.
 func (g *clientWithGetter) Get(ctx context.Context, req *gpb.GetRequest, _ ...grpc.CallOption) (*gpb.GetResponse, error) {
-	g.getRequests = append(g.getRequests, req)
+	g.getRequests = append([]*gpb.GetRequest{req}, g.getRequests...)
 	if len(g.stub.getResponses) == 0 {
 		return nil, io.EOF
 	}

@@ -299,6 +299,62 @@ func receiveStream[T any](sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-ch
 	return dataCh, errCh
 }
 
+func removeRedundantModPrefix7951(v any, modName string) any {
+	switch v := v.(type) {
+	case map[string]any:
+		newMap := map[string]any{}
+		for name, v := range v {
+			ps := strings.Split(name, ":")
+			if len(ps) != 2 {
+				return fmt.Errorf("ygnmi error: when wrapping RFC7951 JSON, got invalid JSON with first-level not qualified: %q", name)
+			}
+			if ps[0] == modName {
+				newMap[ps[1]] = v
+			} else {
+				newMap[name] = v
+			}
+		}
+		return newMap
+	case []any:
+		var newSlice []any
+		for _, v := range v {
+			newSlice = append(newSlice, removeRedundantModPrefix7951(v, modName))
+		}
+		return newSlice
+	default:
+		return v
+	}
+}
+
+func wrapJSONIETFSinglePath(v any, modName, pathName string) any {
+	return map[string]any{fmt.Sprintf("%s:%s", modName, pathName): removeRedundantModPrefix7951(v, modName)}
+}
+
+// wrapJSONIETF returns the input RFC7951 JSON wrapped in another layer.
+func wrapJSONIETF(tv *gpb.TypedValue, qualifiedRelPath []string) error {
+	bs := tv.GetJsonIetfVal()
+	if len(bs) == 0 {
+		return fmt.Errorf("TypedValue is not JSON IETF:\n%s", prototext.Format(tv))
+	}
+	var jv any
+	if err := json.Unmarshal(bs, &jv); err != nil {
+		return fmt.Errorf("cannot unmarshal IETF JSON: %v", err)
+	}
+	for _, qualPathEle := range qualifiedRelPath {
+		ps := strings.Split(qualPathEle, ":")
+		if len(ps) != 2 {
+			return fmt.Errorf("ygnmi error: got unexpected qualified YANG name: %q", qualPathEle)
+		}
+		jv = wrapJSONIETFSinglePath(jv, ps[0], ps[1])
+	}
+	bs, err := json.Marshal(jv)
+	if err != nil {
+		return fmt.Errorf("ygnmi internal error: cannot marshal wrapped JSON: %v", err)
+	}
+	tv.Value = &gpb.TypedValue_JsonIetfVal{JsonIetfVal: bs}
+	return nil
+}
+
 // set configures the target at the query path.
 func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, op setOperation, opts ...Option) (*gpb.SetResponse, *gpb.Path, error) {
 	path, err := resolvePath(q.PathStruct())
@@ -306,13 +362,16 @@ func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, op setO
 		return nil, nil, err
 	}
 
+	var modifyTypedValueFn func(*gpb.TypedValue) error
+
 	req := &gpb.SetRequest{}
 	var setVal interface{} = val
 	if q.isLeaf() && q.isScalar() {
 		setVal = &val
+	} else if q.compressInfo() != nil && len(q.compressInfo().PostRelPath) > 0 {
+		modifyTypedValueFn = func(tv *gpb.TypedValue) error { return wrapJSONIETF(tv, q.compressInfo().PostRelPath) }
 	}
-	// TODO(wenbli): Support ordered maps.
-	if err := populateSetRequest(req, path, setVal, op, !q.IsState(), opts...); err != nil {
+	if err := populateSetRequest(req, path, setVal, op, !q.IsState(), modifyTypedValueFn, opts...); err != nil {
 		return nil, nil, err
 	}
 
@@ -337,7 +396,7 @@ const (
 )
 
 // populateSetRequest fills a SetResponse for a val and operation type.
-func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op setOperation, preferShadowPath bool, opts ...Option) error {
+func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op setOperation, preferShadowPath bool, modifyTypedValueFn func(*gpb.TypedValue) error, opts ...Option) error {
 	if req == nil {
 		return fmt.Errorf("cannot populate a nil SetRequest")
 	}
@@ -376,6 +435,11 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op
 			}
 		} else if err != nil {
 			return fmt.Errorf("failed to encode set request: %v", err)
+		}
+		if modifyTypedValueFn != nil {
+			if err := modifyTypedValueFn(typedVal); err != nil {
+				return fmt.Errorf("failed to modify TypedValue: %v", err)
+			}
 		}
 		update := &gpb.Update{
 			Path: path,

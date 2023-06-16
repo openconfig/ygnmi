@@ -17,6 +17,7 @@ package ygnmi_test
 import (
 	"context"
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -39,6 +40,69 @@ import (
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
 	ygottestutil "github.com/openconfig/ygot/testutil"
 )
+
+// mustPath returns a string as a gNMI path, causing a panic if the string
+// is invalid.
+func mustPath(s string) *gpb.Path {
+	p, err := ygot.StringToStructuredPath(s)
+	if err != nil {
+		panic(err)
+	}
+	return p
+}
+
+func getSampleOrderedMap(t *testing.T) *exampleoc.Model_OrderedList_OrderedMap {
+	om := &exampleoc.Model_OrderedList_OrderedMap{}
+	ol, err := om.AppendNew("foo")
+	if err != nil {
+		t.Fatal(err)
+	}
+	ol.SetValue(42)
+	ol, err = om.AppendNew("bar")
+	if err != nil {
+		t.Fatal(err)
+	}
+	ol.SetValue(43)
+	ol, err = om.AppendNew("baz")
+	if err != nil {
+		t.Fatal(err)
+	}
+	ol.SetValue(44)
+	return om
+}
+
+func lookupCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVal *ygnmi.Value[T]) {
+	got, err := ygnmi.Lookup(context.Background(), c, inQuery)
+	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
+		t.Fatalf("Lookup(ctx, c, %v) returned unexpected diff: %s", inQuery, diff)
+	}
+	if err != nil {
+		return
+	}
+	verifySubscriptionPathsSent(t, fakeGNMI, wantSubscriptionPath)
+	checkJustReceived(t, got.RecvTimestamp)
+	wantVal.RecvTimestamp = got.RecvTimestamp
+
+	if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_OrderedList_OrderedMap{}), protocmp.Transform()); diff != "" {
+		t.Errorf("Lookup(ctx, c, %v) returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", inQuery, diff, got.ComplianceErrors)
+	}
+}
+
+func lookupWithGetCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequest *gpb.GetRequest, wantVal *ygnmi.Value[T]) {
+	got, err := ygnmi.Lookup(context.Background(), c, inQuery, ygnmi.WithUseGet())
+	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
+		t.Fatalf("Lookup(ctx, c, %v) returned unexpected diff (-want, +got):\n%s", inQuery, diff)
+	}
+	if err != nil {
+		return
+	}
+	if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_OrderedList_OrderedMap{}), cmpopts.IgnoreFields(ygnmi.Value[T]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
+		t.Errorf("Lookup() returned unexpected diff (-want, +got):\n%s", diff)
+	}
+	if diff := cmp.Diff(wantRequest, fakeGNMI.GetRequests()[0], protocmp.Transform()); diff != "" {
+		t.Errorf("Lookup() GetRequest different from expected (-want, +got):\n%s", diff)
+	}
+}
 
 func TestLookup(t *testing.T) {
 	fakeGNMI, c := newClient(t)
@@ -223,20 +287,7 @@ func TestLookup(t *testing.T) {
 	for _, tt := range leafTests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			got, err := ygnmi.Lookup(context.Background(), c, tt.inQuery)
-			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
-				t.Fatalf("Lookup(ctx, c, %v) returned unexpected diff: %s", tt.inQuery, diff)
-			}
-			if err != nil {
-				return
-			}
-			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
-			checkJustReceived(t, got.RecvTimestamp)
-			tt.wantVal.RecvTimestamp = got.RecvTimestamp
-
-			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[string]{}), protocmp.Transform()); diff != "" {
-				t.Errorf("Lookup(ctx, c, %v) returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", tt.inQuery, diff, got.ComplianceErrors)
-			}
+			lookupCheckFn(t, fakeGNMI, c, tt.inQuery, tt.wantErr, tt.wantSubscriptionPath, tt.wantVal)
 		})
 	}
 
@@ -248,7 +299,7 @@ func TestLookup(t *testing.T) {
 	configQuery := exampleocpath.Root().Parent().Child().Config()
 	stateQuery := exampleocpath.Root().Parent().Child().State()
 
-	tests := []struct {
+	nonLeafTests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
 		inQuery              ygnmi.SingletonQuery[*exampleoc.Parent_Child]
@@ -408,26 +459,59 @@ func TestLookup(t *testing.T) {
 		}),
 	}}
 
-	for _, tt := range tests {
+	for _, tt := range nonLeafTests {
 		t.Run("nonleaf "+tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			got, err := ygnmi.Lookup(context.Background(), c, tt.inQuery)
-			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
-				t.Fatalf("Lookup(ctx, c, %v) returned unexpected diff: %s", tt.inQuery, diff)
-			}
-			if err != nil {
-				return
-			}
-			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
-			checkJustReceived(t, got.RecvTimestamp)
-			tt.wantVal.RecvTimestamp = got.RecvTimestamp
-
-			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Parent_Child]{}), protocmp.Transform()); diff != "" {
-				t.Errorf("Lookup(ctx, c, %v) returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", tt.inQuery, diff, got.ComplianceErrors)
-			}
+			lookupCheckFn(t, fakeGNMI, c, tt.inQuery, tt.wantErr, tt.wantSubscriptionPath, tt.wantVal)
 		})
 	}
 
+	t.Run("success ordered map", func(t *testing.T) {
+		fakeGNMI.Stub().Notification(&gpb.Notification{
+			Timestamp: 100,
+			Atomic:    true,
+			Prefix:    mustPath("/model/ordered-lists"),
+			Update: []*gpb.Update{{
+				Path: mustPath(`ordered-list[key=foo]/config/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: mustPath(`ordered-list[key=foo]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: mustPath(`ordered-list[key=foo]/config/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/config/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: mustPath(`ordered-list[key=bar]/config/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+			}, {
+				Path: mustPath(`ordered-list[key=baz]/config/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
+			}, {
+				Path: mustPath(`ordered-list[key=baz]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
+			}, {
+				Path: mustPath(`ordered-list[key=baz]/config/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 44}},
+			}},
+		}).Sync()
+
+		lookupCheckFn(
+			t, fakeGNMI, c,
+			ygnmi.SingletonQuery[*exampleoc.Model_OrderedList_OrderedMap](exampleocpath.Root().Model().OrderedListAll().Config()),
+			"",
+			testutil.GNMIPath(t, "/model/ordered-lists"),
+			(&ygnmi.Value[*exampleoc.Model_OrderedList_OrderedMap]{
+				Path:      testutil.GNMIPath(t, "/model/ordered-lists"),
+				Timestamp: time.Unix(0, 100),
+			}).SetVal(getSampleOrderedMap(t)),
+		)
+	})
 }
 
 func TestLookupWithGet(t *testing.T) {
@@ -481,16 +565,13 @@ func TestLookupWithGet(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			got, err := ygnmi.Lookup(context.Background(), c, exampleocpath.Root().RemoteContainer().ALeaf().State(), ygnmi.WithUseGet())
-			if err != nil {
-				t.Fatalf("Lookup() returned unexpected error: %v", err)
-			}
-			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[string]{}), cmpopts.IgnoreFields(ygnmi.Value[string]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
-				t.Errorf("Lookup() returned unexpected diff: %s", diff)
-			}
-			if diff := cmp.Diff(tt.wantRequest, fakeGNMI.GetRequests()[0], protocmp.Transform()); diff != "" {
-				t.Errorf("Lookup() GetRequest different from expected: %s", diff)
-			}
+			lookupWithGetCheckFn(
+				t, fakeGNMI, c,
+				exampleocpath.Root().RemoteContainer().ALeaf().State(),
+				"",
+				tt.wantRequest,
+				tt.wantVal,
+			)
 		})
 	}
 
@@ -569,6 +650,60 @@ func TestLookupWithGet(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("success ordered map", func(t *testing.T) {
+		fakeGNMI.Stub().GetResponse(&gpb.GetResponse{
+			Notification: []*gpb.Notification{{
+				Timestamp: 100,
+				Atomic:    true,
+				Prefix:    mustPath("/model/ordered-lists"),
+				Update: []*gpb.Update{{
+					Path: mustPath(""),
+					Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`{
+  "openconfig-withlistval:ordered-list": [
+    {
+      "config": {
+        "key": "foo",
+        "value": "42"
+      },
+      "key": "foo"
+    },
+    {
+      "config": {
+        "key": "bar",
+        "value": "43"
+      },
+      "key": "bar"
+    },
+    {
+      "config": {
+        "key": "baz",
+        "value": "44"
+      },
+      "key": "baz"
+    }
+  ]
+}`)}},
+				}},
+			}},
+		}, nil)
+
+		lookupWithGetCheckFn(
+			t, fakeGNMI, c,
+			ygnmi.SingletonQuery[*exampleoc.Model_OrderedList_OrderedMap](exampleocpath.Root().Model().OrderedListAll().Config()),
+			"",
+			&gpb.GetRequest{
+				Encoding: gpb.Encoding_JSON_IETF,
+				Type:     gpb.GetRequest_CONFIG,
+				Prefix:   &gpb.Path{},
+				Path:     []*gpb.Path{testutil.GNMIPath(t, "/model/ordered-lists")},
+			},
+			(&ygnmi.Value[*exampleoc.Model_OrderedList_OrderedMap]{
+				Path:      testutil.GNMIPath(t, "/model/ordered-lists"),
+				Timestamp: time.Unix(0, 100),
+			}).SetVal(getSampleOrderedMap(t)),
+		)
+	})
 }
 
 func TestGet(t *testing.T) {
@@ -2452,6 +2587,65 @@ func TestUpdate(t *testing.T) {
 		stubErr: fmt.Errorf("fake"),
 		wantErr: "fake",
 	}, {
+		desc: "YANG ordered list",
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
+			om := &exampleoc.Model_OrderedList_OrderedMap{}
+			ol, err := om.AppendNew("foo")
+			if err != nil {
+				t.Fatal(err)
+			}
+			ol.SetValue(42)
+			ol, err = om.AppendNew("bar")
+			if err != nil {
+				t.Fatal(err)
+			}
+			ol.SetValue(43)
+			ol, err = om.AppendNew("baz")
+			if err != nil {
+				t.Fatal(err)
+			}
+			ol.SetValue(44)
+			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Model().OrderedListAll().Config(), om)
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "/model/ordered-lists"),
+				Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(removeWhitespace(`{
+  "openconfig-withlistval:ordered-list": [
+    {
+      "config": {
+        "key": "foo",
+        "value": "42"
+      },
+      "key": "foo"
+    },
+    {
+      "config": {
+        "key": "bar",
+        "value": "43"
+      },
+      "key": "bar"
+    },
+    {
+      "config": {
+        "key": "baz",
+        "value": "44"
+      },
+      "key": "baz"
+    }
+  ]
+}`))}},
+			}},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
 		desc: "leaf and prefer proto",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
 			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Parent().Child().One().Config(), "10", ygnmi.WithSetPreferProtoEncoding())
@@ -2611,6 +2805,10 @@ func mustAnyNew(t testing.TB, m proto.Message) *anypb.Any {
 	return any
 }
 
+func removeWhitespace(s string) string {
+	return strings.Join(strings.Fields(s), "")
+}
+
 func TestReplace(t *testing.T) {
 	setClient := &testutil.SetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
@@ -2675,6 +2873,65 @@ func TestReplace(t *testing.T) {
 			Replace: []*gpb.Update{{
 				Path: testutil.GNMIPath(t, "parent/child"),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("{\n  \"openconfig-simple:config\": {\n    \"one\": \"10\"\n  }\n}")}},
+			}},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "YANG ordered list",
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
+			om := &exampleoc.Model_OrderedList_OrderedMap{}
+			ol, err := om.AppendNew("foo")
+			if err != nil {
+				t.Fatal(err)
+			}
+			ol.SetValue(42)
+			ol, err = om.AppendNew("bar")
+			if err != nil {
+				t.Fatal(err)
+			}
+			ol.SetValue(43)
+			ol, err = om.AppendNew("baz")
+			if err != nil {
+				t.Fatal(err)
+			}
+			ol.SetValue(44)
+			return ygnmi.Replace(context.Background(), c, exampleocpath.Root().Model().OrderedListAll().Config(), om)
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Replace: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "/model/ordered-lists"),
+				Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(removeWhitespace(`{
+  "openconfig-withlistval:ordered-list": [
+    {
+      "config": {
+        "key": "foo",
+        "value": "42"
+      },
+      "key": "foo"
+    },
+    {
+      "config": {
+        "key": "bar",
+        "value": "43"
+      },
+      "key": "bar"
+    },
+    {
+      "config": {
+        "key": "baz",
+        "value": "44"
+      },
+      "key": "baz"
+    }
+  ]
+}`))}},
 			}},
 		},
 		stubResponse: &gpb.SetResponse{
@@ -2749,6 +3006,24 @@ func TestDelete(t *testing.T) {
 			},
 			Delete: []*gpb.Path{
 				testutil.GNMIPath(t, "parent/child/config/one"),
+			},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "YANG ordered list",
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
+			return ygnmi.Delete(context.Background(), c, exampleocpath.Root().Model().OrderedListAll().Config())
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Delete: []*gpb.Path{
+				testutil.GNMIPath(t, "/model/ordered-lists"),
 			},
 		},
 		stubResponse: &gpb.SetResponse{

@@ -151,7 +151,7 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 		return ret, nil
 	}
 
-	unmarshalledData, complianceErrs, err := unmarshal(data, schema.SchemaTree[q.dirName()], goStruct, queryPath, schema, q.isLeaf(), !q.IsState(), opts)
+	unmarshalledData, complianceErrs, err := unmarshal(data, schema.SchemaTree[q.dirName()], goStruct, queryPath, schema, q.isLeaf(), !q.IsState(), q.compressInfo(), opts)
 	ret.ComplianceErrors = complianceErrs
 	if err != nil {
 		return ret, err
@@ -266,7 +266,7 @@ func unmarshalSchemaless(data []*DataPoint, val any) (bool, error) {
 // NOTE: The subset of datapoints includes datapoints that are value restriction noncompliant.
 // The second error slice are internal errors, while the returned
 // *ComplianceError stores the compliance errors.
-func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.ValidatedGoStruct, queryPath *gpb.Path, schema *ytypes.Schema, isLeaf, isConfig bool, opts *opt) ([]*DataPoint, *ComplianceErrors, error) {
+func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.ValidatedGoStruct, queryPath *gpb.Path, schema *ytypes.Schema, isLeaf, isConfig bool, compressInfo *CompressionInfo, opts *opt) ([]*DataPoint, *ComplianceErrors, error) {
 	queryPathStr := pathToString(queryPath)
 	if isLeaf {
 		switch {
@@ -320,10 +320,25 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 			})
 			continue
 		}
+
+		dpPath := dp.Path
+		// Wrap the IETF JSON if compression info indicates since JSON unmarshal
+		// currently doesn't support unmarshalling at a compressed-out node.
+		// Skip wrapping for other encoding formats because the most likely other
+		// format -- scalars, doesn't need wrapping.
+		if compressInfo != nil && len(compressInfo.PreRelPath) > 0 && len(dp.Value.GetJsonIetfVal()) > 0 {
+			if err := wrapJSONIETF(dp.Value, compressInfo.PreRelPath); err != nil {
+				errs.Add(fmt.Errorf("failed to wrap received JSON: %v", err))
+			} else {
+				dpPath = proto.Clone(dp.Path).(*gpb.Path)
+				dpPath.Elem = dpPath.Elem[:len(dpPath.Elem)-len(compressInfo.PreRelPath)]
+			}
+		}
+
 		// 1b. Check for path compliance: by unmarshalling from the
 		// root, we check that the path, including the list key,
 		// corresponds to an actual schema element.
-		if _, _, err := ytypes.GetOrCreateNode(schema.RootSchema(), schema.Root, dp.Path, gcopts...); err != nil {
+		if _, _, err := ytypes.GetOrCreateNode(schema.RootSchema(), schema.Root, dpPath, gcopts...); err != nil {
 			pathUnmarshalErrs = append(pathUnmarshalErrs, &TelemetryError{Path: dp.Path, Value: dp.Value, Err: fmt.Errorf("path %q is invalid and cannot be matched to a generated GoStruct field: %v", dpPathStr, err)})
 			continue
 		}
@@ -333,8 +348,7 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 		// parent pointers. Therefore, we must remove that first element to
 		// obtain the sanitized path.
 
-		// TODO(wenbli): Support ordered maps.
-		relPath := util.TrimGNMIPathPrefix(dp.Path, util.PathStringToElements(structSchema.Path())[1:])
+		relPath := util.TrimGNMIPathPrefix(dpPath, util.PathStringToElements(structSchema.Path())[1:])
 		if dp.Value == nil {
 			var dopts []ytypes.DelNodeOpt
 			if isConfig {
@@ -355,6 +369,7 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 				sopts = append(sopts, &ytypes.IgnoreExtraFields{})
 			}
 			// 2. Check for type compliance (since path should already be compliant).
+
 			if err := ytypes.SetNode(structSchema, structPtr, relPath, dp.Value, sopts...); err == nil {
 				unmarshalledDatapoints = append(unmarshalledDatapoints, dp)
 			} else {
