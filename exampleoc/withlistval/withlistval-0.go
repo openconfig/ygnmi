@@ -315,72 +315,6 @@ type Model_MultiKey_Key1PathAny struct {
 }
 
 // State returns a Query that can be used in gNMI operations.
-func (n *Model_MultiKeyPath) State() ygnmi.SingletonQuery[*oc.Model_MultiKey] {
-	return ygnmi.NewNonLeafSingletonQuery[*oc.Model_MultiKey](
-		"Model_MultiKey",
-		true,
-		n,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// State returns a Query that can be used in gNMI operations.
-func (n *Model_MultiKeyPathAny) State() ygnmi.WildcardQuery[*oc.Model_MultiKey] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_MultiKey](
-		"Model_MultiKey",
-		true,
-		n,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// Config returns a Query that can be used in gNMI operations.
-func (n *Model_MultiKeyPath) Config() ygnmi.ConfigQuery[*oc.Model_MultiKey] {
-	return ygnmi.NewNonLeafConfigQuery[*oc.Model_MultiKey](
-		"Model_MultiKey",
-		false,
-		n,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// Config returns a Query that can be used in gNMI operations.
-func (n *Model_MultiKeyPathAny) Config() ygnmi.WildcardQuery[*oc.Model_MultiKey] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_MultiKey](
-		"Model_MultiKey",
-		false,
-		n,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// State returns a Query that can be used in gNMI operations.
 //
 //	Defining module:      "openconfig-withlistval"
 //	Instantiating module: "openconfig-withlistval"
@@ -518,6 +452,18 @@ func (n *Model_MultiKey_Key1PathAny) Config() ygnmi.WildcardQuery[uint32] {
 			}
 		},
 	)
+}
+
+// Model_MultiKey_Key2Path represents the /openconfig-withlistval/model/b/multi-key/state/key2 YANG schema element.
+type Model_MultiKey_Key2Path struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// Model_MultiKey_Key2PathAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key/state/key2 YANG schema element.
+type Model_MultiKey_Key2PathAny struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -660,18 +606,6 @@ func (n *Model_MultiKey_Key2PathAny) Config() ygnmi.WildcardQuery[uint64] {
 	)
 }
 
-// Model_MultiKey_Key2Path represents the /openconfig-withlistval/model/b/multi-key/state/key2 YANG schema element.
-type Model_MultiKey_Key2Path struct {
-	*ygnmi.NodePath
-	parent ygnmi.PathStruct
-}
-
-// Model_MultiKey_Key2PathAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key/state/key2 YANG schema element.
-type Model_MultiKey_Key2PathAny struct {
-	*ygnmi.NodePath
-	parent ygnmi.PathStruct
-}
-
 // Model_MultiKeyPath represents the /openconfig-withlistval/model/b/multi-key YANG schema element.
 type Model_MultiKeyPath struct {
 	*ygnmi.NodePath
@@ -750,6 +684,72 @@ func (n *Model_MultiKeyPathAny) Key2() *Model_MultiKey_Key2PathAny {
 	}
 }
 
+// State returns a Query that can be used in gNMI operations.
+func (n *Model_MultiKeyPath) State() ygnmi.SingletonQuery[*oc.Model_MultiKey] {
+	return ygnmi.NewNonLeafSingletonQuery[*oc.Model_MultiKey](
+		"Model_MultiKey",
+		true,
+		n,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *Model_MultiKeyPathAny) State() ygnmi.WildcardQuery[*oc.Model_MultiKey] {
+	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_MultiKey](
+		"Model_MultiKey",
+		true,
+		n,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *Model_MultiKeyPath) Config() ygnmi.ConfigQuery[*oc.Model_MultiKey] {
+	return ygnmi.NewNonLeafConfigQuery[*oc.Model_MultiKey](
+		"Model_MultiKey",
+		false,
+		n,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *Model_MultiKeyPathAny) Config() ygnmi.WildcardQuery[*oc.Model_MultiKey] {
+	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_MultiKey](
+		"Model_MultiKey",
+		false,
+		n,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
 // Model_NoKeyPath represents the /openconfig-withlistval/model/c/no-key YANG schema element.
 type Model_NoKeyPath struct {
 	*ygnmi.NodePath
@@ -803,39 +803,6 @@ type Model_NoKey_Foo_KeyPath struct {
 type Model_NoKey_Foo_KeyPathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// State returns a Query that can be used in gNMI operations.
-func (n *Model_NoKey_FooPath) State() ygnmi.SingletonQuery[*oc.Model_NoKey_Foo] {
-	return ygnmi.NewNonLeafSingletonQuery[*oc.Model_NoKey_Foo](
-		"Model_NoKey_Foo",
-		true,
-		n,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// State returns a Query that can be used in gNMI operations.
-func (n *Model_NoKey_FooPathAny) State() ygnmi.WildcardQuery[*oc.Model_NoKey_Foo] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_NoKey_Foo](
-		"Model_NoKey_Foo",
-		true,
-		n,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -908,6 +875,18 @@ func (n *Model_NoKey_Foo_KeyPathAny) State() ygnmi.WildcardQuery[string] {
 	)
 }
 
+// Model_NoKey_Foo_ValuePath represents the /openconfig-withlistval/model/c/no-key/foo/state/value YANG schema element.
+type Model_NoKey_Foo_ValuePath struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// Model_NoKey_Foo_ValuePathAny represents the wildcard version of the /openconfig-withlistval/model/c/no-key/foo/state/value YANG schema element.
+type Model_NoKey_Foo_ValuePathAny struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
 // State returns a Query that can be used in gNMI operations.
 //
 //	Defining module:      "openconfig-withlistval"
@@ -976,18 +955,6 @@ func (n *Model_NoKey_Foo_ValuePathAny) State() ygnmi.WildcardQuery[int64] {
 			}
 		},
 	)
-}
-
-// Model_NoKey_Foo_ValuePath represents the /openconfig-withlistval/model/c/no-key/foo/state/value YANG schema element.
-type Model_NoKey_Foo_ValuePath struct {
-	*ygnmi.NodePath
-	parent ygnmi.PathStruct
-}
-
-// Model_NoKey_Foo_ValuePathAny represents the wildcard version of the /openconfig-withlistval/model/c/no-key/foo/state/value YANG schema element.
-type Model_NoKey_Foo_ValuePathAny struct {
-	*ygnmi.NodePath
-	parent ygnmi.PathStruct
 }
 
 // Model_NoKey_FooPath represents the /openconfig-withlistval/model/c/no-key/foo YANG schema element.
@@ -1068,6 +1035,39 @@ func (n *Model_NoKey_FooPathAny) Value() *Model_NoKey_Foo_ValuePathAny {
 	}
 }
 
+// State returns a Query that can be used in gNMI operations.
+func (n *Model_NoKey_FooPath) State() ygnmi.SingletonQuery[*oc.Model_NoKey_Foo] {
+	return ygnmi.NewNonLeafSingletonQuery[*oc.Model_NoKey_Foo](
+		"Model_NoKey_Foo",
+		true,
+		n,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *Model_NoKey_FooPathAny) State() ygnmi.WildcardQuery[*oc.Model_NoKey_Foo] {
+	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_NoKey_Foo](
+		"Model_NoKey_Foo",
+		true,
+		n,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
 // Model_SingleKey_KeyPath represents the /openconfig-withlistval/model/a/single-key/state/key YANG schema element.
 type Model_SingleKey_KeyPath struct {
 	*ygnmi.NodePath
@@ -1078,72 +1078,6 @@ type Model_SingleKey_KeyPath struct {
 type Model_SingleKey_KeyPathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// State returns a Query that can be used in gNMI operations.
-func (n *Model_SingleKeyPath) State() ygnmi.SingletonQuery[*oc.Model_SingleKey] {
-	return ygnmi.NewNonLeafSingletonQuery[*oc.Model_SingleKey](
-		"Model_SingleKey",
-		true,
-		n,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// State returns a Query that can be used in gNMI operations.
-func (n *Model_SingleKeyPathAny) State() ygnmi.WildcardQuery[*oc.Model_SingleKey] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_SingleKey](
-		"Model_SingleKey",
-		true,
-		n,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// Config returns a Query that can be used in gNMI operations.
-func (n *Model_SingleKeyPath) Config() ygnmi.ConfigQuery[*oc.Model_SingleKey] {
-	return ygnmi.NewNonLeafConfigQuery[*oc.Model_SingleKey](
-		"Model_SingleKey",
-		false,
-		n,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// Config returns a Query that can be used in gNMI operations.
-func (n *Model_SingleKeyPathAny) Config() ygnmi.WildcardQuery[*oc.Model_SingleKey] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_SingleKey](
-		"Model_SingleKey",
-		false,
-		n,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -1286,6 +1220,18 @@ func (n *Model_SingleKey_KeyPathAny) Config() ygnmi.WildcardQuery[string] {
 	)
 }
 
+// Model_SingleKey_ValuePath represents the /openconfig-withlistval/model/a/single-key/state/value YANG schema element.
+type Model_SingleKey_ValuePath struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// Model_SingleKey_ValuePathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/state/value YANG schema element.
+type Model_SingleKey_ValuePathAny struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
 // State returns a Query that can be used in gNMI operations.
 //
 //	Defining module:      "openconfig-withlistval"
@@ -1426,18 +1372,6 @@ func (n *Model_SingleKey_ValuePathAny) Config() ygnmi.WildcardQuery[int64] {
 	)
 }
 
-// Model_SingleKey_ValuePath represents the /openconfig-withlistval/model/a/single-key/state/value YANG schema element.
-type Model_SingleKey_ValuePath struct {
-	*ygnmi.NodePath
-	parent ygnmi.PathStruct
-}
-
-// Model_SingleKey_ValuePathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/state/value YANG schema element.
-type Model_SingleKey_ValuePathAny struct {
-	*ygnmi.NodePath
-	parent ygnmi.PathStruct
-}
-
 // Model_SingleKeyPath represents the /openconfig-withlistval/model/a/single-key YANG schema element.
 type Model_SingleKeyPath struct {
 	*ygnmi.NodePath
@@ -1514,4 +1448,70 @@ func (n *Model_SingleKeyPathAny) Value() *Model_SingleKey_ValuePathAny {
 		),
 		parent: n,
 	}
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *Model_SingleKeyPath) State() ygnmi.SingletonQuery[*oc.Model_SingleKey] {
+	return ygnmi.NewNonLeafSingletonQuery[*oc.Model_SingleKey](
+		"Model_SingleKey",
+		true,
+		n,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *Model_SingleKeyPathAny) State() ygnmi.WildcardQuery[*oc.Model_SingleKey] {
+	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_SingleKey](
+		"Model_SingleKey",
+		true,
+		n,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *Model_SingleKeyPath) Config() ygnmi.ConfigQuery[*oc.Model_SingleKey] {
+	return ygnmi.NewNonLeafConfigQuery[*oc.Model_SingleKey](
+		"Model_SingleKey",
+		false,
+		n,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *Model_SingleKeyPathAny) Config() ygnmi.WildcardQuery[*oc.Model_SingleKey] {
+	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_SingleKey](
+		"Model_SingleKey",
+		false,
+		n,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
 }

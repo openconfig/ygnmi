@@ -282,35 +282,14 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 		errs = util.AppendErrs(errs, es)
 	}
 
-	// Run any extra generators, grouped by directory.
-	extraPerDir := map[string]*strings.Builder{}
-	for _, psName := range GetOrderedNodeDataNames(nodeDataMap) {
-		if _, ok := extraPerDir[nodeDataMap[psName].DirectoryName]; !ok {
-			extraPerDir[nodeDataMap[psName].DirectoryName] = &strings.Builder{}
-		}
-		for _, gen := range cg.ExtraGenerators {
-			extra, err := gen(psName, ir.Directories[nodeDataMap[psName].DirectoryName], nodeDataMap[psName])
-			if err != nil {
-				errs = util.AppendErr(errs, err)
-			}
-			if _, ok := extraPerDir[nodeDataMap[psName].DirectoryName]; !ok {
-				extraPerDir[nodeDataMap[psName].DirectoryName] = &strings.Builder{}
-			}
-			extraPerDir[nodeDataMap[psName].DirectoryName].WriteString(extra)
-		}
-	}
-
 	// Generate struct code.
 	var structSnippets []GoPathStructCodeSnippet
 	for _, directoryPath := range ir.OrderedDirectoryPathsByName() {
 		directory := ir.Directories[directoryPath]
 
-		structSnippet, es := generateDirectorySnippet(directory, ir.Directories, schemaStructPkgAccessor, cg.PathStructSuffix, cg.GenerateWildcardPaths, cg.SplitByModule, cg.TrimPackageModulePrefix, cg.PackageName, cg.PackageSuffix, cg.UnifyPathStructs)
+		structSnippet, es := generateDirectorySnippet(directory, ir.Directories, nodeDataMap, cg.ExtraGenerators, schemaStructPkgAccessor, cg.PathStructSuffix, cg.GenerateWildcardPaths, cg.SplitByModule, cg.TrimPackageModulePrefix, cg.PackageName, cg.PackageSuffix, cg.UnifyPathStructs)
 		if es != nil {
 			errs = util.AppendErrs(errs, es)
-		}
-		if builder, ok := extraPerDir[directory.Path]; ok {
-			structSnippet[0].ExtraGeneration = builder.String()
 		}
 
 		structSnippets = append(structSnippets, structSnippet...)
@@ -467,6 +446,25 @@ func (g GoPathStructCodeSnippet) String() string {
 	return b.String()
 }
 
+// genExtras calls the extra generators to populate ExtraGeneration.
+//
+// - nodeDataMap is the set of all nodes keyed by pathstruct name.
+// - dir is the directory to which this snippet belongs.
+func (snip *GoPathStructCodeSnippet) genExtras(nodeDataMap NodeDataMap, dir *ygen.ParsedDirectory, extraGens []Generator) util.Errors {
+	var errs util.Errors
+	psName := snip.PathStructName
+	var b strings.Builder
+	for _, gen := range extraGens {
+		extra, err := gen(psName, dir, nodeDataMap[psName])
+		if err != nil {
+			errs = util.AppendErr(errs, err)
+		}
+		b.WriteString(extra)
+	}
+	snip.ExtraGeneration = b.String()
+	return errs
+}
+
 // NodeDataMap is a map from the path struct type name of a schema node to its NodeData.
 type NodeDataMap map[string]*NodeData
 
@@ -600,6 +598,7 @@ type {{ .TypeName }}{{ .WildcardSuffix }} struct {
 }
 {{- end }}
 `)
+
 	// goUnifiedLeafPathStructTemplate is similar to goPathStructTemplate except
 	// leaves are not PathStructs; instead they have Config and State methods
 	// that return path structs.
@@ -887,7 +886,7 @@ type goPathFieldData struct {
 // the fields of the struct. directory is the parsed information of a schema
 // node, and directories is a map from path to a parsed schema node for all
 // directory nodes in the schema.
-func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[string]*ygen.ParsedDirectory, schemaStructPkgAccessor, pathStructSuffix string,
+func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[string]*ygen.ParsedDirectory, nodeDataMap NodeDataMap, extraGens []Generator, schemaStructPkgAccessor, pathStructSuffix string,
 	generateWildcardPaths, splitByModule bool, trimPrefix, pkgName, pkgSuffix string, unified bool) ([]GoPathStructCodeSnippet, util.Errors) {
 
 	var errs util.Errors
@@ -905,6 +904,21 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 		}
 	} else if err := goPathStructTemplate.Execute(&structBuf, structData); err != nil {
 		return nil, util.AppendErr(errs, err)
+	}
+
+	nonLeafSnippet := GoPathStructCodeSnippet{
+		PathStructName: structData.TypeName,
+		StructBase:     structBuf.String(),
+		Package:        goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix),
+	}
+	errs = util.AppendErrs(errs, nonLeafSnippet.genExtras(nodeDataMap, directory, extraGens))
+
+	// Since it is not possible for gNMI to refer to individual nodes
+	// underneath an unkeyed list, prevent constructing paths that go below
+	// it by breaking the chain here.
+	switch {
+	case directory.Type == ygen.List && len(directory.ListKeys) == 0:
+		return []GoPathStructCodeSnippet{nonLeafSnippet}, nil
 	}
 
 	deps := map[string]bool{}
@@ -980,6 +994,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 				StructBase:     buf.String(),
 				Package:        goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix),
 			}
+			errs = util.AppendErrs(errs, leafSnippet.genExtras(nodeDataMap, directory, extraGens))
 			snippets = append(snippets, leafSnippet)
 		}
 	}
@@ -988,17 +1003,11 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 		errs = nil
 	}
 
-	nonLeafSnippet := GoPathStructCodeSnippet{
-		PathStructName:    structData.TypeName,
-		StructBase:        structBuf.String(),
-		ChildConstructors: methodBuf.String(),
-		Package:           goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix),
-	}
+	nonLeafSnippet.ChildConstructors = methodBuf.String()
 	for dep := range deps {
 		nonLeafSnippet.Deps = append(nonLeafSnippet.Deps, dep)
 	}
 
-	nonLeafIdx := len(snippets)
 	snippets = append(snippets, nonLeafSnippet)
 
 	for pkg, build := range listBuilderAPIBufs {
@@ -1009,11 +1018,6 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 				ChildConstructors: code,
 			})
 		}
-	}
-
-	// Since it is not possible for gNMI to refer to individual nodes underneath an unkeyed list, prevent constructing paths below a keyless list.
-	if directory.Type == ygen.List && len(directory.ListKeys) == 0 {
-		snippets[nonLeafIdx].ChildConstructors = ""
 	}
 
 	return snippets, errs
@@ -1100,7 +1104,7 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 		return generateChildConstructorsForLeafOrContainer(methodBuf, fieldData, isUnderFakeRoot, generateWildcardPaths, unified, field.Type == ygen.LeafNode || field.Type == ygen.LeafListNode)
 	case len(fieldDirectory.ListKeys) == 0:
 		// Generate a single wildcard constructor for keyless-lists.
-		if errs := generateChildConstructorsForListBuilderFormat(methodBuf, builderBuf, fieldDirectory.ListKeys, fieldDirectory.ListKeyYANGNames, fieldData, isUnderFakeRoot, schemaStructPkgAccessor); len(errs) > 0 {
+		if errs := generateChildConstructorsForListBuilderFormat(methodBuf, builderBuf, nil, nil, fieldData, isUnderFakeRoot, schemaStructPkgAccessor); len(errs) > 0 {
 			return errs
 		}
 		return nil

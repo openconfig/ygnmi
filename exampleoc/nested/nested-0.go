@@ -1351,72 +1351,6 @@ type A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny struct {
 }
 
 // State returns a Query that can be used in gNMI operations.
-func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F_G_H_I_J_K_L_M] {
-	return ygnmi.NewNonLeafSingletonQuery[*oc.A_B_C_D_E_F_G_H_I_J_K_L_M](
-		"A_B_C_D_E_F_G_H_I_J_K_L_M",
-		true,
-		n,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// State returns a Query that can be used in gNMI operations.
-func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_G_H_I_J_K_L_M] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.A_B_C_D_E_F_G_H_I_J_K_L_M](
-		"A_B_C_D_E_F_G_H_I_J_K_L_M",
-		true,
-		n,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// Config returns a Query that can be used in gNMI operations.
-func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F_G_H_I_J_K_L_M] {
-	return ygnmi.NewNonLeafConfigQuery[*oc.A_B_C_D_E_F_G_H_I_J_K_L_M](
-		"A_B_C_D_E_F_G_H_I_J_K_L_M",
-		false,
-		n,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// Config returns a Query that can be used in gNMI operations.
-func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_G_H_I_J_K_L_M] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.A_B_C_D_E_F_G_H_I_J_K_L_M](
-		"A_B_C_D_E_F_G_H_I_J_K_L_M",
-		false,
-		n,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-	)
-}
-
-// State returns a Query that can be used in gNMI operations.
 //
 //	Defining module:      "openconfig-nested"
 //	Instantiating module: "openconfig-nested"
@@ -1528,4 +1462,70 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooP
 		),
 		parent: n,
 	}
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) State() ygnmi.SingletonQuery[*oc.A_B_C_D_E_F_G_H_I_J_K_L_M] {
+	return ygnmi.NewNonLeafSingletonQuery[*oc.A_B_C_D_E_F_G_H_I_J_K_L_M](
+		"A_B_C_D_E_F_G_H_I_J_K_L_M",
+		true,
+		n,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) State() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_G_H_I_J_K_L_M] {
+	return ygnmi.NewNonLeafWildcardQuery[*oc.A_B_C_D_E_F_G_H_I_J_K_L_M](
+		"A_B_C_D_E_F_G_H_I_J_K_L_M",
+		true,
+		n,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) Config() ygnmi.ConfigQuery[*oc.A_B_C_D_E_F_G_H_I_J_K_L_M] {
+	return ygnmi.NewNonLeafConfigQuery[*oc.A_B_C_D_E_F_G_H_I_J_K_L_M](
+		"A_B_C_D_E_F_G_H_I_J_K_L_M",
+		false,
+		n,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_C_D_E_F_G_H_I_J_K_L_M] {
+	return ygnmi.NewNonLeafWildcardQuery[*oc.A_B_C_D_E_F_G_H_I_J_K_L_M](
+		"A_B_C_D_E_F_G_H_I_J_K_L_M",
+		false,
+		n,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+	)
 }
