@@ -172,9 +172,10 @@ var (
 // 	Path from parent:     "{{ .RelPath }}"
 // 	Path from root:       "{{ .AbsPath }}"
 func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
-	return ygnmi.NewLeaf{{ .SingletonTypeName }}[{{ .GoTypeName }}](
+	return ygnmi.New{{ .SingletonTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
+		true,
 		{{ .IsScalar }},
 		ygnmi.New{{ .PathBaseTypeName }}(
 			[]string{ {{- .RelPathList -}} },
@@ -205,6 +206,7 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 				Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -216,9 +218,10 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 // 	Path from parent:     "{{ .RelPath }}"
 // 	Path from root:       "{{ .AbsPath }}"
 func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{{ .WildcardTypeName }}[{{ .GoTypeName }}] {
-	return ygnmi.NewLeaf{{ .WildcardTypeName }}[{{ .GoTypeName }}](
+	return ygnmi.New{{ .WildcardTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
+		true,
 		{{ .IsScalar }},
 		ygnmi.New{{ .PathBaseTypeName }}(
 			[]string{ {{- .RelPathList -}} },
@@ -257,10 +260,13 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 	goGNMINonLeafTemplate = mustTemplate("non-leaf-gnmi", `
 // {{ .MethodName }} returns a Query that can be used in gNMI operations.
 func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
-	return ygnmi.NewNonLeaf{{ .SingletonTypeName }}[{{ .GoTypeName }}](
+	return ygnmi.New{{ .SingletonTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
+		false,
+		false,
 		n,
+		nil,
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
@@ -269,6 +275,7 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 				Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -276,10 +283,14 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 
 // {{ .MethodName }} returns a Query that can be used in gNMI operations.
 func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{{ .WildcardTypeName }}[{{ .GoTypeName }}] {
-	return ygnmi.NewNonLeaf{{ .WildcardTypeName }}[{{ .GoTypeName }}](
+	return ygnmi.New{{ .WildcardTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
+		false,
+		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
@@ -311,11 +322,14 @@ func (b *Batch) AddPaths(paths ...ygnmi.PathStruct) *Batch {
 func (b *Batch) State() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
 	queryPaths := make([]ygnmi.PathStruct, len(b.paths))
 	copy(queryPaths, b.paths)
-    return ygnmi.NewNonLeaf{{ .SingletonTypeName }}[{{ .GoTypeName }}](
-        "{{ .GoStructTypeName }}",
-        true,
-        ygnmi.NewDeviceRootBase(),
-        queryPaths,
+	return ygnmi.New{{ .SingletonTypeName }}[{{ .GoTypeName }}](
+		"{{ .GoStructTypeName }}",
+		true,
+		false,
+		false,
+		ygnmi.NewDeviceRootBase(),
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
@@ -323,7 +337,8 @@ func (b *Batch) State() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
 				Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
 			}
 		},
-    )
+		queryPaths,
+	)
 }
 
 // Config returns a Query that can be used in gNMI operations.
@@ -331,11 +346,14 @@ func (b *Batch) State() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
 func (b *Batch) Config() ygnmi.{{ .SingletonTypeName }}[*oc.Root] {
 	queryPaths := make([]ygnmi.PathStruct, len(b.paths))
 	copy(queryPaths, b.paths)
-    return ygnmi.NewNonLeaf{{ .SingletonTypeName }}[*oc.Root](
-        "{{ .GoStructTypeName }}",
-        false,
-        ygnmi.NewDeviceRootBase(),
-        queryPaths,
+	return ygnmi.New{{ .SingletonTypeName }}[*oc.Root](
+		"{{ .GoStructTypeName }}",
+		false,
+		false,
+		false,
+		ygnmi.NewDeviceRootBase(),
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
@@ -343,7 +361,8 @@ func (b *Batch) Config() ygnmi.{{ .SingletonTypeName }}[*oc.Root] {
 				Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
 			}
 		},
-    )
+		queryPaths,
+	)
 }
 `)
 	oncePerPackageTmpl = mustTemplate("once-per-package", `

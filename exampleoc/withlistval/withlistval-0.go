@@ -270,10 +270,13 @@ func binarySliceToFloatSlice(in []oc.Binary) []float32 {
 
 // State returns a Query that can be used in gNMI operations.
 func (n *ModelPath) State() ygnmi.SingletonQuery[*oc.Model] {
-	return ygnmi.NewNonLeafSingletonQuery[*oc.Model](
+	return ygnmi.NewSingletonQuery[*oc.Model](
 		"Model",
 		true,
+		false,
+		false,
 		n,
+		nil,
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
@@ -282,15 +285,20 @@ func (n *ModelPath) State() ygnmi.SingletonQuery[*oc.Model] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
 // State returns a Query that can be used in gNMI operations.
 func (n *ModelPathAny) State() ygnmi.WildcardQuery[*oc.Model] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Model](
+	return ygnmi.NewWildcardQuery[*oc.Model](
 		"Model",
 		true,
+		false,
+		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -303,10 +311,13 @@ func (n *ModelPathAny) State() ygnmi.WildcardQuery[*oc.Model] {
 
 // Config returns a Query that can be used in gNMI operations.
 func (n *ModelPath) Config() ygnmi.ConfigQuery[*oc.Model] {
-	return ygnmi.NewNonLeafConfigQuery[*oc.Model](
+	return ygnmi.NewConfigQuery[*oc.Model](
 		"Model",
 		false,
+		false,
+		false,
 		n,
+		nil,
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
@@ -315,15 +326,20 @@ func (n *ModelPath) Config() ygnmi.ConfigQuery[*oc.Model] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
 // Config returns a Query that can be used in gNMI operations.
 func (n *ModelPathAny) Config() ygnmi.WildcardQuery[*oc.Model] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Model](
+	return ygnmi.NewWildcardQuery[*oc.Model](
 		"Model",
 		false,
+		false,
+		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -353,8 +369,9 @@ type Model_MultiKey_Key1PathAny struct {
 //	Path from parent:     "state/key1"
 //	Path from root:       "/model/b/multi-key/state/key1"
 func (n *Model_MultiKey_Key1Path) State() ygnmi.SingletonQuery[uint32] {
-	return ygnmi.NewLeafSingletonQuery[uint32](
+	return ygnmi.NewSingletonQuery[uint32](
 		"Model_MultiKey",
+		true,
 		true,
 		true,
 		ygnmi.NewNodePath(
@@ -378,6 +395,7 @@ func (n *Model_MultiKey_Key1Path) State() ygnmi.SingletonQuery[uint32] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -388,8 +406,9 @@ func (n *Model_MultiKey_Key1Path) State() ygnmi.SingletonQuery[uint32] {
 //	Path from parent:     "state/key1"
 //	Path from root:       "/model/b/multi-key/state/key1"
 func (n *Model_MultiKey_Key1PathAny) State() ygnmi.WildcardQuery[uint32] {
-	return ygnmi.NewLeafWildcardQuery[uint32](
+	return ygnmi.NewWildcardQuery[uint32](
 		"Model_MultiKey",
+		true,
 		true,
 		true,
 		ygnmi.NewNodePath(
@@ -423,9 +442,10 @@ func (n *Model_MultiKey_Key1PathAny) State() ygnmi.WildcardQuery[uint32] {
 //	Path from parent:     "config/key1"
 //	Path from root:       "/model/b/multi-key/config/key1"
 func (n *Model_MultiKey_Key1Path) Config() ygnmi.ConfigQuery[uint32] {
-	return ygnmi.NewLeafConfigQuery[uint32](
+	return ygnmi.NewConfigQuery[uint32](
 		"Model_MultiKey",
 		false,
+		true,
 		true,
 		ygnmi.NewNodePath(
 			[]string{"config", "key1"},
@@ -448,6 +468,7 @@ func (n *Model_MultiKey_Key1Path) Config() ygnmi.ConfigQuery[uint32] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -458,9 +479,10 @@ func (n *Model_MultiKey_Key1Path) Config() ygnmi.ConfigQuery[uint32] {
 //	Path from parent:     "config/key1"
 //	Path from root:       "/model/b/multi-key/config/key1"
 func (n *Model_MultiKey_Key1PathAny) Config() ygnmi.WildcardQuery[uint32] {
-	return ygnmi.NewLeafWildcardQuery[uint32](
+	return ygnmi.NewWildcardQuery[uint32](
 		"Model_MultiKey",
 		false,
+		true,
 		true,
 		ygnmi.NewNodePath(
 			[]string{"config", "key1"},
@@ -505,8 +527,9 @@ type Model_MultiKey_Key2PathAny struct {
 //	Path from parent:     "state/key2"
 //	Path from root:       "/model/b/multi-key/state/key2"
 func (n *Model_MultiKey_Key2Path) State() ygnmi.SingletonQuery[uint64] {
-	return ygnmi.NewLeafSingletonQuery[uint64](
+	return ygnmi.NewSingletonQuery[uint64](
 		"Model_MultiKey",
+		true,
 		true,
 		true,
 		ygnmi.NewNodePath(
@@ -530,6 +553,7 @@ func (n *Model_MultiKey_Key2Path) State() ygnmi.SingletonQuery[uint64] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -540,8 +564,9 @@ func (n *Model_MultiKey_Key2Path) State() ygnmi.SingletonQuery[uint64] {
 //	Path from parent:     "state/key2"
 //	Path from root:       "/model/b/multi-key/state/key2"
 func (n *Model_MultiKey_Key2PathAny) State() ygnmi.WildcardQuery[uint64] {
-	return ygnmi.NewLeafWildcardQuery[uint64](
+	return ygnmi.NewWildcardQuery[uint64](
 		"Model_MultiKey",
+		true,
 		true,
 		true,
 		ygnmi.NewNodePath(
@@ -575,9 +600,10 @@ func (n *Model_MultiKey_Key2PathAny) State() ygnmi.WildcardQuery[uint64] {
 //	Path from parent:     "config/key2"
 //	Path from root:       "/model/b/multi-key/config/key2"
 func (n *Model_MultiKey_Key2Path) Config() ygnmi.ConfigQuery[uint64] {
-	return ygnmi.NewLeafConfigQuery[uint64](
+	return ygnmi.NewConfigQuery[uint64](
 		"Model_MultiKey",
 		false,
+		true,
 		true,
 		ygnmi.NewNodePath(
 			[]string{"config", "key2"},
@@ -600,6 +626,7 @@ func (n *Model_MultiKey_Key2Path) Config() ygnmi.ConfigQuery[uint64] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -610,9 +637,10 @@ func (n *Model_MultiKey_Key2Path) Config() ygnmi.ConfigQuery[uint64] {
 //	Path from parent:     "config/key2"
 //	Path from root:       "/model/b/multi-key/config/key2"
 func (n *Model_MultiKey_Key2PathAny) Config() ygnmi.WildcardQuery[uint64] {
-	return ygnmi.NewLeafWildcardQuery[uint64](
+	return ygnmi.NewWildcardQuery[uint64](
 		"Model_MultiKey",
 		false,
+		true,
 		true,
 		ygnmi.NewNodePath(
 			[]string{"config", "key2"},
@@ -718,10 +746,13 @@ func (n *Model_MultiKeyPathAny) Key2() *Model_MultiKey_Key2PathAny {
 
 // State returns a Query that can be used in gNMI operations.
 func (n *Model_MultiKeyPath) State() ygnmi.SingletonQuery[*oc.Model_MultiKey] {
-	return ygnmi.NewNonLeafSingletonQuery[*oc.Model_MultiKey](
+	return ygnmi.NewSingletonQuery[*oc.Model_MultiKey](
 		"Model_MultiKey",
 		true,
+		false,
+		false,
 		n,
+		nil,
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
@@ -730,15 +761,20 @@ func (n *Model_MultiKeyPath) State() ygnmi.SingletonQuery[*oc.Model_MultiKey] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
 // State returns a Query that can be used in gNMI operations.
 func (n *Model_MultiKeyPathAny) State() ygnmi.WildcardQuery[*oc.Model_MultiKey] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_MultiKey](
+	return ygnmi.NewWildcardQuery[*oc.Model_MultiKey](
 		"Model_MultiKey",
 		true,
+		false,
+		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -751,10 +787,13 @@ func (n *Model_MultiKeyPathAny) State() ygnmi.WildcardQuery[*oc.Model_MultiKey] 
 
 // Config returns a Query that can be used in gNMI operations.
 func (n *Model_MultiKeyPath) Config() ygnmi.ConfigQuery[*oc.Model_MultiKey] {
-	return ygnmi.NewNonLeafConfigQuery[*oc.Model_MultiKey](
+	return ygnmi.NewConfigQuery[*oc.Model_MultiKey](
 		"Model_MultiKey",
 		false,
+		false,
+		false,
 		n,
+		nil,
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
@@ -763,15 +802,20 @@ func (n *Model_MultiKeyPath) Config() ygnmi.ConfigQuery[*oc.Model_MultiKey] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
 // Config returns a Query that can be used in gNMI operations.
 func (n *Model_MultiKeyPathAny) Config() ygnmi.WildcardQuery[*oc.Model_MultiKey] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_MultiKey](
+	return ygnmi.NewWildcardQuery[*oc.Model_MultiKey](
 		"Model_MultiKey",
 		false,
+		false,
+		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -794,10 +838,13 @@ type Model_NoKeyPathAny struct {
 
 // State returns a Query that can be used in gNMI operations.
 func (n *Model_NoKeyPath) State() ygnmi.SingletonQuery[*oc.Model_NoKey] {
-	return ygnmi.NewNonLeafSingletonQuery[*oc.Model_NoKey](
+	return ygnmi.NewSingletonQuery[*oc.Model_NoKey](
 		"Model_NoKey",
 		true,
+		false,
+		false,
 		n,
+		nil,
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
@@ -806,15 +853,20 @@ func (n *Model_NoKeyPath) State() ygnmi.SingletonQuery[*oc.Model_NoKey] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
 // State returns a Query that can be used in gNMI operations.
 func (n *Model_NoKeyPathAny) State() ygnmi.WildcardQuery[*oc.Model_NoKey] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_NoKey](
+	return ygnmi.NewWildcardQuery[*oc.Model_NoKey](
 		"Model_NoKey",
 		true,
+		false,
+		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -844,8 +896,9 @@ type Model_NoKey_Foo_KeyPathAny struct {
 //	Path from parent:     "state/key"
 //	Path from root:       "/model/c/no-key/foo/state/key"
 func (n *Model_NoKey_Foo_KeyPath) State() ygnmi.SingletonQuery[string] {
-	return ygnmi.NewLeafSingletonQuery[string](
+	return ygnmi.NewSingletonQuery[string](
 		"Model_NoKey_Foo",
+		true,
 		true,
 		true,
 		ygnmi.NewNodePath(
@@ -869,6 +922,7 @@ func (n *Model_NoKey_Foo_KeyPath) State() ygnmi.SingletonQuery[string] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -879,8 +933,9 @@ func (n *Model_NoKey_Foo_KeyPath) State() ygnmi.SingletonQuery[string] {
 //	Path from parent:     "state/key"
 //	Path from root:       "/model/c/no-key/foo/state/key"
 func (n *Model_NoKey_Foo_KeyPathAny) State() ygnmi.WildcardQuery[string] {
-	return ygnmi.NewLeafWildcardQuery[string](
+	return ygnmi.NewWildcardQuery[string](
 		"Model_NoKey_Foo",
+		true,
 		true,
 		true,
 		ygnmi.NewNodePath(
@@ -926,8 +981,9 @@ type Model_NoKey_Foo_ValuePathAny struct {
 //	Path from parent:     "state/value"
 //	Path from root:       "/model/c/no-key/foo/state/value"
 func (n *Model_NoKey_Foo_ValuePath) State() ygnmi.SingletonQuery[int64] {
-	return ygnmi.NewLeafSingletonQuery[int64](
+	return ygnmi.NewSingletonQuery[int64](
 		"Model_NoKey_Foo",
+		true,
 		true,
 		true,
 		ygnmi.NewNodePath(
@@ -951,6 +1007,7 @@ func (n *Model_NoKey_Foo_ValuePath) State() ygnmi.SingletonQuery[int64] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -961,8 +1018,9 @@ func (n *Model_NoKey_Foo_ValuePath) State() ygnmi.SingletonQuery[int64] {
 //	Path from parent:     "state/value"
 //	Path from root:       "/model/c/no-key/foo/state/value"
 func (n *Model_NoKey_Foo_ValuePathAny) State() ygnmi.WildcardQuery[int64] {
-	return ygnmi.NewLeafWildcardQuery[int64](
+	return ygnmi.NewWildcardQuery[int64](
 		"Model_NoKey_Foo",
+		true,
 		true,
 		true,
 		ygnmi.NewNodePath(
@@ -1069,10 +1127,13 @@ func (n *Model_NoKey_FooPathAny) Value() *Model_NoKey_Foo_ValuePathAny {
 
 // State returns a Query that can be used in gNMI operations.
 func (n *Model_NoKey_FooPath) State() ygnmi.SingletonQuery[*oc.Model_NoKey_Foo] {
-	return ygnmi.NewNonLeafSingletonQuery[*oc.Model_NoKey_Foo](
+	return ygnmi.NewSingletonQuery[*oc.Model_NoKey_Foo](
 		"Model_NoKey_Foo",
 		true,
+		false,
+		false,
 		n,
+		nil,
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
@@ -1081,15 +1142,20 @@ func (n *Model_NoKey_FooPath) State() ygnmi.SingletonQuery[*oc.Model_NoKey_Foo] 
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
 // State returns a Query that can be used in gNMI operations.
 func (n *Model_NoKey_FooPathAny) State() ygnmi.WildcardQuery[*oc.Model_NoKey_Foo] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_NoKey_Foo](
+	return ygnmi.NewWildcardQuery[*oc.Model_NoKey_Foo](
 		"Model_NoKey_Foo",
 		true,
+		false,
+		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1112,10 +1178,13 @@ type Model_OrderedListPathAny struct {
 
 // State returns a Query that can be used in gNMI operations.
 func (n *Model_OrderedListPath) State() ygnmi.SingletonQuery[*oc.Model_OrderedList_OrderedMap] {
-	return ygnmi.NewNonLeafSingletonQuery[*oc.Model_OrderedList_OrderedMap](
+	return ygnmi.NewSingletonQuery[*oc.Model_OrderedList_OrderedMap](
 		"Model",
 		true,
+		false,
+		false,
 		n,
+		nil,
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
@@ -1124,15 +1193,20 @@ func (n *Model_OrderedListPath) State() ygnmi.SingletonQuery[*oc.Model_OrderedLi
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
 // State returns a Query that can be used in gNMI operations.
 func (n *Model_OrderedListPathAny) State() ygnmi.WildcardQuery[*oc.Model_OrderedList_OrderedMap] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_OrderedList_OrderedMap](
+	return ygnmi.NewWildcardQuery[*oc.Model_OrderedList_OrderedMap](
 		"Model",
 		true,
+		false,
+		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1145,10 +1219,13 @@ func (n *Model_OrderedListPathAny) State() ygnmi.WildcardQuery[*oc.Model_Ordered
 
 // Config returns a Query that can be used in gNMI operations.
 func (n *Model_OrderedListPath) Config() ygnmi.ConfigQuery[*oc.Model_OrderedList_OrderedMap] {
-	return ygnmi.NewNonLeafConfigQuery[*oc.Model_OrderedList_OrderedMap](
+	return ygnmi.NewConfigQuery[*oc.Model_OrderedList_OrderedMap](
 		"Model",
 		false,
+		false,
+		false,
 		n,
+		nil,
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
@@ -1157,15 +1234,20 @@ func (n *Model_OrderedListPath) Config() ygnmi.ConfigQuery[*oc.Model_OrderedList
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
 // Config returns a Query that can be used in gNMI operations.
 func (n *Model_OrderedListPathAny) Config() ygnmi.WildcardQuery[*oc.Model_OrderedList_OrderedMap] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_OrderedList_OrderedMap](
+	return ygnmi.NewWildcardQuery[*oc.Model_OrderedList_OrderedMap](
 		"Model",
 		false,
+		false,
+		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1195,8 +1277,9 @@ type Model_SingleKey_KeyPathAny struct {
 //	Path from parent:     "state/key"
 //	Path from root:       "/model/a/single-key/state/key"
 func (n *Model_SingleKey_KeyPath) State() ygnmi.SingletonQuery[string] {
-	return ygnmi.NewLeafSingletonQuery[string](
+	return ygnmi.NewSingletonQuery[string](
 		"Model_SingleKey",
+		true,
 		true,
 		true,
 		ygnmi.NewNodePath(
@@ -1220,6 +1303,7 @@ func (n *Model_SingleKey_KeyPath) State() ygnmi.SingletonQuery[string] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1230,8 +1314,9 @@ func (n *Model_SingleKey_KeyPath) State() ygnmi.SingletonQuery[string] {
 //	Path from parent:     "state/key"
 //	Path from root:       "/model/a/single-key/state/key"
 func (n *Model_SingleKey_KeyPathAny) State() ygnmi.WildcardQuery[string] {
-	return ygnmi.NewLeafWildcardQuery[string](
+	return ygnmi.NewWildcardQuery[string](
 		"Model_SingleKey",
+		true,
 		true,
 		true,
 		ygnmi.NewNodePath(
@@ -1265,9 +1350,10 @@ func (n *Model_SingleKey_KeyPathAny) State() ygnmi.WildcardQuery[string] {
 //	Path from parent:     "config/key"
 //	Path from root:       "/model/a/single-key/config/key"
 func (n *Model_SingleKey_KeyPath) Config() ygnmi.ConfigQuery[string] {
-	return ygnmi.NewLeafConfigQuery[string](
+	return ygnmi.NewConfigQuery[string](
 		"Model_SingleKey",
 		false,
+		true,
 		true,
 		ygnmi.NewNodePath(
 			[]string{"config", "key"},
@@ -1290,6 +1376,7 @@ func (n *Model_SingleKey_KeyPath) Config() ygnmi.ConfigQuery[string] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1300,9 +1387,10 @@ func (n *Model_SingleKey_KeyPath) Config() ygnmi.ConfigQuery[string] {
 //	Path from parent:     "config/key"
 //	Path from root:       "/model/a/single-key/config/key"
 func (n *Model_SingleKey_KeyPathAny) Config() ygnmi.WildcardQuery[string] {
-	return ygnmi.NewLeafWildcardQuery[string](
+	return ygnmi.NewWildcardQuery[string](
 		"Model_SingleKey",
 		false,
+		true,
 		true,
 		ygnmi.NewNodePath(
 			[]string{"config", "key"},
@@ -1347,8 +1435,9 @@ type Model_SingleKey_ValuePathAny struct {
 //	Path from parent:     "state/value"
 //	Path from root:       "/model/a/single-key/state/value"
 func (n *Model_SingleKey_ValuePath) State() ygnmi.SingletonQuery[int64] {
-	return ygnmi.NewLeafSingletonQuery[int64](
+	return ygnmi.NewSingletonQuery[int64](
 		"Model_SingleKey",
+		true,
 		true,
 		true,
 		ygnmi.NewNodePath(
@@ -1372,6 +1461,7 @@ func (n *Model_SingleKey_ValuePath) State() ygnmi.SingletonQuery[int64] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1382,8 +1472,9 @@ func (n *Model_SingleKey_ValuePath) State() ygnmi.SingletonQuery[int64] {
 //	Path from parent:     "state/value"
 //	Path from root:       "/model/a/single-key/state/value"
 func (n *Model_SingleKey_ValuePathAny) State() ygnmi.WildcardQuery[int64] {
-	return ygnmi.NewLeafWildcardQuery[int64](
+	return ygnmi.NewWildcardQuery[int64](
 		"Model_SingleKey",
+		true,
 		true,
 		true,
 		ygnmi.NewNodePath(
@@ -1417,9 +1508,10 @@ func (n *Model_SingleKey_ValuePathAny) State() ygnmi.WildcardQuery[int64] {
 //	Path from parent:     "config/value"
 //	Path from root:       "/model/a/single-key/config/value"
 func (n *Model_SingleKey_ValuePath) Config() ygnmi.ConfigQuery[int64] {
-	return ygnmi.NewLeafConfigQuery[int64](
+	return ygnmi.NewConfigQuery[int64](
 		"Model_SingleKey",
 		false,
+		true,
 		true,
 		ygnmi.NewNodePath(
 			[]string{"config", "value"},
@@ -1442,6 +1534,7 @@ func (n *Model_SingleKey_ValuePath) Config() ygnmi.ConfigQuery[int64] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1452,9 +1545,10 @@ func (n *Model_SingleKey_ValuePath) Config() ygnmi.ConfigQuery[int64] {
 //	Path from parent:     "config/value"
 //	Path from root:       "/model/a/single-key/config/value"
 func (n *Model_SingleKey_ValuePathAny) Config() ygnmi.WildcardQuery[int64] {
-	return ygnmi.NewLeafWildcardQuery[int64](
+	return ygnmi.NewWildcardQuery[int64](
 		"Model_SingleKey",
 		false,
+		true,
 		true,
 		ygnmi.NewNodePath(
 			[]string{"config", "value"},
@@ -1560,10 +1654,13 @@ func (n *Model_SingleKeyPathAny) Value() *Model_SingleKey_ValuePathAny {
 
 // State returns a Query that can be used in gNMI operations.
 func (n *Model_SingleKeyPath) State() ygnmi.SingletonQuery[*oc.Model_SingleKey] {
-	return ygnmi.NewNonLeafSingletonQuery[*oc.Model_SingleKey](
+	return ygnmi.NewSingletonQuery[*oc.Model_SingleKey](
 		"Model_SingleKey",
 		true,
+		false,
+		false,
 		n,
+		nil,
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
@@ -1572,15 +1669,20 @@ func (n *Model_SingleKeyPath) State() ygnmi.SingletonQuery[*oc.Model_SingleKey] 
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
 // State returns a Query that can be used in gNMI operations.
 func (n *Model_SingleKeyPathAny) State() ygnmi.WildcardQuery[*oc.Model_SingleKey] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_SingleKey](
+	return ygnmi.NewWildcardQuery[*oc.Model_SingleKey](
 		"Model_SingleKey",
 		true,
+		false,
+		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1593,10 +1695,13 @@ func (n *Model_SingleKeyPathAny) State() ygnmi.WildcardQuery[*oc.Model_SingleKey
 
 // Config returns a Query that can be used in gNMI operations.
 func (n *Model_SingleKeyPath) Config() ygnmi.ConfigQuery[*oc.Model_SingleKey] {
-	return ygnmi.NewNonLeafConfigQuery[*oc.Model_SingleKey](
+	return ygnmi.NewConfigQuery[*oc.Model_SingleKey](
 		"Model_SingleKey",
 		false,
+		false,
+		false,
 		n,
+		nil,
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
@@ -1605,15 +1710,20 @@ func (n *Model_SingleKeyPath) Config() ygnmi.ConfigQuery[*oc.Model_SingleKey] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
 // Config returns a Query that can be used in gNMI operations.
 func (n *Model_SingleKeyPathAny) Config() ygnmi.WildcardQuery[*oc.Model_SingleKey] {
-	return ygnmi.NewNonLeafWildcardQuery[*oc.Model_SingleKey](
+	return ygnmi.NewWildcardQuery[*oc.Model_SingleKey](
 		"Model_SingleKey",
 		false,
+		false,
+		false,
 		n,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
