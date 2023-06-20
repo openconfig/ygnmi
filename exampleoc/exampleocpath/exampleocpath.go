@@ -130,13 +130,14 @@ func (b *Batch) AddPaths(paths ...ygnmi.PathStruct) *Batch {
 func (b *Batch) State() ygnmi.SingletonQuery[*oc.Root] {
 	queryPaths := make([]ygnmi.PathStruct, len(b.paths))
 	copy(queryPaths, b.paths)
-	return ygnmi.NewNonLeafSingletonQuery[*oc.Root](
+	return ygnmi.NewSingletonQuery[*oc.Root](
 		"Root",
 		true,
+		false,
+		false,
 		ygnmi.NewDeviceRootBase(),
 		nil,
 		nil,
-		queryPaths,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -144,6 +145,7 @@ func (b *Batch) State() ygnmi.SingletonQuery[*oc.Root] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		queryPaths,
 		nil,
 	)
 }
@@ -153,13 +155,14 @@ func (b *Batch) State() ygnmi.SingletonQuery[*oc.Root] {
 func (b *Batch) Config() ygnmi.SingletonQuery[*oc.Root] {
 	queryPaths := make([]ygnmi.PathStruct, len(b.paths))
 	copy(queryPaths, b.paths)
-	return ygnmi.NewNonLeafSingletonQuery[*oc.Root](
+	return ygnmi.NewSingletonQuery[*oc.Root](
 		"Root",
+		false,
+		false,
 		false,
 		ygnmi.NewDeviceRootBase(),
 		nil,
 		nil,
-		queryPaths,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -167,6 +170,7 @@ func (b *Batch) Config() ygnmi.SingletonQuery[*oc.Root] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		queryPaths,
 		nil,
 	)
 }
@@ -181,11 +185,12 @@ func binarySliceToFloatSlice(in []oc.Binary) []float32 {
 
 // State returns a Query that can be used in gNMI operations.
 func (n *RootPath) State() ygnmi.SingletonQuery[*oc.Root] {
-	return ygnmi.NewNonLeafSingletonQuery[*oc.Root](
+	return ygnmi.NewSingletonQuery[*oc.Root](
 		"Root",
 		true,
+		false,
+		false,
 		n,
-		nil,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -195,17 +200,19 @@ func (n *RootPath) State() ygnmi.SingletonQuery[*oc.Root] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 		nil,
 	)
 }
 
 // Config returns a Query that can be used in gNMI operations.
 func (n *RootPath) Config() ygnmi.ConfigQuery[*oc.Root] {
-	return ygnmi.NewNonLeafConfigQuery[*oc.Root](
+	return ygnmi.NewConfigQuery[*oc.Root](
 		"Root",
 		false,
+		false,
+		false,
 		n,
-		nil,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -215,6 +222,7 @@ func (n *RootPath) Config() ygnmi.ConfigQuery[*oc.Root] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 		nil,
 	)
 }

@@ -39,15 +39,19 @@ func NewConfig[T any](path, origin string) (ygnmi.ConfigQuery[T], error) {
 		return nil, err
 	}
 
-	return ygnmi.NewLeafConfigQuery("",
+	return ygnmi.NewConfigQuery("",
 			false,
+			true,
 			scalar,
 			ps,
 			createFn,
 			func() ygot.ValidatedGoStruct {
 				return nil
 			},
-			func() *ytypes.Schema { return nil }),
+			func() *ytypes.Schema { return nil },
+			nil,
+			nil,
+		),
 		nil
 }
 
@@ -59,15 +63,18 @@ func NewWildcard[T any](path, origin string) (ygnmi.WildcardQuery[T], error) {
 		return nil, err
 	}
 
-	return ygnmi.NewLeafWildcardQuery("",
+	return ygnmi.NewWildcardQuery("",
 			false,
+			true,
 			scalar,
 			ps,
 			createFn,
 			func() ygot.ValidatedGoStruct {
 				return nil
 			},
-			func() *ytypes.Schema { return nil }),
+			func() *ytypes.Schema { return nil },
+			nil,
+		),
 		nil
 }
 
