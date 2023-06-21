@@ -52,12 +52,12 @@ type ModelPathAny struct {
 	*ygnmi.NodePath
 }
 
-// OrderedListAll (list): 
+// OrderedListMap (list): 
 // 	Defining module:      "openconfig-orderedlist"
 // 	Instantiating module: "openconfig-orderedlist"
 // 	Path from parent:     "ordered-lists/ordered-list"
 // 	Path from root:       "/model/ordered-lists/ordered-list"
-func (n *ModelPath) OrderedListAll() *Model_OrderedListPath {
+func (n *ModelPath) OrderedListMap() *Model_OrderedListPath {
 	return &Model_OrderedListPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"ordered-lists"},
@@ -67,12 +67,12 @@ func (n *ModelPath) OrderedListAll() *Model_OrderedListPath {
 	}
 }
 
-// OrderedListAll (list): 
+// OrderedListMap (list): 
 // 	Defining module:      "openconfig-orderedlist"
 // 	Instantiating module: "openconfig-orderedlist"
 // 	Path from parent:     "ordered-lists/ordered-list"
 // 	Path from root:       "/model/ordered-lists/ordered-list"
-func (n *ModelPathAny) OrderedListAll() *Model_OrderedListPathAny {
+func (n *ModelPathAny) OrderedListMap() *Model_OrderedListPathAny {
 	return &Model_OrderedListPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"ordered-lists"},

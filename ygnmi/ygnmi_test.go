@@ -587,7 +587,7 @@ func TestLookup(t *testing.T) {
 
 		lookupCheckFn(
 			t, fakeGNMI, c,
-			ygnmi.SingletonQuery[*exampleoc.Model_SingleKey_OrderedList_OrderedMap](exampleocpath.Root().Model().SingleKey("foo").OrderedListAll().Config()),
+			ygnmi.SingletonQuery[*exampleoc.Model_SingleKey_OrderedList_OrderedMap](exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().Config()),
 			"",
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 			(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
@@ -774,7 +774,7 @@ func TestLookupWithGet(t *testing.T) {
 
 		lookupWithGetCheckFn(
 			t, fakeGNMI, c,
-			ygnmi.SingletonQuery[*exampleoc.Model_SingleKey_OrderedList_OrderedMap](exampleocpath.Root().Model().SingleKey("foo").OrderedListAll().Config()),
+			ygnmi.SingletonQuery[*exampleoc.Model_SingleKey_OrderedList_OrderedMap](exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().Config()),
 			"",
 			&gpb.GetRequest{
 				Encoding: gpb.Encoding_JSON_IETF,
@@ -909,7 +909,7 @@ func TestGet(t *testing.T) {
 		}).Sync()
 
 		getCheckFn(t, fakeGNMI, c,
-			exampleocpath.Root().Model().SingleKey("foo").OrderedListAll().State(),
+			exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().State(),
 			"",
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 			getSampleOrderedMap(t),
@@ -1344,7 +1344,7 @@ func TestWatch(t *testing.T) {
 
 		want := getSampleOrderedMap(t)
 		watchCheckFn(t, fakeGNMI, 2*time.Second, client,
-			exampleocpath.Root().Model().SingleKey("foo").OrderedListAll().State(),
+			exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().State(),
 			nil,
 			func(val *exampleoc.Model_SingleKey_OrderedList_OrderedMap) bool {
 				return cmp.Equal(val, want, cmp.AllowUnexported(exampleoc.Model_SingleKey_OrderedList_OrderedMap{}))
@@ -2067,7 +2067,7 @@ func TestLookupAll(t *testing.T) {
 
 		lookupAllCheckFn(
 			t, fakeGNMI, c,
-			exampleocpath.Root().Model().SingleKeyAny().OrderedListAll().State(),
+			exampleocpath.Root().Model().SingleKeyAny().OrderedListMap().State(),
 			"",
 			testutil.GNMIPath(t, "/model/a/single-key[key=*]/ordered-lists"),
 			[]*ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
@@ -2826,7 +2826,7 @@ func TestUpdate(t *testing.T) {
 				t.Fatal(err)
 			}
 			ol.SetValue(44)
-			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Model().SingleKey("foo").OrderedListAll().Config(), om)
+			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().Config(), om)
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3120,7 +3120,7 @@ func TestReplace(t *testing.T) {
 				t.Fatal(err)
 			}
 			ol.SetValue(44)
-			return ygnmi.Replace(context.Background(), c, exampleocpath.Root().Model().SingleKey("foo").OrderedListAll().Config(), om)
+			return ygnmi.Replace(context.Background(), c, exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().Config(), om)
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3237,7 +3237,7 @@ func TestDelete(t *testing.T) {
 	}, {
 		desc: "YANG ordered list",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Delete(context.Background(), c, exampleocpath.Root().Model().SingleKey("foo").OrderedListAll().Config())
+			return ygnmi.Delete(context.Background(), c, exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().Config())
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
