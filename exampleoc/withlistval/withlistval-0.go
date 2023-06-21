@@ -286,6 +286,7 @@ func (n *ModelPath) State() ygnmi.SingletonQuery[*oc.Model] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -306,6 +307,7 @@ func (n *ModelPathAny) State() ygnmi.WildcardQuery[*oc.Model] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -327,6 +329,7 @@ func (n *ModelPath) Config() ygnmi.ConfigQuery[*oc.Model] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -347,6 +350,7 @@ func (n *ModelPathAny) Config() ygnmi.WildcardQuery[*oc.Model] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -396,6 +400,7 @@ func (n *Model_MultiKey_Key1Path) State() ygnmi.SingletonQuery[uint32] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -432,6 +437,7 @@ func (n *Model_MultiKey_Key1PathAny) State() ygnmi.WildcardQuery[uint32] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -469,6 +475,7 @@ func (n *Model_MultiKey_Key1Path) Config() ygnmi.ConfigQuery[uint32] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -505,6 +512,7 @@ func (n *Model_MultiKey_Key1PathAny) Config() ygnmi.WildcardQuery[uint32] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -554,6 +562,7 @@ func (n *Model_MultiKey_Key2Path) State() ygnmi.SingletonQuery[uint64] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -590,6 +599,7 @@ func (n *Model_MultiKey_Key2PathAny) State() ygnmi.WildcardQuery[uint64] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -627,6 +637,7 @@ func (n *Model_MultiKey_Key2Path) Config() ygnmi.ConfigQuery[uint64] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -663,6 +674,7 @@ func (n *Model_MultiKey_Key2PathAny) Config() ygnmi.WildcardQuery[uint64] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -762,6 +774,7 @@ func (n *Model_MultiKeyPath) State() ygnmi.SingletonQuery[*oc.Model_MultiKey] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -782,6 +795,7 @@ func (n *Model_MultiKeyPathAny) State() ygnmi.WildcardQuery[*oc.Model_MultiKey] 
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -803,6 +817,7 @@ func (n *Model_MultiKeyPath) Config() ygnmi.ConfigQuery[*oc.Model_MultiKey] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -823,6 +838,7 @@ func (n *Model_MultiKeyPathAny) Config() ygnmi.WildcardQuery[*oc.Model_MultiKey]
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -854,6 +870,7 @@ func (n *Model_NoKeyPath) State() ygnmi.SingletonQuery[*oc.Model_NoKey] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -874,6 +891,7 @@ func (n *Model_NoKeyPathAny) State() ygnmi.WildcardQuery[*oc.Model_NoKey] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -923,6 +941,7 @@ func (n *Model_NoKey_Foo_KeyPath) State() ygnmi.SingletonQuery[string] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -959,6 +978,7 @@ func (n *Model_NoKey_Foo_KeyPathAny) State() ygnmi.WildcardQuery[string] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1008,6 +1028,7 @@ func (n *Model_NoKey_Foo_ValuePath) State() ygnmi.SingletonQuery[int64] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -1044,6 +1065,7 @@ func (n *Model_NoKey_Foo_ValuePathAny) State() ygnmi.WildcardQuery[int64] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1143,6 +1165,7 @@ func (n *Model_NoKey_FooPath) State() ygnmi.SingletonQuery[*oc.Model_NoKey_Foo] 
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -1163,6 +1186,7 @@ func (n *Model_NoKey_FooPathAny) State() ygnmi.WildcardQuery[*oc.Model_NoKey_Foo
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1184,8 +1208,11 @@ func (n *Model_OrderedListPath) State() ygnmi.SingletonQuery[*oc.Model_OrderedLi
 		false,
 		false,
 		n,
-		nil,
-		nil,
+		func(gs ygot.ValidatedGoStruct) (*oc.Model_OrderedList_OrderedMap, bool) {
+			ret := gs.(*oc.Model).OrderedList
+			return ret, ret != nil
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1194,6 +1221,10 @@ func (n *Model_OrderedListPath) State() ygnmi.SingletonQuery[*oc.Model_OrderedLi
 			}
 		},
 		nil,
+		&ygnmi.CompressionInfo{
+			PreRelPath:  []string{"openconfig-withlistval:ordered-lists"},
+			PostRelPath: []string{"openconfig-withlistval:ordered-list"},
+		},
 	)
 }
 
@@ -1205,14 +1236,21 @@ func (n *Model_OrderedListPathAny) State() ygnmi.WildcardQuery[*oc.Model_Ordered
 		false,
 		false,
 		n,
-		nil,
-		nil,
+		func(gs ygot.ValidatedGoStruct) (*oc.Model_OrderedList_OrderedMap, bool) {
+			ret := gs.(*oc.Model).OrderedList
+			return ret, ret != nil
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
+		},
+		&ygnmi.CompressionInfo{
+			PreRelPath:  []string{"openconfig-withlistval:ordered-lists"},
+			PostRelPath: []string{"openconfig-withlistval:ordered-list"},
 		},
 	)
 }
@@ -1225,8 +1263,11 @@ func (n *Model_OrderedListPath) Config() ygnmi.ConfigQuery[*oc.Model_OrderedList
 		false,
 		false,
 		n,
-		nil,
-		nil,
+		func(gs ygot.ValidatedGoStruct) (*oc.Model_OrderedList_OrderedMap, bool) {
+			ret := gs.(*oc.Model).OrderedList
+			return ret, ret != nil
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1235,6 +1276,10 @@ func (n *Model_OrderedListPath) Config() ygnmi.ConfigQuery[*oc.Model_OrderedList
 			}
 		},
 		nil,
+		&ygnmi.CompressionInfo{
+			PreRelPath:  []string{"openconfig-withlistval:ordered-lists"},
+			PostRelPath: []string{"openconfig-withlistval:ordered-list"},
+		},
 	)
 }
 
@@ -1246,14 +1291,21 @@ func (n *Model_OrderedListPathAny) Config() ygnmi.WildcardQuery[*oc.Model_Ordere
 		false,
 		false,
 		n,
-		nil,
-		nil,
+		func(gs ygot.ValidatedGoStruct) (*oc.Model_OrderedList_OrderedMap, bool) {
+			ret := gs.(*oc.Model).OrderedList
+			return ret, ret != nil
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
+		},
+		&ygnmi.CompressionInfo{
+			PreRelPath:  []string{"openconfig-withlistval:ordered-lists"},
+			PostRelPath: []string{"openconfig-withlistval:ordered-list"},
 		},
 	)
 }
@@ -1304,6 +1356,7 @@ func (n *Model_SingleKey_KeyPath) State() ygnmi.SingletonQuery[string] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -1340,6 +1393,7 @@ func (n *Model_SingleKey_KeyPathAny) State() ygnmi.WildcardQuery[string] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1377,6 +1431,7 @@ func (n *Model_SingleKey_KeyPath) Config() ygnmi.ConfigQuery[string] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -1413,6 +1468,7 @@ func (n *Model_SingleKey_KeyPathAny) Config() ygnmi.WildcardQuery[string] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1462,6 +1518,7 @@ func (n *Model_SingleKey_ValuePath) State() ygnmi.SingletonQuery[int64] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -1498,6 +1555,7 @@ func (n *Model_SingleKey_ValuePathAny) State() ygnmi.WildcardQuery[int64] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1535,6 +1593,7 @@ func (n *Model_SingleKey_ValuePath) Config() ygnmi.ConfigQuery[int64] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -1571,6 +1630,7 @@ func (n *Model_SingleKey_ValuePathAny) Config() ygnmi.WildcardQuery[int64] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1670,6 +1730,7 @@ func (n *Model_SingleKeyPath) State() ygnmi.SingletonQuery[*oc.Model_SingleKey] 
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -1690,6 +1751,7 @@ func (n *Model_SingleKeyPathAny) State() ygnmi.WildcardQuery[*oc.Model_SingleKey
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1711,6 +1773,7 @@ func (n *Model_SingleKeyPath) Config() ygnmi.ConfigQuery[*oc.Model_SingleKey] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -1731,5 +1794,6 @@ func (n *Model_SingleKeyPathAny) Config() ygnmi.WildcardQuery[*oc.Model_SingleKe
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }

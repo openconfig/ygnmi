@@ -22,11 +22,27 @@ import (
 	"github.com/openconfig/ygot/ytypes"
 )
 
+// CompressionInfo contains information about a compressed path element for a
+// node which points to a path element that's compressed out.
+//
+// e.g. for OpenConfig's /interfaces/interface, if a path points to
+// /interfaces, then CompressionInfo will be populated with the following:
+// - PreRelPath: []{"openconfig-interfaces:interfaces"}
+// - PostRelPath: []{"openconfig-interfaces:interface"}
+type CompressionInfo struct {
+	// PreRelPath is the list of qualified path elements prior to the
+	// compressed-out node.
+	PreRelPath []string
+	// PostRelPath is the list of qualified path elements after the
+	// compressed-out node.
+	PostRelPath []string
+}
+
 // ExtractFn is the type for the func that extracts a concrete val from a GoStruct.
 type ExtractFn[T any] func(ygot.ValidatedGoStruct) (T, bool)
 
 // NewSingletonQuery creates a new SingletonQueryStruct object.
-func NewSingletonQuery[T any](goStructName string, state, leaf, scalar bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema, subPaths []PathStruct) *SingletonQueryStruct[T] {
+func NewSingletonQuery[T any](goStructName string, state, leaf, scalar bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema, subPaths []PathStruct, compressInfo *CompressionInfo) *SingletonQueryStruct[T] {
 	return &SingletonQueryStruct[T]{
 		baseQuery: baseQuery[T]{
 			goStructName,
@@ -38,12 +54,13 @@ func NewSingletonQuery[T any](goStructName string, state, leaf, scalar bool, ps 
 			extractFn,
 			goStructFn,
 			subPaths,
+			compressInfo,
 		},
 	}
 }
 
 // NewConfigQuery creates a new NewLeafConfigQuery object.
-func NewConfigQuery[T any](goStructName string, state, leaf, scalar bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema, subPaths []PathStruct) *ConfigQueryStruct[T] {
+func NewConfigQuery[T any](goStructName string, state, leaf, scalar bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema, subPaths []PathStruct, compressInfo *CompressionInfo) *ConfigQueryStruct[T] {
 	return &ConfigQueryStruct[T]{
 		baseQuery: baseQuery[T]{
 			goStructName,
@@ -55,12 +72,13 @@ func NewConfigQuery[T any](goStructName string, state, leaf, scalar bool, ps Pat
 			extractFn,
 			goStructFn,
 			nil,
+			compressInfo,
 		},
 	}
 }
 
 // NewWildcardQuery creates a new NewLeafWildcardQuery object.
-func NewWildcardQuery[T any](goStructName string, state, leaf, scalar bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema) *WildcardQueryStruct[T] {
+func NewWildcardQuery[T any](goStructName string, state, leaf, scalar bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema, compressInfo *CompressionInfo) *WildcardQueryStruct[T] {
 	return &WildcardQueryStruct[T]{
 		baseQuery: baseQuery[T]{
 			goStructName,
@@ -72,6 +90,7 @@ func NewWildcardQuery[T any](goStructName string, state, leaf, scalar bool, ps P
 			extractFn,
 			goStructFn,
 			nil,
+			compressInfo,
 		},
 	}
 }
@@ -106,6 +125,7 @@ func (q *ConfigQueryStruct[T]) IsConfig() {}
 // IsSingleton restricts this struct to be used only where a singleton path is expected.
 func (q *ConfigQueryStruct[T]) IsSingleton() {}
 
+// baseQuery contains common fields for query objects.
 type baseQuery[T any] struct {
 	// goStructName is the name of the YANG directory or GoStruct which
 	// contains this node.
@@ -123,13 +143,23 @@ type baseQuery[T any] struct {
 	scalar bool
 	// yschemaFn is parsed YANG schema to use when unmarshalling data.
 	yschemaFn func() *ytypes.Schema
-	// extractFn is used to extract the value from the containing GoStruct.
+	// extractFn extracts the value from the containing GoStruct.
+	//
+	// If this value is nil, then it is assumed that the baseQuery refers
+	// to a GoStruct and the value itself can be returned.
 	extractFn ExtractFn[T]
-	// goStructFn initializes a new GoStruct containing this node.
+	// goStructFn initializes a new GoStruct able to contain the given
+	// node.
+	//
+	// If this value is nil, then it is assumed that the baseQuery refers
+	// to a GoStruct and the type itself can be returned.
 	goStructFn func() ygot.ValidatedGoStruct
 	// queryPathStructs are the paths used to for the gNMI subscription.
 	// They must be equal to or descendants of ps.
 	queryPathStructs []PathStruct
+	// compInfo stores compression information when the node points to a
+	// path that's compressed out in the generated code.
+	compInfo *CompressionInfo
 }
 
 // dirName returns the YANG schema name of the GoStruct containing this node.
@@ -212,4 +242,9 @@ func (q *baseQuery[T]) subPaths() []PathStruct {
 // natural type is not a pointer (e.g. YANG's string type).
 func (q *baseQuery[T]) isScalar() bool {
 	return q.scalar
+}
+
+// schema returns the schema used for unmarshalling.
+func (q *baseQuery[T]) compressInfo() *CompressionInfo {
+	return q.compInfo
 }

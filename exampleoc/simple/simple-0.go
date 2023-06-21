@@ -104,6 +104,7 @@ func (n *ParentPath) State() ygnmi.SingletonQuery[*oc.Parent] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -124,6 +125,7 @@ func (n *ParentPathAny) State() ygnmi.WildcardQuery[*oc.Parent] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -145,6 +147,7 @@ func (n *ParentPath) Config() ygnmi.ConfigQuery[*oc.Parent] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -165,6 +168,7 @@ func (n *ParentPathAny) Config() ygnmi.WildcardQuery[*oc.Parent] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -210,6 +214,7 @@ func (n *Parent_Child_FivePath) State() ygnmi.SingletonQuery[float32] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -242,6 +247,7 @@ func (n *Parent_Child_FivePathAny) State() ygnmi.WildcardQuery[float32] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -275,6 +281,7 @@ func (n *Parent_Child_FivePath) Config() ygnmi.ConfigQuery[float32] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -307,6 +314,7 @@ func (n *Parent_Child_FivePathAny) Config() ygnmi.WildcardQuery[float32] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -352,6 +360,7 @@ func (n *Parent_Child_FourPath) State() ygnmi.SingletonQuery[oc.Binary] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -384,6 +393,7 @@ func (n *Parent_Child_FourPathAny) State() ygnmi.WildcardQuery[oc.Binary] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -417,6 +427,7 @@ func (n *Parent_Child_FourPath) Config() ygnmi.ConfigQuery[oc.Binary] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -449,6 +460,7 @@ func (n *Parent_Child_FourPathAny) Config() ygnmi.WildcardQuery[oc.Binary] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -498,6 +510,7 @@ func (n *Parent_Child_OnePath) State() ygnmi.SingletonQuery[string] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -534,6 +547,7 @@ func (n *Parent_Child_OnePathAny) State() ygnmi.WildcardQuery[string] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -571,6 +585,7 @@ func (n *Parent_Child_OnePath) Config() ygnmi.ConfigQuery[string] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -607,6 +622,7 @@ func (n *Parent_Child_OnePathAny) Config() ygnmi.WildcardQuery[string] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -652,6 +668,7 @@ func (n *Parent_Child_SixPath) State() ygnmi.SingletonQuery[[]float32] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -684,6 +701,7 @@ func (n *Parent_Child_SixPathAny) State() ygnmi.WildcardQuery[[]float32] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -717,6 +735,7 @@ func (n *Parent_Child_SixPath) Config() ygnmi.ConfigQuery[[]float32] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -749,6 +768,7 @@ func (n *Parent_Child_SixPathAny) Config() ygnmi.WildcardQuery[[]float32] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -794,6 +814,7 @@ func (n *Parent_Child_ThreePath) State() ygnmi.SingletonQuery[oc.E_Child_Three] 
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -826,6 +847,7 @@ func (n *Parent_Child_ThreePathAny) State() ygnmi.WildcardQuery[oc.E_Child_Three
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -859,6 +881,7 @@ func (n *Parent_Child_ThreePath) Config() ygnmi.ConfigQuery[oc.E_Child_Three] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -891,6 +914,7 @@ func (n *Parent_Child_ThreePathAny) Config() ygnmi.WildcardQuery[oc.E_Child_Thre
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -940,6 +964,7 @@ func (n *Parent_Child_TwoPath) State() ygnmi.SingletonQuery[string] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -976,6 +1001,7 @@ func (n *Parent_Child_TwoPathAny) State() ygnmi.WildcardQuery[string] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1211,6 +1237,7 @@ func (n *Parent_ChildPath) State() ygnmi.SingletonQuery[*oc.Parent_Child] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -1231,6 +1258,7 @@ func (n *Parent_ChildPathAny) State() ygnmi.WildcardQuery[*oc.Parent_Child] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1252,6 +1280,7 @@ func (n *Parent_ChildPath) Config() ygnmi.ConfigQuery[*oc.Parent_Child] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -1272,6 +1301,7 @@ func (n *Parent_ChildPathAny) Config() ygnmi.WildcardQuery[*oc.Parent_Child] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1321,6 +1351,7 @@ func (n *RemoteContainer_ALeafPath) State() ygnmi.SingletonQuery[string] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -1357,6 +1388,7 @@ func (n *RemoteContainer_ALeafPathAny) State() ygnmi.WildcardQuery[string] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1394,6 +1426,7 @@ func (n *RemoteContainer_ALeafPath) Config() ygnmi.ConfigQuery[string] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -1430,6 +1463,7 @@ func (n *RemoteContainer_ALeafPathAny) Config() ygnmi.WildcardQuery[string] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1495,6 +1529,7 @@ func (n *RemoteContainerPath) State() ygnmi.SingletonQuery[*oc.RemoteContainer] 
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -1515,6 +1550,7 @@ func (n *RemoteContainerPathAny) State() ygnmi.WildcardQuery[*oc.RemoteContainer
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -1536,6 +1572,7 @@ func (n *RemoteContainerPath) Config() ygnmi.ConfigQuery[*oc.RemoteContainer] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -1556,5 +1593,6 @@ func (n *RemoteContainerPathAny) Config() ygnmi.WildcardQuery[*oc.RemoteContaine
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }

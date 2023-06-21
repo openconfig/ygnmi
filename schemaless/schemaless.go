@@ -50,6 +50,7 @@ func NewConfig[T any](path, origin string) (ygnmi.ConfigQuery[T], error) {
 			},
 			func() *ytypes.Schema { return nil },
 			nil,
+			nil,
 		),
 		nil
 }
@@ -72,6 +73,7 @@ func NewWildcard[T any](path, origin string) (ygnmi.WildcardQuery[T], error) {
 				return nil
 			},
 			func() *ytypes.Schema { return nil },
+			nil,
 		),
 		nil
 }

@@ -43,6 +43,7 @@ type gnmiStruct struct {
 	DefiningModuleName      string
 	InstantiatingModuleName string
 	SpecialConvertFunc      string
+	CompressInfo            *CompressionInfo
 }
 
 const (
@@ -71,6 +72,7 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		GenerateWildcard:        node.YANGPath != "/", // Do not generate wildcard for the fake root.
 		WildcardSuffix:          WildcardSuffix,
 		FakeRootName:            fakeRootName,
+		CompressInfo:            node.CompressInfo,
 	}
 	var b strings.Builder
 	if node.SubsumingGoStructName == fakeRootName {
@@ -207,6 +209,7 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -252,6 +255,7 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 				Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 {{- end }}
@@ -266,8 +270,16 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 		false,
 		false,
 		n,
+		{{- if .CompressInfo }}
+		func(gs ygot.ValidatedGoStruct) ({{ .GoTypeName }}, bool) { 
+			ret := gs.(*{{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}).{{ .GoFieldName }}
+			return ret, ret != nil
+		},
+		func() ygot.ValidatedGoStruct { return new({{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}) },
+		{{- else }}
 		nil,
 		nil,
+		{{- end }}
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
@@ -276,6 +288,14 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 			}
 		},
 		nil,
+		{{- if .CompressInfo }}
+		&ygnmi.CompressionInfo{
+			PreRelPath: []string{ {{- .CompressInfo.PreRelPathList -}} },
+			PostRelPath: []string{ {{- .CompressInfo.PostRelPathList -}} },
+		},
+		{{- else }}
+		nil,
+		{{- end }}
 	)
 }
 
@@ -289,8 +309,16 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 		false,
 		false,
 		n,
+		{{- if .CompressInfo }}
+		func(gs ygot.ValidatedGoStruct) ({{ .GoTypeName }}, bool) { 
+			ret := gs.(*{{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}).{{ .GoFieldName }}
+			return ret, ret != nil
+		},
+		func() ygot.ValidatedGoStruct { return new({{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}) },
+		{{- else }}
 		nil,
 		nil,
+		{{- end }}
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
@@ -298,6 +326,14 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 				Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
 			}
 		},
+		{{- if .CompressInfo }}
+		&ygnmi.CompressionInfo{
+			PreRelPath: []string{ {{- .CompressInfo.PreRelPathList -}} },
+			PostRelPath: []string{ {{- .CompressInfo.PostRelPathList -}} },
+		},
+		{{- else }}
+		nil,
+		{{- end }}
 	)
 }
 {{- end }}
@@ -338,6 +374,7 @@ func (b *Batch) State() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
 			}
 		},
 		queryPaths,
+		nil,
 	)
 }
 
@@ -362,9 +399,11 @@ func (b *Batch) Config() ygnmi.{{ .SingletonTypeName }}[*oc.Root] {
 			}
 		},
 		queryPaths,
+		nil,
 	)
 }
 `)
+
 	oncePerPackageTmpl = mustTemplate("once-per-package", `
 func binarySliceToFloatSlice(in []oc.Binary) []float32 {
 	converted := make([]float32, 0, len(in))

@@ -513,7 +513,7 @@ type NodeData struct {
 	DirectoryName string
 	// CompressInfo contains information about a compressed path element for a node
 	// which points to a path element that's compressed out.
-	CompressInfo CompressionInfo
+	CompressInfo *CompressionInfo
 }
 
 // CompressionInfo contains information about a compressed path element for a
@@ -524,12 +524,14 @@ type NodeData struct {
 // - PreRelPath: []{"openconfig-interfaces:interfaces"}
 // - PostRelPath: []{"openconfig-interfaces:interface"}
 type CompressionInfo struct {
-	// PreRelPath is the list of qualified path elements prior to the
-	// compressed-out node.
-	PreRelPath []string
-	// PostRelPath is the list of qualified path elements after the
-	// compressed-out node.
-	PostRelPath []string
+	// PreRelPath is the list of strings of qualified path elements prior
+	// to the compressed-out node in Go list syntax.
+	//
+	// e.g. "openconfig-withlistval:ordered-lists", "openconfig-withlistval:ordered-lists-again"
+	PreRelPathList string
+	// PreRelPath is the list of strings of qualified path elements after
+	// the compressed-out node in Go list syntax.
+	PostRelPathList string
 }
 
 // GetOrderedNodeDataNames returns the alphabetically-sorted slice of keys
@@ -800,9 +802,9 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 					errs = util.AppendErr(errs, fmt.Errorf("expected two path elements for the relative path of an ordered map, got %d: %v", gotLen, relPath))
 					continue
 				}
-				nodeDataMap[pathStructName].CompressInfo = CompressionInfo{
-					PreRelPath:  []string{fmt.Sprintf("%s:%s", relMods[0], relPath[0])},
-					PostRelPath: []string{fmt.Sprintf("%s:%s", relMods[1], relPath[1])},
+				nodeDataMap[pathStructName].CompressInfo = &CompressionInfo{
+					PreRelPathList:  fmt.Sprintf(`"%s:%s"`, relMods[0], relPath[0]),
+					PostRelPathList: fmt.Sprintf(`"%s:%s"`, relMods[1], relPath[1]),
 				}
 			}
 		}

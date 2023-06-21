@@ -146,6 +146,7 @@ func (b *Batch) State() ygnmi.SingletonQuery[*oc.Root] {
 			}
 		},
 		queryPaths,
+		nil,
 	)
 }
 
@@ -170,6 +171,7 @@ func (b *Batch) Config() ygnmi.SingletonQuery[*oc.Root] {
 			}
 		},
 		queryPaths,
+		nil,
 	)
 }
 
@@ -199,6 +201,7 @@ func (n *RootPath) State() ygnmi.SingletonQuery[*oc.Root] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -219,6 +222,7 @@ func (n *RootPath) Config() ygnmi.ConfigQuery[*oc.Root] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 		nil,
 	)
 }

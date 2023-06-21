@@ -89,6 +89,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -124,6 +125,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 `,
@@ -183,6 +185,7 @@ func (n *Container_LeafList) State() ygnmi.SingletonQuery[[]uint32] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -214,6 +217,7 @@ func (n *Container_LeafListAny) State() ygnmi.WildcardQuery[[]uint32] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -246,6 +250,7 @@ func (n *Container_LeafList) Config() ygnmi.ConfigQuery[[]uint32] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -277,6 +282,7 @@ func (n *Container_LeafListAny) Config() ygnmi.WildcardQuery[[]uint32] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 `,
@@ -325,6 +331,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[E_Child_Three] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -356,6 +363,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 `,
@@ -409,6 +417,7 @@ func (b *Batch) State() ygnmi.SingletonQuery[*Root] {
 			}
 		},
 		queryPaths,
+		nil,
 	)
 }
 
@@ -433,6 +442,7 @@ func (b *Batch) Config() ygnmi.SingletonQuery[*oc.Root] {
 			}
 		},
 		queryPaths,
+		nil,
 	)
 }
 
@@ -454,6 +464,7 @@ func (n *Root) State() ygnmi.SingletonQuery[*Root] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -474,6 +485,7 @@ func (n *Root) Config() ygnmi.ConfigQuery[*Root] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 		nil,
 	)
 }
