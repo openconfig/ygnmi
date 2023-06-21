@@ -62,9 +62,9 @@ const (
 	// BuilderCtorSuffix is the suffix applied to the list builder
 	// constructor method's name in order to indicate itself to the user.
 	BuilderCtorSuffix = "Any"
-	// WholedKeyedListSuffix is the suffix applied to a keyed list's
+	// WholeKeyedListSuffix is the suffix applied to a keyed list's
 	// constructor method name in order to indicate itself to the user.
-	WholedKeyedListSuffix = "Map"
+	WholeKeyedListSuffix = "Map"
 	// BuilderKeyPrefix is the prefix applied to the key-modifying builder
 	// method for a list PathStruct that uses the builder API.
 	// NOTE: This cannot be "", as the builder method name would conflict
@@ -1150,7 +1150,7 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 			return []error{fmt.Errorf("expected two path elements for the relative path of an ordered map, got %d: %v", gotLen, path)}
 		}
 		fieldData.RelPathList = relPathListFn(path[:1])
-		fieldData.MethodName += WholedKeyedListSuffix
+		fieldData.MethodName += WholeKeyedListSuffix
 		fallthrough
 	case field.Type != ygen.ListNode:
 		return generateChildConstructorsForLeafOrContainer(methodBuf, fieldData, isUnderFakeRoot, generateWildcardPaths, unified, field.Type == ygen.LeafNode || field.Type == ygen.LeafListNode)
