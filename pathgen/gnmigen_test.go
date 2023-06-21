@@ -62,8 +62,9 @@ func TestGNMIGenerator(t *testing.T) {
 // 	Path from parent:     "leaf"
 // 	Path from root:       "/container/leaf"
 func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
-	return ygnmi.NewLeafSingletonQuery[int32](
+	return ygnmi.NewSingletonQuery[int32](
 		"Container",
+		true,
 		true,
 		true,
 		ygnmi.NewNodePath(
@@ -87,6 +88,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -96,8 +98,9 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 // 	Path from parent:     "leaf"
 // 	Path from root:       "/container/leaf"
 func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
-	return ygnmi.NewLeafWildcardQuery[int32](
+	return ygnmi.NewWildcardQuery[int32](
 		"Container",
+		true,
 		true,
 		true,
 		ygnmi.NewNodePath(
@@ -157,8 +160,9 @@ func binarySliceToFloatSlice(in []oc.Binary) []float32 {
 // 	Path from parent:     "state/leaflist"
 // 	Path from root:       "/container-with-config/state/leaflist"
 func (n *Container_LeafList) State() ygnmi.SingletonQuery[[]uint32] {
-	return ygnmi.NewLeafSingletonQuery[[]uint32](
+	return ygnmi.NewSingletonQuery[[]uint32](
 		"Container",
+		true,
 		true,
 		false,
 		ygnmi.NewNodePath(
@@ -178,6 +182,7 @@ func (n *Container_LeafList) State() ygnmi.SingletonQuery[[]uint32] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -187,8 +192,9 @@ func (n *Container_LeafList) State() ygnmi.SingletonQuery[[]uint32] {
 // 	Path from parent:     "state/leaflist"
 // 	Path from root:       "/container-with-config/state/leaflist"
 func (n *Container_LeafListAny) State() ygnmi.WildcardQuery[[]uint32] {
-	return ygnmi.NewLeafWildcardQuery[[]uint32](
+	return ygnmi.NewWildcardQuery[[]uint32](
 		"Container",
+		true,
 		true,
 		false,
 		ygnmi.NewNodePath(
@@ -217,9 +223,10 @@ func (n *Container_LeafListAny) State() ygnmi.WildcardQuery[[]uint32] {
 // 	Path from parent:     "config/leaflist"
 // 	Path from root:       "/container-with-config/config/leaflist"
 func (n *Container_LeafList) Config() ygnmi.ConfigQuery[[]uint32] {
-	return ygnmi.NewLeafConfigQuery[[]uint32](
+	return ygnmi.NewConfigQuery[[]uint32](
 		"Container",
 		false,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"config", "leaflist"},
@@ -238,6 +245,7 @@ func (n *Container_LeafList) Config() ygnmi.ConfigQuery[[]uint32] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -247,9 +255,10 @@ func (n *Container_LeafList) Config() ygnmi.ConfigQuery[[]uint32] {
 // 	Path from parent:     "config/leaflist"
 // 	Path from root:       "/container-with-config/config/leaflist"
 func (n *Container_LeafListAny) Config() ygnmi.WildcardQuery[[]uint32] {
-	return ygnmi.NewLeafWildcardQuery[[]uint32](
+	return ygnmi.NewWildcardQuery[[]uint32](
 		"Container",
 		false,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"config", "leaflist"},
@@ -293,8 +302,9 @@ func (n *Container_LeafListAny) Config() ygnmi.WildcardQuery[[]uint32] {
 // 	Path from parent:     "leaf"
 // 	Path from root:       "/container/leaf"
 func (n *Container_Leaf) State() ygnmi.SingletonQuery[E_Child_Three] {
-	return ygnmi.NewLeafSingletonQuery[E_Child_Three](
+	return ygnmi.NewSingletonQuery[E_Child_Three](
 		"Container",
+		true,
 		true,
 		false,
 		ygnmi.NewNodePath(
@@ -314,6 +324,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[E_Child_Three] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 
@@ -323,8 +334,9 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[E_Child_Three] {
 // 	Path from parent:     "leaf"
 // 	Path from root:       "/container/leaf"
 func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
-	return ygnmi.NewLeafWildcardQuery[E_Child_Three](
+	return ygnmi.NewWildcardQuery[E_Child_Three](
 		"Container",
+		true,
 		true,
 		false,
 		ygnmi.NewNodePath(
@@ -381,11 +393,14 @@ func (b *Batch) AddPaths(paths ...ygnmi.PathStruct) *Batch {
 func (b *Batch) State() ygnmi.SingletonQuery[*Root] {
 	queryPaths := make([]ygnmi.PathStruct, len(b.paths))
 	copy(queryPaths, b.paths)
-    return ygnmi.NewNonLeafSingletonQuery[*Root](
-        "Root",
-        true,
-        ygnmi.NewDeviceRootBase(),
-        queryPaths,
+	return ygnmi.NewSingletonQuery[*Root](
+		"Root",
+		true,
+		false,
+		false,
+		ygnmi.NewDeviceRootBase(),
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -393,7 +408,8 @@ func (b *Batch) State() ygnmi.SingletonQuery[*Root] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
-    )
+		queryPaths,
+	)
 }
 
 // Config returns a Query that can be used in gNMI operations.
@@ -401,27 +417,13 @@ func (b *Batch) State() ygnmi.SingletonQuery[*Root] {
 func (b *Batch) Config() ygnmi.SingletonQuery[*oc.Root] {
 	queryPaths := make([]ygnmi.PathStruct, len(b.paths))
 	copy(queryPaths, b.paths)
-    return ygnmi.NewNonLeafSingletonQuery[*oc.Root](
-        "Root",
-        false,
-        ygnmi.NewDeviceRootBase(),
-        queryPaths,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-    )
-}
-
-// State returns a Query that can be used in gNMI operations.
-func (n *Root) State() ygnmi.SingletonQuery[*Root] {
-	return ygnmi.NewNonLeafSingletonQuery[*Root](
+	return ygnmi.NewSingletonQuery[*oc.Root](
 		"Root",
-		true,
-		n,
+		false,
+		false,
+		false,
+		ygnmi.NewDeviceRootBase(),
+		nil,
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
@@ -430,15 +432,40 @@ func (n *Root) State() ygnmi.SingletonQuery[*Root] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		queryPaths,
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *Root) State() ygnmi.SingletonQuery[*Root] {
+	return ygnmi.NewSingletonQuery[*Root](
+		"Root",
+		true,
+		false,
+		false,
+		n,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
 	)
 }
 
 // Config returns a Query that can be used in gNMI operations.
 func (n *Root) Config() ygnmi.ConfigQuery[*Root] {
-	return ygnmi.NewNonLeafConfigQuery[*Root](
+	return ygnmi.NewConfigQuery[*Root](
 		"Root",
 		false,
+		false,
+		false,
 		n,
+		nil,
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
@@ -447,6 +474,7 @@ func (n *Root) Config() ygnmi.ConfigQuery[*Root] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 	)
 }
 `,
