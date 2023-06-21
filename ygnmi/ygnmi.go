@@ -684,14 +684,16 @@ func (b *Batch[T]) AddPaths(paths ...PathStruct) error {
 func (b *Batch[T]) Query() SingletonQuery[T] {
 	queryPaths := make([]PathStruct, len(b.paths))
 	copy(queryPaths, b.paths)
-	return NewNonLeafSingletonQuery[T](
+	return NewSingletonQuery[T](
 		b.root.dirName(),
 		b.root.IsState(),
+		false,
+		false,
 		b.root.PathStruct(),
 		nil,
 		nil,
-		queryPaths,
 		b.root.schema,
+		queryPaths,
 		b.root.compressInfo(),
 	)
 }
