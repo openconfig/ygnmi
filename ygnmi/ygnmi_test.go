@@ -41,16 +41,6 @@ import (
 	ygottestutil "github.com/openconfig/ygot/testutil"
 )
 
-// mustPath returns a string as a gNMI path, causing a panic if the string
-// is invalid.
-func mustPath(s string) *gpb.Path {
-	p, err := ygot.StringToStructuredPath(s)
-	if err != nil {
-		panic(err)
-	}
-	return p
-}
-
 func getSampleOrderedMap(t *testing.T) *exampleoc.Model_SingleKey_OrderedList_OrderedMap {
 	om := &exampleoc.Model_SingleKey_OrderedList_OrderedMap{}
 	ol, err := om.AppendNew("foo")
@@ -564,33 +554,33 @@ func TestLookup(t *testing.T) {
 		fakeGNMI.Stub().Notification(&gpb.Notification{
 			Timestamp: 100,
 			Atomic:    true,
-			Prefix:    mustPath("/model/a/single-key[key=foo]/ordered-lists"),
+			Prefix:    testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 			Update: []*gpb.Update{{
-				Path: mustPath(`ordered-list[key=foo]/config/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/config/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
 			}, {
-				Path: mustPath(`ordered-list[key=foo]/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
 			}, {
-				Path: mustPath(`ordered-list[key=foo]/config/value`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/config/value`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/config/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/config/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/config/value`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/config/value`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
 			}, {
-				Path: mustPath(`ordered-list[key=baz]/config/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=baz]/config/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
 			}, {
-				Path: mustPath(`ordered-list[key=baz]/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=baz]/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
 			}, {
-				Path: mustPath(`ordered-list[key=baz]/config/value`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=baz]/config/value`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 44}},
 			}},
 		}).Sync()
@@ -750,9 +740,9 @@ func TestLookupWithGet(t *testing.T) {
 			Notification: []*gpb.Notification{{
 				Timestamp: 100,
 				Atomic:    true,
-				Prefix:    mustPath("/model/a/single-key[key=foo]/ordered-lists"),
+				Prefix:    testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 				Update: []*gpb.Update{{
-					Path: mustPath(""),
+					Path: testutil.GNMIPath(t, ""),
 					Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`{
   "openconfig-withlistval:ordered-list": [
     {
@@ -887,33 +877,33 @@ func TestGet(t *testing.T) {
 		fakeGNMI.Stub().Notification(&gpb.Notification{
 			Timestamp: 100,
 			Atomic:    true,
-			Prefix:    mustPath("/model/a/single-key[key=foo]/ordered-lists"),
+			Prefix:    testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 			Update: []*gpb.Update{{
-				Path: mustPath(`ordered-list[key=foo]/state/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/state/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
 			}, {
-				Path: mustPath(`ordered-list[key=foo]/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
 			}, {
-				Path: mustPath(`ordered-list[key=foo]/state/value`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/state/value`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/state/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/state/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/state/value`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/state/value`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
 			}, {
-				Path: mustPath(`ordered-list[key=baz]/state/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=baz]/state/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
 			}, {
-				Path: mustPath(`ordered-list[key=baz]/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=baz]/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
 			}, {
-				Path: mustPath(`ordered-list[key=baz]/state/value`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=baz]/state/value`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 44}},
 			}},
 		}).Sync()
@@ -1298,56 +1288,56 @@ func TestWatch(t *testing.T) {
 		fakeGNMI.Stub().Notification(&gpb.Notification{
 			Timestamp: startTime.UnixNano(),
 			Atomic:    true,
-			Prefix:    mustPath("/model/a/single-key[key=foo]/ordered-lists"),
+			Prefix:    testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 			Update: []*gpb.Update{{
-				Path: mustPath(`ordered-list[key=foo]/state/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/state/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
 			}, {
-				Path: mustPath(`ordered-list[key=foo]/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
 			}, {
-				Path: mustPath(`ordered-list[key=foo]/state/value`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/state/value`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/state/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/state/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/state/value`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/state/value`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
 			}},
 		}).Sync().Notification(&gpb.Notification{
 			Timestamp: startTime.Add(time.Millisecond).UnixNano(),
 			Atomic:    true,
-			Prefix:    mustPath("/model/a/single-key[key=foo]/ordered-lists"),
+			Prefix:    testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 			Update: []*gpb.Update{{
-				Path: mustPath(`ordered-list[key=foo]/state/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/state/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
 			}, {
-				Path: mustPath(`ordered-list[key=foo]/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
 			}, {
-				Path: mustPath(`ordered-list[key=foo]/state/value`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/state/value`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/state/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/state/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/state/value`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/state/value`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
 			}, {
-				Path: mustPath(`ordered-list[key=baz]/state/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=baz]/state/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
 			}, {
-				Path: mustPath(`ordered-list[key=baz]/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=baz]/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
 			}, {
-				Path: mustPath(`ordered-list[key=baz]/state/value`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=baz]/state/value`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 44}},
 			}},
 		})
@@ -2018,33 +2008,33 @@ func TestLookupAll(t *testing.T) {
 		fakeGNMI.Stub().Notification(&gpb.Notification{
 			Timestamp: 100,
 			Atomic:    true,
-			Prefix:    mustPath("/model/a/single-key[key=foo]/ordered-lists"),
+			Prefix:    testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 			Update: []*gpb.Update{{
-				Path: mustPath(`ordered-list[key=foo]/state/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/state/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
 			}, {
-				Path: mustPath(`ordered-list[key=foo]/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
 			}, {
-				Path: mustPath(`ordered-list[key=foo]/state/value`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/state/value`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/state/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/state/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/state/value`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/state/value`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
 			}, {
-				Path: mustPath(`ordered-list[key=baz]/state/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=baz]/state/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
 			}, {
-				Path: mustPath(`ordered-list[key=baz]/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=baz]/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
 			}, {
-				Path: mustPath(`ordered-list[key=baz]/state/value`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=baz]/state/value`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 44}},
 			}},
 		}).Notification(&gpb.Notification{
@@ -2052,25 +2042,25 @@ func TestLookupAll(t *testing.T) {
 			Atomic:    true,
 			Prefix:    testutil.GNMIPath(t, "/model/a/single-key[key=bar]/ordered-lists"),
 			Update: []*gpb.Update{{
-				Path: mustPath(`ordered-list[key=foo]/state/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/state/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
 			}, {
-				Path: mustPath(`ordered-list[key=foo]/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
 			}, {
-				Path: mustPath(`ordered-list[key=foo]/state/value`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/state/value`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/state/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/state/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/key`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/key`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/state/value`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/state/value`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
 			}, {
-				Path: mustPath(`ordered-list[key=bar]/state/dne-value`),
+				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/state/dne-value`),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
 			}},
 		}).Sync()
