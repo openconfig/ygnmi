@@ -246,5 +246,5 @@ func (q *baseQuery[T]) isScalar() bool {
 
 // schema returns the schema used for unmarshalling.
 func (q *baseQuery[T]) compressInfo() *CompressionInfo {
-	return nil
+	return q.compInfo
 }
