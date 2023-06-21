@@ -1,0 +1,41 @@
+module openconfig-orderedlist {
+  namespace "urn:ocorderedlist";
+  prefix "oc";
+
+  description
+    "A simple test module that is used to verify code generation for a
+    schema that contains an ordered list";
+
+  grouping single-key-config {
+    leaf key { type string; }
+  }
+
+  grouping lists-top {
+    container model {
+      container ordered-lists {
+        list ordered-list {
+          key "key";
+          ordered-by user;
+
+          leaf key {
+            type leafref {
+              path "../config/key";
+            }
+          }
+
+          container config {
+            uses single-key-config;
+          }
+
+          container state {
+            config false;
+            uses single-key-config;
+          }
+        }
+      }
+    }
+  }
+
+  uses lists-top;
+
+}

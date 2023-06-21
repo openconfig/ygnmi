@@ -65,6 +65,36 @@ func (n *ModelPath) MultiKey(Key1 uint32, Key2 uint64) *Model_MultiKeyPath {
 	}
 }
 
+// NoKeyAny (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "c/no-key"
+// 	Path from root:       "/model/c/no-key"
+func (n *ModelPath) NoKeyAny() *Model_NoKeyPathAny {
+	return &Model_NoKeyPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"c", "no-key"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
+// NoKeyAny (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "c/no-key"
+// 	Path from root:       "/model/c/no-key"
+func (n *ModelPathAny) NoKeyAny() *Model_NoKeyPathAny {
+	return &Model_NoKeyPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"c", "no-key"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
 // SingleKey (list): 
 // 	Defining module:      "openconfig-withlist"
 // 	Instantiating module: "openconfig-withlist"
@@ -125,6 +155,11 @@ func (n *Model_MultiKeyPath) Key2() *Model_MultiKey_Key2Path {
 			n,
 		),
 	}
+}
+
+// Model_NoKeyPath represents the /openconfig-withlist/model/c/no-key YANG schema element.
+type Model_NoKeyPath struct {
+	*ygnmi.NodePath
 }
 
 // Model_SingleKey_KeyPath represents the /openconfig-withlist/model/a/single-key/state/key YANG schema element.
