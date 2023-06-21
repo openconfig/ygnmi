@@ -64,9 +64,6 @@ const (
 	BuilderCtorSuffix = "Any"
 	// WholeKeyedListCtorSuffix is the suffix applied to a keyed list's
 	// constructor method name in order to indicate itself to the user.
-	//
-	// Map is the name chosen since keyed lists are always represented as
-	// maps or ordered maps. Unkeyed lists
 	WholeKeyedListCtorSuffix = "Map"
 	// BuilderKeyPrefix is the prefix applied to the key-modifying builder
 	// method for a list PathStruct that uses the builder API.
