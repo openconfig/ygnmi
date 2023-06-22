@@ -91,6 +91,36 @@ func (n *BGPPathAny) Neighbor(PeerIP string) *BGP_NeighborPathAny {
 	}
 }
 
+// NeighborMap (list): 
+// 	Defining module:      "openconfig-camelcase"
+// 	Instantiating module: "openconfig-camelcase"
+// 	Path from parent:     "neighbors/neighbor"
+// 	Path from root:       "/bgp/neighbors/neighbor"
+func (n *BGPPath) NeighborMap() *BGP_NeighborPathMap {
+	return &BGP_NeighborPathMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"neighbors"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
+// NeighborMap (list): 
+// 	Defining module:      "openconfig-camelcase"
+// 	Instantiating module: "openconfig-camelcase"
+// 	Path from parent:     "neighbors/neighbor"
+// 	Path from root:       "/bgp/neighbors/neighbor"
+func (n *BGPPathAny) NeighborMap() *BGP_NeighborPathMapAny {
+	return &BGP_NeighborPathMapAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"neighbors"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
 // BGP_Neighbor_PeerIPPath represents the /openconfig-camelcase/bgp/neighbors/neighbor/state/peer-ip YANG schema element.
 type BGP_Neighbor_PeerIPPath struct {
 	*ygnmi.NodePath
@@ -108,6 +138,18 @@ type BGP_NeighborPath struct {
 
 // BGP_NeighborPathAny represents the wildcard version of the /openconfig-camelcase/bgp/neighbors/neighbor YANG schema element.
 type BGP_NeighborPathAny struct {
+	*ygnmi.NodePath
+}
+
+// BGP_NeighborPathMap represents the version of the /openconfig-camelcase/bgp/neighbors/neighbor YANG schema element
+// that references the entire keyed list as a map.
+type BGP_NeighborPathMap struct {
+	*ygnmi.NodePath
+}
+
+// BGP_NeighborPathMapAny represents the wildcard version of the /openconfig-camelcase/bgp/neighbors/neighbor YANG schema element
+// that references the entire keyed list as a map.
+type BGP_NeighborPathMapAny struct {
 	*ygnmi.NodePath
 }
 

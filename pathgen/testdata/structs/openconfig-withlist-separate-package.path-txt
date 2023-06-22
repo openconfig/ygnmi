@@ -133,6 +133,36 @@ func (n *ModelAny) MultiKey(Key1 uint32, Key2 uint64) *Model_MultiKeyAny {
 	}
 }
 
+// MultiKeyMap (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "b/multi-key"
+// 	Path from root:       "/model/b/multi-key"
+func (n *Model) MultiKeyMap() *Model_MultiKeyMap {
+	return &Model_MultiKeyMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"b"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
+// MultiKeyMap (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "b/multi-key"
+// 	Path from root:       "/model/b/multi-key"
+func (n *ModelAny) MultiKeyMap() *Model_MultiKeyMapAny {
+	return &Model_MultiKeyMapAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"b"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
 // NoKeyAny (list): 
 // 	Defining module:      "openconfig-withlist"
 // 	Instantiating module: "openconfig-withlist"
@@ -227,6 +257,36 @@ func (n *ModelAny) SingleKey(Key string) *Model_SingleKeyAny {
 	}
 }
 
+// SingleKeyMap (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "a/single-key"
+// 	Path from root:       "/model/a/single-key"
+func (n *Model) SingleKeyMap() *Model_SingleKeyMap {
+	return &Model_SingleKeyMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"a"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
+// SingleKeyMap (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "a/single-key"
+// 	Path from root:       "/model/a/single-key"
+func (n *ModelAny) SingleKeyMap() *Model_SingleKeyMapAny {
+	return &Model_SingleKeyMapAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"a"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
 // Model_MultiKey_Key1 represents the /openconfig-withlist/model/b/multi-key/state/key1 YANG schema element.
 type Model_MultiKey_Key1 struct {
 	*ygnmi.NodePath
@@ -254,6 +314,18 @@ type Model_MultiKey struct {
 
 // Model_MultiKeyAny represents the wildcard version of the /openconfig-withlist/model/b/multi-key YANG schema element.
 type Model_MultiKeyAny struct {
+	*ygnmi.NodePath
+}
+
+// Model_MultiKeyMap represents the version of the /openconfig-withlist/model/b/multi-key YANG schema element
+// that references the entire keyed list as a map.
+type Model_MultiKeyMap struct {
+	*ygnmi.NodePath
+}
+
+// Model_MultiKeyMapAny represents the wildcard version of the /openconfig-withlist/model/b/multi-key YANG schema element
+// that references the entire keyed list as a map.
+type Model_MultiKeyMapAny struct {
 	*ygnmi.NodePath
 }
 
@@ -344,6 +416,18 @@ type Model_SingleKey struct {
 
 // Model_SingleKeyAny represents the wildcard version of the /openconfig-withlist/model/a/single-key YANG schema element.
 type Model_SingleKeyAny struct {
+	*ygnmi.NodePath
+}
+
+// Model_SingleKeyMap represents the version of the /openconfig-withlist/model/a/single-key YANG schema element
+// that references the entire keyed list as a map.
+type Model_SingleKeyMap struct {
+	*ygnmi.NodePath
+}
+
+// Model_SingleKeyMapAny represents the wildcard version of the /openconfig-withlist/model/a/single-key YANG schema element
+// that references the entire keyed list as a map.
+type Model_SingleKeyMapAny struct {
 	*ygnmi.NodePath
 }
 

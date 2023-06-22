@@ -527,7 +527,7 @@ type CompressionInfo struct {
 	// PreRelPath is the list of strings of qualified path elements prior
 	// to the compressed-out node in Go list syntax.
 	//
-	// e.g. "openconfig-withlistval:ordered-lists", "openconfig-withlistval:ordered-lists-again"
+	// e.g. "openconfig-withlistval:atomic-lists", "openconfig-withlistval:atomic-lists-again"
 	PreRelPathList string
 	// PreRelPath is the list of strings of qualified path elements after
 	// the compressed-out node in Go list syntax.
@@ -620,6 +620,25 @@ type {{ .TypeName }} struct {
 type {{ .TypeName }}{{ .WildcardSuffix }} struct {
 	*ygnmi.{{ .PathBaseTypeName }}
 }
+{{- end }}
+
+{{- if .IsKeyedList }}
+
+// {{ .TypeName }}{{ .WholeKeyedListSuffix }} represents the version of the {{ .YANGPath }} YANG schema element
+// that references the entire keyed list as a map.
+type {{ .TypeName }}{{ .WholeKeyedListSuffix }} struct {
+	*ygnmi.{{ .PathBaseTypeName }}
+}
+
+{{- if .GenerateWildcardPaths }}
+
+// {{ .TypeName }}{{ .WholeKeyedListSuffix }}{{ .WildcardSuffix }} represents the wildcard version of the {{ .YANGPath }} YANG schema element
+// that references the entire keyed list as a map.
+type {{ .TypeName }}{{ .WholeKeyedListSuffix }}{{ .WildcardSuffix }} struct {
+	*ygnmi.{{ .PathBaseTypeName }}
+}
+{{- end }}
+
 {{- end }}
 `)
 
@@ -746,6 +765,8 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 			isLeaf := mType != nil
 
 			subsumingGoStructName := dir.Name
+			// TODO(wenbli): Do the same for atomic, non-ordered-by-user lists.
+			// TODO(wenbli): Generate helpers for Map PathStructs for non-atomic lists without impacting existing helpers.
 			if !isLeaf && !field.YANGDetails.OrderedByUser {
 				subsumingGoStructName = ir.Directories[field.YANGDetails.Path].Name
 			}
@@ -877,6 +898,11 @@ type goPathStructData struct {
 	WildcardSuffix string
 	// GenerateWildcardPaths means to generate wildcard nodes and paths.
 	GenerateWildcardPaths bool
+	// IsKeyedList means that the path struct represents a keyed list.
+	IsKeyedList bool
+	// WholeKeyedListSuffix is the suffix given to the path struct
+	// for the map type representing the map whole keyed list.
+	WholeKeyedListSuffix string
 }
 
 // getStructData returns the goPathStructData corresponding to a
@@ -891,6 +917,8 @@ func getStructData(directory *ygen.ParsedDirectory, pathStructSuffix string, gen
 		PathStructInterfaceName: ygnmi.PathStructInterfaceName,
 		WildcardSuffix:          WildcardSuffix,
 		GenerateWildcardPaths:   generateWildcardPaths,
+		IsKeyedList:             (directory.Type == ygen.List || directory.Type == ygen.OrderedList) && len(directory.ListKeys) > 0,
+		WholeKeyedListSuffix:    WholeKeyedListSuffix,
 	}
 }
 
@@ -954,11 +982,11 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 	errs = util.AppendErrs(errs, nonLeafSnippet.genExtras(nodeDataMap, directory, extraGens))
 
 	// Since it is not possible for gNMI to refer to individual nodes
-	// underneath an unkeyed list or an ordered list (which is assumed to
-	// be telemetry-atomic), prevent constructing paths that go below it by
-	// breaking the chain here.
+	// underneath an unkeyed list or a telemetry-atomic node (ordered lists
+	// are always assumed to be telemetry-atomic), prevent constructing
+	// paths that go below it by breaking the chain here.
 	switch {
-	case directory.Type == ygen.List && len(directory.ListKeys) == 0, directory.Type == ygen.OrderedList:
+	case directory.Type == ygen.List && len(directory.ListKeys) == 0, directory.Type == ygen.OrderedList, directory.TelemetryAtomic, directory.CompressedTelemetryAtomic:
 		return []GoPathStructCodeSnippet{nonLeafSnippet}, nil
 	}
 
@@ -1145,28 +1173,32 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 	fieldDirectory := directories[field.YANGDetails.Path]
 
 	switch {
-	case field.Type == ygen.ListNode && field.YANGDetails.OrderedByUser:
-		if gotLen := len(path); gotLen != 2 {
-			return []error{fmt.Errorf("expected two path elements for the relative path of an ordered map, got %d: %v", gotLen, path)}
-		}
-		fieldData.RelPathList = relPathListFn(path[:1])
-		fieldData.MethodName += WholeKeyedListSuffix
-		fallthrough
-	case field.Type != ygen.ListNode:
-		return generateChildConstructorsForLeafOrContainer(methodBuf, fieldData, isUnderFakeRoot, generateWildcardPaths, unified, field.Type == ygen.LeafNode || field.Type == ygen.LeafListNode)
-	case len(fieldDirectory.ListKeys) == 0:
+	case field.Type == ygen.ListNode && len(fieldDirectory.ListKeys) == 0: // unkeyed lists
 		// Generate a single wildcard constructor for keyless-lists.
 		if errs := generateChildConstructorsForListBuilderFormat(methodBuf, builderBuf, nil, nil, fieldData, isUnderFakeRoot, schemaStructPkgAccessor); len(errs) > 0 {
 			return errs
 		}
 		return nil
-	default:
+	case field.Type == ygen.ListNode && !field.YANGDetails.OrderedByUser && !fieldDirectory.CompressedTelemetryAtomic: // non-atomic keyed lists
 		if generateWildcardPaths {
 			if errs := generateChildConstructorsForListBuilderFormat(methodBuf, builderBuf, fieldDirectory.ListKeys, fieldDirectory.ListKeyYANGNames, fieldData, isUnderFakeRoot, schemaStructPkgAccessor); len(errs) > 0 {
 				return errs
 			}
 		}
-		return generateChildConstructorsForList(methodBuf, fieldDirectory.ListKeys, fieldDirectory.ListKeyYANGNames, fieldData, isUnderFakeRoot, generateWildcardPaths, schemaStructPkgAccessor)
+		if errs := generateChildConstructorsForList(methodBuf, fieldDirectory.ListKeys, fieldDirectory.ListKeyYANGNames, fieldData, isUnderFakeRoot, generateWildcardPaths, schemaStructPkgAccessor); len(errs) > 0 {
+			return errs
+		}
+		fallthrough
+	case field.Type == ygen.ListNode: // atomic keyed lists
+		if gotLen := len(path); gotLen != 2 {
+			return []error{fmt.Errorf("expected two path elements for the relative path of an ordered map, got %d: %v", gotLen, path)}
+		}
+		fieldData.RelPathList = relPathListFn(path[:1])
+		fieldData.TypeName += WholeKeyedListSuffix
+		fieldData.MethodName += WholeKeyedListSuffix
+		fallthrough
+	default: // non-lists
+		return generateChildConstructorsForLeafOrContainer(methodBuf, fieldData, isUnderFakeRoot, generateWildcardPaths, unified, field.Type == ygen.LeafNode || field.Type == ygen.LeafListNode)
 	}
 }
 
@@ -1192,6 +1224,7 @@ func generateChildConstructorsForLeafOrContainer(methodBuf *strings.Builder, fie
 	}
 
 	if generateWildcardPaths {
+		fieldData := fieldData
 		// Generate child constructor for the wildcard version of the parent struct.
 		fieldData.TypeName += WildcardSuffix
 		fieldData.Struct.TypeName += WildcardSuffix
@@ -1206,6 +1239,7 @@ func generateChildConstructorsForLeafOrContainer(methodBuf *strings.Builder, fie
 			}
 		}
 	}
+
 	return errors
 }
 

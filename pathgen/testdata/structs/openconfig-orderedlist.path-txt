@@ -57,8 +57,8 @@ type ModelPathAny struct {
 // 	Instantiating module: "openconfig-orderedlist"
 // 	Path from parent:     "ordered-lists/ordered-list"
 // 	Path from root:       "/model/ordered-lists/ordered-list"
-func (n *ModelPath) OrderedListMap() *Model_OrderedListPath {
-	return &Model_OrderedListPath{
+func (n *ModelPath) OrderedListMap() *Model_OrderedListPathMap {
+	return &Model_OrderedListPathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"ordered-lists"},
 			map[string]interface{}{},
@@ -72,8 +72,8 @@ func (n *ModelPath) OrderedListMap() *Model_OrderedListPath {
 // 	Instantiating module: "openconfig-orderedlist"
 // 	Path from parent:     "ordered-lists/ordered-list"
 // 	Path from root:       "/model/ordered-lists/ordered-list"
-func (n *ModelPathAny) OrderedListMap() *Model_OrderedListPathAny {
-	return &Model_OrderedListPathAny{
+func (n *ModelPathAny) OrderedListMap() *Model_OrderedListPathMapAny {
+	return &Model_OrderedListPathMapAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"ordered-lists"},
 			map[string]interface{}{},
@@ -89,5 +89,17 @@ type Model_OrderedListPath struct {
 
 // Model_OrderedListPathAny represents the wildcard version of the /openconfig-orderedlist/model/ordered-lists/ordered-list YANG schema element.
 type Model_OrderedListPathAny struct {
+	*ygnmi.NodePath
+}
+
+// Model_OrderedListPathMap represents the version of the /openconfig-orderedlist/model/ordered-lists/ordered-list YANG schema element
+// that references the entire keyed list as a map.
+type Model_OrderedListPathMap struct {
+	*ygnmi.NodePath
+}
+
+// Model_OrderedListPathMapAny represents the wildcard version of the /openconfig-orderedlist/model/ordered-lists/ordered-list YANG schema element
+// that references the entire keyed list as a map.
+type Model_OrderedListPathMapAny struct {
 	*ygnmi.NodePath
 }
