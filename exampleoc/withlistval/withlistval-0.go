@@ -1526,13 +1526,13 @@ func (n *Model_SingleKeyPathAny) Key() *Model_SingleKey_KeyPathAny {
 	}
 }
 
-// OrderedListAll (list):
+// OrderedListMap (list):
 //
 //	Defining module:      "openconfig-withlistval"
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "ordered-lists/ordered-list"
 //	Path from root:       "/model/a/single-key/ordered-lists/ordered-list"
-func (n *Model_SingleKeyPath) OrderedListAll() *Model_SingleKey_OrderedListPath {
+func (n *Model_SingleKeyPath) OrderedListMap() *Model_SingleKey_OrderedListPath {
 	return &Model_SingleKey_OrderedListPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"ordered-lists"},
@@ -1542,13 +1542,13 @@ func (n *Model_SingleKeyPath) OrderedListAll() *Model_SingleKey_OrderedListPath 
 	}
 }
 
-// OrderedListAll (list):
+// OrderedListMap (list):
 //
 //	Defining module:      "openconfig-withlistval"
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "ordered-lists/ordered-list"
 //	Path from root:       "/model/a/single-key/ordered-lists/ordered-list"
-func (n *Model_SingleKeyPathAny) OrderedListAll() *Model_SingleKey_OrderedListPathAny {
+func (n *Model_SingleKeyPathAny) OrderedListMap() *Model_SingleKey_OrderedListPathAny {
 	return &Model_SingleKey_OrderedListPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"ordered-lists"},
