@@ -595,7 +595,7 @@ func (sb *SetBatch) Set(ctx context.Context, c *Client, opts ...Option) (*Result
 		if err != nil {
 			return nil, err
 		}
-		if err := populateSetRequest(req, path, op.val, op.mode, op.config, opts...); err != nil {
+		if err := populateSetRequest(req, path, op.val, op.mode, op.config, nil, opts...); err != nil {
 			return nil, err
 		}
 	}

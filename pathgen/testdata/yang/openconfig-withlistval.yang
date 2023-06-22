@@ -36,6 +36,28 @@ module openconfig-withlistval {
             config false;
             uses single-key-config;
           }
+
+          container ordered-lists {
+            list ordered-list {
+              key "key";
+              ordered-by user;
+
+              leaf key {
+                type leafref {
+                  path "../config/key";
+                }
+              }
+
+              container config {
+                uses single-key-config;
+              }
+
+              container state {
+                config false;
+                uses single-key-config;
+              }
+            }
+          }
         }
       }
 
@@ -76,28 +98,6 @@ module openconfig-withlistval {
               config false;
               uses single-key-config;
             }
-          }
-        }
-      }
-
-      container ordered-lists {
-        list ordered-list {
-          key "key";
-          ordered-by user;
-
-          leaf key {
-            type leafref {
-              path "../config/key";
-            }
-          }
-
-          container config {
-            uses single-key-config;
-          }
-
-          container state {
-            config false;
-            uses single-key-config;
           }
         }
       }
