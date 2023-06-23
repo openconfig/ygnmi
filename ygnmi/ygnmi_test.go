@@ -2306,6 +2306,7 @@ func TestLookupAll(t *testing.T) {
 	t.Run("success whole single-keyed map", func(t *testing.T) {
 		fakeGNMI.Stub().Notification(&gpb.Notification{
 			Timestamp: 100,
+			Atomic:    true,
 			Prefix:    testutil.GNMIPath(t, "/model/a/single-key[key=foo]/inner-a"),
 			Update: []*gpb.Update{{
 				Path: testutil.GNMIPath(t, `single-key[key=foo]/state/key`),
@@ -2337,6 +2338,7 @@ func TestLookupAll(t *testing.T) {
 			}},
 		}).Notification(&gpb.Notification{
 			Timestamp: 101,
+			Atomic:    true,
 			Prefix:    testutil.GNMIPath(t, "/model/a/single-key[key=bar]/inner-a"),
 			Update: []*gpb.Update{{
 				Path: testutil.GNMIPath(t, `single-key[key=foo]/state/key`),

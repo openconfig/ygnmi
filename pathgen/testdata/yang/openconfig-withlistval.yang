@@ -63,6 +63,7 @@ module openconfig-withlistval {
           }
 
           container inner-a {
+            oc-ext:telemetry-atomic;
             list single-key {
               key "key";
 

@@ -420,14 +420,12 @@ type Model_AtomicListPathAny struct {
 	*ygnmi.NodePath
 }
 
-// Model_AtomicListPathMap represents the version of the /openconfig-withlist/model/atomic-lists/atomic-list YANG schema element
-// that references the entire keyed list as a map.
+// Model_AtomicListPathMap represents the /openconfig-withlist/model/atomic-lists/atomic-list YANG schema element.
 type Model_AtomicListPathMap struct {
 	*ygnmi.NodePath
 }
 
-// Model_AtomicListPathMapAny represents the wildcard version of the /openconfig-withlist/model/atomic-lists/atomic-list YANG schema element
-// that references the entire keyed list as a map.
+// Model_AtomicListPathMapAny represents the wildcard version of the /openconfig-withlist/model/atomic-lists/atomic-list YANG schema element.
 type Model_AtomicListPathMapAny struct {
 	*ygnmi.NodePath
 }
@@ -442,14 +440,12 @@ type Model_AtomicListElementPathAny struct {
 	*ygnmi.NodePath
 }
 
-// Model_AtomicListElementPathMap represents the version of the /openconfig-withlist/model/atomic-list-elements/atomic-list-element YANG schema element
-// that references the entire keyed list as a map.
+// Model_AtomicListElementPathMap represents the /openconfig-withlist/model/atomic-list-elements/atomic-list-element YANG schema element.
 type Model_AtomicListElementPathMap struct {
 	*ygnmi.NodePath
 }
 
-// Model_AtomicListElementPathMapAny represents the wildcard version of the /openconfig-withlist/model/atomic-list-elements/atomic-list-element YANG schema element
-// that references the entire keyed list as a map.
+// Model_AtomicListElementPathMapAny represents the wildcard version of the /openconfig-withlist/model/atomic-list-elements/atomic-list-element YANG schema element.
 type Model_AtomicListElementPathMapAny struct {
 	*ygnmi.NodePath
 }
