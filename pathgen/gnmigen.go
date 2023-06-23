@@ -111,7 +111,7 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		tmpl = goGNMILeafTemplate
 	}
 
-	generateAux := func(tmplStruct gnmiStruct, shadow bool) error {
+	generate := func(tmplStruct gnmiStruct, shadow bool) error {
 		if node.IsLeaf {
 			if err := populateTmplForLeaf(dir, node.YANGFieldName, shadow, &tmplStruct); err != nil {
 				return err
@@ -120,24 +120,21 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		return tmpl.Execute(&b, &tmplStruct)
 	}
 
-	generate := func(tmplStruct gnmiStruct) error {
-		if err := generateAux(tmplStruct, false); err != nil {
-			return err
-		}
-
-		if !generateConfigFunc(dir, node) {
-			return nil
-		}
-
-		tmplStruct.MethodName = "Config"
-		tmplStruct.SingletonTypeName = "ConfigQuery"
-		tmplStruct.IsState = false
-		return generateAux(tmplStruct, true)
-	}
-
-	if err := generate(tmplStruct); err != nil {
+	if err := generate(tmplStruct, false); err != nil {
 		return "", err
 	}
+
+	if !generateConfigFunc(dir, node) {
+		return b.String(), nil
+	}
+
+	tmplStruct.MethodName = "Config"
+	tmplStruct.SingletonTypeName = "ConfigQuery"
+	tmplStruct.IsState = false
+	if err := generate(tmplStruct, true); err != nil {
+		return "", err
+	}
+
 	return b.String(), nil
 }
 
