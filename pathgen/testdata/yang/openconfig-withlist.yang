@@ -2,6 +2,8 @@ module openconfig-withlist {
   namespace "urn:ocwithlist";
   prefix "oc";
 
+  import openconfig-extensions { prefix oc-ext; }
+
   description
     "A simple test module that is used to verify code generation for a
     schema that contains lists";
@@ -77,6 +79,49 @@ module openconfig-withlist {
         }
       }
 
+      container atomic-lists {
+        oc-ext:telemetry-atomic;
+        list atomic-list {
+          key "key";
+
+          leaf key {
+            type leafref {
+              path "../config/key";
+            }
+          }
+
+          container config {
+            uses single-key-config;
+          }
+
+          container state {
+            config false;
+            uses single-key-config;
+          }
+        }
+      }
+
+      container atomic-list-elements {
+        list atomic-list-element {
+          key "key";
+          oc-ext:telemetry-atomic;
+
+          leaf key {
+            type leafref {
+              path "../config/key";
+            }
+          }
+
+          container config {
+            uses single-key-config;
+          }
+
+          container state {
+            config false;
+            uses single-key-config;
+          }
+        }
+      }
     }
   }
 
