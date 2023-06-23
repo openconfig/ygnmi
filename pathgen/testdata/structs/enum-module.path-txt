@@ -37,14 +37,12 @@ type AListPathAny struct {
 	*ygnmi.NodePath
 }
 
-// AListPathMap represents the version of the /enum-module/a-lists/a-list YANG schema element
-// that references the entire keyed list as a map.
+// AListPathMap represents the /enum-module/a-lists/a-list YANG schema element.
 type AListPathMap struct {
 	*ygnmi.NodePath
 }
 
-// AListPathMapAny represents the wildcard version of the /enum-module/a-lists/a-list YANG schema element
-// that references the entire keyed list as a map.
+// AListPathMapAny represents the wildcard version of the /enum-module/a-lists/a-list YANG schema element.
 type AListPathMapAny struct {
 	*ygnmi.NodePath
 }
@@ -99,14 +97,12 @@ type BListPathAny struct {
 	*ygnmi.NodePath
 }
 
-// BListPathMap represents the version of the /enum-module/b-lists/b-list YANG schema element
-// that references the entire keyed list as a map.
+// BListPathMap represents the /enum-module/b-lists/b-list YANG schema element.
 type BListPathMap struct {
 	*ygnmi.NodePath
 }
 
-// BListPathMapAny represents the wildcard version of the /enum-module/b-lists/b-list YANG schema element
-// that references the entire keyed list as a map.
+// BListPathMapAny represents the wildcard version of the /enum-module/b-lists/b-list YANG schema element.
 type BListPathMapAny struct {
 	*ygnmi.NodePath
 }

@@ -720,14 +720,12 @@ type Model_MultiKeyPathAny struct {
 	*ygnmi.NodePath
 }
 
-// Model_MultiKeyPathMap represents the version of the /openconfig-withlistval/model/b/multi-key YANG schema element
-// that references the entire keyed list as a map.
+// Model_MultiKeyPathMap represents the /openconfig-withlistval/model/b/multi-key YANG schema element.
 type Model_MultiKeyPathMap struct {
 	*ygnmi.NodePath
 }
 
-// Model_MultiKeyPathMapAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key YANG schema element
-// that references the entire keyed list as a map.
+// Model_MultiKeyPathMapAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key YANG schema element.
 type Model_MultiKeyPathMapAny struct {
 	*ygnmi.NodePath
 }
@@ -1678,14 +1676,12 @@ type Model_SingleKeyPathAny struct {
 	*ygnmi.NodePath
 }
 
-// Model_SingleKeyPathMap represents the version of the /openconfig-withlistval/model/a/single-key YANG schema element
-// that references the entire keyed list as a map.
+// Model_SingleKeyPathMap represents the /openconfig-withlistval/model/a/single-key YANG schema element.
 type Model_SingleKeyPathMap struct {
 	*ygnmi.NodePath
 }
 
-// Model_SingleKeyPathMapAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key YANG schema element
-// that references the entire keyed list as a map.
+// Model_SingleKeyPathMapAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key YANG schema element.
 type Model_SingleKeyPathMapAny struct {
 	*ygnmi.NodePath
 }
@@ -1996,14 +1992,12 @@ type Model_SingleKey_OrderedListPathAny struct {
 	*ygnmi.NodePath
 }
 
-// Model_SingleKey_OrderedListPathMap represents the version of the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list YANG schema element
-// that references the entire keyed list as a map.
+// Model_SingleKey_OrderedListPathMap represents the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list YANG schema element.
 type Model_SingleKey_OrderedListPathMap struct {
 	*ygnmi.NodePath
 }
 
-// Model_SingleKey_OrderedListPathMapAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list YANG schema element
-// that references the entire keyed list as a map.
+// Model_SingleKey_OrderedListPathMapAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list YANG schema element.
 type Model_SingleKey_OrderedListPathMapAny struct {
 	*ygnmi.NodePath
 }

@@ -317,14 +317,12 @@ type Model_MultiKeyAny struct {
 	*ygnmi.NodePath
 }
 
-// Model_MultiKeyMap represents the version of the /openconfig-withlist/model/b/multi-key YANG schema element
-// that references the entire keyed list as a map.
+// Model_MultiKeyMap represents the /openconfig-withlist/model/b/multi-key YANG schema element.
 type Model_MultiKeyMap struct {
 	*ygnmi.NodePath
 }
 
-// Model_MultiKeyMapAny represents the wildcard version of the /openconfig-withlist/model/b/multi-key YANG schema element
-// that references the entire keyed list as a map.
+// Model_MultiKeyMapAny represents the wildcard version of the /openconfig-withlist/model/b/multi-key YANG schema element.
 type Model_MultiKeyMapAny struct {
 	*ygnmi.NodePath
 }
@@ -419,14 +417,12 @@ type Model_SingleKeyAny struct {
 	*ygnmi.NodePath
 }
 
-// Model_SingleKeyMap represents the version of the /openconfig-withlist/model/a/single-key YANG schema element
-// that references the entire keyed list as a map.
+// Model_SingleKeyMap represents the /openconfig-withlist/model/a/single-key YANG schema element.
 type Model_SingleKeyMap struct {
 	*ygnmi.NodePath
 }
 
-// Model_SingleKeyMapAny represents the wildcard version of the /openconfig-withlist/model/a/single-key YANG schema element
-// that references the entire keyed list as a map.
+// Model_SingleKeyMapAny represents the wildcard version of the /openconfig-withlist/model/a/single-key YANG schema element.
 type Model_SingleKeyMapAny struct {
 	*ygnmi.NodePath
 }

@@ -2956,14 +2956,12 @@ type ListAny struct {
 	*ygnmi.NodePath
 }
 
-// ListMap represents the version of the /root-module/list-container/list YANG schema element
-// that references the entire keyed list as a map.
+// ListMap represents the /root-module/list-container/list YANG schema element.
 type ListMap struct {
 	*ygnmi.NodePath
 }
 
-// ListMapAny represents the wildcard version of the /root-module/list-container/list YANG schema element
-// that references the entire keyed list as a map.
+// ListMapAny represents the wildcard version of the /root-module/list-container/list YANG schema element.
 type ListMapAny struct {
 	*ygnmi.NodePath
 }
@@ -3073,8 +3071,7 @@ type List struct {
 	*ygnmi.NodePath
 }
 
-// ListMap represents the version of the /root-module/list-container/list YANG schema element
-// that references the entire keyed list as a map.
+// ListMap represents the /root-module/list-container/list YANG schema element.
 type ListMap struct {
 	*ygnmi.NodePath
 }
