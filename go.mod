@@ -8,7 +8,7 @@ require (
 	github.com/openconfig/gnmi v0.9.1
 	github.com/openconfig/gocloser v0.0.0-20220310182203-c6c950ed3b0b
 	github.com/openconfig/goyang v1.4.0
-	github.com/openconfig/ygot v0.29.0-beta.2
+	github.com/openconfig/ygot v0.29.0-beta.3
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.15.0
