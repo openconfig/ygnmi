@@ -141,14 +141,12 @@ type BGP_NeighborPathAny struct {
 	*ygnmi.NodePath
 }
 
-// BGP_NeighborPathMap represents the version of the /openconfig-camelcase/bgp/neighbors/neighbor YANG schema element
-// that references the entire keyed list as a map.
+// BGP_NeighborPathMap represents the /openconfig-camelcase/bgp/neighbors/neighbor YANG schema element.
 type BGP_NeighborPathMap struct {
 	*ygnmi.NodePath
 }
 
-// BGP_NeighborPathMapAny represents the wildcard version of the /openconfig-camelcase/bgp/neighbors/neighbor YANG schema element
-// that references the entire keyed list as a map.
+// BGP_NeighborPathMapAny represents the wildcard version of the /openconfig-camelcase/bgp/neighbors/neighbor YANG schema element.
 type BGP_NeighborPathMapAny struct {
 	*ygnmi.NodePath
 }

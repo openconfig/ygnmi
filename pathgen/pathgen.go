@@ -625,25 +625,6 @@ type {{ .TypeName }}{{ .WildcardSuffix }} struct {
 	*ygnmi.{{ .PathBaseTypeName }}
 }
 {{- end }}
-
-{{- if .IsKeyedList }}
-
-// {{ .TypeName }}{{ .WholeKeyedListSuffix }} represents the version of the {{ .YANGPath }} YANG schema element
-// that references the entire keyed list as a map.
-type {{ .TypeName }}{{ .WholeKeyedListSuffix }} struct {
-	*ygnmi.{{ .PathBaseTypeName }}
-}
-
-{{- if .GenerateWildcardPaths }}
-
-// {{ .TypeName }}{{ .WholeKeyedListSuffix }}{{ .WildcardSuffix }} represents the wildcard version of the {{ .YANGPath }} YANG schema element
-// that references the entire keyed list as a map.
-type {{ .TypeName }}{{ .WholeKeyedListSuffix }}{{ .WildcardSuffix }} struct {
-	*ygnmi.{{ .PathBaseTypeName }}
-}
-{{- end }}
-
-{{- end }}
 `)
 
 	// goUnifiedLeafPathStructTemplate is similar to goPathStructTemplate except
@@ -935,11 +916,6 @@ type goPathStructData struct {
 	WildcardSuffix string
 	// GenerateWildcardPaths means to generate wildcard nodes and paths.
 	GenerateWildcardPaths bool
-	// IsKeyedList means that the path struct represents a keyed list.
-	IsKeyedList bool
-	// WholeKeyedListSuffix is the suffix given to the path struct
-	// for the map type representing the map whole keyed list.
-	WholeKeyedListSuffix string
 }
 
 // getStructData returns the goPathStructData corresponding to a
@@ -954,8 +930,6 @@ func getStructData(directory *ygen.ParsedDirectory, pathStructSuffix string, gen
 		PathStructInterfaceName: ygnmi.PathStructInterfaceName,
 		WildcardSuffix:          WildcardSuffix,
 		GenerateWildcardPaths:   generateWildcardPaths,
-		IsKeyedList:             (directory.Type == ygen.List || directory.Type == ygen.OrderedList) && len(directory.ListKeys) > 0,
-		WholeKeyedListSuffix:    WholeKeyedListSuffix,
 	}
 }
 
@@ -1009,6 +983,15 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 		}
 	} else if err := goPathStructTemplate.Execute(&structBuf, structData); err != nil {
 		return nil, util.AppendErr(errs, err)
+	}
+
+	// Generate Map PathStructs for keyed list types.
+	if isKeyedList := (directory.Type == ygen.List || directory.Type == ygen.OrderedList) && len(directory.ListKeys) > 0; isKeyedList {
+		structData := structData
+		structData.TypeName += WholeKeyedListSuffix
+		if err := goPathStructTemplate.Execute(&structBuf, structData); err != nil {
+			return nil, util.AppendErr(errs, err)
+		}
 	}
 
 	nonLeafSnippet := GoPathStructCodeSnippet{

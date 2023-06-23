@@ -92,14 +92,12 @@ type Model_OrderedListPathAny struct {
 	*ygnmi.NodePath
 }
 
-// Model_OrderedListPathMap represents the version of the /openconfig-orderedlist/model/ordered-lists/ordered-list YANG schema element
-// that references the entire keyed list as a map.
+// Model_OrderedListPathMap represents the /openconfig-orderedlist/model/ordered-lists/ordered-list YANG schema element.
 type Model_OrderedListPathMap struct {
 	*ygnmi.NodePath
 }
 
-// Model_OrderedListPathMapAny represents the wildcard version of the /openconfig-orderedlist/model/ordered-lists/ordered-list YANG schema element
-// that references the entire keyed list as a map.
+// Model_OrderedListPathMapAny represents the wildcard version of the /openconfig-orderedlist/model/ordered-lists/ordered-list YANG schema element.
 type Model_OrderedListPathMapAny struct {
 	*ygnmi.NodePath
 }
