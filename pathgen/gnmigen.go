@@ -135,22 +135,9 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		return generateAux(tmplStruct, true)
 	}
 
-	isKeyedList := (dir.Type == ygen.List || dir.Type == ygen.OrderedList) && len(dir.ListKeys) > 0
-
-	if node.IsLeaf || !(dir.Type == ygen.OrderedList || (isKeyedList && dir.CompressedTelemetryAtomic)) {
-		if err := generate(tmplStruct); err != nil {
-			return "", err
-		}
+	if err := generate(tmplStruct); err != nil {
+		return "", err
 	}
-
-	if !node.IsLeaf && isKeyedList {
-		tmplStruct := tmplStruct
-		tmplStruct.PathStructName += WholeKeyedListSuffix
-		if err := generate(tmplStruct); err != nil {
-			return "", err
-		}
-	}
-
 	return b.String(), nil
 }
 
