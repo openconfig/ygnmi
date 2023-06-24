@@ -2,6 +2,8 @@ module openconfig-withlistval {
   namespace "urn:ocwithlistval";
   prefix "oc";
 
+  import openconfig-extensions { prefix oc-ext; }
+
   description
     "A simple test module that is used to verify code generation for a
     schema that contains lists";
@@ -38,9 +40,32 @@ module openconfig-withlistval {
           }
 
           container ordered-lists {
+            oc-ext:telemetry-atomic;
             list ordered-list {
               key "key";
               ordered-by user;
+
+              leaf key {
+                type leafref {
+                  path "../config/key";
+                }
+              }
+
+              container config {
+                uses single-key-config;
+              }
+
+              container state {
+                config false;
+                uses single-key-config;
+              }
+            }
+          }
+
+          container inner-a {
+            oc-ext:telemetry-atomic;
+            list single-key {
+              key "key";
 
               leaf key {
                 type leafref {

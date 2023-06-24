@@ -76,6 +76,36 @@ func getSampleOrderedMapIncomplete(t *testing.T) *exampleoc.Model_SingleKey_Orde
 	return om
 }
 
+func getSampleSingleKeyedMap(t *testing.T) map[string]*exampleoc.Model_SingleKey {
+	model := &exampleoc.Model{}
+	model.GetOrCreateSingleKey("foo").SetValue(42)
+	model.GetOrCreateSingleKey("bar").SetValue(43)
+	model.GetOrCreateSingleKey("baz").SetValue(44)
+	return model.SingleKey
+}
+
+func getSampleSingleKeyedMapIncomplete(t *testing.T) map[string]*exampleoc.Model_SingleKey {
+	model := &exampleoc.Model{}
+	model.GetOrCreateSingleKey("foo").SetValue(42)
+	model.GetOrCreateSingleKey("bar").SetValue(43)
+	return model.SingleKey
+}
+
+func getSampleInnerSingleKeyedMap(t *testing.T) map[string]*exampleoc.Model_SingleKey_SingleKey {
+	sk := &exampleoc.Model_SingleKey{}
+	sk.GetOrCreateSingleKey("foo").SetValue(42)
+	sk.GetOrCreateSingleKey("bar").SetValue(43)
+	sk.GetOrCreateSingleKey("baz").SetValue(44)
+	return sk.SingleKey
+}
+
+func getSampleInnerSingleKeyedMapIncomplete(t *testing.T) map[string]*exampleoc.Model_SingleKey_SingleKey {
+	sk := &exampleoc.Model_SingleKey{}
+	sk.GetOrCreateSingleKey("foo").SetValue(42)
+	sk.GetOrCreateSingleKey("bar").SetValue(43)
+	return sk.SingleKey
+}
+
 func lookupCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVal *ygnmi.Value[T]) {
 	got, err := ygnmi.Lookup(context.Background(), c, inQuery)
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
@@ -596,6 +626,52 @@ func TestLookup(t *testing.T) {
 			}).SetVal(getSampleOrderedMap(t)),
 		)
 	})
+
+	t.Run("success whole single-keyed map", func(t *testing.T) {
+		fakeGNMI.Stub().Notification(&gpb.Notification{
+			Timestamp: 100,
+			Prefix:    testutil.GNMIPath(t, "/model/a"),
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/config/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/config/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/config/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/config/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=baz]/config/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=baz]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=baz]/config/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 44}},
+			}},
+		}).Sync()
+
+		lookupCheckFn(
+			t, fakeGNMI, c,
+			ygnmi.SingletonQuery[map[string]*exampleoc.Model_SingleKey](exampleocpath.Root().Model().SingleKeyMap().Config()),
+			"",
+			testutil.GNMIPath(t, "/model/a"),
+			(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+				Path:      testutil.GNMIPath(t, "/model/a"),
+				Timestamp: time.Unix(0, 100),
+			}).SetVal(getSampleSingleKeyedMap(t)),
+		)
+	})
 }
 
 func TestLookupWithGet(t *testing.T) {
@@ -786,6 +862,59 @@ func TestLookupWithGet(t *testing.T) {
 				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 				Timestamp: time.Unix(0, 100),
 			}).SetVal(getSampleOrderedMap(t)),
+		)
+	})
+
+	t.Run("success whole single-keyed map", func(t *testing.T) {
+		fakeGNMI.Stub().GetResponse(&gpb.GetResponse{
+			Notification: []*gpb.Notification{{
+				Timestamp: 100,
+				Prefix:    testutil.GNMIPath(t, "/model/a"),
+				Update: []*gpb.Update{{
+					Path: testutil.GNMIPath(t, ""),
+					Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`{
+  "openconfig-withlistval:single-key": [
+    {
+      "config": {
+        "key": "foo",
+        "value": "42"
+      },
+      "key": "foo"
+    },
+    {
+      "config": {
+        "key": "bar",
+        "value": "43"
+      },
+      "key": "bar"
+    },
+    {
+      "config": {
+        "key": "baz",
+        "value": "44"
+      },
+      "key": "baz"
+    }
+  ]
+}`)}},
+				}},
+			}},
+		}, nil)
+
+		lookupWithGetCheckFn(
+			t, fakeGNMI, c,
+			ygnmi.SingletonQuery[map[string]*exampleoc.Model_SingleKey](exampleocpath.Root().Model().SingleKeyMap().Config()),
+			"",
+			&gpb.GetRequest{
+				Encoding: gpb.Encoding_JSON_IETF,
+				Type:     gpb.GetRequest_CONFIG,
+				Prefix:   &gpb.Path{},
+				Path:     []*gpb.Path{testutil.GNMIPath(t, "/model/a")},
+			},
+			(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+				Path:      testutil.GNMIPath(t, "/model/a"),
+				Timestamp: time.Unix(0, 100),
+			}).SetVal(getSampleSingleKeyedMap(t)),
 		)
 	})
 }
@@ -1366,6 +1495,89 @@ func TestWatch(t *testing.T) {
 				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 				Timestamp: startTime.Add(time.Millisecond),
 			}).SetVal(getSampleOrderedMap(t)),
+		)
+	})
+
+	t.Run("success whole single-keyed map", func(t *testing.T) {
+		fakeGNMI.Stub().Notification(&gpb.Notification{
+			Timestamp: startTime.UnixNano(),
+			Prefix:    testutil.GNMIPath(t, "/model/a"),
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+			}},
+		}).Sync().Notification(&gpb.Notification{
+			Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+			Prefix:    testutil.GNMIPath(t, "/model/a"),
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=baz]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=baz]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=baz]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 44}},
+			}},
+		})
+
+		want := getSampleSingleKeyedMap(t)
+		watchCheckFn(t, fakeGNMI, 2*time.Second, client,
+			exampleocpath.Root().Model().SingleKeyMap().State(),
+			nil,
+			func(val map[string]*exampleoc.Model_SingleKey) bool {
+				return cmp.Equal(val, want)
+			},
+			"",
+			testutil.GNMIPath(t, "/model/a"),
+			gpb.SubscriptionMode_TARGET_DEFINED,
+			[]*ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+					Path:      testutil.GNMIPath(t, "/model/a"),
+					Timestamp: startTime,
+				}).SetVal(getSampleSingleKeyedMapIncomplete(t)),
+				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+					Path:      testutil.GNMIPath(t, "/model/a"),
+					Timestamp: startTime.Add(time.Millisecond),
+				}).SetVal(getSampleSingleKeyedMap(t)),
+			},
+			(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+				Path:      testutil.GNMIPath(t, "/model/a"),
+				Timestamp: startTime.Add(time.Millisecond),
+			}).SetVal(getSampleSingleKeyedMap(t)),
 		)
 	})
 }
@@ -2086,6 +2298,93 @@ func TestLookupAll(t *testing.T) {
 					Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 					Timestamp: time.Unix(0, 100),
 				}).SetVal(getSampleOrderedMap(t)),
+			},
+			true,
+		)
+	})
+
+	t.Run("success whole single-keyed map", func(t *testing.T) {
+		fakeGNMI.Stub().Notification(&gpb.Notification{
+			Timestamp: 100,
+			Atomic:    true,
+			Prefix:    testutil.GNMIPath(t, "/model/a/single-key[key=foo]/inner-a"),
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=baz]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=baz]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=baz]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 44}},
+			}},
+		}).Notification(&gpb.Notification{
+			Timestamp: 101,
+			Atomic:    true,
+			Prefix:    testutil.GNMIPath(t, "/model/a/single-key[key=bar]/inner-a"),
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/state/dne-value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+			}},
+		}).Sync()
+
+		lookupAllCheckFn(
+			t, fakeGNMI, c,
+			exampleocpath.Root().Model().SingleKeyAny().SingleKeyMap().State(),
+			"",
+			testutil.GNMIPath(t, "/model/a/single-key[key=*]/inner-a"),
+			[]*ygnmi.Value[map[string]*exampleoc.Model_SingleKey_SingleKey]{
+				// In alphabetical order.
+				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey_SingleKey]{
+					Path:      testutil.GNMIPath(t, "/model/a/single-key[key=bar]/inner-a"),
+					Timestamp: time.Unix(0, 101),
+					ComplianceErrors: &ygnmi.ComplianceErrors{
+						PathErrors: []*ygnmi.TelemetryError{{
+							Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+							Path:  testutil.GNMIPath(t, "model/a/single-key[key=bar]/inner-a/single-key[key=bar]/state/dne-value"),
+						}},
+					},
+				}).SetVal(getSampleInnerSingleKeyedMapIncomplete(t)),
+				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey_SingleKey]{
+					Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/inner-a"),
+					Timestamp: time.Unix(0, 100),
+				}).SetVal(getSampleInnerSingleKeyedMap(t)),
 			},
 			true,
 		)
@@ -2867,6 +3166,49 @@ func TestUpdate(t *testing.T) {
 			},
 		},
 	}, {
+		desc: "whole single-keyed list",
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
+			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Model().SingleKeyMap().Config(), getSampleSingleKeyedMap(t))
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "/model/a"),
+				Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(removeWhitespace(`{
+  "openconfig-withlistval:single-key": [
+    {
+      "config": {
+        "key": "bar",
+        "value": "43"
+      },
+      "key": "bar"
+    },
+    {
+      "config": {
+        "key": "baz",
+        "value": "44"
+      },
+      "key": "baz"
+    },
+    {
+      "config": {
+        "key": "foo",
+        "value": "42"
+      },
+      "key": "foo"
+    }
+  ]
+}`))}},
+			}},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
 		desc: "leaf and prefer proto",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
 			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Parent().Child().One().Config(), "10", ygnmi.WithSetPreferProtoEncoding())
@@ -3161,6 +3503,49 @@ func TestReplace(t *testing.T) {
 			},
 		},
 	}, {
+		desc: "whole single-keyed list",
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
+			return ygnmi.Replace(context.Background(), c, exampleocpath.Root().Model().SingleKeyMap().Config(), getSampleSingleKeyedMap(t))
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Replace: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "/model/a"),
+				Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(removeWhitespace(`{
+  "openconfig-withlistval:single-key": [
+    {
+      "config": {
+        "key": "bar",
+        "value": "43"
+      },
+      "key": "bar"
+    },
+    {
+      "config": {
+        "key": "baz",
+        "value": "44"
+      },
+      "key": "baz"
+    },
+    {
+      "config": {
+        "key": "foo",
+        "value": "42"
+      },
+      "key": "foo"
+    }
+  ]
+}`))}},
+			}},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
 		desc: "server error",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
 			return ygnmi.Replace(context.Background(), c, exampleocpath.Root().Parent().Child().One().Config(), "10")
@@ -3245,6 +3630,24 @@ func TestDelete(t *testing.T) {
 			},
 			Delete: []*gpb.Path{
 				testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
+			},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "whole single-keyed list",
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
+			return ygnmi.Delete(context.Background(), c, exampleocpath.Root().Model().SingleKeyMap().Config())
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Delete: []*gpb.Path{
+				testutil.GNMIPath(t, "/model/a"),
 			},
 		},
 		stubResponse: &gpb.SetResponse{

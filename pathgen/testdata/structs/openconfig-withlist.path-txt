@@ -52,6 +52,130 @@ type ModelPathAny struct {
 	*ygnmi.NodePath
 }
 
+// AtomicListMap (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "atomic-lists/atomic-list"
+// 	Path from root:       "/model/atomic-lists/atomic-list"
+func (n *ModelPath) AtomicListMap() *Model_AtomicListPathMap {
+	return &Model_AtomicListPathMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"atomic-lists"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
+// AtomicListMap (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "atomic-lists/atomic-list"
+// 	Path from root:       "/model/atomic-lists/atomic-list"
+func (n *ModelPathAny) AtomicListMap() *Model_AtomicListPathMapAny {
+	return &Model_AtomicListPathMapAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"atomic-lists"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
+// AtomicListElementAny (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "atomic-list-elements/atomic-list-element"
+// 	Path from root:       "/model/atomic-list-elements/atomic-list-element"
+func (n *ModelPath) AtomicListElementAny() *Model_AtomicListElementPathAny {
+	return &Model_AtomicListElementPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"atomic-list-elements", "atomic-list-element"},
+			map[string]interface{}{"key": "*"},
+			n,
+		),
+	}
+}
+
+// AtomicListElementAny (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "atomic-list-elements/atomic-list-element"
+// 	Path from root:       "/model/atomic-list-elements/atomic-list-element"
+func (n *ModelPathAny) AtomicListElementAny() *Model_AtomicListElementPathAny {
+	return &Model_AtomicListElementPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"atomic-list-elements", "atomic-list-element"},
+			map[string]interface{}{"key": "*"},
+			n,
+		),
+	}
+}
+
+// AtomicListElement (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "atomic-list-elements/atomic-list-element"
+// 	Path from root:       "/model/atomic-list-elements/atomic-list-element"
+//
+// 	Key: string
+func (n *ModelPath) AtomicListElement(Key string) *Model_AtomicListElementPath {
+	return &Model_AtomicListElementPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"atomic-list-elements", "atomic-list-element"},
+			map[string]interface{}{"key": Key},
+			n,
+		),
+	}
+}
+
+// AtomicListElement (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "atomic-list-elements/atomic-list-element"
+// 	Path from root:       "/model/atomic-list-elements/atomic-list-element"
+//
+// 	Key: string
+func (n *ModelPathAny) AtomicListElement(Key string) *Model_AtomicListElementPathAny {
+	return &Model_AtomicListElementPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"atomic-list-elements", "atomic-list-element"},
+			map[string]interface{}{"key": Key},
+			n,
+		),
+	}
+}
+
+// AtomicListElementMap (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "atomic-list-elements/atomic-list-element"
+// 	Path from root:       "/model/atomic-list-elements/atomic-list-element"
+func (n *ModelPath) AtomicListElementMap() *Model_AtomicListElementPathMap {
+	return &Model_AtomicListElementPathMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"atomic-list-elements"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
+// AtomicListElementMap (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "atomic-list-elements/atomic-list-element"
+// 	Path from root:       "/model/atomic-list-elements/atomic-list-element"
+func (n *ModelPathAny) AtomicListElementMap() *Model_AtomicListElementPathMapAny {
+	return &Model_AtomicListElementPathMapAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"atomic-list-elements"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
 // MultiKeyAny (list): 
 // 	Defining module:      "openconfig-withlist"
 // 	Instantiating module: "openconfig-withlist"
@@ -284,6 +408,46 @@ func (n *ModelPathAny) SingleKeyMap() *Model_SingleKeyPathMapAny {
 			n,
 		),
 	}
+}
+
+// Model_AtomicListPath represents the /openconfig-withlist/model/atomic-lists/atomic-list YANG schema element.
+type Model_AtomicListPath struct {
+	*ygnmi.NodePath
+}
+
+// Model_AtomicListPathAny represents the wildcard version of the /openconfig-withlist/model/atomic-lists/atomic-list YANG schema element.
+type Model_AtomicListPathAny struct {
+	*ygnmi.NodePath
+}
+
+// Model_AtomicListPathMap represents the /openconfig-withlist/model/atomic-lists/atomic-list YANG schema element.
+type Model_AtomicListPathMap struct {
+	*ygnmi.NodePath
+}
+
+// Model_AtomicListPathMapAny represents the wildcard version of the /openconfig-withlist/model/atomic-lists/atomic-list YANG schema element.
+type Model_AtomicListPathMapAny struct {
+	*ygnmi.NodePath
+}
+
+// Model_AtomicListElementPath represents the /openconfig-withlist/model/atomic-list-elements/atomic-list-element YANG schema element.
+type Model_AtomicListElementPath struct {
+	*ygnmi.NodePath
+}
+
+// Model_AtomicListElementPathAny represents the wildcard version of the /openconfig-withlist/model/atomic-list-elements/atomic-list-element YANG schema element.
+type Model_AtomicListElementPathAny struct {
+	*ygnmi.NodePath
+}
+
+// Model_AtomicListElementPathMap represents the /openconfig-withlist/model/atomic-list-elements/atomic-list-element YANG schema element.
+type Model_AtomicListElementPathMap struct {
+	*ygnmi.NodePath
+}
+
+// Model_AtomicListElementPathMapAny represents the wildcard version of the /openconfig-withlist/model/atomic-list-elements/atomic-list-element YANG schema element.
+type Model_AtomicListElementPathMapAny struct {
+	*ygnmi.NodePath
 }
 
 // Model_MultiKey_Key1Path represents the /openconfig-withlist/model/b/multi-key/state/key1 YANG schema element.

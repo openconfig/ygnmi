@@ -716,6 +716,9 @@ func mustTemplate(name, src string) *template.Template {
 // parsed information.
 // packageName, splitByModule, and trimOCPackage are used to determine
 // the generated Go package name for the generated PathStructs.
+//
+// TODO(wenbli): Change this function to be callable while traversing the IR
+// rather than traversing the IR itself again.
 func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStructSuffix, packageName, packageSuffix string, splitByModule bool, trimPrefix string) (NodeDataMap, util.Errors) {
 	nodeDataMap := NodeDataMap{}
 	var errs util.Errors
