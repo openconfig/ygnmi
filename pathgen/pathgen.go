@@ -786,6 +786,10 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 				}
 			}
 
+			var yangTypeName string
+			if field.Flags != nil {
+				yangTypeName = field.Flags[yangTypeNameFlagKey]
+			}
 			nodeData := NodeData{
 				GoTypeName:            goTypeName,
 				LocalGoTypeName:       localGoTypeName,
@@ -794,22 +798,17 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 				IsLeaf:                isLeaf,
 				IsScalarField:         gogen.IsScalarField(field),
 				HasDefault:            isLeaf && (len(field.YANGDetails.Defaults) > 0 || mType.DefaultValue != nil),
-				YANGTypeName: func() string {
-					if field.Flags != nil {
-						return field.Flags[yangTypeNameFlagKey]
-					} else {
-						return ""
-					}
-				}(),
-				YANGPath:          field.YANGDetails.Path,
-				GoPathPackageName: goPackageName(field.YANGDetails.RootElementModule, splitByModule, false, packageName, trimPrefix, packageSuffix),
-				DirectoryName:     field.YANGDetails.Path,
+				YANGTypeName:          yangTypeName,
+				YANGPath:              field.YANGDetails.Path,
+				GoPathPackageName:     goPackageName(field.YANGDetails.RootElementModule, splitByModule, false, packageName, trimPrefix, packageSuffix),
+				DirectoryName:         field.YANGDetails.Path,
 			}
+
 			switch {
-			case !isLeaf && field.Type == ygen.ListNode && len(fieldDir.ListKeys) > 0 && !(fieldDir.CompressedTelemetryAtomic || field.YANGDetails.OrderedByUser):
+			case !isLeaf && isKeyedList(fieldDir) && !fieldDir.CompressedTelemetryAtomic && !field.YANGDetails.OrderedByUser:
 				nodeDataMap[pathStructName] = &nodeData
 				fallthrough
-			case !isLeaf && field.Type == ygen.ListNode && len(fieldDir.ListKeys) > 0:
+			case !isLeaf && isKeyedList(fieldDir):
 				nodeData := nodeData
 				nodeData.SubsumingGoStructName = dir.Name
 				if field.YANGDetails.OrderedByUser {
@@ -956,6 +955,10 @@ type goPathFieldData struct {
 	ChildPkgAccessor        string           // ChildPkgAccessor is used if the child path struct exists in another package.
 }
 
+func isKeyedList(directory *ygen.ParsedDirectory) bool {
+	return (directory.Type == ygen.List || directory.Type == ygen.OrderedList) && len(directory.ListKeys) > 0
+}
+
 // generateDirectorySnippet generates all Go code associated with a schema node
 // (container, list, leaf, or fakeroot), all of which have a corresponding
 // struct onto which to attach the necessary methods for path generation.
@@ -989,7 +992,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 	}
 
 	// Generate Map PathStructs for keyed list types.
-	if isKeyedList := (directory.Type == ygen.List || directory.Type == ygen.OrderedList) && len(directory.ListKeys) > 0; isKeyedList {
+	if isKeyedList(directory) {
 		structData := structData
 		structData.TypeName += WholeKeyedListSuffix
 		if err := goPathStructTemplate.Execute(&structBuf, structData); err != nil {
