@@ -37,6 +37,16 @@ type AListPathAny struct {
 	*ygnmi.NodePath
 }
 
+// AListPathMap represents the /enum-module/a-lists/a-list YANG schema element.
+type AListPathMap struct {
+	*ygnmi.NodePath
+}
+
+// AListPathMapAny represents the wildcard version of the /enum-module/a-lists/a-list YANG schema element.
+type AListPathMapAny struct {
+	*ygnmi.NodePath
+}
+
 // Value (leaf): 
 // 	Defining module:      "enum-module"
 // 	Instantiating module: "enum-module"
@@ -84,6 +94,16 @@ type BListPath struct {
 
 // BListPathAny represents the wildcard version of the /enum-module/b-lists/b-list YANG schema element.
 type BListPathAny struct {
+	*ygnmi.NodePath
+}
+
+// BListPathMap represents the /enum-module/b-lists/b-list YANG schema element.
+type BListPathMap struct {
+	*ygnmi.NodePath
+}
+
+// BListPathMapAny represents the wildcard version of the /enum-module/b-lists/b-list YANG schema element.
+type BListPathMapAny struct {
 	*ygnmi.NodePath
 }
 
@@ -209,6 +229,21 @@ func (n *DevicePath) AList(Value AList_Value_Union) *AListPath {
 	}
 }
 
+// AListMap (list): 
+// 	Defining module:      "enum-module"
+// 	Instantiating module: "enum-module"
+// 	Path from parent:     "a-lists/a-list"
+// 	Path from root:       "/a-lists/a-list"
+func (n *DevicePath) AListMap() *AListPathMap {
+	return &AListPathMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"a-lists"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
 // BListAny (list): 
 // 	Defining module:      "enum-module"
 // 	Instantiating module: "enum-module"
@@ -236,6 +271,21 @@ func (n *DevicePath) BList(Value BList_Value_Union) *BListPath {
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b-lists", "b-list"},
 			map[string]interface{}{"value": Value},
+			n,
+		),
+	}
+}
+
+// BListMap (list): 
+// 	Defining module:      "enum-module"
+// 	Instantiating module: "enum-module"
+// 	Path from parent:     "b-lists/b-list"
+// 	Path from root:       "/b-lists/b-list"
+func (n *DevicePath) BListMap() *BListPathMap {
+	return &BListPathMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"b-lists"},
+			map[string]interface{}{},
 			n,
 		),
 	}

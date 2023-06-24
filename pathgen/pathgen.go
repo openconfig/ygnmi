@@ -451,11 +451,15 @@ func (g GoPathStructCodeSnippet) String() string {
 
 // genExtras calls the extra generators to populate ExtraGeneration.
 //
-// - nodeDataMap is the set of all nodes keyed by pathstruct name.
-// - dir is the directory to which this snippet belongs.
-func (snip *GoPathStructCodeSnippet) genExtras(nodeDataMap NodeDataMap, dir *ygen.ParsedDirectory, extraGens []Generator) util.Errors {
+//   - psName is the PathStruct name used to retrieve the correct entry from
+//     NodeDataMap. If it is not present then generation is skipped.
+//   - nodeDataMap is the set of all nodes keyed by pathstruct name.
+//   - dir is the directory to which this snippet belongs.
+func (snip *GoPathStructCodeSnippet) genExtras(psName string, nodeDataMap NodeDataMap, dir *ygen.ParsedDirectory, extraGens []Generator) util.Errors {
+	if _, ok := nodeDataMap[psName]; !ok {
+		return nil
+	}
 	var errs util.Errors
-	psName := snip.PathStructName
 	var b strings.Builder
 	for _, gen := range extraGens {
 		extra, err := gen(psName, dir, nodeDataMap[psName])
@@ -464,7 +468,7 @@ func (snip *GoPathStructCodeSnippet) genExtras(nodeDataMap NodeDataMap, dir *yge
 		}
 		b.WriteString(extra)
 	}
-	snip.ExtraGeneration = b.String()
+	snip.ExtraGeneration += b.String()
 	return errs
 }
 
@@ -527,7 +531,7 @@ type CompressionInfo struct {
 	// PreRelPath is the list of strings of qualified path elements prior
 	// to the compressed-out node in Go list syntax.
 	//
-	// e.g. "openconfig-withlistval:ordered-lists", "openconfig-withlistval:ordered-lists-again"
+	// e.g. "openconfig-withlistval:atomic-lists", "openconfig-withlistval:atomic-lists-again"
 	PreRelPathList string
 	// PreRelPath is the list of strings of qualified path elements after
 	// the compressed-out node in Go list syntax.
@@ -744,18 +748,22 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 
 			mType := field.LangType
 			isLeaf := mType != nil
+			var fieldDir *ygen.ParsedDirectory
+			if !isLeaf {
+				var ok bool
+				if fieldDir, ok = ir.Directories[field.YANGDetails.Path]; !ok {
+					errs = util.AppendErr(errs, fmt.Errorf("field was a non-leaf but could not find it in IR: %s", field.YANGDetails.Path))
+					continue
+				}
+			}
 
 			subsumingGoStructName := dir.Name
-			if !isLeaf && !field.YANGDetails.OrderedByUser {
-				subsumingGoStructName = ir.Directories[field.YANGDetails.Path].Name
+			if !isLeaf {
+				subsumingGoStructName = fieldDir.Name
 			}
 
 			var goTypeName, localGoTypeName string
 			switch {
-			case !isLeaf && field.YANGDetails.OrderedByUser:
-				typeName := gogen.OrderedMapTypeName(ir.Directories[field.YANGDetails.Path].Name)
-				goTypeName = "*" + schemaStructPkgAccessor + typeName
-				localGoTypeName = "*" + typeName
 			case !isLeaf:
 				goTypeName = "*" + schemaStructPkgAccessor + subsumingGoStructName
 				localGoTypeName = "*" + subsumingGoStructName
@@ -767,18 +775,19 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 				localGoTypeName = mType.NativeType
 			case field.Type == ygen.LeafListNode:
 				goTypeName = "[]" + mType.NativeType
+				localGoTypeName = goTypeName
 			default:
 				goTypeName = mType.NativeType
-			}
-			if localGoTypeName == "" {
-				localGoTypeName = goTypeName
+				if localGoTypeName == "" {
+					localGoTypeName = goTypeName
+				}
 			}
 
 			var yangTypeName string
 			if field.Flags != nil {
 				yangTypeName = field.Flags[yangTypeNameFlagKey]
 			}
-			nodeDataMap[pathStructName] = &NodeData{
+			nodeData := NodeData{
 				GoTypeName:            goTypeName,
 				LocalGoTypeName:       localGoTypeName,
 				GoFieldName:           goFieldNameMap[fieldName],
@@ -791,21 +800,50 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 				GoPathPackageName:     goPackageName(field.YANGDetails.RootElementModule, splitByModule, false, packageName, trimPrefix, packageSuffix),
 				DirectoryName:         field.YANGDetails.Path,
 			}
+
 			switch {
-			case isLeaf:
-				nodeDataMap[pathStructName].YANGFieldName = fieldName
-				nodeDataMap[pathStructName].DirectoryName = dir.Path
-			case !isLeaf && field.YANGDetails.OrderedByUser: // "ordered-by user" lists
+			case !isLeaf && isKeyedList(fieldDir) && !fieldDir.CompressedTelemetryAtomic && !field.YANGDetails.OrderedByUser:
+				nodeDataMap[pathStructName] = &nodeData
+				fallthrough
+			case !isLeaf && isKeyedList(fieldDir):
+				nodeData := nodeData
+				nodeData.SubsumingGoStructName = dir.Name
+				if field.YANGDetails.OrderedByUser {
+					typeName := gogen.OrderedMapTypeName(fieldDir.Name)
+					nodeData.GoTypeName = "*" + schemaStructPkgAccessor + typeName
+					nodeData.LocalGoTypeName = "*" + typeName
+				} else {
+					_, keyType, isDefined, err := gogen.UnorderedMapTypeName(field.YANGDetails.Path, goFieldNameMap[fieldName], dir.Name, ir.Directories)
+					if err != nil {
+						errs = util.AppendErr(errs, fmt.Errorf("could not determine type name of unordered keyed map: %v", err))
+						continue
+					}
+					nonLocalKeyType := keyType
+					if isDefined {
+						nonLocalKeyType = schemaStructPkgAccessor + keyType
+					}
+					nodeData.GoTypeName = fmt.Sprintf("map[%s]%s", nonLocalKeyType, nodeData.GoTypeName)
+					nodeData.LocalGoTypeName = fmt.Sprintf("map[%s]%s", keyType, nodeData.LocalGoTypeName)
+				}
+
 				relPath := longestPath(field.MappedPaths)
 				relMods := longestPath(field.MappedPathModules)
 				if gotLen := len(relPath); gotLen != 2 {
 					errs = util.AppendErr(errs, fmt.Errorf("expected two path elements for the relative path of an ordered map, got %d: %v", gotLen, relPath))
 					continue
 				}
-				nodeDataMap[pathStructName].CompressInfo = &CompressionInfo{
+				nodeData.CompressInfo = &CompressionInfo{
 					PreRelPathList:  fmt.Sprintf(`"%s:%s"`, relMods[0], relPath[0]),
 					PostRelPathList: fmt.Sprintf(`"%s:%s"`, relMods[1], relPath[1]),
 				}
+
+				nodeDataMap[pathStructName+WholeKeyedListSuffix] = &nodeData
+			case isLeaf:
+				nodeData.YANGFieldName = fieldName
+				nodeData.DirectoryName = dir.Path
+				fallthrough
+			default:
+				nodeDataMap[pathStructName] = &nodeData
 			}
 		}
 	}
@@ -914,6 +952,10 @@ type goPathFieldData struct {
 	ChildPkgAccessor        string           // ChildPkgAccessor is used if the child path struct exists in another package.
 }
 
+func isKeyedList(directory *ygen.ParsedDirectory) bool {
+	return (directory.Type == ygen.List || directory.Type == ygen.OrderedList) && len(directory.ListKeys) > 0
+}
+
 // generateDirectorySnippet generates all Go code associated with a schema node
 // (container, list, leaf, or fakeroot), all of which have a corresponding
 // struct onto which to attach the necessary methods for path generation.
@@ -946,19 +988,29 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 		return nil, util.AppendErr(errs, err)
 	}
 
+	// Generate Map PathStructs for keyed list types.
+	if isKeyedList(directory) {
+		structData := structData
+		structData.TypeName += WholeKeyedListSuffix
+		if err := goPathStructTemplate.Execute(&structBuf, structData); err != nil {
+			return nil, util.AppendErr(errs, err)
+		}
+	}
+
 	nonLeafSnippet := GoPathStructCodeSnippet{
 		PathStructName: structData.TypeName,
 		StructBase:     structBuf.String(),
 		Package:        goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix),
 	}
-	errs = util.AppendErrs(errs, nonLeafSnippet.genExtras(nodeDataMap, directory, extraGens))
+	errs = util.AppendErrs(errs, nonLeafSnippet.genExtras(structData.TypeName, nodeDataMap, directory, extraGens))
+	errs = util.AppendErrs(errs, nonLeafSnippet.genExtras(structData.TypeName+WholeKeyedListSuffix, nodeDataMap, directory, extraGens))
 
 	// Since it is not possible for gNMI to refer to individual nodes
-	// underneath an unkeyed list or an ordered list (which is assumed to
-	// be telemetry-atomic), prevent constructing paths that go below it by
-	// breaking the chain here.
+	// underneath an unkeyed list or a telemetry-atomic node (ordered lists
+	// are always assumed to be telemetry-atomic), prevent constructing
+	// paths that go below it by breaking the chain here.
 	switch {
-	case directory.Type == ygen.List && len(directory.ListKeys) == 0, directory.Type == ygen.OrderedList:
+	case directory.Type == ygen.List && len(directory.ListKeys) == 0, directory.Type == ygen.OrderedList, directory.TelemetryAtomic, directory.CompressedTelemetryAtomic:
 		return []GoPathStructCodeSnippet{nonLeafSnippet}, nil
 	}
 
@@ -1035,7 +1087,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 				StructBase:     buf.String(),
 				Package:        goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix),
 			}
-			errs = util.AppendErrs(errs, leafSnippet.genExtras(nodeDataMap, directory, extraGens))
+			errs = util.AppendErrs(errs, leafSnippet.genExtras(leafTypeName, nodeDataMap, directory, extraGens))
 			snippets = append(snippets, leafSnippet)
 		}
 	}
@@ -1145,28 +1197,32 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 	fieldDirectory := directories[field.YANGDetails.Path]
 
 	switch {
-	case field.Type == ygen.ListNode && field.YANGDetails.OrderedByUser:
-		if gotLen := len(path); gotLen != 2 {
-			return []error{fmt.Errorf("expected two path elements for the relative path of an ordered map, got %d: %v", gotLen, path)}
-		}
-		fieldData.RelPathList = relPathListFn(path[:1])
-		fieldData.MethodName += WholeKeyedListSuffix
-		fallthrough
-	case field.Type != ygen.ListNode:
-		return generateChildConstructorsForLeafOrContainer(methodBuf, fieldData, isUnderFakeRoot, generateWildcardPaths, unified, field.Type == ygen.LeafNode || field.Type == ygen.LeafListNode)
-	case len(fieldDirectory.ListKeys) == 0:
+	case field.Type == ygen.ListNode && len(fieldDirectory.ListKeys) == 0: // unkeyed lists
 		// Generate a single wildcard constructor for keyless-lists.
 		if errs := generateChildConstructorsForListBuilderFormat(methodBuf, builderBuf, nil, nil, fieldData, isUnderFakeRoot, schemaStructPkgAccessor); len(errs) > 0 {
 			return errs
 		}
 		return nil
-	default:
+	case field.Type == ygen.ListNode && !field.YANGDetails.OrderedByUser && !fieldDirectory.CompressedTelemetryAtomic: // non-atomic keyed lists
 		if generateWildcardPaths {
 			if errs := generateChildConstructorsForListBuilderFormat(methodBuf, builderBuf, fieldDirectory.ListKeys, fieldDirectory.ListKeyYANGNames, fieldData, isUnderFakeRoot, schemaStructPkgAccessor); len(errs) > 0 {
 				return errs
 			}
 		}
-		return generateChildConstructorsForList(methodBuf, fieldDirectory.ListKeys, fieldDirectory.ListKeyYANGNames, fieldData, isUnderFakeRoot, generateWildcardPaths, schemaStructPkgAccessor)
+		if errs := generateChildConstructorsForList(methodBuf, fieldDirectory.ListKeys, fieldDirectory.ListKeyYANGNames, fieldData, isUnderFakeRoot, generateWildcardPaths, schemaStructPkgAccessor); len(errs) > 0 {
+			return errs
+		}
+		fallthrough
+	case field.Type == ygen.ListNode: // atomic keyed lists
+		if gotLen := len(path); gotLen != 2 {
+			return []error{fmt.Errorf("expected two path elements for the relative path of an ordered map, got %d: %v", gotLen, path)}
+		}
+		fieldData.RelPathList = relPathListFn(path[:1])
+		fieldData.TypeName += WholeKeyedListSuffix
+		fieldData.MethodName += WholeKeyedListSuffix
+		fallthrough
+	default: // non-lists
+		return generateChildConstructorsForLeafOrContainer(methodBuf, fieldData, isUnderFakeRoot, generateWildcardPaths, unified, field.Type == ygen.LeafNode || field.Type == ygen.LeafListNode)
 	}
 }
 
@@ -1192,6 +1248,7 @@ func generateChildConstructorsForLeafOrContainer(methodBuf *strings.Builder, fie
 	}
 
 	if generateWildcardPaths {
+		fieldData := fieldData
 		// Generate child constructor for the wildcard version of the parent struct.
 		fieldData.TypeName += WildcardSuffix
 		fieldData.Struct.TypeName += WildcardSuffix
@@ -1206,6 +1263,7 @@ func generateChildConstructorsForLeafOrContainer(methodBuf *strings.Builder, fie
 			}
 		}
 	}
+
 	return errors
 }
 

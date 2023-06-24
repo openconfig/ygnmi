@@ -525,7 +525,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-orderedlist/model",
 			},
-			"Model_OrderedListPath": {
+			"Model_OrderedListPathMap": {
 				GoTypeName:            "*Model_OrderedList_OrderedMap",
 				LocalGoTypeName:       "*Model_OrderedList_OrderedMap",
 				GoFieldName:           "OrderedList",
@@ -912,6 +912,16 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/enum-module/a-lists/a-list",
 				YANGFieldName:         "",
 			},
+			"AListPathMap": {
+				GoTypeName:            "map[AList_Value_Union]*AList",
+				LocalGoTypeName:       "map[AList_Value_Union]*AList",
+				GoFieldName:           "AList",
+				SubsumingGoStructName: "Device",
+				YANGPath:              "/enum-module/a-lists/a-list",
+				GoPathPackageName:     "ocstructs",
+				DirectoryName:         "/enum-module/a-lists/a-list",
+				CompressInfo:          &CompressionInfo{PreRelPathList: `"enum-module:a-lists"`, PostRelPathList: `"enum-module:a-list"`},
+			},
 			"AList_ValuePath": {
 				GoTypeName:            "AList_Value_Union",
 				LocalGoTypeName:       "AList_Value_Union",
@@ -936,6 +946,16 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/enum-module/b-lists/b-list",
 				YANGFieldName:         "",
+			},
+			"BListPathMap": {
+				GoTypeName:            "map[BList_Value_Union]*BList",
+				LocalGoTypeName:       "map[BList_Value_Union]*BList",
+				GoFieldName:           "BList",
+				SubsumingGoStructName: "Device",
+				YANGPath:              "/enum-module/b-lists/b-list",
+				GoPathPackageName:     "ocstructs",
+				DirectoryName:         "/enum-module/b-lists/b-list",
+				CompressInfo:          &CompressionInfo{PreRelPathList: `"enum-module:b-lists"`, PostRelPathList: `"enum-module:b-list"`},
 			},
 			"BList_ValuePath": {
 				GoTypeName:            "BList_Value_Union",
@@ -1600,7 +1620,7 @@ func getIR() *ygen.IR {
 						Type:                    ygen.ListNode,
 						LangType:                nil,
 						MappedPaths:             [][]string{{"list-container", "list"}},
-						MappedPathModules:       [][]string{{"root-module"}},
+						MappedPathModules:       [][]string{{"root-module", "root-module"}},
 						ShadowMappedPaths:       nil,
 						ShadowMappedPathModules: nil,
 					},
@@ -1621,7 +1641,7 @@ func getIR() *ygen.IR {
 						Type:                    ygen.ListNode,
 						LangType:                nil,
 						MappedPaths:             [][]string{{"list-container-with-state", "list-with-state"}},
-						MappedPathModules:       [][]string{{"root-module"}},
+						MappedPathModules:       [][]string{{"root-module", "root-module"}},
 						ShadowMappedPaths:       nil,
 						ShadowMappedPathModules: nil,
 					},
@@ -1641,7 +1661,7 @@ func getIR() *ygen.IR {
 						Type:                    ygen.ListNode,
 						LangType:                nil,
 						MappedPaths:             [][]string{{"keyless-list-container", "keyless-list"}},
-						MappedPathModules:       [][]string{{"root-module"}},
+						MappedPathModules:       [][]string{{"root-module", "root-module"}},
 						ShadowMappedPaths:       nil,
 						ShadowMappedPathModules: nil,
 					},
@@ -2108,6 +2128,19 @@ func TestGetNodeDataMap(t *testing.T) {
 				DirectoryName:         "/root-module/list-container/list",
 				YANGFieldName:         "",
 			},
+			"List_PathMap": {
+				GoTypeName:            "map[struct.List_Key]*struct.List",
+				LocalGoTypeName:       "map[List_Key]*List",
+				GoFieldName:           "List",
+				SubsumingGoStructName: "Root",
+				YANGPath:              "/root-module/list-container/list",
+				GoPathPackageName:     "rootmodulepath",
+				DirectoryName:         "/root-module/list-container/list",
+				CompressInfo: &CompressionInfo{
+					PreRelPathList:  `"root-module:list-container"`,
+					PostRelPathList: `"root-module:list"`,
+				},
+			},
 			"ListWithState_Path": {
 				GoTypeName:            "*struct.ListWithState",
 				LocalGoTypeName:       "*ListWithState",
@@ -2119,6 +2152,19 @@ func TestGetNodeDataMap(t *testing.T) {
 				GoPathPackageName:     "rootmodulepath",
 				DirectoryName:         "/root-module/list-container-with-state/list-with-state",
 				YANGFieldName:         "",
+			},
+			"ListWithState_PathMap": {
+				GoTypeName:            "map[float64]*struct.ListWithState",
+				LocalGoTypeName:       "map[float64]*ListWithState",
+				GoFieldName:           "ListWithState",
+				SubsumingGoStructName: "Root",
+				YANGPath:              "/root-module/list-container-with-state/list-with-state",
+				GoPathPackageName:     "rootmodulepath",
+				DirectoryName:         "/root-module/list-container-with-state/list-with-state",
+				CompressInfo: &CompressionInfo{
+					PreRelPathList:  `"root-module:list-container-with-state"`,
+					PostRelPathList: `"root-module:list-with-state"`,
+				},
 			},
 			"ListWithState_Key_Path": {
 				GoTypeName:            "float64",
@@ -2217,9 +2263,11 @@ func TestGetNodeDataMap(t *testing.T) {
 			"Leaf_Path",
 			"ListWithState_Key_Path",
 			"ListWithState_Path",
+			"ListWithState_PathMap",
 			"List_Key1_Path",
 			"List_Key2_Path",
 			"List_Path",
+			"List_PathMap",
 			"List_UnionKey_Path",
 			"Root_Path",
 		},
@@ -2309,6 +2357,25 @@ func (n *RootPath) List(Key1 string, Key2 oc.Binary, UnionKey oc.RootElementModu
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": Key1, "key2": Key2, "union-key": UnionKey},
+			n,
+		),
+	}
+}
+
+// ListMap (list): 
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "list-container/list"
+// 	Path from root:       "/list-container/list"
+//
+// 	Key1: string
+// 	Key2: oc.Binary
+// 	UnionKey: [oc.UnionString, oc.Binary]
+func (n *RootPath) ListMap() *ListPathMap {
+	return &ListPathMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"list-container"},
+			map[string]interface{}{},
 			n,
 		),
 	}
@@ -2763,6 +2830,16 @@ func (n *RootPath) ListWithState(Key float64) *ListWithStatePath {
 		),
 	}
 }
+
+func (n *RootPath) ListWithStateMap() *ListWithStatePathMap {
+	return &ListWithStatePathMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"list-container-with-state"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
 `,
 		}},
 		wantNoWildcard: []GoPathStructCodeSnippet{{
@@ -2797,6 +2874,16 @@ func (n *RootPath) ListWithState(Key float64) *ListWithStatePath {
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": Key},
+			n,
+		),
+	}
+}
+
+func (n *RootPath) ListWithStateMap() *ListWithStatePathMap {
+	return &ListWithStatePathMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"list-container-with-state"},
+			map[string]interface{}{},
 			n,
 		),
 	}
@@ -2866,6 +2953,16 @@ type List struct {
 
 // ListAny represents the wildcard version of the /root-module/list-container/list YANG schema element.
 type ListAny struct {
+	*ygnmi.NodePath
+}
+
+// ListMap represents the /root-module/list-container/list YANG schema element.
+type ListMap struct {
+	*ygnmi.NodePath
+}
+
+// ListMapAny represents the wildcard version of the /root-module/list-container/list YANG schema element.
+type ListMapAny struct {
 	*ygnmi.NodePath
 }
 `,
@@ -2973,6 +3070,11 @@ type List_UnionKey struct {
 type List struct {
 	*ygnmi.NodePath
 }
+
+// ListMap represents the /root-module/list-container/list YANG schema element.
+type ListMap struct {
+	*ygnmi.NodePath
+}
 `,
 			ChildConstructors: `
 func (n *List) Key1() *List_Key1 {
@@ -3053,11 +3155,31 @@ func (n *RootPath) List(Key1 string, Key2 oc.Binary, UnionKey oc.RootElementModu
 	}
 }
 
+func (n *RootPath) ListMap() *rootmodulepath.ListPathMap {
+	return &rootmodulepath.ListPathMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"list-container"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
 func (n *RootPath) ListWithState(Key float64) *rootmodulepath.ListWithStatePath {
 	return &rootmodulepath.ListWithStatePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": Key},
+			n,
+		),
+	}
+}
+
+func (n *RootPath) ListWithStateMap() *rootmodulepath.ListWithStatePathMap {
+	return &rootmodulepath.ListWithStatePathMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"list-container-with-state"},
+			map[string]interface{}{},
 			n,
 		),
 	}
@@ -3127,6 +3249,16 @@ func (n *RootPath) List(Key1 string, Key2 oc.Binary, UnionKey oc.RootElementModu
 	}
 }
 
+func (n *RootPath) ListMap() *rootmodulepath.ListPathMap {
+	return &rootmodulepath.ListPathMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"list-container"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
 func (n *RootPath) ListWithStateAny() *rootmodulepath.ListWithStatePathAny {
 	return &rootmodulepath.ListWithStatePathAny{
 		NodePath: ygnmi.NewNodePath(
@@ -3142,6 +3274,16 @@ func (n *RootPath) ListWithState(Key float64) *rootmodulepath.ListWithStatePath 
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": Key},
+			n,
+		),
+	}
+}
+
+func (n *RootPath) ListWithStateMap() *rootmodulepath.ListWithStatePathMap {
+	return &rootmodulepath.ListWithStatePathMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"list-container-with-state"},
+			map[string]interface{}{},
 			n,
 		),
 	}
@@ -3428,6 +3570,16 @@ func (n *RootPath) ListWithState(Key float64) *ListWithStatePath {
 		),
 	}
 }
+
+func (n *RootPath) ListWithStateMap() *ListWithStatePathMap {
+	return &ListWithStatePathMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"list-container-with-state"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
 `,
 	}, {
 		name:                    "root-level list methods over key threshold -- should use builder API",
@@ -3453,6 +3605,16 @@ func (n *RootPath) List(Key1 string, Key2 oc.Binary, UnionKey oc.RootElementModu
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": Key1, "key2": Key2, "union-key": UnionKey},
+			n,
+		),
+	}
+}
+
+func (n *RootPath) ListMap() *ListPathMap {
+	return &ListPathMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"list-container"},
+			map[string]interface{}{},
 			n,
 		),
 	}

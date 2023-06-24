@@ -54,10 +54,16 @@ const (
 var packagesSeen = map[string]bool{}
 
 // GNMIGenerator is a plugin generator for generating ygnmi query objects.
+//
+// - pathStructName is the name of the PathStruct of the node.
+// - node contains information of the node.
+// - dir is the containing directory of the node. For leaves this is the
+// parent.
+//
 // Note: GNMIGenerator requires that PreferOperationalState be true when generating PathStructs.
 // TODO(DanG100): pass schema from parent to child.
 func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeData) (string, error) {
-	tmplStruct := &gnmiStruct{
+	tmplStruct := gnmiStruct{
 		PathStructName:          pathStructName,
 		GoTypeName:              node.GoTypeName,
 		GoStructTypeName:        node.SubsumingGoStructName,
@@ -76,7 +82,7 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 	}
 	var b strings.Builder
 	if node.SubsumingGoStructName == fakeRootName {
-		if err := batchTemplate.Execute(&b, tmplStruct); err != nil {
+		if err := batchTemplate.Execute(&b, &tmplStruct); err != nil {
 			return "", err
 		}
 	}
@@ -103,12 +109,18 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 	tmpl := goGNMINonLeafTemplate
 	if node.IsLeaf {
 		tmpl = goGNMILeafTemplate
-		if err := populateTmplForLeaf(dir, node.YANGFieldName, false, tmplStruct); err != nil {
-			return "", err
-		}
 	}
 
-	if err := tmpl.Execute(&b, tmplStruct); err != nil {
+	generate := func(tmplStruct gnmiStruct, shadow bool) error {
+		if node.IsLeaf {
+			if err := populateTmplForLeaf(dir, node.YANGFieldName, shadow, &tmplStruct); err != nil {
+				return err
+			}
+		}
+		return tmpl.Execute(&b, &tmplStruct)
+	}
+
+	if err := generate(tmplStruct, false); err != nil {
 		return "", err
 	}
 
@@ -119,12 +131,7 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 	tmplStruct.MethodName = "Config"
 	tmplStruct.SingletonTypeName = "ConfigQuery"
 	tmplStruct.IsState = false
-	if node.IsLeaf {
-		if err := populateTmplForLeaf(dir, node.YANGFieldName, true, tmplStruct); err != nil {
-			return "", err
-		}
-	}
-	if err := tmpl.Execute(&b, tmplStruct); err != nil {
+	if err := generate(tmplStruct, true); err != nil {
 		return "", err
 	}
 

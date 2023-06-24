@@ -65,6 +65,21 @@ func (n *ModelPath) MultiKey(Key1 uint32, Key2 uint64) *Model_MultiKeyPath {
 	}
 }
 
+// MultiKeyMap (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "b/multi-key"
+// 	Path from root:       "/model/b/multi-key"
+func (n *ModelPath) MultiKeyMap() *Model_MultiKeyPathMap {
+	return &Model_MultiKeyPathMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"b"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
 // NoKeyAny (list): 
 // 	Defining module:      "openconfig-withlist"
 // 	Instantiating module: "openconfig-withlist"
@@ -112,6 +127,21 @@ func (n *ModelPath) SingleKey(Key string) *Model_SingleKeyPath {
 	}
 }
 
+// SingleKeyMap (list): 
+// 	Defining module:      "openconfig-withlist"
+// 	Instantiating module: "openconfig-withlist"
+// 	Path from parent:     "a/single-key"
+// 	Path from root:       "/model/a/single-key"
+func (n *ModelPath) SingleKeyMap() *Model_SingleKeyPathMap {
+	return &Model_SingleKeyPathMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"a"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
 // Model_MultiKey_Key1Path represents the /openconfig-withlist/model/b/multi-key/state/key1 YANG schema element.
 type Model_MultiKey_Key1Path struct {
 	*ygnmi.NodePath
@@ -124,6 +154,11 @@ type Model_MultiKey_Key2Path struct {
 
 // Model_MultiKeyPath represents the /openconfig-withlist/model/b/multi-key YANG schema element.
 type Model_MultiKeyPath struct {
+	*ygnmi.NodePath
+}
+
+// Model_MultiKeyPathMap represents the /openconfig-withlist/model/b/multi-key YANG schema element.
+type Model_MultiKeyPathMap struct {
 	*ygnmi.NodePath
 }
 
@@ -169,6 +204,11 @@ type Model_SingleKey_KeyPath struct {
 
 // Model_SingleKeyPath represents the /openconfig-withlist/model/a/single-key YANG schema element.
 type Model_SingleKeyPath struct {
+	*ygnmi.NodePath
+}
+
+// Model_SingleKeyPathMap represents the /openconfig-withlist/model/a/single-key YANG schema element.
+type Model_SingleKeyPathMap struct {
 	*ygnmi.NodePath
 }
 
