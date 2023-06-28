@@ -40,7 +40,6 @@ module openconfig-withlistval {
           }
 
           container ordered-lists {
-            oc-ext:telemetry-atomic;
             list ordered-list {
               key "key";
               ordered-by user;

@@ -184,6 +184,10 @@ type GenConfig struct {
 	UnifyPathStructs bool
 	// ExtraGenerators are custom funcs that are used to extend the path struct generation.
 	ExtraGenerators []Generator
+	// GenerateOrderedListsAsUnorderedMaps indicates that lists that are
+	// marked `ordered-by user` will be represented using built-in Go maps
+	// instead of an ordered map Go structure.
+	GenerateOrderedListsAsUnorderedMaps bool
 }
 
 // GoImports contains package import options.
@@ -280,7 +284,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 	}
 
 	// Get NodeDataMap for the schema.
-	nodeDataMap, es := getNodeDataMap(ir, cg.FakeRootName, schemaStructPkgAccessor, cg.PathStructSuffix, cg.PackageName, cg.PackageSuffix, cg.SplitByModule, cg.TrimPackageModulePrefix)
+	nodeDataMap, es := getNodeDataMap(ir, cg.FakeRootName, schemaStructPkgAccessor, cg.PathStructSuffix, cg.PackageName, cg.PackageSuffix, cg.SplitByModule, cg.TrimPackageModulePrefix, !cg.GenerateOrderedListsAsUnorderedMaps)
 	if es != nil {
 		errs = util.AppendErrs(errs, es)
 	}
@@ -290,7 +294,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 	for _, directoryPath := range ir.OrderedDirectoryPathsByName() {
 		directory := ir.Directories[directoryPath]
 
-		structSnippet, es := generateDirectorySnippet(directory, ir.Directories, nodeDataMap, cg.ExtraGenerators, schemaStructPkgAccessor, cg.PathStructSuffix, cg.GenerateWildcardPaths, cg.SplitByModule, cg.TrimPackageModulePrefix, cg.PackageName, cg.PackageSuffix, cg.UnifyPathStructs)
+		structSnippet, es := generateDirectorySnippet(directory, ir.Directories, nodeDataMap, cg.ExtraGenerators, schemaStructPkgAccessor, cg.PathStructSuffix, cg.GenerateWildcardPaths, cg.SplitByModule, cg.TrimPackageModulePrefix, cg.PackageName, cg.PackageSuffix, cg.UnifyPathStructs, !cg.GenerateOrderedListsAsUnorderedMaps)
 		if es != nil {
 			errs = util.AppendErrs(errs, es)
 		}
@@ -719,7 +723,7 @@ func mustTemplate(name, src string) *template.Template {
 //
 // TODO(wenbli): Change this function to be callable while traversing the IR
 // rather than traversing the IR itself again.
-func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStructSuffix, packageName, packageSuffix string, splitByModule bool, trimPrefix string) (NodeDataMap, util.Errors) {
+func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStructSuffix, packageName, packageSuffix string, splitByModule bool, trimPrefix string, generateOrderedMaps bool) (NodeDataMap, util.Errors) {
 	nodeDataMap := NodeDataMap{}
 	var errs util.Errors
 	for _, dir := range ir.Directories {
@@ -805,13 +809,13 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 			}
 
 			switch {
-			case !isLeaf && isKeyedList(fieldDir) && !fieldDir.CompressedTelemetryAtomic && !field.YANGDetails.OrderedByUser:
+			case !isLeaf && isKeyedList(fieldDir) && !fieldDir.CompressedTelemetryAtomic && !(field.YANGDetails.OrderedByUser && generateOrderedMaps):
 				nodeDataMap[pathStructName] = &nodeData
 				fallthrough
 			case !isLeaf && isKeyedList(fieldDir):
 				nodeData := nodeData
 				nodeData.SubsumingGoStructName = dir.Name
-				if field.YANGDetails.OrderedByUser {
+				if field.YANGDetails.OrderedByUser && generateOrderedMaps {
 					typeName := gogen.OrderedMapTypeName(fieldDir.Name)
 					nodeData.GoTypeName = "*" + schemaStructPkgAccessor + typeName
 					nodeData.LocalGoTypeName = "*" + typeName
@@ -972,7 +976,7 @@ func isKeyedList(directory *ygen.ParsedDirectory) bool {
 // node, and directories is a map from path to a parsed schema node for all
 // directory nodes in the schema.
 func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[string]*ygen.ParsedDirectory, nodeDataMap NodeDataMap, extraGens []Generator, schemaStructPkgAccessor, pathStructSuffix string,
-	generateWildcardPaths, splitByModule bool, trimPrefix, pkgName, pkgSuffix string, unified bool) ([]GoPathStructCodeSnippet, util.Errors) {
+	generateWildcardPaths, splitByModule bool, trimPrefix, pkgName, pkgSuffix string, unified bool, generateOrderedMaps bool) ([]GoPathStructCodeSnippet, util.Errors) {
 
 	var errs util.Errors
 	// structBuf is used to store the code associated with the struct defined for
@@ -1013,7 +1017,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 	// are always assumed to be telemetry-atomic), prevent constructing
 	// paths that go below it by breaking the chain here.
 	switch {
-	case directory.Type == ygen.List && len(directory.ListKeys) == 0, directory.Type == ygen.OrderedList, directory.TelemetryAtomic, directory.CompressedTelemetryAtomic:
+	case directory.Type == ygen.List && len(directory.ListKeys) == 0, directory.Type == ygen.OrderedList && generateOrderedMaps, directory.TelemetryAtomic, directory.CompressedTelemetryAtomic:
 		return []GoPathStructCodeSnippet{nonLeafSnippet}, nil
 	}
 
@@ -1054,7 +1058,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 			}
 		}
 
-		if es := generateChildConstructors(&methodBuf, buildBuf, directory, fName, goFieldName, directories, schemaStructPkgAccessor, pathStructSuffix, generateWildcardPaths, childPkgAccessor, unified); es != nil {
+		if es := generateChildConstructors(&methodBuf, buildBuf, directory, fName, goFieldName, directories, schemaStructPkgAccessor, pathStructSuffix, generateWildcardPaths, childPkgAccessor, unified, generateOrderedMaps); es != nil {
 			errs = util.AppendErrs(errs, es)
 		}
 
@@ -1148,7 +1152,7 @@ func relPathListFn(path []string) string {
 // type name of of the child path struct, and a map of all directories of the
 // whole schema keyed by their schema paths.
 func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.Builder, directory *ygen.ParsedDirectory, directoryFieldName string, goFieldName string, directories map[string]*ygen.ParsedDirectory, schemaStructPkgAccessor,
-	pathStructSuffix string, generateWildcardPaths bool, childPkgAccessor string, unified bool) []error {
+	pathStructSuffix string, generateWildcardPaths bool, childPkgAccessor string, unified bool, generateOrderedMaps bool) []error {
 
 	field, ok := directory.Fields[directoryFieldName]
 	if !ok {
@@ -1206,7 +1210,7 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 			return errs
 		}
 		return nil
-	case field.Type == ygen.ListNode && !field.YANGDetails.OrderedByUser && !fieldDirectory.CompressedTelemetryAtomic: // non-atomic keyed lists
+	case field.Type == ygen.ListNode && !(field.YANGDetails.OrderedByUser && generateOrderedMaps) && !fieldDirectory.CompressedTelemetryAtomic: // non-atomic keyed lists
 		if generateWildcardPaths {
 			if errs := generateChildConstructorsForListBuilderFormat(methodBuf, builderBuf, fieldDirectory.ListKeys, fieldDirectory.ListKeyYANGNames, fieldData, isUnderFakeRoot, schemaStructPkgAccessor); len(errs) > 0 {
 				return errs

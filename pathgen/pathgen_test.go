@@ -59,9 +59,10 @@ func TestGeneratePathCode(t *testing.T) {
 		// inUseDefiningModuleForTypedefEnumNames uses the defining module name to prefix typedef enumerated types instead of the module where the typedef enumerated value is used.
 		inUseDefiningModuleForTypedefEnumNames bool
 		// inGenerateWildcardPaths determines whether wildcard paths are generated.
-		inGenerateWildcardPaths bool
-		inSchemaStructPkgPath   string
-		inPathStructSuffix      string
+		inGenerateWildcardPaths               bool
+		inSchemaStructPkgPath                 string
+		inPathStructSuffix                    string
+		inGenerateOrderedListsAsUnorderedMaps bool
 		// checkYANGPath says whether to check for the YANG path in the NodeDataMap.
 		checkYANGPath bool
 		// wantStructsCodeFile is the path of the generated Go code that the output of the test should be compared to.
@@ -537,6 +538,71 @@ func TestGeneratePathCode(t *testing.T) {
 					PreRelPathList:  `"openconfig-orderedlist:ordered-lists"`,
 					PostRelPathList: `"openconfig-orderedlist:ordered-list"`,
 				},
+			},
+			"Model_OrderedList_KeyPath": {
+				GoTypeName:            "string",
+				LocalGoTypeName:       "string",
+				GoFieldName:           "Key",
+				SubsumingGoStructName: "Model_OrderedList",
+				IsLeaf:                true,
+				IsScalarField:         true,
+				YANGTypeName:          "string",
+				YANGPath:              "/openconfig-orderedlist/model/ordered-lists/ordered-list/state/key",
+				GoPathPackageName:     "ocstructs",
+				YANGFieldName:         "key",
+				DirectoryName:         "/openconfig-orderedlist/model/ordered-lists/ordered-list",
+			}},
+	}, {
+		name:                                   "simple openconfig test with ordered list but turned off",
+		inFiles:                                []string{filepath.Join(datapath, "openconfig-orderedlist.yang")},
+		inPreferOperationalState:               true,
+		inShortenEnumLeafNames:                 true,
+		inUseDefiningModuleForTypedefEnumNames: true,
+		inGenerateWildcardPaths:                true,
+		inSchemaStructPkgPath:                  "",
+		inPathStructSuffix:                     "Path",
+		inGenerateOrderedListsAsUnorderedMaps:  true,
+		checkYANGPath:                          true,
+		wantStructsCodeFile:                    filepath.Join(TestRoot, "testdata/structs/openconfig-orderedlist-unordered.path-txt"),
+		wantNodeDataMap: NodeDataMap{
+			"DevicePath": {
+				GoTypeName:            "*Device",
+				LocalGoTypeName:       "*Device",
+				SubsumingGoStructName: "Device",
+				YANGPath:              "/",
+				GoPathPackageName:     "ocstructs",
+				DirectoryName:         "/device",
+			},
+			"ModelPath": {
+				GoTypeName:            "*Model",
+				LocalGoTypeName:       "*Model",
+				GoFieldName:           "Model",
+				SubsumingGoStructName: "Model",
+				YANGPath:              "/openconfig-orderedlist/model",
+				GoPathPackageName:     "ocstructs",
+				DirectoryName:         "/openconfig-orderedlist/model",
+			},
+			"Model_OrderedListPathMap": {
+				GoTypeName:            "map[string]*Model_OrderedList",
+				LocalGoTypeName:       "map[string]*Model_OrderedList",
+				GoFieldName:           "OrderedList",
+				SubsumingGoStructName: "Model",
+				YANGPath:              "/openconfig-orderedlist/model/ordered-lists/ordered-list",
+				GoPathPackageName:     "ocstructs",
+				DirectoryName:         "/openconfig-orderedlist/model/ordered-lists/ordered-list",
+				CompressInfo: &CompressionInfo{
+					PreRelPathList:  `"openconfig-orderedlist:ordered-lists"`,
+					PostRelPathList: `"openconfig-orderedlist:ordered-list"`,
+				},
+			},
+			"Model_OrderedListPath": {
+				GoTypeName:            "*Model_OrderedList",
+				LocalGoTypeName:       "*Model_OrderedList",
+				GoFieldName:           "OrderedList",
+				SubsumingGoStructName: "Model_OrderedList",
+				YANGPath:              "/openconfig-orderedlist/model/ordered-lists/ordered-list",
+				GoPathPackageName:     "ocstructs",
+				DirectoryName:         "/openconfig-orderedlist/model/ordered-lists/ordered-list",
 			},
 			"Model_OrderedList_KeyPath": {
 				GoTypeName:            "string",
@@ -1215,6 +1281,7 @@ func TestGeneratePathCode(t *testing.T) {
 				cg.UseDefiningModuleForTypedefEnumNames = tt.inUseDefiningModuleForTypedefEnumNames
 				cg.GenerateWildcardPaths = tt.inGenerateWildcardPaths
 				cg.PackageName = "ocstructs"
+				cg.GenerateOrderedListsAsUnorderedMaps = tt.inGenerateOrderedListsAsUnorderedMaps
 
 				gotCode, gotNodeDataMap, err := cg.GeneratePathCode(tt.inFiles, tt.inIncludePaths)
 				if err != nil && !tt.wantErr {
@@ -2275,7 +2342,7 @@ func TestGetNodeDataMap(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, gotErrs := getNodeDataMap(tt.inIR, tt.inFakeRootName, tt.inSchemaStructPkgAccessor, tt.inPathStructSuffix, tt.inPackageName, tt.inPackageSuffix, tt.inSplitByModule, "")
+			got, gotErrs := getNodeDataMap(tt.inIR, tt.inFakeRootName, tt.inSchemaStructPkgAccessor, tt.inPathStructSuffix, tt.inPackageName, tt.inPackageSuffix, tt.inSplitByModule, "", true)
 			// TODO(wenbli): Enhance gNMI's errdiff with checking a slice of substrings and use here.
 			var gotErrStrs []string
 			for _, err := range gotErrs {
@@ -3319,7 +3386,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 	for _, tt := range tests {
 		if tt.want != nil {
 			t.Run(tt.name, func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, nil, "oc.", tt.inPathStructSuffix, true, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, nil, "oc.", tt.inPathStructSuffix, true, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath, true)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}
@@ -3336,7 +3403,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 
 		if tt.wantNoWildcard != nil {
 			t.Run(tt.name+" no wildcard", func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, nil, "oc.", tt.inPathStructSuffix, false, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, nil, "oc.", tt.inPathStructSuffix, false, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath, true)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}
@@ -3648,7 +3715,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 		t.Run(tt.name, func(t *testing.T) {
 			var methodBuf strings.Builder
 			var builderBuf strings.Builder
-			if errs := generateChildConstructors(&methodBuf, &builderBuf, tt.inDirectory, tt.inFieldName, tt.inUniqueFieldName, tt.inDirectories, "oc.", tt.inPathStructSuffix, tt.inGenerateWildcardPaths, tt.inChildAccessor, tt.inUnifiedPaths); errs != nil {
+			if errs := generateChildConstructors(&methodBuf, &builderBuf, tt.inDirectory, tt.inFieldName, tt.inUniqueFieldName, tt.inDirectories, "oc.", tt.inPathStructSuffix, tt.inGenerateWildcardPaths, tt.inChildAccessor, tt.inUnifiedPaths, true); errs != nil {
 				t.Fatal(errs)
 			}
 
