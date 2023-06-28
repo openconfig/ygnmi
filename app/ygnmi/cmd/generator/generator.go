@@ -56,8 +56,10 @@ func New() *cobra.Command {
 	generator.Flags().Int("structs_split_files_count", 1, "The number of files to split the generated schema structs into.")
 	generator.Flags().Int("pathstructs_split_files_count", 1, "The number of files to split the generated path structs into.")
 	generator.Flags().Bool("ignore_deviate_notsupported", false, "If set to true, 'deviate not-supported' YANG statements are ignored, thus target nodes are retained in the generated code.")
+	generator.Flags().Bool("generate_ordered_maps", true, "If set to true, ordered map structures satisfying the interface ygot.GoOrderedMap will be generated for `ordered-by user` lists instead of Go built-in maps.")
 
 	generator.Flags().MarkHidden("schema_struct_path")
+	generator.Flags().MarkHidden("generate_ordered_maps")
 
 	return generator
 }
@@ -102,14 +104,15 @@ func generate(cmd *cobra.Command, args []string) error {
 				IgnoreDeviateNotSupported: viper.GetBool("ignore_deviate_notsupported"),
 			},
 		},
-		GeneratingBinary:        version,
-		GenerateWildcardPaths:   true,
-		TrimPackageModulePrefix: viper.GetString("trim_module_prefix"),
-		SplitByModule:           true,
-		BasePackagePath:         viper.GetString("base_package_path"),
-		PackageSuffix:           "",
-		UnifyPathStructs:        true,
-		ExtraGenerators:         []pathgen.Generator{pathgen.GNMIGenerator},
+		GeneratingBinary:                    version,
+		GenerateWildcardPaths:               true,
+		TrimPackageModulePrefix:             viper.GetString("trim_module_prefix"),
+		SplitByModule:                       true,
+		BasePackagePath:                     viper.GetString("base_package_path"),
+		PackageSuffix:                       "",
+		UnifyPathStructs:                    true,
+		ExtraGenerators:                     []pathgen.Generator{pathgen.GNMIGenerator},
+		GenerateOrderedListsAsUnorderedMaps: !viper.GetBool("generate_ordered_maps"),
 	}
 
 	pathCode, _, errs := pcg.GeneratePathCode(args, viper.GetStringSlice("paths"))
@@ -196,6 +199,7 @@ func generateStructs(modules []string, schemaPath, version string) error {
 			GenerateSimpleUnions:                true,
 			IncludeModelData:                    false,
 			AppendEnumSuffixForSimpleUnionEnums: true,
+			GenerateOrderedListsAsUnorderedMaps: !viper.GetBool("generate_ordered_maps"),
 		},
 	)
 	generatedGoCode, errs := cg.Generate(modules, viper.GetStringSlice("paths"))
