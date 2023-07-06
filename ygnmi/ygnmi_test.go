@@ -686,52 +686,6 @@ func TestLookup(t *testing.T) {
 
 func TestUnorderedOrderedMap(t *testing.T) {
 	fakeGNMI, c := newClient(t)
-	t.Run("success unordered ordered map", func(t *testing.T) {
-		fakeGNMI.Stub().Notification(&gpb.Notification{
-			Timestamp: 100,
-			Prefix:    testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
-			Update: []*gpb.Update{{
-				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/config/key`),
-				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
-			}, {
-				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/key`),
-				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
-			}, {
-				Path: testutil.GNMIPath(t, `ordered-list[key=foo]/config/value`),
-				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
-			}, {
-				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/config/key`),
-				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
-			}, {
-				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/key`),
-				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
-			}, {
-				Path: testutil.GNMIPath(t, `ordered-list[key=bar]/config/value`),
-				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
-			}, {
-				Path: testutil.GNMIPath(t, `ordered-list[key=baz]/config/key`),
-				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
-			}, {
-				Path: testutil.GNMIPath(t, `ordered-list[key=baz]/key`),
-				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
-			}, {
-				Path: testutil.GNMIPath(t, `ordered-list[key=baz]/config/value`),
-				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 44}},
-			}},
-		}).Sync()
-
-		lookupCheckFn(
-			t, fakeGNMI, c,
-			ygnmi.SingletonQuery[map[string]*exampleocunordered.Model_SingleKey_OrderedList](exampleocunorderedpath.Root().Model().SingleKey("foo").OrderedListMap().Config()),
-			"",
-			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
-			(&ygnmi.Value[map[string]*exampleocunordered.Model_SingleKey_OrderedList]{
-				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
-				Timestamp: time.Unix(0, 100),
-			}).SetVal(getSampleOrderedMapUnordered(t)),
-		)
-	})
-
 	t.Run("success unordered ordered map leaf", func(t *testing.T) {
 		fakeGNMI.Stub().Notification(&gpb.Notification{
 			Timestamp: 100,

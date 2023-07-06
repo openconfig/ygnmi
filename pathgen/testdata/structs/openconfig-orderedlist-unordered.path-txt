@@ -116,36 +116,6 @@ func (n *ModelPathAny) OrderedList(Key string) *Model_OrderedListPathAny {
 	}
 }
 
-// OrderedListMap (list): 
-// 	Defining module:      "openconfig-orderedlist"
-// 	Instantiating module: "openconfig-orderedlist"
-// 	Path from parent:     "ordered-lists/ordered-list"
-// 	Path from root:       "/model/ordered-lists/ordered-list"
-func (n *ModelPath) OrderedListMap() *Model_OrderedListPathMap {
-	return &Model_OrderedListPathMap{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"ordered-lists"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-}
-
-// OrderedListMap (list): 
-// 	Defining module:      "openconfig-orderedlist"
-// 	Instantiating module: "openconfig-orderedlist"
-// 	Path from parent:     "ordered-lists/ordered-list"
-// 	Path from root:       "/model/ordered-lists/ordered-list"
-func (n *ModelPathAny) OrderedListMap() *Model_OrderedListPathMapAny {
-	return &Model_OrderedListPathMapAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"ordered-lists"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-}
-
 // Model_OrderedList_KeyPath represents the /openconfig-orderedlist/model/ordered-lists/ordered-list/state/key YANG schema element.
 type Model_OrderedList_KeyPath struct {
 	*ygnmi.NodePath
