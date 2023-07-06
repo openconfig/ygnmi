@@ -59,10 +59,10 @@ func TestGeneratePathCode(t *testing.T) {
 		// inUseDefiningModuleForTypedefEnumNames uses the defining module name to prefix typedef enumerated types instead of the module where the typedef enumerated value is used.
 		inUseDefiningModuleForTypedefEnumNames bool
 		// inGenerateWildcardPaths determines whether wildcard paths are generated.
-		inGenerateWildcardPaths               bool
-		inSchemaStructPkgPath                 string
-		inPathStructSuffix                    string
-		inGenerateOrderedListsAsUnorderedMaps bool
+		inGenerateWildcardPaths bool
+		inSchemaStructPkgPath   string
+		inPathStructSuffix      string
+		inIgnoreAtomicLists     bool
 		// checkYANGPath says whether to check for the YANG path in the NodeDataMap.
 		checkYANGPath bool
 		// wantStructsCodeFile is the path of the generated Go code that the output of the test should be compared to.
@@ -553,7 +553,7 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/openconfig-orderedlist/model/ordered-lists/ordered-list",
 			}},
 	}, {
-		name:                                   "simple openconfig test with ordered list but turned off",
+		name:                                   "simple openconfig test with ordered list but atomic generation turned off",
 		inFiles:                                []string{filepath.Join(datapath, "openconfig-orderedlist.yang")},
 		inPreferOperationalState:               true,
 		inShortenEnumLeafNames:                 true,
@@ -561,7 +561,7 @@ func TestGeneratePathCode(t *testing.T) {
 		inGenerateWildcardPaths:                true,
 		inSchemaStructPkgPath:                  "",
 		inPathStructSuffix:                     "Path",
-		inGenerateOrderedListsAsUnorderedMaps:  true,
+		inIgnoreAtomicLists:                    true,
 		checkYANGPath:                          true,
 		wantStructsCodeFile:                    filepath.Join(TestRoot, "testdata/structs/openconfig-orderedlist-unordered.path-txt"),
 		wantNodeDataMap: NodeDataMap{
@@ -581,19 +581,6 @@ func TestGeneratePathCode(t *testing.T) {
 				YANGPath:              "/openconfig-orderedlist/model",
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-orderedlist/model",
-			},
-			"Model_OrderedListPathMap": {
-				GoTypeName:            "map[string]*Model_OrderedList",
-				LocalGoTypeName:       "map[string]*Model_OrderedList",
-				GoFieldName:           "OrderedList",
-				SubsumingGoStructName: "Model",
-				YANGPath:              "/openconfig-orderedlist/model/ordered-lists/ordered-list",
-				GoPathPackageName:     "ocstructs",
-				DirectoryName:         "/openconfig-orderedlist/model/ordered-lists/ordered-list",
-				CompressInfo: &CompressionInfo{
-					PreRelPathList:  `"openconfig-orderedlist:ordered-lists"`,
-					PostRelPathList: `"openconfig-orderedlist:ordered-list"`,
-				},
 			},
 			"Model_OrderedListPath": {
 				GoTypeName:            "*Model_OrderedList",
@@ -1281,7 +1268,7 @@ func TestGeneratePathCode(t *testing.T) {
 				cg.UseDefiningModuleForTypedefEnumNames = tt.inUseDefiningModuleForTypedefEnumNames
 				cg.GenerateWildcardPaths = tt.inGenerateWildcardPaths
 				cg.PackageName = "ocstructs"
-				cg.GenerateOrderedListsAsUnorderedMaps = tt.inGenerateOrderedListsAsUnorderedMaps
+				cg.IgnoreAtomicLists = tt.inIgnoreAtomicLists
 
 				gotCode, gotNodeDataMap, err := cg.GeneratePathCode(tt.inFiles, tt.inIncludePaths)
 				if err != nil && !tt.wantErr {
