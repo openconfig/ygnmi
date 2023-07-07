@@ -26,7 +26,6 @@ import (
 	"github.com/openconfig/gnmi/errdiff"
 	"github.com/openconfig/ygnmi/exampleoc"
 	"github.com/openconfig/ygnmi/exampleoc/exampleocpath"
-	"github.com/openconfig/ygnmi/internal/exampleocunordered"
 	"github.com/openconfig/ygnmi/internal/exampleocunordered/exampleocunorderedpath"
 	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygnmi/schemaless"
@@ -76,14 +75,6 @@ func getSampleOrderedMapIncomplete(t *testing.T) *exampleoc.Model_SingleKey_Orde
 	}
 	ol.SetValue(43)
 	return om
-}
-
-func getSampleOrderedMapUnordered(t *testing.T) map[string]*exampleocunordered.Model_SingleKey_OrderedList {
-	sk := &exampleocunordered.Model_SingleKey{}
-	sk.GetOrCreateOrderedList("foo").SetValue(42)
-	sk.GetOrCreateOrderedList("bar").SetValue(43)
-	sk.GetOrCreateOrderedList("baz").SetValue(44)
-	return sk.OrderedList
 }
 
 func getSampleSingleKeyedMap(t *testing.T) map[string]*exampleoc.Model_SingleKey {
