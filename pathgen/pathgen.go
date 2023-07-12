@@ -184,13 +184,17 @@ type GenConfig struct {
 	UnifyPathStructs bool
 	// ExtraGenerators are custom funcs that are used to extend the path struct generation.
 	ExtraGenerators []Generator
-	// IgnoreAtomicLists, disables the following default behaviours:
+	// IgnoreAtomicLists disables the following default behaviours:
 	//  - All compressed lists will have a new accessor <ListName>Map() that
 	//  retrieves the whole list.
-	//  - Any child underneath atomic lists are no longer reachable.
+	//  - Any child underneath lists whose compressed-out parent container
+	//  is marked "telemetry-atomic" are no longer reachable.
 	//  - lists marked `ordered-by user` will be represented using built-in Go maps
 	//  instead of an ordered map Go structure.
 	IgnoreAtomicLists bool
+	// IgnoreAtomic avoids generating any descendants where a
+	// non-compressed-out list or container is marked "telemetry-atomic".
+	IgnoreAtomic bool
 }
 
 // GoImports contains package import options.
@@ -297,7 +301,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 	for _, directoryPath := range ir.OrderedDirectoryPathsByName() {
 		directory := ir.Directories[directoryPath]
 
-		structSnippet, es := generateDirectorySnippet(directory, ir.Directories, nodeDataMap, cg.ExtraGenerators, schemaStructPkgAccessor, cg.PathStructSuffix, cg.GenerateWildcardPaths, cg.SplitByModule, cg.TrimPackageModulePrefix, cg.PackageName, cg.PackageSuffix, cg.UnifyPathStructs, !cg.IgnoreAtomicLists)
+		structSnippet, es := generateDirectorySnippet(directory, ir.Directories, nodeDataMap, cg.ExtraGenerators, schemaStructPkgAccessor, cg.PathStructSuffix, cg.GenerateWildcardPaths, cg.SplitByModule, cg.TrimPackageModulePrefix, cg.PackageName, cg.PackageSuffix, cg.UnifyPathStructs, !cg.IgnoreAtomic, !cg.IgnoreAtomicLists)
 		if es != nil {
 			errs = util.AppendErrs(errs, es)
 		}
@@ -988,7 +992,7 @@ func isCompressedAtomicList(directory *ygen.ParsedDirectory) bool {
 // node, and directories is a map from path to a parsed schema node for all
 // directory nodes in the schema.
 func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[string]*ygen.ParsedDirectory, nodeDataMap NodeDataMap, extraGens []Generator, schemaStructPkgAccessor, pathStructSuffix string,
-	generateWildcardPaths, splitByModule bool, trimPrefix, pkgName, pkgSuffix string, unified bool, generateAtomicLists bool) ([]GoPathStructCodeSnippet, util.Errors) {
+	generateWildcardPaths, splitByModule bool, trimPrefix, pkgName, pkgSuffix string, unified bool, generateAtomic, generateAtomicLists bool) ([]GoPathStructCodeSnippet, util.Errors) {
 
 	var errs util.Errors
 	// structBuf is used to store the code associated with the struct defined for
@@ -1029,7 +1033,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 	// are always assumed to be telemetry-atomic), prevent constructing
 	// paths that go below it by breaking the chain here.
 	switch {
-	case directory.Type == ygen.List && len(directory.ListKeys) == 0, directory.TelemetryAtomic, generateAtomicLists && isCompressedAtomicList(directory):
+	case directory.Type == ygen.List && len(directory.ListKeys) == 0, generateAtomic && directory.TelemetryAtomic, generateAtomicLists && isCompressedAtomicList(directory):
 		return []GoPathStructCodeSnippet{nonLeafSnippet}, nil
 	}
 

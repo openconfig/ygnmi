@@ -63,6 +63,22 @@ func (n *RootPath) A() *nested.APath {
 	}
 }
 
+// Container (container):
+//
+//	Defining module:      "openconfig-nested"
+//	Instantiating module: "openconfig-nested"
+//	Path from parent:     "container"
+//	Path from root:       "/container"
+func (n *RootPath) Container() *nested.ContainerPath {
+	return &nested.ContainerPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"container"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+}
+
 // Model (container):
 //
 //	Defining module:      "openconfig-withlistval"

@@ -1794,3 +1794,220 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_
 		nil,
 	)
 }
+
+// Container_EnabledPath represents the /openconfig-nested/container/enabled YANG schema element.
+type Container_EnabledPath struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// Container_EnabledPathAny represents the wildcard version of the /openconfig-nested/container/enabled YANG schema element.
+type Container_EnabledPathAny struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// State returns a Query that can be used in gNMI operations.
+//
+//	Defining module:      "openconfig-nested"
+//	Instantiating module: "openconfig-nested"
+//	Path from parent:     "enabled"
+//	Path from root:       "/container/enabled"
+func (n *Container_EnabledPath) State() ygnmi.SingletonQuery[bool] {
+	return ygnmi.NewSingletonQuery[bool](
+		"Container",
+		true,
+		true,
+		true,
+		ygnmi.NewNodePath(
+			[]string{"enabled"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) (bool, bool) {
+			ret := gs.(*oc.Container).Enabled
+			if ret == nil {
+				var zero bool
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Container) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+//
+//	Defining module:      "openconfig-nested"
+//	Instantiating module: "openconfig-nested"
+//	Path from parent:     "enabled"
+//	Path from root:       "/container/enabled"
+func (n *Container_EnabledPathAny) State() ygnmi.WildcardQuery[bool] {
+	return ygnmi.NewWildcardQuery[bool](
+		"Container",
+		true,
+		true,
+		true,
+		ygnmi.NewNodePath(
+			[]string{"enabled"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) (bool, bool) {
+			ret := gs.(*oc.Container).Enabled
+			if ret == nil {
+				var zero bool
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Container) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+}
+
+// ContainerPath represents the /openconfig-nested/container YANG schema element.
+type ContainerPath struct {
+	*ygnmi.NodePath
+}
+
+// ContainerPathAny represents the wildcard version of the /openconfig-nested/container YANG schema element.
+type ContainerPathAny struct {
+	*ygnmi.NodePath
+}
+
+// Enabled (leaf):
+//
+//	Defining module:      "openconfig-nested"
+//	Instantiating module: "openconfig-nested"
+//	Path from parent:     "enabled"
+//	Path from root:       "/container/enabled"
+func (n *ContainerPath) Enabled() *Container_EnabledPath {
+	return &Container_EnabledPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"enabled"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+}
+
+// Enabled (leaf):
+//
+//	Defining module:      "openconfig-nested"
+//	Instantiating module: "openconfig-nested"
+//	Path from parent:     "enabled"
+//	Path from root:       "/container/enabled"
+func (n *ContainerPathAny) Enabled() *Container_EnabledPathAny {
+	return &Container_EnabledPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"enabled"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *ContainerPath) State() ygnmi.SingletonQuery[*oc.Container] {
+	return ygnmi.NewSingletonQuery[*oc.Container](
+		"Container",
+		true,
+		false,
+		false,
+		n,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *ContainerPathAny) State() ygnmi.WildcardQuery[*oc.Container] {
+	return ygnmi.NewWildcardQuery[*oc.Container](
+		"Container",
+		true,
+		false,
+		false,
+		n,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *ContainerPath) Config() ygnmi.ConfigQuery[*oc.Container] {
+	return ygnmi.NewConfigQuery[*oc.Container](
+		"Container",
+		false,
+		false,
+		false,
+		n,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *ContainerPathAny) Config() ygnmi.WildcardQuery[*oc.Container] {
+	return ygnmi.NewWildcardQuery[*oc.Container](
+		"Container",
+		false,
+		false,
+		false,
+		n,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+}
