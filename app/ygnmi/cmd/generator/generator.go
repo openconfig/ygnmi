@@ -56,9 +56,12 @@ func New() *cobra.Command {
 	generator.Flags().Int("structs_split_files_count", 1, "The number of files to split the generated schema structs into.")
 	generator.Flags().Int("pathstructs_split_files_count", 1, "The number of files to split the generated path structs into.")
 	generator.Flags().Bool("ignore_deviate_notsupported", false, "If set to true, 'deviate not-supported' YANG statements are ignored, thus target nodes are retained in the generated code.")
+	// TODO(wenovus): Delete these hidden flags
+	generator.Flags().Bool("generate_atomic", true, "If set to true, then any descendants of a non-compressed-out list or container that is marked \"telemetry-atomic\" are not generated.")
 	generator.Flags().Bool("generate_atomic_lists", true, "If set to true, then 1) all compressed lists will have a new accessor <ListName>Map() that retrieves the whole list; 2) any child underneath atomic lists are no longer reachable; 3) ordered map structures satisfying the interface ygot.GoOrderedMap will be generated for `ordered-by user` lists instead of Go built-in maps.")
 
 	generator.Flags().MarkHidden("schema_struct_path")
+	generator.Flags().MarkHidden("generate_atomic")
 	generator.Flags().MarkHidden("generate_atomic_lists")
 
 	return generator
@@ -112,6 +115,7 @@ func generate(cmd *cobra.Command, args []string) error {
 		PackageSuffix:           "",
 		UnifyPathStructs:        true,
 		ExtraGenerators:         []pathgen.Generator{pathgen.GNMIGenerator},
+		IgnoreAtomic:            !viper.GetBool("generate_atomic"),
 		IgnoreAtomicLists:       !viper.GetBool("generate_atomic_lists"),
 	}
 

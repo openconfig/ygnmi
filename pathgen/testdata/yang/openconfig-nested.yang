@@ -4,6 +4,8 @@ module openconfig-nested {
   description
     "A test module with deeply nested path to use for benchmarking";
 
+  import openconfig-extensions { prefix oc-ext; }
+
   container a {
     container b {
       container c {
@@ -32,6 +34,13 @@ module openconfig-nested {
           }
         }
       }
+    }
+  }
+
+  container container {
+    oc-ext:telemetry-atomic;
+    leaf enabled {
+      type boolean;
     }
   }
 }

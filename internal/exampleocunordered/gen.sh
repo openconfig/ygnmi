@@ -20,6 +20,7 @@ cd "$(dirname "$0")"
 go run ../../app/ygnmi generator \
   --trim_module_prefix=openconfig \
   --base_package_path=github.com/openconfig/ygnmi/internal/exampleocunordered \
+  --generate_atomic=false \
   --generate_atomic_lists=false \
   ../../pathgen/testdata/yang/openconfig-simple.yang \
   ../../pathgen/testdata/yang/openconfig-withlistval.yang \

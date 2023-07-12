@@ -1794,3 +1794,99 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Config() ygnmi.WildcardQuery[*oc.A_B_
 		nil,
 	)
 }
+
+// ContainerPath represents the /openconfig-nested/container YANG schema element.
+type ContainerPath struct {
+	*ygnmi.NodePath
+}
+
+// ContainerPathAny represents the wildcard version of the /openconfig-nested/container YANG schema element.
+type ContainerPathAny struct {
+	*ygnmi.NodePath
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *ContainerPath) State() ygnmi.SingletonQuery[*oc.Container] {
+	return ygnmi.NewSingletonQuery[*oc.Container](
+		"Container",
+		true,
+		false,
+		false,
+		n,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *ContainerPathAny) State() ygnmi.WildcardQuery[*oc.Container] {
+	return ygnmi.NewWildcardQuery[*oc.Container](
+		"Container",
+		true,
+		false,
+		false,
+		n,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *ContainerPath) Config() ygnmi.ConfigQuery[*oc.Container] {
+	return ygnmi.NewConfigQuery[*oc.Container](
+		"Container",
+		false,
+		false,
+		false,
+		n,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *ContainerPathAny) Config() ygnmi.WildcardQuery[*oc.Container] {
+	return ygnmi.NewWildcardQuery[*oc.Container](
+		"Container",
+		false,
+		false,
+		false,
+		n,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+}
