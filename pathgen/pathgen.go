@@ -617,7 +617,7 @@ func Root() *{{ .TypeName }} {
 	// goPathStructTemplate defines the template for the type definition of
 	// a path node as well as its core method(s). A path struct/node is
 	// either a container, list, or a leaf node in the openconfig schema
-	// where the tree formed by the nodes mirrors the compressed YANG
+	// where the tree formed by the nodes mirrors the YANG
 	// schema tree. The defined type stores the relative path to the
 	// current node, as well as its parent node for obtaining its absolute
 	// path. There are two versions of these, non-wildcard and wildcard.
@@ -627,25 +627,9 @@ func Root() *{{ .TypeName }} {
 // {{ .TypeName }} represents the {{ .YANGPath }} YANG schema element.
 type {{ .TypeName }} struct {
 	*ygnmi.{{ .PathBaseTypeName }}
-}
-
-{{- if .GenerateWildcardPaths }}
-
-// {{ .TypeName }}{{ .WildcardSuffix }} represents the wildcard version of the {{ .YANGPath }} YANG schema element.
-type {{ .TypeName }}{{ .WildcardSuffix }} struct {
-	*ygnmi.{{ .PathBaseTypeName }}
-}
+{{- if .GenerateParentField }}
+	parent ygnmi.PathStruct
 {{- end }}
-`)
-
-	// goUnifiedLeafPathStructTemplate is similar to goPathStructTemplate except
-	// leaves are not PathStructs; instead they have Config and State methods
-	// that return path structs.
-	goUnifiedLeafPathStructTemplate = mustTemplate("leaf-struct", `
-// {{ .TypeName }} represents the {{ .YANGPath }} YANG schema element.
-type {{ .TypeName }} struct {
-	*ygnmi.{{ .PathBaseTypeName }}
-	parent ygnmi.PathStruct
 }
 
 {{- if .GenerateWildcardPaths }}
@@ -653,7 +637,9 @@ type {{ .TypeName }} struct {
 // {{ .TypeName }}{{ .WildcardSuffix }} represents the wildcard version of the {{ .YANGPath }} YANG schema element.
 type {{ .TypeName }}{{ .WildcardSuffix }} struct {
 	*ygnmi.{{ .PathBaseTypeName }}
+{{- if .GenerateParentField }}
 	parent ygnmi.PathStruct
+{{- end }}
 }
 {{- end }}
 `)
@@ -680,28 +666,9 @@ func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{
 			map[string]interface{}{ {{- .KeyEntriesStr -}} },
 			n,
 		),
-	}
-}
-`)
-
-	// goUnifiedLeafPathChildConstructorTemplate generates the child constructor method
-	// for a generated struct by returning an instantiation of the child's
-	// path struct object. In the unified model, leaves are not path structs
-	// because with path compression, a leaf path may be a state or config path.
-	goUnifiedLeafPathChildConstructorTemplate = mustTemplate("unifiedchildConstructor", `
-// {{ .MethodName }} ({{ .YANGNodeType }}): {{ .YANGDescription }}
-// 	Defining module:      "{{ .DefiningModuleName }}"
-// 	Instantiating module: "{{ .InstantiatingModuleName }}"
-// 	Path from parent:     "{{ .RelPath }}"
-// 	Path from root:       "{{ .AbsPath }}"
-func (n *{{ .Struct.TypeName }}) {{ .MethodName -}} ({{ .KeyParamListStr }}) *{{ .ChildPkgAccessor }}{{ .TypeName }} {
-	return &{{ .ChildPkgAccessor }}{{ .TypeName }}{
-		{{ .Struct.PathBaseTypeName }}: ygnmi.New{{ .Struct.PathBaseTypeName }}(
-			[]string{ {{- .RelPathList -}} },
-			map[string]interface{}{ {{- .KeyEntriesStr -}} },
-			n,
-		),
+{{- if .GenerateParentField }}
 		parent: n,
+{{- end }}
 	}
 }
 `)
@@ -934,6 +901,10 @@ type goPathStructData struct {
 	WildcardSuffix string
 	// GenerateWildcardPaths means to generate wildcard nodes and paths.
 	GenerateWildcardPaths bool
+	// GenerateParentField means to generate a parent PathStruct field in
+	// the PathStruct so that it's accessible by code within the generated
+	// file's package.
+	GenerateParentField bool
 }
 
 // getStructData returns the goPathStructData corresponding to a
@@ -969,6 +940,10 @@ type goPathFieldData struct {
 	KeyEntriesStr           string           // KeyEntriesStr is an ordered list of comma-separated ("schemaName": unique camel-case name) for a list's keys.
 	KeyParamDocStrs         []string         // KeyParamDocStrs is an ordered slice of docstrings documenting the types of each list key parameter.
 	ChildPkgAccessor        string           // ChildPkgAccessor is used if the child path struct exists in another package.
+	// GenerateParentField means to generate a parent PathStruct field in
+	// the PathStruct so that it's accessible by code within the generated
+	// file's package.
+	GenerateParentField bool
 }
 
 func isKeyedList(directory *ygen.ParsedDirectory) bool {
@@ -1094,15 +1069,10 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 					PathStructInterfaceName: ygnmi.PathStructInterfaceName,
 					WildcardSuffix:          WildcardSuffix,
 					GenerateWildcardPaths:   generateWildcardPaths,
+					GenerateParentField:     unified,
 				}
-				if unified {
-					if err := goUnifiedLeafPathStructTemplate.Execute(&buf, structData); err != nil {
-						errs = util.AppendErr(errs, err)
-					}
-				} else {
-					if err := goPathStructTemplate.Execute(&buf, structData); err != nil {
-						errs = util.AppendErr(errs, err)
-					}
+				if err := goPathStructTemplate.Execute(&buf, structData); err != nil {
+					errs = util.AppendErr(errs, err)
 				}
 			}
 			leafSnippet := GoPathStructCodeSnippet{
@@ -1259,13 +1229,10 @@ func generateChildConstructorsForLeafOrContainer(methodBuf *strings.Builder, fie
 	// Generate child constructor for the non-wildcard version of the parent struct.
 	var errors []error
 	if unified && isLeaf {
-		if err := goUnifiedLeafPathChildConstructorTemplate.Execute(methodBuf, fieldData); err != nil {
-			errors = append(errors, err)
-		}
-	} else {
-		if err := goPathChildConstructorTemplate.Execute(methodBuf, fieldData); err != nil {
-			errors = append(errors, err)
-		}
+		fieldData.GenerateParentField = true
+	}
+	if err := goPathChildConstructorTemplate.Execute(methodBuf, fieldData); err != nil {
+		errors = append(errors, err)
 	}
 
 	// The root node doesn't have a wildcard version of itself.
@@ -1279,14 +1246,8 @@ func generateChildConstructorsForLeafOrContainer(methodBuf *strings.Builder, fie
 		fieldData.TypeName += WildcardSuffix
 		fieldData.Struct.TypeName += WildcardSuffix
 
-		if unified && isLeaf {
-			if err := goUnifiedLeafPathChildConstructorTemplate.Execute(methodBuf, fieldData); err != nil {
-				errors = append(errors, err)
-			}
-		} else {
-			if err := goPathChildConstructorTemplate.Execute(methodBuf, fieldData); err != nil {
-				errors = append(errors, err)
-			}
+		if err := goPathChildConstructorTemplate.Execute(methodBuf, fieldData); err != nil {
+			errors = append(errors, err)
 		}
 	}
 
