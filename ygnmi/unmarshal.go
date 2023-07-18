@@ -171,6 +171,9 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 		ret.Timestamp = unmarshalledData[0].Timestamp
 		ret.RecvTimestamp = unmarshalledData[0].RecvTimestamp
 	}
+	if q.isListContainer() {
+		path.Elem[len(path.Elem)-1].Key = nil
+	}
 	ret.Path = path
 
 	// For non-leaf config queries, prune all state-only leaves.

@@ -98,7 +98,7 @@ func NewDefaultConfig(schemaStructPkgPath string) *GenConfig {
 }
 
 // Generator is func to returns extra generated code for a given node.
-type Generator func(string, *ygen.ParsedDirectory, *NodeData) (string, error)
+type Generator func(string, *ygen.ParsedDirectory, *NodeData, bool) (string, error)
 
 // GenConfig stores code generation configuration.
 type GenConfig struct {
@@ -276,7 +276,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 	}
 
 	// Get NodeDataMap for the schema.
-	nodeDataMap, es := getNodeDataMap(ir, cg.FakeRootName, schemaStructPkgAccessor, cg.PathStructSuffix, cg.PackageName, cg.PackageSuffix, cg.SplitByModule, cg.TrimPackageModulePrefix, !cg.IgnoreAtomicLists)
+	nodeDataMap, es := getNodeDataMap(ir, cg.FakeRootName, schemaStructPkgAccessor, cg.PathStructSuffix, cg.PackageName, cg.PackageSuffix, cg.SplitByModule, cg.TrimPackageModulePrefix, !cg.IgnoreAtomicLists, cg.CompressBehaviour.CompressEnabled())
 	if es != nil {
 		errs = util.AppendErrs(errs, es)
 	}
@@ -286,7 +286,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 	for _, directoryPath := range ir.OrderedDirectoryPathsByName() {
 		directory := ir.Directories[directoryPath]
 
-		structSnippet, es := generateDirectorySnippet(directory, ir.Directories, nodeDataMap, cg.ExtraGenerators, schemaStructPkgAccessor, cg.PathStructSuffix, cg.GenerateWildcardPaths, cg.SplitByModule, cg.TrimPackageModulePrefix, cg.PackageName, cg.PackageSuffix, cg.UnifyPathStructs, !cg.IgnoreAtomic, !cg.IgnoreAtomicLists)
+		structSnippet, es := generateDirectorySnippet(directory, ir.Directories, nodeDataMap, cg.ExtraGenerators, schemaStructPkgAccessor, cg.PathStructSuffix, cg.GenerateWildcardPaths, cg.SplitByModule, cg.TrimPackageModulePrefix, cg.PackageName, cg.PackageSuffix, cg.UnifyPathStructs, !cg.IgnoreAtomic, !cg.IgnoreAtomicLists, cg.CompressBehaviour.CompressEnabled())
 		if es != nil {
 			errs = util.AppendErrs(errs, es)
 		}
@@ -451,14 +451,14 @@ func (g GoPathStructCodeSnippet) String() string {
 //     NodeDataMap. If it is not present then generation is skipped.
 //   - nodeDataMap is the set of all nodes keyed by pathstruct name.
 //   - dir is the directory to which this snippet belongs.
-func (snip *GoPathStructCodeSnippet) genExtras(psName string, nodeDataMap NodeDataMap, dir *ygen.ParsedDirectory, extraGens []Generator) util.Errors {
+func (snip *GoPathStructCodeSnippet) genExtras(psName string, nodeDataMap NodeDataMap, dir *ygen.ParsedDirectory, compressPaths bool, extraGens []Generator) util.Errors {
 	if _, ok := nodeDataMap[psName]; !ok {
 		return nil
 	}
 	var errs util.Errors
 	var b strings.Builder
 	for _, gen := range extraGens {
-		extra, err := gen(psName, dir, nodeDataMap[psName])
+		extra, err := gen(psName, dir, nodeDataMap[psName], compressPaths)
 		if err != nil {
 			errs = util.AppendErr(errs, err)
 		}
@@ -491,6 +491,9 @@ type NodeData struct {
 	// IsScalarField indicates a leaf that is stored as a pointer in its
 	// parent struct.
 	IsScalarField bool
+	// IsListContainer indicates that the node represents the  container
+	// surrounding a list.
+	IsListContainer bool
 	// HasDefault indicates whether this node has a default value
 	// associated with it. This is only relevant to leaf or leaf-list
 	// nodes.
@@ -681,7 +684,7 @@ func mustTemplate(name, src string) *template.Template {
 //
 // TODO(wenbli): Change this function to be callable while traversing the IR
 // rather than traversing the IR itself again.
-func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStructSuffix, packageName, packageSuffix string, splitByModule bool, trimPrefix string, generateAtomicLists bool) (NodeDataMap, util.Errors) {
+func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStructSuffix, packageName, packageSuffix string, splitByModule bool, trimPrefix string, generateAtomicLists, compressPaths bool) (NodeDataMap, util.Errors) {
 	nodeDataMap := NodeDataMap{}
 	var errs util.Errors
 	for _, dir := range ir.Directories {
@@ -770,13 +773,14 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 			case !isLeaf && isKeyedList(fieldDir) && !(generateAtomicLists && isCompressedAtomicList(fieldDir)): // Non-atomic lists
 				// Generate path to list element.
 				nodeDataMap[pathStructName] = &nodeData
-				fallthrough
+				fallthrough // Generate Map-suffixed PathStruct
 			case !isLeaf && isKeyedList(fieldDir): // Atomic lists
 				if !generateAtomicLists {
 					break
 				}
-				// Generate path to container surrounding list element.
+				// Generate path to container surrounding list element (i.e. Map-suffixed PathStruct).
 				nodeData := nodeData
+				nodeData.IsListContainer = true
 				nodeData.SubsumingGoStructName = dir.Name
 				if field.YANGDetails.OrderedByUser {
 					typeName := gogen.OrderedMapTypeName(fieldDir.Name)
@@ -796,15 +800,17 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 					nodeData.LocalGoTypeName = fmt.Sprintf("map[%s]%s", keyType, nodeData.LocalGoTypeName)
 				}
 
-				relPath := longestPath(field.MappedPaths)
-				relMods := longestPath(field.MappedPathModules)
-				if gotLen := len(relPath); gotLen != 2 {
-					errs = util.AppendErr(errs, fmt.Errorf("expected two path elements for the relative path of an ordered map, got %d: %v", gotLen, relPath))
-					continue
-				}
-				nodeData.CompressInfo = &CompressionInfo{
-					PreRelPathList:  fmt.Sprintf(`"%s:%s"`, relMods[0], relPath[0]),
-					PostRelPathList: fmt.Sprintf(`"%s:%s"`, relMods[1], relPath[1]),
+				if compressPaths {
+					relPath := longestPath(field.MappedPaths)
+					relMods := longestPath(field.MappedPathModules)
+					if gotLen := len(relPath); gotLen != 2 {
+						errs = util.AppendErr(errs, fmt.Errorf("expected two path elements for the relative path of an ordered map, got %d: %v", gotLen, relPath))
+						continue
+					}
+					nodeData.CompressInfo = &CompressionInfo{
+						PreRelPathList:  fmt.Sprintf(`"%s:%s"`, relMods[0], relPath[0]),
+						PostRelPathList: fmt.Sprintf(`"%s:%s"`, relMods[1], relPath[1]),
+					}
 				}
 
 				nodeDataMap[pathStructName+WholeKeyedListSuffix] = &nodeData
@@ -951,7 +957,7 @@ func isCompressedAtomicList(directory *ygen.ParsedDirectory) bool {
 // node, and directories is a map from path to a parsed schema node for all
 // directory nodes in the schema.
 func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[string]*ygen.ParsedDirectory, nodeDataMap NodeDataMap, extraGens []Generator, schemaStructPkgAccessor, pathStructSuffix string,
-	generateWildcardPaths, splitByModule bool, trimPrefix, pkgName, pkgSuffix string, unified bool, generateAtomic, generateAtomicLists bool) ([]GoPathStructCodeSnippet, util.Errors) {
+	generateWildcardPaths, splitByModule bool, trimPrefix, pkgName, pkgSuffix string, unified bool, generateAtomic, generateAtomicLists, compressPaths bool) ([]GoPathStructCodeSnippet, util.Errors) {
 
 	var errs util.Errors
 	// structBuf is used to store the code associated with the struct defined for
@@ -984,8 +990,8 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 		StructBase:     structBuf.String(),
 		Package:        goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix),
 	}
-	errs = util.AppendErrs(errs, nonLeafSnippet.genExtras(structData.TypeName, nodeDataMap, directory, extraGens))
-	errs = util.AppendErrs(errs, nonLeafSnippet.genExtras(structData.TypeName+WholeKeyedListSuffix, nodeDataMap, directory, extraGens))
+	errs = util.AppendErrs(errs, nonLeafSnippet.genExtras(structData.TypeName, nodeDataMap, directory, compressPaths, extraGens))
+	errs = util.AppendErrs(errs, nonLeafSnippet.genExtras(structData.TypeName+WholeKeyedListSuffix, nodeDataMap, directory, compressPaths, extraGens))
 
 	// Since it is not possible for gNMI to refer to individual nodes
 	// underneath an unkeyed list or a telemetry-atomic node (ordered lists
@@ -1033,7 +1039,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 			}
 		}
 
-		if es := generateChildConstructors(&methodBuf, buildBuf, directory, fName, goFieldName, directories, schemaStructPkgAccessor, pathStructSuffix, generateWildcardPaths, childPkgAccessor, unified, generateAtomicLists); es != nil {
+		if es := generateChildConstructors(&methodBuf, buildBuf, directory, fName, goFieldName, directories, schemaStructPkgAccessor, pathStructSuffix, generateWildcardPaths, childPkgAccessor, unified, generateAtomicLists, compressPaths); es != nil {
 			errs = util.AppendErrs(errs, es)
 		}
 
@@ -1064,7 +1070,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 				StructBase:     buf.String(),
 				Package:        goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix),
 			}
-			errs = util.AppendErrs(errs, leafSnippet.genExtras(leafTypeName, nodeDataMap, directory, extraGens))
+			errs = util.AppendErrs(errs, leafSnippet.genExtras(leafTypeName, nodeDataMap, directory, compressPaths, extraGens))
 			snippets = append(snippets, leafSnippet)
 		}
 	}
@@ -1122,7 +1128,7 @@ func relPathListFn(path []string) string {
 // type name of of the child path struct, and a map of all directories of the
 // whole schema keyed by their schema paths.
 func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.Builder, directory *ygen.ParsedDirectory, directoryFieldName string, goFieldName string, directories map[string]*ygen.ParsedDirectory, schemaStructPkgAccessor,
-	pathStructSuffix string, generateWildcardPaths bool, childPkgAccessor string, unified bool, generateAtomicLists bool) []error {
+	pathStructSuffix string, generateWildcardPaths bool, childPkgAccessor string, unified bool, generateAtomicLists, compressPaths bool) []error {
 
 	field, ok := directory.Fields[directoryFieldName]
 	if !ok {
@@ -1194,7 +1200,7 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 		if !generateAtomicLists {
 			return nil
 		}
-		if gotLen := len(path); gotLen != 2 {
+		if gotLen := len(path); compressPaths && gotLen != 2 {
 			return []error{fmt.Errorf("expected two path elements for the relative path of an ordered map, got %d: %v", gotLen, path)}
 		}
 		fieldData.RelPathList = relPathListFn(path[:1])

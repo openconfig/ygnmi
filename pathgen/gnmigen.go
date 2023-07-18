@@ -44,6 +44,7 @@ type gnmiStruct struct {
 	InstantiatingModuleName string
 	SpecialConvertFunc      string
 	CompressInfo            *CompressionInfo
+	IsListContainer         bool
 }
 
 const (
@@ -62,7 +63,11 @@ var packagesSeen = map[string]bool{}
 //
 // Note: GNMIGenerator requires that PreferOperationalState be true when generating PathStructs.
 // TODO(DanG100): pass schema from parent to child.
-func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeData) (string, error) {
+func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeData, compressPaths bool) (string, error) {
+	methodName := "Query"
+	if compressPaths {
+		methodName = "State"
+	}
 	tmplStruct := gnmiStruct{
 		PathStructName:          pathStructName,
 		GoTypeName:              node.GoTypeName,
@@ -71,7 +76,7 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		GoFieldName:             node.GoFieldName,
 		SchemaStructPkgAccessor: "oc.",
 		IsState:                 true,
-		MethodName:              "State",
+		MethodName:              methodName,
 		SingletonTypeName:       "SingletonQuery",
 		WildcardTypeName:        "WildcardQuery",
 		IsScalar:                node.IsScalarField,
@@ -79,11 +84,25 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		WildcardSuffix:          WildcardSuffix,
 		FakeRootName:            fakeRootName,
 		CompressInfo:            node.CompressInfo,
+		IsListContainer:         node.IsListContainer,
 	}
 	var b strings.Builder
 	if node.SubsumingGoStructName == fakeRootName {
+		if err := batchStructTemplate.Execute(&b, &tmplStruct); err != nil {
+			return "", err
+		}
 		if err := batchTemplate.Execute(&b, &tmplStruct); err != nil {
 			return "", err
+		}
+		if compressPaths {
+			tmplStruct := tmplStruct
+			tmplStruct.MethodName = "Config"
+			// TODO: Should this be here? If not, add a comment for why.
+			// tmplStruct.SingletonTypeName = "ConfigQuery"
+			tmplStruct.IsState = false
+			if err := batchTemplate.Execute(&b, &tmplStruct); err != nil {
+				return "", err
+			}
 		}
 	}
 	if !packagesSeen[node.GoPathPackageName] {
@@ -124,7 +143,7 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		return "", err
 	}
 
-	if !generateConfigFunc(dir, node) {
+	if !generateConfigFunc(dir, node) || !compressPaths {
 		return b.String(), nil
 	}
 
@@ -186,6 +205,7 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 		{{ .IsState }},
 		true,
 		{{ .IsScalar }},
+		false,
 		ygnmi.New{{ .PathBaseTypeName }}(
 			[]string{ {{- .RelPathList -}} },
 			nil,
@@ -233,6 +253,7 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 		{{ .IsState }},
 		true,
 		{{ .IsScalar }},
+		false,
 		ygnmi.New{{ .PathBaseTypeName }}(
 			[]string{ {{- .RelPathList -}} },
 			nil,
@@ -276,8 +297,9 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 		{{ .IsState }},
 		false,
 		false,
+		{{ .IsListContainer }},
 		n,
-		{{- if .CompressInfo }}
+		{{- if .IsListContainer }}
 		func(gs ygot.ValidatedGoStruct) ({{ .GoTypeName }}, bool) { 
 			ret := gs.(*{{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}).{{ .GoFieldName }}
 			return ret, ret != nil
@@ -315,8 +337,9 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 		{{ .IsState }},
 		false,
 		false,
+		{{ .IsListContainer }},
 		n,
-		{{- if .CompressInfo }}
+		{{- if .IsListContainer }}
 		func(gs ygot.ValidatedGoStruct) ({{ .GoTypeName }}, bool) { 
 			ret := gs.(*{{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}).{{ .GoFieldName }}
 			return ret, ret != nil
@@ -346,10 +369,9 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 {{- end }}
 `)
 
-	batchTemplate = mustTemplate("batch", `
+	batchStructTemplate = mustTemplate("batch-struct", `
 // Batch contains a collection of paths.
-// Calling State() or Config() on the batch returns a query
-// that can use to Lookup, Watch, etc on multiple paths at once.
+// Use batch to call Lookup, Watch, etc. on multiple paths at once.
 type Batch struct {
     paths []ygnmi.PathStruct
 }
@@ -359,39 +381,17 @@ func (b *Batch) AddPaths(paths ...ygnmi.PathStruct) *Batch {
     b.paths = append(b.paths, paths...)
     return b
 }
+`)
 
-// State returns a Query that can be used in gNMI operations.
+	batchTemplate = mustTemplate("batch", `
+// {{ .MethodName }} returns a Query that can be used in gNMI operations.
 // The returned query is immutable, adding paths does not modify existing queries.
-func (b *Batch) State() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
+func (b *Batch) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
 	queryPaths := make([]ygnmi.PathStruct, len(b.paths))
 	copy(queryPaths, b.paths)
 	return ygnmi.New{{ .SingletonTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
-		true,
-		false,
-		false,
-		ygnmi.NewDeviceRootBase(),
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
-				SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
-				Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
-			}
-		},
-		queryPaths,
-		nil,
-	)
-}
-
-// Config returns a Query that can be used in gNMI operations.
-// The returned query is immutable, adding paths does not modify existing queries.
-func (b *Batch) Config() ygnmi.{{ .SingletonTypeName }}[*oc.Root] {
-	queryPaths := make([]ygnmi.PathStruct, len(b.paths))
-	copy(queryPaths, b.paths)
-	return ygnmi.New{{ .SingletonTypeName }}[*oc.Root](
-		"{{ .GoStructTypeName }}",
+		{{ .IsState }},
 		false,
 		false,
 		false,

@@ -222,6 +222,161 @@ func TestGeneratePathCode(t *testing.T) {
 				YANGFieldName:         "a-leaf",
 			}},
 	}, {
+		name:                    "simple openconfig test with compression off",
+		inFiles:                 []string{filepath.Join(datapath, "openconfig-simple.yang")},
+		wantStructsCodeFile:     filepath.Join(TestRoot, "testdata/structs/openconfig-simple.uncompressed.path-txt"),
+		inCompressBehaviour:     genutil.Uncompressed,
+		inShortenEnumLeafNames:  true,
+		inGenerateWildcardPaths: true,
+		inSchemaStructPkgPath:   "",
+		inPathStructSuffix:      "Path",
+		// FIXME(wenbli): Test this
+		//checkYANGPath:           true,
+		/*
+			wantNodeDataMap: NodeDataMap{
+				"DevicePath": {
+					GoTypeName:            "*Device",
+					LocalGoTypeName:       "*Device",
+					SubsumingGoStructName: "Device",
+					YANGPath:              "/",
+					GoPathPackageName:     "ocstructs",
+					DirectoryName:         "/device",
+				},
+				"ParentPath": {
+					GoTypeName:            "*Parent",
+					LocalGoTypeName:       "*Parent",
+					GoFieldName:           "Parent",
+					SubsumingGoStructName: "Parent",
+					IsLeaf:                false,
+					IsScalarField:         false,
+					HasDefault:            false,
+					YANGPath:              "/openconfig-simple/parent",
+					GoPathPackageName:     "ocstructs",
+					DirectoryName:         "/openconfig-simple/parent",
+					YANGFieldName:         "",
+				},
+				"Parent_ChildPath": {
+					GoTypeName:            "*Parent_Child",
+					LocalGoTypeName:       "*Parent_Child",
+					GoFieldName:           "Child",
+					SubsumingGoStructName: "Parent_Child",
+					IsLeaf:                false,
+					IsScalarField:         false,
+					HasDefault:            false,
+					YANGPath:              "/openconfig-simple/parent/child",
+					GoPathPackageName:     "ocstructs",
+					DirectoryName:         "/openconfig-simple/parent/child",
+					YANGFieldName:         "",
+				},
+				"Parent_Child_FourPath": {
+					GoTypeName:            "Binary",
+					LocalGoTypeName:       "Binary",
+					GoFieldName:           "Four",
+					SubsumingGoStructName: "Parent_Child",
+					IsLeaf:                true,
+					IsScalarField:         false,
+					HasDefault:            false,
+					YANGTypeName:          "binary",
+					YANGPath:              "/openconfig-simple/parent/child/state/four",
+					GoPathPackageName:     "ocstructs",
+					DirectoryName:         "/openconfig-simple/parent/child",
+					YANGFieldName:         "four",
+				},
+				"Parent_Child_OnePath": {
+					GoTypeName:            "string",
+					LocalGoTypeName:       "string",
+					GoFieldName:           "One",
+					SubsumingGoStructName: "Parent_Child",
+					IsLeaf:                true,
+					IsScalarField:         true,
+					HasDefault:            false,
+					YANGTypeName:          "string",
+					YANGPath:              "/openconfig-simple/parent/child/state/one",
+					GoPathPackageName:     "ocstructs",
+					DirectoryName:         "/openconfig-simple/parent/child",
+					YANGFieldName:         "one",
+				},
+				"Parent_Child_ThreePath": {
+					GoTypeName:            "E_Child_Three",
+					LocalGoTypeName:       "E_Child_Three",
+					GoFieldName:           "Three",
+					SubsumingGoStructName: "Parent_Child",
+					IsLeaf:                true,
+					IsScalarField:         false,
+					HasDefault:            false,
+					YANGTypeName:          "enumeration",
+					YANGPath:              "/openconfig-simple/parent/child/state/three",
+					GoPathPackageName:     "ocstructs",
+					DirectoryName:         "/openconfig-simple/parent/child",
+					YANGFieldName:         "three",
+				},
+				"Parent_Child_TwoPath": {
+					GoTypeName:            "string",
+					LocalGoTypeName:       "string",
+					GoFieldName:           "Two",
+					SubsumingGoStructName: "Parent_Child",
+					IsLeaf:                true,
+					IsScalarField:         true,
+					HasDefault:            false,
+					YANGTypeName:          "string",
+					YANGPath:              "/openconfig-simple/parent/child/state/two",
+					GoPathPackageName:     "ocstructs",
+					DirectoryName:         "/openconfig-simple/parent/child",
+					YANGFieldName:         "two",
+				},
+				"Parent_Child_FivePath": {
+					GoTypeName:            "Binary",
+					LocalGoTypeName:       "Binary",
+					GoFieldName:           "Five",
+					SubsumingGoStructName: "Parent_Child",
+					IsLeaf:                true,
+					YANGTypeName:          "ieeefloat32",
+					YANGPath:              "/openconfig-simple/parent/child/state/five",
+					GoPathPackageName:     "ocstructs",
+					YANGFieldName:         "five",
+					DirectoryName:         "/openconfig-simple/parent/child",
+				},
+				"Parent_Child_SixPath": {
+					GoTypeName:            "[]Binary",
+					LocalGoTypeName:       "[]Binary",
+					GoFieldName:           "Six",
+					SubsumingGoStructName: "Parent_Child",
+					IsLeaf:                true,
+					YANGTypeName:          "ieeefloat32",
+					YANGPath:              "/openconfig-simple/parent/child/state/six",
+					GoPathPackageName:     "ocstructs",
+					YANGFieldName:         "six",
+					DirectoryName:         "/openconfig-simple/parent/child",
+				},
+				"RemoteContainerPath": {
+					GoTypeName:            "*RemoteContainer",
+					LocalGoTypeName:       "*RemoteContainer",
+					GoFieldName:           "RemoteContainer",
+					SubsumingGoStructName: "RemoteContainer",
+					IsLeaf:                false,
+					IsScalarField:         false,
+					HasDefault:            false,
+					YANGPath:              "/openconfig-simple/remote-container",
+					GoPathPackageName:     "ocstructs",
+					DirectoryName:         "/openconfig-simple/remote-container",
+					YANGFieldName:         "",
+				},
+				"RemoteContainer_ALeafPath": {
+					GoTypeName:            "string",
+					LocalGoTypeName:       "string",
+					GoFieldName:           "ALeaf",
+					SubsumingGoStructName: "RemoteContainer",
+					IsLeaf:                true,
+					IsScalarField:         true,
+					HasDefault:            false,
+					YANGTypeName:          "string",
+					YANGPath:              "/openconfig-simple/remote-container/state/a-leaf",
+					GoPathPackageName:     "ocstructs",
+					DirectoryName:         "/openconfig-simple/remote-container",
+					YANGFieldName:         "a-leaf",
+				}},
+		*/
+	}, {
 		name:                                   "simple openconfig test with preferOperationalState=false",
 		inFiles:                                []string{filepath.Join(datapath, "openconfig-simple.yang")},
 		inCompressBehaviour:                    genutil.PreferIntendedConfig,
@@ -530,6 +685,7 @@ func TestGeneratePathCode(t *testing.T) {
 				LocalGoTypeName:       "*Model_OrderedList_OrderedMap",
 				GoFieldName:           "OrderedList",
 				SubsumingGoStructName: "Model",
+				IsListContainer:       true,
 				YANGPath:              "/openconfig-orderedlist/model/ordered-lists/ordered-list",
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-orderedlist/model/ordered-lists/ordered-list",
@@ -969,6 +1125,7 @@ func TestGeneratePathCode(t *testing.T) {
 				LocalGoTypeName:       "map[AList_Value_Union]*AList",
 				GoFieldName:           "AList",
 				SubsumingGoStructName: "Device",
+				IsListContainer:       true,
 				YANGPath:              "/enum-module/a-lists/a-list",
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/enum-module/a-lists/a-list",
@@ -1004,6 +1161,7 @@ func TestGeneratePathCode(t *testing.T) {
 				LocalGoTypeName:       "map[BList_Value_Union]*BList",
 				GoFieldName:           "BList",
 				SubsumingGoStructName: "Device",
+				IsListContainer:       true,
 				YANGPath:              "/enum-module/b-lists/b-list",
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/enum-module/b-lists/b-list",
@@ -2185,6 +2343,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				LocalGoTypeName:       "map[List_Key]*List",
 				GoFieldName:           "List",
 				SubsumingGoStructName: "Root",
+				IsListContainer:       true,
 				YANGPath:              "/root-module/list-container/list",
 				GoPathPackageName:     "rootmodulepath",
 				DirectoryName:         "/root-module/list-container/list",
@@ -2210,6 +2369,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				LocalGoTypeName:       "map[float64]*ListWithState",
 				GoFieldName:           "ListWithState",
 				SubsumingGoStructName: "Root",
+				IsListContainer:       true,
 				YANGPath:              "/root-module/list-container-with-state/list-with-state",
 				GoPathPackageName:     "rootmodulepath",
 				DirectoryName:         "/root-module/list-container-with-state/list-with-state",
@@ -2327,7 +2487,7 @@ func TestGetNodeDataMap(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, gotErrs := getNodeDataMap(tt.inIR, tt.inFakeRootName, tt.inSchemaStructPkgAccessor, tt.inPathStructSuffix, tt.inPackageName, tt.inPackageSuffix, tt.inSplitByModule, "", true)
+			got, gotErrs := getNodeDataMap(tt.inIR, tt.inFakeRootName, tt.inSchemaStructPkgAccessor, tt.inPathStructSuffix, tt.inPackageName, tt.inPackageSuffix, tt.inSplitByModule, "", true, true)
 			// TODO(wenbli): Enhance gNMI's errdiff with checking a slice of substrings and use here.
 			var gotErrStrs []string
 			for _, err := range gotErrs {
@@ -3371,7 +3531,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 	for _, tt := range tests {
 		if tt.want != nil {
 			t.Run(tt.name, func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, nil, "oc.", tt.inPathStructSuffix, true, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath, true, true)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, nil, "oc.", tt.inPathStructSuffix, true, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath, true, true, true)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}
@@ -3388,7 +3548,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 
 		if tt.wantNoWildcard != nil {
 			t.Run(tt.name+" no wildcard", func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, nil, "oc.", tt.inPathStructSuffix, false, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath, true, true)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, nil, "oc.", tt.inPathStructSuffix, false, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath, true, true, true)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}
@@ -3700,7 +3860,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 		t.Run(tt.name, func(t *testing.T) {
 			var methodBuf strings.Builder
 			var builderBuf strings.Builder
-			if errs := generateChildConstructors(&methodBuf, &builderBuf, tt.inDirectory, tt.inFieldName, tt.inUniqueFieldName, tt.inDirectories, "oc.", tt.inPathStructSuffix, tt.inGenerateWildcardPaths, tt.inChildAccessor, tt.inUnifiedPaths, true); errs != nil {
+			if errs := generateChildConstructors(&methodBuf, &builderBuf, tt.inDirectory, tt.inFieldName, tt.inUniqueFieldName, tt.inDirectories, "oc.", tt.inPathStructSuffix, tt.inGenerateWildcardPaths, tt.inChildAccessor, tt.inUnifiedPaths, true, true); errs != nil {
 				t.Fatal(errs)
 			}
 

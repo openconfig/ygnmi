@@ -43,6 +43,7 @@ func New() *cobra.Command {
 		Args:  cobra.MinimumNArgs(1),
 	}
 
+	generator.Flags().Bool("compress_paths", true, "If set to true, the generated path API and ygot GoStructs are compressed for brevity according to OpenConfig YANG module conventions. Non-OpenConfig YANG files are recommended to set this flag to false.")
 	generator.Flags().String("schema_struct_path", "", "The Go import path for the schema structs package. This is not needed for most use cases.")
 	generator.Flags().String("ygot_path", "github.com/openconfig/ygot/ygot", "The import path to use for ygot.")
 	generator.Flags().String("ygnmi_path", "github.com/openconfig/ygnmi/ygnmi", "The import path to use for ygnmi.")
@@ -83,6 +84,11 @@ func generate(cmd *cobra.Command, args []string) error {
 	importPath := strings.Split(viper.GetString("base_package_path"), "/")
 	rootPackageName := fmt.Sprintf("%spath", importPath[len(importPath)-1])
 
+	compressBehaviour := genutil.Uncompressed
+	if viper.GetBool("compress_paths") {
+		compressBehaviour = genutil.PreferOperationalState
+	}
+
 	pcg := pathgen.GenConfig{
 		PackageName: rootPackageName,
 		GoImports: pathgen.GoImports{
@@ -91,7 +97,7 @@ func generate(cmd *cobra.Command, args []string) error {
 			YgnmiImportPath:     viper.GetString("ygnmi_path"),
 			YtypesImportPath:    viper.GetString("ytypes_path"),
 		},
-		CompressBehaviour:                    genutil.PreferOperationalState,
+		CompressBehaviour:                    compressBehaviour,
 		SkipEnumDeduplication:                false,
 		ShortenEnumLeafNames:                 true,
 		EnumOrgPrefixesToTrim:                []string{viper.GetString("trim_module_prefix")},
@@ -151,9 +157,9 @@ func generate(cmd *cobra.Command, args []string) error {
 }
 
 func generateStructs(modules []string, schemaPath, version string) error {
-	cmp, err := genutil.TranslateToCompressBehaviour(true, false, true)
-	if err != nil {
-		return err
+	cmp := genutil.Uncompressed
+	if viper.GetBool("compress_paths") {
+		cmp = genutil.PreferOperationalState
 	}
 
 	// Perform the code generation.
