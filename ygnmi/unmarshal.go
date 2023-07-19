@@ -167,17 +167,17 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 		path.Origin = queryPath.Origin
 		ret.Timestamp = LatestTimestamp(unmarshalledData)
 		ret.RecvTimestamp = LatestRecvTimestamp(unmarshalledData)
+		if q.isListContainer() {
+			path.Elem[len(path.Elem)-1].Key = nil
+		}
 	} else {
 		ret.Timestamp = unmarshalledData[0].Timestamp
 		ret.RecvTimestamp = unmarshalledData[0].RecvTimestamp
 	}
-	if q.isListContainer() {
-		path.Elem[len(path.Elem)-1].Key = nil
-	}
 	ret.Path = path
 
 	// For non-leaf config queries, prune all state-only leaves.
-	if !q.isLeaf() && !q.IsState() {
+	if q.isCompressedSchema() && !q.isLeaf() && !q.IsState() {
 		err := ygot.PruneConfigFalse(q.schema().SchemaTree[q.dirName()], goStruct)
 		if err != nil {
 			return ret, err

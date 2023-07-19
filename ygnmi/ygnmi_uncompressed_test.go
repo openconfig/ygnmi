@@ -40,7 +40,7 @@ func getSampleSingleKeyedMapUncompressed(t *testing.T) map[string]*uexampleoc.Op
 func TestUncompressed(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 
-	t.Run("lookup-leaf", func(t *testing.T) {
+	t.Run("lookup-config-leaf", func(t *testing.T) {
 		fakeGNMI.Stub().Notification(&gpb.Notification{
 			Timestamp: 100,
 			Update: []*gpb.Update{{
@@ -56,6 +56,27 @@ func TestUncompressed(t *testing.T) {
 			testutil.GNMIPath(t, `/model/a/single-key[key=foo]/config/key`),
 			(&ygnmi.Value[string]{
 				Path:      testutil.GNMIPath(t, `/model/a/single-key[key=foo]/config/key`),
+				Timestamp: time.Unix(0, 100),
+			}).SetVal("foo"),
+		)
+	})
+
+	t.Run("lookup-state-leaf", func(t *testing.T) {
+		fakeGNMI.Stub().Notification(&gpb.Notification{
+			Timestamp: 100,
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, `/model/a/single-key[key=foo]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}},
+		}).Sync()
+
+		lookupCheckFn(
+			t, fakeGNMI, c,
+			ygnmi.SingletonQuery[string](uexampleocpath.Root().Model().A().SingleKey("foo").State().Key().Query()),
+			"",
+			testutil.GNMIPath(t, `/model/a/single-key[key=foo]/state/key`),
+			(&ygnmi.Value[string]{
+				Path:      testutil.GNMIPath(t, `/model/a/single-key[key=foo]/state/key`),
 				Timestamp: time.Unix(0, 100),
 			}).SetVal("foo"),
 		)

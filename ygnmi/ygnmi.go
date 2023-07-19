@@ -53,6 +53,8 @@ type AnyQuery[T any] interface {
 	IsState() bool
 	// isLeaf returns if the path for this query is a leaf.
 	isLeaf() bool
+	// isCompressedSchema returns whether the query is for compressed ygot schema.
+	isCompressedSchema() bool
 	// isListContainer returns if the path for this query is for a whole list.
 	isListContainer() bool
 	// isScalar returns whether the type (T) for this path is a pointer field (*T) in the parent GoStruct.
@@ -691,6 +693,7 @@ func (b *Batch[T]) Query() SingletonQuery[T] {
 		b.root.IsState(),
 		false,
 		false,
+		b.root.isCompressedSchema(),
 		false,
 		b.root.PathStruct(),
 		nil,

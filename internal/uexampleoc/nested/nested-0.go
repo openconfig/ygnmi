@@ -84,10 +84,11 @@ func binarySliceToFloatSlice(in []oc.Binary) []float32 {
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_APath) Query() ygnmi.SingletonQuery[*oc.OpenconfigNested_A] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigNested_A](
+func (n *OpenconfigNested_APath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A](
 		"OpenconfigNested_A",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -110,7 +111,8 @@ func (n *OpenconfigNested_APath) Query() ygnmi.SingletonQuery[*oc.OpenconfigNest
 func (n *OpenconfigNested_APathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A](
 		"OpenconfigNested_A",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -171,10 +173,11 @@ func (n *OpenconfigNested_A_BPathAny) C() *OpenconfigNested_A_B_CPathAny {
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_BPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigNested_A_B] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigNested_A_B](
+func (n *OpenconfigNested_A_BPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B](
 		"OpenconfigNested_A_B",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -197,7 +200,8 @@ func (n *OpenconfigNested_A_BPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigNe
 func (n *OpenconfigNested_A_BPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B](
 		"OpenconfigNested_A_B",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -258,10 +262,11 @@ func (n *OpenconfigNested_A_B_CPathAny) D() *OpenconfigNested_A_B_C_DPathAny {
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_CPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigNested_A_B_C] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigNested_A_B_C](
+func (n *OpenconfigNested_A_B_CPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C](
 		"OpenconfigNested_A_B_C",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -284,7 +289,8 @@ func (n *OpenconfigNested_A_B_CPath) Query() ygnmi.SingletonQuery[*oc.Openconfig
 func (n *OpenconfigNested_A_B_CPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C](
 		"OpenconfigNested_A_B_C",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -345,10 +351,11 @@ func (n *OpenconfigNested_A_B_C_DPathAny) E() *OpenconfigNested_A_B_C_D_EPathAny
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_DPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigNested_A_B_C_D] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigNested_A_B_C_D](
+func (n *OpenconfigNested_A_B_C_DPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D](
 		"OpenconfigNested_A_B_C_D",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -371,7 +378,8 @@ func (n *OpenconfigNested_A_B_C_DPath) Query() ygnmi.SingletonQuery[*oc.Openconf
 func (n *OpenconfigNested_A_B_C_DPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D](
 		"OpenconfigNested_A_B_C_D",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -432,10 +440,11 @@ func (n *OpenconfigNested_A_B_C_D_EPathAny) F() *OpenconfigNested_A_B_C_D_E_FPat
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_EPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigNested_A_B_C_D_E] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigNested_A_B_C_D_E](
+func (n *OpenconfigNested_A_B_C_D_EPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E](
 		"OpenconfigNested_A_B_C_D_E",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -458,7 +467,8 @@ func (n *OpenconfigNested_A_B_C_D_EPath) Query() ygnmi.SingletonQuery[*oc.Openco
 func (n *OpenconfigNested_A_B_C_D_EPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E](
 		"OpenconfigNested_A_B_C_D_E",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -519,10 +529,11 @@ func (n *OpenconfigNested_A_B_C_D_E_FPathAny) G() *OpenconfigNested_A_B_C_D_E_F_
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_FPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F](
+func (n *OpenconfigNested_A_B_C_D_E_FPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F](
 		"OpenconfigNested_A_B_C_D_E_F",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -545,7 +556,8 @@ func (n *OpenconfigNested_A_B_C_D_E_FPath) Query() ygnmi.SingletonQuery[*oc.Open
 func (n *OpenconfigNested_A_B_C_D_E_FPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F](
 		"OpenconfigNested_A_B_C_D_E_F",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -606,10 +618,11 @@ func (n *OpenconfigNested_A_B_C_D_E_F_GPathAny) H() *OpenconfigNested_A_B_C_D_E_
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_GPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G](
+func (n *OpenconfigNested_A_B_C_D_E_F_GPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G](
 		"OpenconfigNested_A_B_C_D_E_F_G",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -632,7 +645,8 @@ func (n *OpenconfigNested_A_B_C_D_E_F_GPath) Query() ygnmi.SingletonQuery[*oc.Op
 func (n *OpenconfigNested_A_B_C_D_E_F_GPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G](
 		"OpenconfigNested_A_B_C_D_E_F_G",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -693,10 +707,11 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_HPathAny) I() *OpenconfigNested_A_B_C_D_
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_HPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H](
+func (n *OpenconfigNested_A_B_C_D_E_F_G_HPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H](
 		"OpenconfigNested_A_B_C_D_E_F_G_H",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -719,7 +734,8 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_HPath) Query() ygnmi.SingletonQuery[*oc.
 func (n *OpenconfigNested_A_B_C_D_E_F_G_HPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H](
 		"OpenconfigNested_A_B_C_D_E_F_G_H",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -780,10 +796,11 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_IPathAny) J() *OpenconfigNested_A_B_C_
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_IPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I](
+func (n *OpenconfigNested_A_B_C_D_E_F_G_H_IPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I](
 		"OpenconfigNested_A_B_C_D_E_F_G_H_I",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -806,7 +823,8 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_IPath) Query() ygnmi.SingletonQuery[*o
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_IPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I](
 		"OpenconfigNested_A_B_C_D_E_F_G_H_I",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -867,10 +885,11 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_JPathAny) K() *OpenconfigNested_A_B_
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_JPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J](
+func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_JPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J](
 		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -893,7 +912,8 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_JPath) Query() ygnmi.SingletonQuery[
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_JPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J](
 		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -954,10 +974,11 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPathAny) L() *OpenconfigNested_A_
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K](
+func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K](
 		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -980,7 +1001,8 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPath) Query() ygnmi.SingletonQuer
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K](
 		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1041,10 +1063,11 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPathAny) M() *OpenconfigNested_
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L](
+func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L](
 		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1067,7 +1090,8 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPath) Query() ygnmi.SingletonQu
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L](
 		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1128,10 +1152,11 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) State() *OpenconfigN
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M](
+func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M](
 		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1154,7 +1179,8 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPath) Query() ygnmi.Singleton
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M](
 		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1190,12 +1216,13 @@ type OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State_FooPathAny struct {
 //	Instantiating module: "openconfig-nested"
 //	Path from parent:     "foo"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State_FooPath) Query() ygnmi.SingletonQuery[string] {
-	return ygnmi.NewSingletonQuery[string](
+func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State_FooPath) Query() ygnmi.ConfigQuery[string] {
+	return ygnmi.NewConfigQuery[string](
 		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"foo"},
@@ -1232,9 +1259,10 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State_FooPath) Query() ygnmi
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State_FooPathAny) Query() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"foo"},
@@ -1306,10 +1334,11 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePathAny) Foo() *Opencon
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePath) Query() ygnmi.SingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State](
+func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State](
 		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1332,7 +1361,8 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePath) Query() ygnmi.Sin
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State](
 		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1361,10 +1391,11 @@ type OpenconfigNested_ContainerPathAny struct {
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_ContainerPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigNested_Container] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigNested_Container](
+func (n *OpenconfigNested_ContainerPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_Container] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_Container](
 		"OpenconfigNested_Container",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1387,7 +1418,8 @@ func (n *OpenconfigNested_ContainerPath) Query() ygnmi.SingletonQuery[*oc.Openco
 func (n *OpenconfigNested_ContainerPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_Container] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_Container](
 		"OpenconfigNested_Container",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,

@@ -148,10 +148,11 @@ func binarySliceToFloatSlice(in []oc.Binary) []float32 {
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_ModelPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model](
+func (n *OpenconfigWithlistval_ModelPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model](
 		"OpenconfigWithlistval_Model",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -174,7 +175,8 @@ func (n *OpenconfigWithlistval_ModelPath) Query() ygnmi.SingletonQuery[*oc.Openc
 func (n *OpenconfigWithlistval_ModelPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model](
 		"OpenconfigWithlistval_Model",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -303,10 +305,11 @@ func (n *OpenconfigWithlistval_Model_APathAny) SingleKeyMap() *OpenconfigWithlis
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_APath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_A] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_A](
+func (n *OpenconfigWithlistval_Model_APath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A](
 		"OpenconfigWithlistval_Model_A",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -329,7 +332,8 @@ func (n *OpenconfigWithlistval_Model_APath) Query() ygnmi.SingletonQuery[*oc.Ope
 func (n *OpenconfigWithlistval_Model_APathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A](
 		"OpenconfigWithlistval_Model_A",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -365,12 +369,13 @@ type OpenconfigWithlistval_Model_A_SingleKey_KeyPathAny struct {
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_KeyPath) Query() ygnmi.SingletonQuery[string] {
-	return ygnmi.NewSingletonQuery[string](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_KeyPath) Query() ygnmi.ConfigQuery[string] {
+	return ygnmi.NewConfigQuery[string](
 		"OpenconfigWithlistval_Model_A_SingleKey",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key"},
@@ -407,9 +412,10 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_KeyPath) Query() ygnmi.Singleto
 func (n *OpenconfigWithlistval_Model_A_SingleKey_KeyPathAny) Query() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"OpenconfigWithlistval_Model_A_SingleKey",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key"},
@@ -619,10 +625,11 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) State() *OpenconfigWith
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey](
+func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey](
 		"OpenconfigWithlistval_Model_A_SingleKey",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -645,7 +652,8 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) Query() ygnmi.SingletonQue
 func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey](
 		"OpenconfigWithlistval_Model_A_SingleKey",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -664,10 +672,11 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) Query() ygnmi.WildcardQ
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKeyPathMap) Query() ygnmi.SingletonQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey] {
-	return ygnmi.NewSingletonQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey](
+func (n *OpenconfigWithlistval_Model_A_SingleKeyPathMap) Query() ygnmi.ConfigQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey] {
+	return ygnmi.NewConfigQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey](
 		"OpenconfigWithlistval_Model_A",
-		true,
+		false,
+		false,
 		false,
 		false,
 		true,
@@ -693,7 +702,8 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPathMap) Query() ygnmi.Singleton
 func (n *OpenconfigWithlistval_Model_A_SingleKeyPathMapAny) Query() ygnmi.WildcardQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey] {
 	return ygnmi.NewWildcardQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey](
 		"OpenconfigWithlistval_Model_A",
-		true,
+		false,
+		false,
 		false,
 		false,
 		true,
@@ -732,12 +742,13 @@ type OpenconfigWithlistval_Model_A_SingleKey_Config_KeyPathAny struct {
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/config/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_Config_KeyPath) Query() ygnmi.SingletonQuery[string] {
-	return ygnmi.NewSingletonQuery[string](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_Config_KeyPath) Query() ygnmi.ConfigQuery[string] {
+	return ygnmi.NewConfigQuery[string](
 		"OpenconfigWithlistval_Model_A_SingleKey_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key"},
@@ -774,9 +785,10 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_Config_KeyPath) Query() ygnmi.S
 func (n *OpenconfigWithlistval_Model_A_SingleKey_Config_KeyPathAny) Query() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"OpenconfigWithlistval_Model_A_SingleKey_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key"},
@@ -821,12 +833,13 @@ type OpenconfigWithlistval_Model_A_SingleKey_Config_ValuePathAny struct {
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "value"
 //	Path from root:       "/model/a/single-key/config/value"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_Config_ValuePath) Query() ygnmi.SingletonQuery[int64] {
-	return ygnmi.NewSingletonQuery[int64](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_Config_ValuePath) Query() ygnmi.ConfigQuery[int64] {
+	return ygnmi.NewConfigQuery[int64](
 		"OpenconfigWithlistval_Model_A_SingleKey_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"value"},
@@ -863,9 +876,10 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_Config_ValuePath) Query() ygnmi
 func (n *OpenconfigWithlistval_Model_A_SingleKey_Config_ValuePathAny) Query() ygnmi.WildcardQuery[int64] {
 	return ygnmi.NewWildcardQuery[int64](
 		"OpenconfigWithlistval_Model_A_SingleKey_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"value"},
@@ -971,10 +985,11 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPathAny) Value() *Opencon
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_Config] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_Config](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_Config] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_Config](
 		"OpenconfigWithlistval_Model_A_SingleKey_Config",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -997,7 +1012,8 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPath) Query() ygnmi.Singl
 func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_Config] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_Config](
 		"OpenconfigWithlistval_Model_A_SingleKey_Config",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1026,10 +1042,11 @@ type OpenconfigWithlistval_Model_A_SingleKey_InnerAPathAny struct {
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerAPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerAPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1052,7 +1069,8 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerAPath) Query() ygnmi.Singl
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerAPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1088,12 +1106,13 @@ type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_KeyPathAny struct 
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_KeyPath) Query() ygnmi.SingletonQuery[string] {
-	return ygnmi.NewSingletonQuery[string](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_KeyPath) Query() ygnmi.ConfigQuery[string] {
+	return ygnmi.NewConfigQuery[string](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key"},
@@ -1130,9 +1149,10 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_KeyPath) Query
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_KeyPathAny) Query() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key"},
@@ -1278,10 +1298,11 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathAny) State(
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1304,7 +1325,8 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPath) Query() y
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1323,10 +1345,11 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathAny) Query(
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathMap) Query() ygnmi.SingletonQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey] {
-	return ygnmi.NewSingletonQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathMap) Query() ygnmi.ConfigQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey] {
+	return ygnmi.NewConfigQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA",
-		true,
+		false,
+		false,
 		false,
 		false,
 		true,
@@ -1352,7 +1375,8 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathMap) Query(
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathMapAny) Query() ygnmi.WildcardQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey] {
 	return ygnmi.NewWildcardQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA",
-		true,
+		false,
+		false,
 		false,
 		false,
 		true,
@@ -1391,12 +1415,13 @@ type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_KeyPathAny 
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/config/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_KeyPath) Query() ygnmi.SingletonQuery[string] {
-	return ygnmi.NewSingletonQuery[string](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_KeyPath) Query() ygnmi.ConfigQuery[string] {
+	return ygnmi.NewConfigQuery[string](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key"},
@@ -1435,9 +1460,10 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_KeyPath
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_KeyPathAny) Query() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key"},
@@ -1484,12 +1510,13 @@ type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_ValuePathAn
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "value"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/config/value"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_ValuePath) Query() ygnmi.SingletonQuery[int64] {
-	return ygnmi.NewSingletonQuery[int64](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_ValuePath) Query() ygnmi.ConfigQuery[int64] {
+	return ygnmi.NewConfigQuery[int64](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"value"},
@@ -1528,9 +1555,10 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_ValuePa
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_ValuePathAny) Query() ygnmi.WildcardQuery[int64] {
 	return ygnmi.NewWildcardQuery[int64](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"value"},
@@ -1638,10 +1666,11 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPathAny)
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1664,7 +1693,8 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPath) Qu
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1700,12 +1730,13 @@ type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_KeyPathAny s
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/state/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_KeyPath) Query() ygnmi.SingletonQuery[string] {
-	return ygnmi.NewSingletonQuery[string](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_KeyPath) Query() ygnmi.ConfigQuery[string] {
+	return ygnmi.NewConfigQuery[string](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key"},
@@ -1744,9 +1775,10 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_KeyPath)
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_KeyPathAny) Query() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key"},
@@ -1793,12 +1825,13 @@ type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_ValuePathAny
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "value"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/state/value"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_ValuePath) Query() ygnmi.SingletonQuery[int64] {
-	return ygnmi.NewSingletonQuery[int64](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_ValuePath) Query() ygnmi.ConfigQuery[int64] {
+	return ygnmi.NewConfigQuery[int64](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"value"},
@@ -1837,9 +1870,10 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_ValuePat
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_ValuePathAny) Query() ygnmi.WildcardQuery[int64] {
 	return ygnmi.NewWildcardQuery[int64](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"value"},
@@ -1947,10 +1981,11 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePathAny) 
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1973,7 +2008,8 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePath) Que
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -2034,10 +2070,11 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPathAny) OrderedLis
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -2060,7 +2097,8 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPath) Query() ygnmi
 func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -2099,10 +2137,11 @@ type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPathMapAny 
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPathMap) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPathMap) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists",
-		true,
+		false,
+		false,
 		false,
 		false,
 		true,
@@ -2128,7 +2167,8 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPathMap
 func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPathMapAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists",
-		true,
+		false,
+		false,
 		false,
 		false,
 		true,
@@ -2167,12 +2207,13 @@ type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_Key
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/config/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_KeyPath) Query() ygnmi.SingletonQuery[string] {
-	return ygnmi.NewSingletonQuery[string](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_KeyPath) Query() ygnmi.ConfigQuery[string] {
+	return ygnmi.NewConfigQuery[string](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key"},
@@ -2211,9 +2252,10 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config
 func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_KeyPathAny) Query() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key"},
@@ -2260,12 +2302,13 @@ type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_Val
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "value"
 //	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/config/value"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_ValuePath) Query() ygnmi.SingletonQuery[int64] {
-	return ygnmi.NewSingletonQuery[int64](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_ValuePath) Query() ygnmi.ConfigQuery[int64] {
+	return ygnmi.NewConfigQuery[int64](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"value"},
@@ -2304,9 +2347,10 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config
 func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_ValuePathAny) Query() ygnmi.WildcardQuery[int64] {
 	return ygnmi.NewWildcardQuery[int64](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"value"},
@@ -2414,10 +2458,11 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_ConfigPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_ConfigPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -2440,7 +2485,8 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config
 func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_ConfigPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -2476,12 +2522,13 @@ type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_KeyP
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/state/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_KeyPath) Query() ygnmi.SingletonQuery[string] {
-	return ygnmi.NewSingletonQuery[string](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_KeyPath) Query() ygnmi.ConfigQuery[string] {
+	return ygnmi.NewConfigQuery[string](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key"},
@@ -2520,9 +2567,10 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_
 func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_KeyPathAny) Query() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key"},
@@ -2569,12 +2617,13 @@ type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_Valu
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "value"
 //	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/state/value"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_ValuePath) Query() ygnmi.SingletonQuery[int64] {
-	return ygnmi.NewSingletonQuery[int64](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_ValuePath) Query() ygnmi.ConfigQuery[int64] {
+	return ygnmi.NewConfigQuery[int64](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"value"},
@@ -2613,9 +2662,10 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_
 func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_ValuePathAny) Query() ygnmi.WildcardQuery[int64] {
 	return ygnmi.NewWildcardQuery[int64](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"value"},
@@ -2723,10 +2773,11 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StateP
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StatePath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StatePath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -2749,7 +2800,8 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StateP
 func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StatePathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -2785,12 +2837,13 @@ type OpenconfigWithlistval_Model_A_SingleKey_State_KeyPathAny struct {
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/state/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_State_KeyPath) Query() ygnmi.SingletonQuery[string] {
-	return ygnmi.NewSingletonQuery[string](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_State_KeyPath) Query() ygnmi.ConfigQuery[string] {
+	return ygnmi.NewConfigQuery[string](
 		"OpenconfigWithlistval_Model_A_SingleKey_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key"},
@@ -2827,9 +2880,10 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_State_KeyPath) Query() ygnmi.Si
 func (n *OpenconfigWithlistval_Model_A_SingleKey_State_KeyPathAny) Query() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"OpenconfigWithlistval_Model_A_SingleKey_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key"},
@@ -2874,12 +2928,13 @@ type OpenconfigWithlistval_Model_A_SingleKey_State_ValuePathAny struct {
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "value"
 //	Path from root:       "/model/a/single-key/state/value"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_State_ValuePath) Query() ygnmi.SingletonQuery[int64] {
-	return ygnmi.NewSingletonQuery[int64](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_State_ValuePath) Query() ygnmi.ConfigQuery[int64] {
+	return ygnmi.NewConfigQuery[int64](
 		"OpenconfigWithlistval_Model_A_SingleKey_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"value"},
@@ -2916,9 +2971,10 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_State_ValuePath) Query() ygnmi.
 func (n *OpenconfigWithlistval_Model_A_SingleKey_State_ValuePathAny) Query() ygnmi.WildcardQuery[int64] {
 	return ygnmi.NewWildcardQuery[int64](
 		"OpenconfigWithlistval_Model_A_SingleKey_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"value"},
@@ -3024,10 +3080,11 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePathAny) Value() *Openconf
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_State] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_State](
+func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_State] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_State](
 		"OpenconfigWithlistval_Model_A_SingleKey_State",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -3050,7 +3107,8 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePath) Query() ygnmi.Single
 func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_State] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_State](
 		"OpenconfigWithlistval_Model_A_SingleKey_State",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -3195,10 +3253,11 @@ func (n *OpenconfigWithlistval_Model_BPathAny) MultiKeyMap() *OpenconfigWithlist
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_BPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_B] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_B](
+func (n *OpenconfigWithlistval_Model_BPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_B] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_B](
 		"OpenconfigWithlistval_Model_B",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -3221,7 +3280,8 @@ func (n *OpenconfigWithlistval_Model_BPath) Query() ygnmi.SingletonQuery[*oc.Ope
 func (n *OpenconfigWithlistval_Model_BPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_B] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_B](
 		"OpenconfigWithlistval_Model_B",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -3257,12 +3317,13 @@ type OpenconfigWithlistval_Model_B_MultiKey_Key1PathAny struct {
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "key1"
 //	Path from root:       "/model/b/multi-key/key1"
-func (n *OpenconfigWithlistval_Model_B_MultiKey_Key1Path) Query() ygnmi.SingletonQuery[uint32] {
-	return ygnmi.NewSingletonQuery[uint32](
+func (n *OpenconfigWithlistval_Model_B_MultiKey_Key1Path) Query() ygnmi.ConfigQuery[uint32] {
+	return ygnmi.NewConfigQuery[uint32](
 		"OpenconfigWithlistval_Model_B_MultiKey",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key1"},
@@ -3299,9 +3360,10 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_Key1Path) Query() ygnmi.Singleto
 func (n *OpenconfigWithlistval_Model_B_MultiKey_Key1PathAny) Query() ygnmi.WildcardQuery[uint32] {
 	return ygnmi.NewWildcardQuery[uint32](
 		"OpenconfigWithlistval_Model_B_MultiKey",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key1"},
@@ -3346,12 +3408,13 @@ type OpenconfigWithlistval_Model_B_MultiKey_Key2PathAny struct {
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "key2"
 //	Path from root:       "/model/b/multi-key/key2"
-func (n *OpenconfigWithlistval_Model_B_MultiKey_Key2Path) Query() ygnmi.SingletonQuery[uint64] {
-	return ygnmi.NewSingletonQuery[uint64](
+func (n *OpenconfigWithlistval_Model_B_MultiKey_Key2Path) Query() ygnmi.ConfigQuery[uint64] {
+	return ygnmi.NewConfigQuery[uint64](
 		"OpenconfigWithlistval_Model_B_MultiKey",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key2"},
@@ -3388,9 +3451,10 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_Key2Path) Query() ygnmi.Singleto
 func (n *OpenconfigWithlistval_Model_B_MultiKey_Key2PathAny) Query() ygnmi.WildcardQuery[uint64] {
 	return ygnmi.NewWildcardQuery[uint64](
 		"OpenconfigWithlistval_Model_B_MultiKey",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key2"},
@@ -3570,10 +3634,11 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPathAny) State() *OpenconfigWithl
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_B_MultiKeyPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey](
+func (n *OpenconfigWithlistval_Model_B_MultiKeyPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey](
 		"OpenconfigWithlistval_Model_B_MultiKey",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -3596,7 +3661,8 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPath) Query() ygnmi.SingletonQuer
 func (n *OpenconfigWithlistval_Model_B_MultiKeyPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey](
 		"OpenconfigWithlistval_Model_B_MultiKey",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -3615,10 +3681,11 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPathAny) Query() ygnmi.WildcardQu
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_B_MultiKeyPathMap) Query() ygnmi.SingletonQuery[map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey] {
-	return ygnmi.NewSingletonQuery[map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey](
+func (n *OpenconfigWithlistval_Model_B_MultiKeyPathMap) Query() ygnmi.ConfigQuery[map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey] {
+	return ygnmi.NewConfigQuery[map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey](
 		"OpenconfigWithlistval_Model_B",
-		true,
+		false,
+		false,
 		false,
 		false,
 		true,
@@ -3644,7 +3711,8 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPathMap) Query() ygnmi.SingletonQ
 func (n *OpenconfigWithlistval_Model_B_MultiKeyPathMapAny) Query() ygnmi.WildcardQuery[map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey] {
 	return ygnmi.NewWildcardQuery[map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey](
 		"OpenconfigWithlistval_Model_B",
-		true,
+		false,
+		false,
 		false,
 		false,
 		true,
@@ -3683,12 +3751,13 @@ type OpenconfigWithlistval_Model_B_MultiKey_Config_Key1PathAny struct {
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "key1"
 //	Path from root:       "/model/b/multi-key/config/key1"
-func (n *OpenconfigWithlistval_Model_B_MultiKey_Config_Key1Path) Query() ygnmi.SingletonQuery[uint32] {
-	return ygnmi.NewSingletonQuery[uint32](
+func (n *OpenconfigWithlistval_Model_B_MultiKey_Config_Key1Path) Query() ygnmi.ConfigQuery[uint32] {
+	return ygnmi.NewConfigQuery[uint32](
 		"OpenconfigWithlistval_Model_B_MultiKey_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key1"},
@@ -3725,9 +3794,10 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_Config_Key1Path) Query() ygnmi.S
 func (n *OpenconfigWithlistval_Model_B_MultiKey_Config_Key1PathAny) Query() ygnmi.WildcardQuery[uint32] {
 	return ygnmi.NewWildcardQuery[uint32](
 		"OpenconfigWithlistval_Model_B_MultiKey_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key1"},
@@ -3772,12 +3842,13 @@ type OpenconfigWithlistval_Model_B_MultiKey_Config_Key2PathAny struct {
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "key2"
 //	Path from root:       "/model/b/multi-key/config/key2"
-func (n *OpenconfigWithlistval_Model_B_MultiKey_Config_Key2Path) Query() ygnmi.SingletonQuery[uint64] {
-	return ygnmi.NewSingletonQuery[uint64](
+func (n *OpenconfigWithlistval_Model_B_MultiKey_Config_Key2Path) Query() ygnmi.ConfigQuery[uint64] {
+	return ygnmi.NewConfigQuery[uint64](
 		"OpenconfigWithlistval_Model_B_MultiKey_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key2"},
@@ -3814,9 +3885,10 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_Config_Key2Path) Query() ygnmi.S
 func (n *OpenconfigWithlistval_Model_B_MultiKey_Config_Key2PathAny) Query() ygnmi.WildcardQuery[uint64] {
 	return ygnmi.NewWildcardQuery[uint64](
 		"OpenconfigWithlistval_Model_B_MultiKey_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key2"},
@@ -3922,10 +3994,11 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPathAny) Key2() *Openconfi
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_Config] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_Config](
+func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_Config] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_Config](
 		"OpenconfigWithlistval_Model_B_MultiKey_Config",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -3948,7 +4021,8 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPath) Query() ygnmi.Single
 func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_Config] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_Config](
 		"OpenconfigWithlistval_Model_B_MultiKey_Config",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -3984,12 +4058,13 @@ type OpenconfigWithlistval_Model_B_MultiKey_State_Key1PathAny struct {
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "key1"
 //	Path from root:       "/model/b/multi-key/state/key1"
-func (n *OpenconfigWithlistval_Model_B_MultiKey_State_Key1Path) Query() ygnmi.SingletonQuery[uint32] {
-	return ygnmi.NewSingletonQuery[uint32](
+func (n *OpenconfigWithlistval_Model_B_MultiKey_State_Key1Path) Query() ygnmi.ConfigQuery[uint32] {
+	return ygnmi.NewConfigQuery[uint32](
 		"OpenconfigWithlistval_Model_B_MultiKey_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key1"},
@@ -4026,9 +4101,10 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_State_Key1Path) Query() ygnmi.Si
 func (n *OpenconfigWithlistval_Model_B_MultiKey_State_Key1PathAny) Query() ygnmi.WildcardQuery[uint32] {
 	return ygnmi.NewWildcardQuery[uint32](
 		"OpenconfigWithlistval_Model_B_MultiKey_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key1"},
@@ -4073,12 +4149,13 @@ type OpenconfigWithlistval_Model_B_MultiKey_State_Key2PathAny struct {
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "key2"
 //	Path from root:       "/model/b/multi-key/state/key2"
-func (n *OpenconfigWithlistval_Model_B_MultiKey_State_Key2Path) Query() ygnmi.SingletonQuery[uint64] {
-	return ygnmi.NewSingletonQuery[uint64](
+func (n *OpenconfigWithlistval_Model_B_MultiKey_State_Key2Path) Query() ygnmi.ConfigQuery[uint64] {
+	return ygnmi.NewConfigQuery[uint64](
 		"OpenconfigWithlistval_Model_B_MultiKey_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key2"},
@@ -4115,9 +4192,10 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_State_Key2Path) Query() ygnmi.Si
 func (n *OpenconfigWithlistval_Model_B_MultiKey_State_Key2PathAny) Query() ygnmi.WildcardQuery[uint64] {
 	return ygnmi.NewWildcardQuery[uint64](
 		"OpenconfigWithlistval_Model_B_MultiKey_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key2"},
@@ -4223,10 +4301,11 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePathAny) Key2() *Openconfig
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_State] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_State](
+func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_State] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_State](
 		"OpenconfigWithlistval_Model_B_MultiKey_State",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -4249,7 +4328,8 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePath) Query() ygnmi.Singlet
 func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_State] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_State](
 		"OpenconfigWithlistval_Model_B_MultiKey_State",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -4310,10 +4390,11 @@ func (n *OpenconfigWithlistval_Model_CPathAny) NoKeyAny() *OpenconfigWithlistval
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_CPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_C] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_C](
+func (n *OpenconfigWithlistval_Model_CPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_C] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_C](
 		"OpenconfigWithlistval_Model_C",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -4336,7 +4417,8 @@ func (n *OpenconfigWithlistval_Model_CPath) Query() ygnmi.SingletonQuery[*oc.Ope
 func (n *OpenconfigWithlistval_Model_CPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_C] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_C](
 		"OpenconfigWithlistval_Model_C",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -4365,10 +4447,11 @@ type OpenconfigWithlistval_Model_C_NoKeyPathAny struct {
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_C_NoKeyPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_C_NoKey] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_C_NoKey](
+func (n *OpenconfigWithlistval_Model_C_NoKeyPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_C_NoKey] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_C_NoKey](
 		"OpenconfigWithlistval_Model_C_NoKey",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -4391,7 +4474,8 @@ func (n *OpenconfigWithlistval_Model_C_NoKeyPath) Query() ygnmi.SingletonQuery[*
 func (n *OpenconfigWithlistval_Model_C_NoKeyPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey](
 		"OpenconfigWithlistval_Model_C_NoKey",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -4452,10 +4536,11 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_FooPathAny) State() *OpenconfigWith
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_C_NoKey_FooPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo](
+func (n *OpenconfigWithlistval_Model_C_NoKey_FooPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo](
 		"OpenconfigWithlistval_Model_C_NoKey_Foo",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -4478,7 +4563,8 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_FooPath) Query() ygnmi.SingletonQue
 func (n *OpenconfigWithlistval_Model_C_NoKey_FooPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo](
 		"OpenconfigWithlistval_Model_C_NoKey_Foo",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -4514,12 +4600,13 @@ type OpenconfigWithlistval_Model_C_NoKey_Foo_State_KeyPathAny struct {
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "key"
 //	Path from root:       "/model/c/no-key/foo/state/key"
-func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_State_KeyPath) Query() ygnmi.SingletonQuery[string] {
-	return ygnmi.NewSingletonQuery[string](
+func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_State_KeyPath) Query() ygnmi.ConfigQuery[string] {
+	return ygnmi.NewConfigQuery[string](
 		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key"},
@@ -4556,9 +4643,10 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_State_KeyPath) Query() ygnmi.Si
 func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_State_KeyPathAny) Query() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"key"},
@@ -4603,12 +4691,13 @@ type OpenconfigWithlistval_Model_C_NoKey_Foo_State_ValuePathAny struct {
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "value"
 //	Path from root:       "/model/c/no-key/foo/state/value"
-func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_State_ValuePath) Query() ygnmi.SingletonQuery[int64] {
-	return ygnmi.NewSingletonQuery[int64](
+func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_State_ValuePath) Query() ygnmi.ConfigQuery[int64] {
+	return ygnmi.NewConfigQuery[int64](
 		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"value"},
@@ -4645,9 +4734,10 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_State_ValuePath) Query() ygnmi.
 func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_State_ValuePathAny) Query() ygnmi.WildcardQuery[int64] {
 	return ygnmi.NewWildcardQuery[int64](
 		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"value"},
@@ -4753,10 +4843,11 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny) Value() *Openconf
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath) Query() ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State](
+func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State](
 		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -4779,7 +4870,8 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath) Query() ygnmi.Single
 func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State](
 		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,

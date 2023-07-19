@@ -28,6 +28,8 @@ import (
 	"github.com/openconfig/ygnmi/exampleoc/exampleocpath"
 	"github.com/openconfig/ygnmi/internal/exampleocunordered/exampleocunorderedpath"
 	"github.com/openconfig/ygnmi/internal/testutil"
+	"github.com/openconfig/ygnmi/internal/uexampleoc"
+	"github.com/openconfig/ygnmi/internal/uexampleoc/uexampleocpath"
 	"github.com/openconfig/ygnmi/schemaless"
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/util"
@@ -3520,6 +3522,66 @@ func TestReplace(t *testing.T) {
     }
   ]
 }`))}},
+			}},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "YANG ordered list for uncompressed schema",
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
+			om := &uexampleoc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap{}
+			ol, err := om.AppendNew("foo")
+			if err != nil {
+				t.Fatal(err)
+			}
+			ol.GetOrCreateConfig().SetKey("foo")
+			ol.GetOrCreateConfig().SetValue(42)
+			ol, err = om.AppendNew("bar")
+			if err != nil {
+				t.Fatal(err)
+			}
+			ol.GetOrCreateConfig().SetKey("bar")
+			ol.GetOrCreateConfig().SetValue(43)
+			ol, err = om.AppendNew("baz")
+			if err != nil {
+				t.Fatal(err)
+			}
+			ol.GetOrCreateConfig().SetKey("baz")
+			ol.GetOrCreateConfig().SetValue(44)
+			return ygnmi.Replace(context.Background(), c, uexampleocpath.Root().Model().A().SingleKey("foo").OrderedLists().OrderedListMap().Query(), om)
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Replace: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists/ordered-list"),
+				Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`[
+  {
+    "openconfig-withlistval:config": {
+      "key": "foo",
+      "value": "42"
+    },
+    "openconfig-withlistval:key": "foo"
+  },
+  {
+    "openconfig-withlistval:config": {
+      "key": "bar",
+      "value": "43"
+    },
+    "openconfig-withlistval:key": "bar"
+  },
+  {
+    "openconfig-withlistval:config": {
+      "key": "baz",
+      "value": "44"
+    },
+    "openconfig-withlistval:key": "baz"
+  }
+]`)}},
 			}},
 		},
 		stubResponse: &gpb.SetResponse{

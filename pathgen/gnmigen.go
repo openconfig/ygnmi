@@ -45,6 +45,7 @@ type gnmiStruct struct {
 	SpecialConvertFunc      string
 	CompressInfo            *CompressionInfo
 	IsListContainer         bool
+	IsCompressedSchema      bool
 }
 
 const (
@@ -64,10 +65,7 @@ var packagesSeen = map[string]bool{}
 // Note: GNMIGenerator requires that PreferOperationalState be true when generating PathStructs.
 // TODO(DanG100): pass schema from parent to child.
 func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeData, compressPaths bool) (string, error) {
-	methodName := "Query"
-	if compressPaths {
-		methodName = "State"
-	}
+	methodName := "State"
 	tmplStruct := gnmiStruct{
 		PathStructName:          pathStructName,
 		GoTypeName:              node.GoTypeName,
@@ -76,6 +74,7 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		GoFieldName:             node.GoFieldName,
 		SchemaStructPkgAccessor: "oc.",
 		IsState:                 true,
+		IsCompressedSchema:      compressPaths,
 		MethodName:              methodName,
 		SingletonTypeName:       "SingletonQuery",
 		WildcardTypeName:        "WildcardQuery",
@@ -139,6 +138,12 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		return tmpl.Execute(&b, &tmplStruct)
 	}
 
+	// TODO(wenbli): This logic is confusing -- fix up after deciding on API for uncompressed.
+	if !compressPaths {
+		tmplStruct.MethodName = "Query"
+		tmplStruct.SingletonTypeName = "ConfigQuery"
+		tmplStruct.IsState = false
+	}
 	if err := generate(tmplStruct, false); err != nil {
 		return "", err
 	}
@@ -205,6 +210,7 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 		{{ .IsState }},
 		true,
 		{{ .IsScalar }},
+		{{ .IsCompressedSchema }},
 		false,
 		ygnmi.New{{ .PathBaseTypeName }}(
 			[]string{ {{- .RelPathList -}} },
@@ -253,6 +259,7 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 		{{ .IsState }},
 		true,
 		{{ .IsScalar }},
+		{{ .IsCompressedSchema }},
 		false,
 		ygnmi.New{{ .PathBaseTypeName }}(
 			[]string{ {{- .RelPathList -}} },
@@ -297,6 +304,7 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 		{{ .IsState }},
 		false,
 		false,
+		{{ .IsCompressedSchema }},
 		{{ .IsListContainer }},
 		n,
 		{{- if .IsListContainer }}
@@ -337,6 +345,7 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 		{{ .IsState }},
 		false,
 		false,
+		{{ .IsCompressedSchema }},
 		{{ .IsListContainer }},
 		n,
 		{{- if .IsListContainer }}
@@ -394,6 +403,7 @@ func (b *Batch) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeNam
 		{{ .IsState }},
 		false,
 		false,
+		{{ .IsCompressedSchema }},
 		false,
 		ygnmi.NewDeviceRootBase(),
 		nil,

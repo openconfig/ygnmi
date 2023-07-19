@@ -139,14 +139,15 @@ func (b *Batch) AddPaths(paths ...ygnmi.PathStruct) *Batch {
 	return b
 }
 
-// Query returns a Query that can be used in gNMI operations.
+// State returns a Query that can be used in gNMI operations.
 // The returned query is immutable, adding paths does not modify existing queries.
-func (b *Batch) Query() ygnmi.SingletonQuery[*oc.Root] {
+func (b *Batch) State() ygnmi.SingletonQuery[*oc.Root] {
 	queryPaths := make([]ygnmi.PathStruct, len(b.paths))
 	copy(queryPaths, b.paths)
 	return ygnmi.NewSingletonQuery[*oc.Root](
 		"Root",
 		true,
+		false,
 		false,
 		false,
 		false,
@@ -174,10 +175,11 @@ func binarySliceToFloatSlice(in []oc.Binary) []float32 {
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *RootPath) Query() ygnmi.SingletonQuery[*oc.Root] {
-	return ygnmi.NewSingletonQuery[*oc.Root](
+func (n *RootPath) Query() ygnmi.ConfigQuery[*oc.Root] {
+	return ygnmi.NewConfigQuery[*oc.Root](
 		"Root",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,

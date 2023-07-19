@@ -86,10 +86,11 @@ func binarySliceToFloatSlice(in []oc.Binary) []float32 {
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigSimple_ParentPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigSimple_Parent] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigSimple_Parent](
+func (n *OpenconfigSimple_ParentPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigSimple_Parent] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigSimple_Parent](
 		"OpenconfigSimple_Parent",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -112,7 +113,8 @@ func (n *OpenconfigSimple_ParentPath) Query() ygnmi.SingletonQuery[*oc.Openconfi
 func (n *OpenconfigSimple_ParentPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigSimple_Parent] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigSimple_Parent](
 		"OpenconfigSimple_Parent",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -205,10 +207,11 @@ func (n *OpenconfigSimple_Parent_ChildPathAny) State() *OpenconfigSimple_Parent_
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigSimple_Parent_ChildPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigSimple_Parent_Child] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigSimple_Parent_Child](
+func (n *OpenconfigSimple_Parent_ChildPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigSimple_Parent_Child] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigSimple_Parent_Child](
 		"OpenconfigSimple_Parent_Child",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -231,7 +234,8 @@ func (n *OpenconfigSimple_Parent_ChildPath) Query() ygnmi.SingletonQuery[*oc.Ope
 func (n *OpenconfigSimple_Parent_ChildPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigSimple_Parent_Child] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigSimple_Parent_Child](
 		"OpenconfigSimple_Parent_Child",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -267,11 +271,12 @@ type OpenconfigSimple_Parent_Child_Config_FivePathAny struct {
 //	Instantiating module: "openconfig-simple"
 //	Path from parent:     "five"
 //	Path from root:       "/parent/child/config/five"
-func (n *OpenconfigSimple_Parent_Child_Config_FivePath) Query() ygnmi.SingletonQuery[float32] {
-	return ygnmi.NewSingletonQuery[float32](
+func (n *OpenconfigSimple_Parent_Child_Config_FivePath) Query() ygnmi.ConfigQuery[float32] {
+	return ygnmi.NewConfigQuery[float32](
 		"OpenconfigSimple_Parent_Child_Config",
+		false,
 		true,
-		true,
+		false,
 		false,
 		false,
 		ygnmi.NewNodePath(
@@ -305,8 +310,9 @@ func (n *OpenconfigSimple_Parent_Child_Config_FivePath) Query() ygnmi.SingletonQ
 func (n *OpenconfigSimple_Parent_Child_Config_FivePathAny) Query() ygnmi.WildcardQuery[float32] {
 	return ygnmi.NewWildcardQuery[float32](
 		"OpenconfigSimple_Parent_Child_Config",
+		false,
 		true,
-		true,
+		false,
 		false,
 		false,
 		ygnmi.NewNodePath(
@@ -348,11 +354,12 @@ type OpenconfigSimple_Parent_Child_Config_FourPathAny struct {
 //	Instantiating module: "openconfig-simple"
 //	Path from parent:     "four"
 //	Path from root:       "/parent/child/config/four"
-func (n *OpenconfigSimple_Parent_Child_Config_FourPath) Query() ygnmi.SingletonQuery[oc.Binary] {
-	return ygnmi.NewSingletonQuery[oc.Binary](
+func (n *OpenconfigSimple_Parent_Child_Config_FourPath) Query() ygnmi.ConfigQuery[oc.Binary] {
+	return ygnmi.NewConfigQuery[oc.Binary](
 		"OpenconfigSimple_Parent_Child_Config",
+		false,
 		true,
-		true,
+		false,
 		false,
 		false,
 		ygnmi.NewNodePath(
@@ -386,8 +393,9 @@ func (n *OpenconfigSimple_Parent_Child_Config_FourPath) Query() ygnmi.SingletonQ
 func (n *OpenconfigSimple_Parent_Child_Config_FourPathAny) Query() ygnmi.WildcardQuery[oc.Binary] {
 	return ygnmi.NewWildcardQuery[oc.Binary](
 		"OpenconfigSimple_Parent_Child_Config",
+		false,
 		true,
-		true,
+		false,
 		false,
 		false,
 		ygnmi.NewNodePath(
@@ -429,12 +437,13 @@ type OpenconfigSimple_Parent_Child_Config_OnePathAny struct {
 //	Instantiating module: "openconfig-simple"
 //	Path from parent:     "one"
 //	Path from root:       "/parent/child/config/one"
-func (n *OpenconfigSimple_Parent_Child_Config_OnePath) Query() ygnmi.SingletonQuery[string] {
-	return ygnmi.NewSingletonQuery[string](
+func (n *OpenconfigSimple_Parent_Child_Config_OnePath) Query() ygnmi.ConfigQuery[string] {
+	return ygnmi.NewConfigQuery[string](
 		"OpenconfigSimple_Parent_Child_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"one"},
@@ -471,9 +480,10 @@ func (n *OpenconfigSimple_Parent_Child_Config_OnePath) Query() ygnmi.SingletonQu
 func (n *OpenconfigSimple_Parent_Child_Config_OnePathAny) Query() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"OpenconfigSimple_Parent_Child_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"one"},
@@ -518,11 +528,12 @@ type OpenconfigSimple_Parent_Child_Config_SixPathAny struct {
 //	Instantiating module: "openconfig-simple"
 //	Path from parent:     "six"
 //	Path from root:       "/parent/child/config/six"
-func (n *OpenconfigSimple_Parent_Child_Config_SixPath) Query() ygnmi.SingletonQuery[[]float32] {
-	return ygnmi.NewSingletonQuery[[]float32](
+func (n *OpenconfigSimple_Parent_Child_Config_SixPath) Query() ygnmi.ConfigQuery[[]float32] {
+	return ygnmi.NewConfigQuery[[]float32](
 		"OpenconfigSimple_Parent_Child_Config",
+		false,
 		true,
-		true,
+		false,
 		false,
 		false,
 		ygnmi.NewNodePath(
@@ -556,8 +567,9 @@ func (n *OpenconfigSimple_Parent_Child_Config_SixPath) Query() ygnmi.SingletonQu
 func (n *OpenconfigSimple_Parent_Child_Config_SixPathAny) Query() ygnmi.WildcardQuery[[]float32] {
 	return ygnmi.NewWildcardQuery[[]float32](
 		"OpenconfigSimple_Parent_Child_Config",
+		false,
 		true,
-		true,
+		false,
 		false,
 		false,
 		ygnmi.NewNodePath(
@@ -599,11 +611,12 @@ type OpenconfigSimple_Parent_Child_Config_ThreePathAny struct {
 //	Instantiating module: "openconfig-simple"
 //	Path from parent:     "three"
 //	Path from root:       "/parent/child/config/three"
-func (n *OpenconfigSimple_Parent_Child_Config_ThreePath) Query() ygnmi.SingletonQuery[oc.E_Simple_Parent_Child_Config_Three] {
-	return ygnmi.NewSingletonQuery[oc.E_Simple_Parent_Child_Config_Three](
+func (n *OpenconfigSimple_Parent_Child_Config_ThreePath) Query() ygnmi.ConfigQuery[oc.E_Simple_Parent_Child_Config_Three] {
+	return ygnmi.NewConfigQuery[oc.E_Simple_Parent_Child_Config_Three](
 		"OpenconfigSimple_Parent_Child_Config",
+		false,
 		true,
-		true,
+		false,
 		false,
 		false,
 		ygnmi.NewNodePath(
@@ -637,8 +650,9 @@ func (n *OpenconfigSimple_Parent_Child_Config_ThreePath) Query() ygnmi.Singleton
 func (n *OpenconfigSimple_Parent_Child_Config_ThreePathAny) Query() ygnmi.WildcardQuery[oc.E_Simple_Parent_Child_Config_Three] {
 	return ygnmi.NewWildcardQuery[oc.E_Simple_Parent_Child_Config_Three](
 		"OpenconfigSimple_Parent_Child_Config",
+		false,
 		true,
-		true,
+		false,
 		false,
 		false,
 		ygnmi.NewNodePath(
@@ -843,10 +857,11 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPathAny) Three() *OpenconfigSimple_
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigSimple_Parent_Child_ConfigPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigSimple_Parent_Child_Config] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigSimple_Parent_Child_Config](
+func (n *OpenconfigSimple_Parent_Child_ConfigPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigSimple_Parent_Child_Config] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigSimple_Parent_Child_Config](
 		"OpenconfigSimple_Parent_Child_Config",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -869,7 +884,8 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPath) Query() ygnmi.SingletonQuery[
 func (n *OpenconfigSimple_Parent_Child_ConfigPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigSimple_Parent_Child_Config] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigSimple_Parent_Child_Config](
 		"OpenconfigSimple_Parent_Child_Config",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -905,11 +921,12 @@ type OpenconfigSimple_Parent_Child_State_FivePathAny struct {
 //	Instantiating module: "openconfig-simple"
 //	Path from parent:     "five"
 //	Path from root:       "/parent/child/state/five"
-func (n *OpenconfigSimple_Parent_Child_State_FivePath) Query() ygnmi.SingletonQuery[float32] {
-	return ygnmi.NewSingletonQuery[float32](
+func (n *OpenconfigSimple_Parent_Child_State_FivePath) Query() ygnmi.ConfigQuery[float32] {
+	return ygnmi.NewConfigQuery[float32](
 		"OpenconfigSimple_Parent_Child_State",
+		false,
 		true,
-		true,
+		false,
 		false,
 		false,
 		ygnmi.NewNodePath(
@@ -943,8 +960,9 @@ func (n *OpenconfigSimple_Parent_Child_State_FivePath) Query() ygnmi.SingletonQu
 func (n *OpenconfigSimple_Parent_Child_State_FivePathAny) Query() ygnmi.WildcardQuery[float32] {
 	return ygnmi.NewWildcardQuery[float32](
 		"OpenconfigSimple_Parent_Child_State",
+		false,
 		true,
-		true,
+		false,
 		false,
 		false,
 		ygnmi.NewNodePath(
@@ -986,11 +1004,12 @@ type OpenconfigSimple_Parent_Child_State_FourPathAny struct {
 //	Instantiating module: "openconfig-simple"
 //	Path from parent:     "four"
 //	Path from root:       "/parent/child/state/four"
-func (n *OpenconfigSimple_Parent_Child_State_FourPath) Query() ygnmi.SingletonQuery[oc.Binary] {
-	return ygnmi.NewSingletonQuery[oc.Binary](
+func (n *OpenconfigSimple_Parent_Child_State_FourPath) Query() ygnmi.ConfigQuery[oc.Binary] {
+	return ygnmi.NewConfigQuery[oc.Binary](
 		"OpenconfigSimple_Parent_Child_State",
+		false,
 		true,
-		true,
+		false,
 		false,
 		false,
 		ygnmi.NewNodePath(
@@ -1024,8 +1043,9 @@ func (n *OpenconfigSimple_Parent_Child_State_FourPath) Query() ygnmi.SingletonQu
 func (n *OpenconfigSimple_Parent_Child_State_FourPathAny) Query() ygnmi.WildcardQuery[oc.Binary] {
 	return ygnmi.NewWildcardQuery[oc.Binary](
 		"OpenconfigSimple_Parent_Child_State",
+		false,
 		true,
-		true,
+		false,
 		false,
 		false,
 		ygnmi.NewNodePath(
@@ -1067,12 +1087,13 @@ type OpenconfigSimple_Parent_Child_State_OnePathAny struct {
 //	Instantiating module: "openconfig-simple"
 //	Path from parent:     "one"
 //	Path from root:       "/parent/child/state/one"
-func (n *OpenconfigSimple_Parent_Child_State_OnePath) Query() ygnmi.SingletonQuery[string] {
-	return ygnmi.NewSingletonQuery[string](
+func (n *OpenconfigSimple_Parent_Child_State_OnePath) Query() ygnmi.ConfigQuery[string] {
+	return ygnmi.NewConfigQuery[string](
 		"OpenconfigSimple_Parent_Child_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"one"},
@@ -1109,9 +1130,10 @@ func (n *OpenconfigSimple_Parent_Child_State_OnePath) Query() ygnmi.SingletonQue
 func (n *OpenconfigSimple_Parent_Child_State_OnePathAny) Query() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"OpenconfigSimple_Parent_Child_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"one"},
@@ -1156,11 +1178,12 @@ type OpenconfigSimple_Parent_Child_State_SixPathAny struct {
 //	Instantiating module: "openconfig-simple"
 //	Path from parent:     "six"
 //	Path from root:       "/parent/child/state/six"
-func (n *OpenconfigSimple_Parent_Child_State_SixPath) Query() ygnmi.SingletonQuery[[]float32] {
-	return ygnmi.NewSingletonQuery[[]float32](
+func (n *OpenconfigSimple_Parent_Child_State_SixPath) Query() ygnmi.ConfigQuery[[]float32] {
+	return ygnmi.NewConfigQuery[[]float32](
 		"OpenconfigSimple_Parent_Child_State",
+		false,
 		true,
-		true,
+		false,
 		false,
 		false,
 		ygnmi.NewNodePath(
@@ -1194,8 +1217,9 @@ func (n *OpenconfigSimple_Parent_Child_State_SixPath) Query() ygnmi.SingletonQue
 func (n *OpenconfigSimple_Parent_Child_State_SixPathAny) Query() ygnmi.WildcardQuery[[]float32] {
 	return ygnmi.NewWildcardQuery[[]float32](
 		"OpenconfigSimple_Parent_Child_State",
+		false,
 		true,
-		true,
+		false,
 		false,
 		false,
 		ygnmi.NewNodePath(
@@ -1237,11 +1261,12 @@ type OpenconfigSimple_Parent_Child_State_ThreePathAny struct {
 //	Instantiating module: "openconfig-simple"
 //	Path from parent:     "three"
 //	Path from root:       "/parent/child/state/three"
-func (n *OpenconfigSimple_Parent_Child_State_ThreePath) Query() ygnmi.SingletonQuery[oc.E_Simple_Parent_Child_Config_Three] {
-	return ygnmi.NewSingletonQuery[oc.E_Simple_Parent_Child_Config_Three](
+func (n *OpenconfigSimple_Parent_Child_State_ThreePath) Query() ygnmi.ConfigQuery[oc.E_Simple_Parent_Child_Config_Three] {
+	return ygnmi.NewConfigQuery[oc.E_Simple_Parent_Child_Config_Three](
 		"OpenconfigSimple_Parent_Child_State",
+		false,
 		true,
-		true,
+		false,
 		false,
 		false,
 		ygnmi.NewNodePath(
@@ -1275,8 +1300,9 @@ func (n *OpenconfigSimple_Parent_Child_State_ThreePath) Query() ygnmi.SingletonQ
 func (n *OpenconfigSimple_Parent_Child_State_ThreePathAny) Query() ygnmi.WildcardQuery[oc.E_Simple_Parent_Child_Config_Three] {
 	return ygnmi.NewWildcardQuery[oc.E_Simple_Parent_Child_Config_Three](
 		"OpenconfigSimple_Parent_Child_State",
+		false,
 		true,
-		true,
+		false,
 		false,
 		false,
 		ygnmi.NewNodePath(
@@ -1318,12 +1344,13 @@ type OpenconfigSimple_Parent_Child_State_TwoPathAny struct {
 //	Instantiating module: "openconfig-simple"
 //	Path from parent:     "two"
 //	Path from root:       "/parent/child/state/two"
-func (n *OpenconfigSimple_Parent_Child_State_TwoPath) Query() ygnmi.SingletonQuery[string] {
-	return ygnmi.NewSingletonQuery[string](
+func (n *OpenconfigSimple_Parent_Child_State_TwoPath) Query() ygnmi.ConfigQuery[string] {
+	return ygnmi.NewConfigQuery[string](
 		"OpenconfigSimple_Parent_Child_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"two"},
@@ -1360,9 +1387,10 @@ func (n *OpenconfigSimple_Parent_Child_State_TwoPath) Query() ygnmi.SingletonQue
 func (n *OpenconfigSimple_Parent_Child_State_TwoPathAny) Query() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"OpenconfigSimple_Parent_Child_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"two"},
@@ -1604,10 +1632,11 @@ func (n *OpenconfigSimple_Parent_Child_StatePathAny) Two() *OpenconfigSimple_Par
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigSimple_Parent_Child_StatePath) Query() ygnmi.SingletonQuery[*oc.OpenconfigSimple_Parent_Child_State] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigSimple_Parent_Child_State](
+func (n *OpenconfigSimple_Parent_Child_StatePath) Query() ygnmi.ConfigQuery[*oc.OpenconfigSimple_Parent_Child_State] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigSimple_Parent_Child_State](
 		"OpenconfigSimple_Parent_Child_State",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1630,7 +1659,8 @@ func (n *OpenconfigSimple_Parent_Child_StatePath) Query() ygnmi.SingletonQuery[*
 func (n *OpenconfigSimple_Parent_Child_StatePathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigSimple_Parent_Child_State] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigSimple_Parent_Child_State](
 		"OpenconfigSimple_Parent_Child_State",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1723,10 +1753,11 @@ func (n *OpenconfigSimple_RemoteContainerPathAny) State() *OpenconfigSimple_Remo
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigSimple_RemoteContainerPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigSimple_RemoteContainer] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigSimple_RemoteContainer](
+func (n *OpenconfigSimple_RemoteContainerPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigSimple_RemoteContainer] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigSimple_RemoteContainer](
 		"OpenconfigSimple_RemoteContainer",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1749,7 +1780,8 @@ func (n *OpenconfigSimple_RemoteContainerPath) Query() ygnmi.SingletonQuery[*oc.
 func (n *OpenconfigSimple_RemoteContainerPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigSimple_RemoteContainer] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigSimple_RemoteContainer](
 		"OpenconfigSimple_RemoteContainer",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1785,12 +1817,13 @@ type OpenconfigSimple_RemoteContainer_Config_ALeafPathAny struct {
 //	Instantiating module: "openconfig-simple"
 //	Path from parent:     "a-leaf"
 //	Path from root:       "/remote-container/config/a-leaf"
-func (n *OpenconfigSimple_RemoteContainer_Config_ALeafPath) Query() ygnmi.SingletonQuery[string] {
-	return ygnmi.NewSingletonQuery[string](
+func (n *OpenconfigSimple_RemoteContainer_Config_ALeafPath) Query() ygnmi.ConfigQuery[string] {
+	return ygnmi.NewConfigQuery[string](
 		"OpenconfigSimple_RemoteContainer_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"a-leaf"},
@@ -1827,9 +1860,10 @@ func (n *OpenconfigSimple_RemoteContainer_Config_ALeafPath) Query() ygnmi.Single
 func (n *OpenconfigSimple_RemoteContainer_Config_ALeafPathAny) Query() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"OpenconfigSimple_RemoteContainer_Config",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"a-leaf"},
@@ -1901,10 +1935,11 @@ func (n *OpenconfigSimple_RemoteContainer_ConfigPathAny) ALeaf() *OpenconfigSimp
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigSimple_RemoteContainer_ConfigPath) Query() ygnmi.SingletonQuery[*oc.OpenconfigSimple_RemoteContainer_Config] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigSimple_RemoteContainer_Config](
+func (n *OpenconfigSimple_RemoteContainer_ConfigPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigSimple_RemoteContainer_Config] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigSimple_RemoteContainer_Config](
 		"OpenconfigSimple_RemoteContainer_Config",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1927,7 +1962,8 @@ func (n *OpenconfigSimple_RemoteContainer_ConfigPath) Query() ygnmi.SingletonQue
 func (n *OpenconfigSimple_RemoteContainer_ConfigPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigSimple_RemoteContainer_Config] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigSimple_RemoteContainer_Config](
 		"OpenconfigSimple_RemoteContainer_Config",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -1963,12 +1999,13 @@ type OpenconfigSimple_RemoteContainer_State_ALeafPathAny struct {
 //	Instantiating module: "openconfig-simple"
 //	Path from parent:     "a-leaf"
 //	Path from root:       "/remote-container/state/a-leaf"
-func (n *OpenconfigSimple_RemoteContainer_State_ALeafPath) Query() ygnmi.SingletonQuery[string] {
-	return ygnmi.NewSingletonQuery[string](
+func (n *OpenconfigSimple_RemoteContainer_State_ALeafPath) Query() ygnmi.ConfigQuery[string] {
+	return ygnmi.NewConfigQuery[string](
 		"OpenconfigSimple_RemoteContainer_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"a-leaf"},
@@ -2005,9 +2042,10 @@ func (n *OpenconfigSimple_RemoteContainer_State_ALeafPath) Query() ygnmi.Singlet
 func (n *OpenconfigSimple_RemoteContainer_State_ALeafPathAny) Query() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"OpenconfigSimple_RemoteContainer_State",
+		false,
 		true,
 		true,
-		true,
+		false,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"a-leaf"},
@@ -2079,10 +2117,11 @@ func (n *OpenconfigSimple_RemoteContainer_StatePathAny) ALeaf() *OpenconfigSimpl
 }
 
 // Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigSimple_RemoteContainer_StatePath) Query() ygnmi.SingletonQuery[*oc.OpenconfigSimple_RemoteContainer_State] {
-	return ygnmi.NewSingletonQuery[*oc.OpenconfigSimple_RemoteContainer_State](
+func (n *OpenconfigSimple_RemoteContainer_StatePath) Query() ygnmi.ConfigQuery[*oc.OpenconfigSimple_RemoteContainer_State] {
+	return ygnmi.NewConfigQuery[*oc.OpenconfigSimple_RemoteContainer_State](
 		"OpenconfigSimple_RemoteContainer_State",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,
@@ -2105,7 +2144,8 @@ func (n *OpenconfigSimple_RemoteContainer_StatePath) Query() ygnmi.SingletonQuer
 func (n *OpenconfigSimple_RemoteContainer_StatePathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigSimple_RemoteContainer_State] {
 	return ygnmi.NewWildcardQuery[*oc.OpenconfigSimple_RemoteContainer_State](
 		"OpenconfigSimple_RemoteContainer_State",
-		true,
+		false,
+		false,
 		false,
 		false,
 		false,

@@ -67,6 +67,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 		true,
 		true,
 		true,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"leaf"},
@@ -102,6 +103,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 	return ygnmi.NewWildcardQuery[int32](
 		"Container",
+		true,
 		true,
 		true,
 		true,
@@ -169,6 +171,7 @@ func (n *Container_LeafList) State() ygnmi.SingletonQuery[[]uint32] {
 		true,
 		true,
 		false,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"state", "leaflist"},
@@ -203,6 +206,7 @@ func (n *Container_LeafListAny) State() ygnmi.WildcardQuery[[]uint32] {
 		true,
 		true,
 		false,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"state", "leaflist"},
@@ -236,6 +240,7 @@ func (n *Container_LeafList) Config() ygnmi.ConfigQuery[[]uint32] {
 		false,
 		true,
 		false,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"config", "leaflist"},
@@ -270,6 +275,7 @@ func (n *Container_LeafListAny) Config() ygnmi.WildcardQuery[[]uint32] {
 		false,
 		true,
 		false,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"config", "leaflist"},
@@ -319,6 +325,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[E_Child_Three] {
 		true,
 		true,
 		false,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"leaf"},
@@ -353,6 +360,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
 		true,
 		true,
 		false,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"leaf"},
@@ -413,6 +421,7 @@ func (b *Batch) State() ygnmi.SingletonQuery[*oc.Root] {
 		true,
 		false,
 		false,
+		true,
 		false,
 		ygnmi.NewDeviceRootBase(),
 		nil,
@@ -439,6 +448,7 @@ func (b *Batch) Config() ygnmi.SingletonQuery[*oc.Root] {
 		false,
 		false,
 		false,
+		true,
 		false,
 		ygnmi.NewDeviceRootBase(),
 		nil,
@@ -462,6 +472,7 @@ func (n *Root) State() ygnmi.SingletonQuery[*oc.Root] {
 		true,
 		false,
 		false,
+		true,
 		false,
 		n,
 		nil,
@@ -485,6 +496,7 @@ func (n *Root) Config() ygnmi.ConfigQuery[*oc.Root] {
 		false,
 		false,
 		false,
+		true,
 		false,
 		n,
 		nil,
