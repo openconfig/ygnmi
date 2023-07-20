@@ -84,9 +84,16 @@ func generate(cmd *cobra.Command, args []string) error {
 	importPath := strings.Split(viper.GetString("base_package_path"), "/")
 	rootPackageName := fmt.Sprintf("%spath", importPath[len(importPath)-1])
 
+	extraGenerators := pathgen.GeneratorGroup{
+		StructFields: []pathgen.Generator{pathgen.GNMIFieldGenerator},
+		StructInits:  []pathgen.Generator{pathgen.GNMIInitGenerator},
+	}
 	compressBehaviour := genutil.Uncompressed
 	if viper.GetBool("compress_paths") {
 		compressBehaviour = genutil.PreferOperationalState
+		extraGenerators = pathgen.GeneratorGroup{
+			Extras: []pathgen.Generator{pathgen.GNMIGenerator},
+		}
 	}
 
 	pcg := pathgen.GenConfig{
@@ -119,7 +126,7 @@ func generate(cmd *cobra.Command, args []string) error {
 		BasePackagePath:         viper.GetString("base_package_path"),
 		PackageSuffix:           "",
 		UnifyPathStructs:        true,
-		ExtraGenerators:         []pathgen.Generator{pathgen.GNMIGenerator},
+		ExtraGenerators:         extraGenerators,
 		IgnoreAtomic:            !viper.GetBool("generate_atomic"),
 		IgnoreAtomicLists:       !viper.GetBool("generate_atomic_lists"),
 	}

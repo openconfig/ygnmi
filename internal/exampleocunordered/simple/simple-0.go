@@ -52,13 +52,14 @@ type ParentPathAny struct {
 //	Path from parent:     "child"
 //	Path from root:       "/parent/child"
 func (n *ParentPath) Child() *Parent_ChildPath {
-	return &Parent_ChildPath{
+	ps := &Parent_ChildPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"child"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Child (container):
@@ -68,13 +69,14 @@ func (n *ParentPath) Child() *Parent_ChildPath {
 //	Path from parent:     "child"
 //	Path from root:       "/parent/child"
 func (n *ParentPathAny) Child() *Parent_ChildPathAny {
-	return &Parent_ChildPathAny{
+	ps := &Parent_ChildPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"child"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 func binarySliceToFloatSlice(in []oc.Binary) []float32 {
@@ -1073,7 +1075,7 @@ type Parent_ChildPathAny struct {
 //	Path from parent:     "*/five"
 //	Path from root:       "/parent/child/*/five"
 func (n *Parent_ChildPath) Five() *Parent_Child_FivePath {
-	return &Parent_Child_FivePath{
+	ps := &Parent_Child_FivePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "five"},
 			map[string]interface{}{},
@@ -1081,6 +1083,7 @@ func (n *Parent_ChildPath) Five() *Parent_Child_FivePath {
 		),
 		parent: n,
 	}
+	return ps
 }
 
 // Five (leaf):
@@ -1090,7 +1093,7 @@ func (n *Parent_ChildPath) Five() *Parent_Child_FivePath {
 //	Path from parent:     "*/five"
 //	Path from root:       "/parent/child/*/five"
 func (n *Parent_ChildPathAny) Five() *Parent_Child_FivePathAny {
-	return &Parent_Child_FivePathAny{
+	ps := &Parent_Child_FivePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "five"},
 			map[string]interface{}{},
@@ -1098,6 +1101,7 @@ func (n *Parent_ChildPathAny) Five() *Parent_Child_FivePathAny {
 		),
 		parent: n,
 	}
+	return ps
 }
 
 // Four (leaf):
@@ -1107,7 +1111,7 @@ func (n *Parent_ChildPathAny) Five() *Parent_Child_FivePathAny {
 //	Path from parent:     "*/four"
 //	Path from root:       "/parent/child/*/four"
 func (n *Parent_ChildPath) Four() *Parent_Child_FourPath {
-	return &Parent_Child_FourPath{
+	ps := &Parent_Child_FourPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "four"},
 			map[string]interface{}{},
@@ -1115,6 +1119,7 @@ func (n *Parent_ChildPath) Four() *Parent_Child_FourPath {
 		),
 		parent: n,
 	}
+	return ps
 }
 
 // Four (leaf):
@@ -1124,7 +1129,7 @@ func (n *Parent_ChildPath) Four() *Parent_Child_FourPath {
 //	Path from parent:     "*/four"
 //	Path from root:       "/parent/child/*/four"
 func (n *Parent_ChildPathAny) Four() *Parent_Child_FourPathAny {
-	return &Parent_Child_FourPathAny{
+	ps := &Parent_Child_FourPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "four"},
 			map[string]interface{}{},
@@ -1132,6 +1137,7 @@ func (n *Parent_ChildPathAny) Four() *Parent_Child_FourPathAny {
 		),
 		parent: n,
 	}
+	return ps
 }
 
 // One (leaf):
@@ -1141,7 +1147,7 @@ func (n *Parent_ChildPathAny) Four() *Parent_Child_FourPathAny {
 //	Path from parent:     "*/one"
 //	Path from root:       "/parent/child/*/one"
 func (n *Parent_ChildPath) One() *Parent_Child_OnePath {
-	return &Parent_Child_OnePath{
+	ps := &Parent_Child_OnePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "one"},
 			map[string]interface{}{},
@@ -1149,6 +1155,7 @@ func (n *Parent_ChildPath) One() *Parent_Child_OnePath {
 		),
 		parent: n,
 	}
+	return ps
 }
 
 // One (leaf):
@@ -1158,7 +1165,7 @@ func (n *Parent_ChildPath) One() *Parent_Child_OnePath {
 //	Path from parent:     "*/one"
 //	Path from root:       "/parent/child/*/one"
 func (n *Parent_ChildPathAny) One() *Parent_Child_OnePathAny {
-	return &Parent_Child_OnePathAny{
+	ps := &Parent_Child_OnePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "one"},
 			map[string]interface{}{},
@@ -1166,6 +1173,7 @@ func (n *Parent_ChildPathAny) One() *Parent_Child_OnePathAny {
 		),
 		parent: n,
 	}
+	return ps
 }
 
 // Six (leaf-list):
@@ -1175,7 +1183,7 @@ func (n *Parent_ChildPathAny) One() *Parent_Child_OnePathAny {
 //	Path from parent:     "*/six"
 //	Path from root:       "/parent/child/*/six"
 func (n *Parent_ChildPath) Six() *Parent_Child_SixPath {
-	return &Parent_Child_SixPath{
+	ps := &Parent_Child_SixPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "six"},
 			map[string]interface{}{},
@@ -1183,6 +1191,7 @@ func (n *Parent_ChildPath) Six() *Parent_Child_SixPath {
 		),
 		parent: n,
 	}
+	return ps
 }
 
 // Six (leaf-list):
@@ -1192,7 +1201,7 @@ func (n *Parent_ChildPath) Six() *Parent_Child_SixPath {
 //	Path from parent:     "*/six"
 //	Path from root:       "/parent/child/*/six"
 func (n *Parent_ChildPathAny) Six() *Parent_Child_SixPathAny {
-	return &Parent_Child_SixPathAny{
+	ps := &Parent_Child_SixPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "six"},
 			map[string]interface{}{},
@@ -1200,6 +1209,7 @@ func (n *Parent_ChildPathAny) Six() *Parent_Child_SixPathAny {
 		),
 		parent: n,
 	}
+	return ps
 }
 
 // Three (leaf):
@@ -1209,7 +1219,7 @@ func (n *Parent_ChildPathAny) Six() *Parent_Child_SixPathAny {
 //	Path from parent:     "*/three"
 //	Path from root:       "/parent/child/*/three"
 func (n *Parent_ChildPath) Three() *Parent_Child_ThreePath {
-	return &Parent_Child_ThreePath{
+	ps := &Parent_Child_ThreePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "three"},
 			map[string]interface{}{},
@@ -1217,6 +1227,7 @@ func (n *Parent_ChildPath) Three() *Parent_Child_ThreePath {
 		),
 		parent: n,
 	}
+	return ps
 }
 
 // Three (leaf):
@@ -1226,7 +1237,7 @@ func (n *Parent_ChildPath) Three() *Parent_Child_ThreePath {
 //	Path from parent:     "*/three"
 //	Path from root:       "/parent/child/*/three"
 func (n *Parent_ChildPathAny) Three() *Parent_Child_ThreePathAny {
-	return &Parent_Child_ThreePathAny{
+	ps := &Parent_Child_ThreePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "three"},
 			map[string]interface{}{},
@@ -1234,6 +1245,7 @@ func (n *Parent_ChildPathAny) Three() *Parent_Child_ThreePathAny {
 		),
 		parent: n,
 	}
+	return ps
 }
 
 // Two (leaf):
@@ -1243,7 +1255,7 @@ func (n *Parent_ChildPathAny) Three() *Parent_Child_ThreePathAny {
 //	Path from parent:     "state/two"
 //	Path from root:       "/parent/child/state/two"
 func (n *Parent_ChildPath) Two() *Parent_Child_TwoPath {
-	return &Parent_Child_TwoPath{
+	ps := &Parent_Child_TwoPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "two"},
 			map[string]interface{}{},
@@ -1251,6 +1263,7 @@ func (n *Parent_ChildPath) Two() *Parent_Child_TwoPath {
 		),
 		parent: n,
 	}
+	return ps
 }
 
 // Two (leaf):
@@ -1260,7 +1273,7 @@ func (n *Parent_ChildPath) Two() *Parent_Child_TwoPath {
 //	Path from parent:     "state/two"
 //	Path from root:       "/parent/child/state/two"
 func (n *Parent_ChildPathAny) Two() *Parent_Child_TwoPathAny {
-	return &Parent_Child_TwoPathAny{
+	ps := &Parent_Child_TwoPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "two"},
 			map[string]interface{}{},
@@ -1268,6 +1281,7 @@ func (n *Parent_ChildPathAny) Two() *Parent_Child_TwoPathAny {
 		),
 		parent: n,
 	}
+	return ps
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -1551,7 +1565,7 @@ type RemoteContainerPathAny struct {
 //	Path from parent:     "*/a-leaf"
 //	Path from root:       "/remote-container/*/a-leaf"
 func (n *RemoteContainerPath) ALeaf() *RemoteContainer_ALeafPath {
-	return &RemoteContainer_ALeafPath{
+	ps := &RemoteContainer_ALeafPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "a-leaf"},
 			map[string]interface{}{},
@@ -1559,6 +1573,7 @@ func (n *RemoteContainerPath) ALeaf() *RemoteContainer_ALeafPath {
 		),
 		parent: n,
 	}
+	return ps
 }
 
 // ALeaf (leaf):
@@ -1568,7 +1583,7 @@ func (n *RemoteContainerPath) ALeaf() *RemoteContainer_ALeafPath {
 //	Path from parent:     "*/a-leaf"
 //	Path from root:       "/remote-container/*/a-leaf"
 func (n *RemoteContainerPathAny) ALeaf() *RemoteContainer_ALeafPathAny {
-	return &RemoteContainer_ALeafPathAny{
+	ps := &RemoteContainer_ALeafPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "a-leaf"},
 			map[string]interface{}{},
@@ -1576,6 +1591,7 @@ func (n *RemoteContainerPathAny) ALeaf() *RemoteContainer_ALeafPathAny {
 		),
 		parent: n,
 	}
+	return ps
 }
 
 // State returns a Query that can be used in gNMI operations.

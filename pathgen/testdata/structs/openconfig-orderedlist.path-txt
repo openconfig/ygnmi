@@ -32,13 +32,14 @@ func Root() *DevicePath {
 // 	Path from parent:     "model"
 // 	Path from root:       "/model"
 func (n *DevicePath) Model() *ModelPath {
-	return &ModelPath{
+	ps := &ModelPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"model"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // ModelPath represents the /openconfig-orderedlist/model YANG schema element.
@@ -57,13 +58,14 @@ type ModelPathAny struct {
 // 	Path from parent:     "ordered-lists/ordered-list"
 // 	Path from root:       "/model/ordered-lists/ordered-list"
 func (n *ModelPath) OrderedListMap() *Model_OrderedListPathMap {
-	return &Model_OrderedListPathMap{
+	ps := &Model_OrderedListPathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"ordered-lists"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // OrderedListMap (list): 
@@ -72,13 +74,14 @@ func (n *ModelPath) OrderedListMap() *Model_OrderedListPathMap {
 // 	Path from parent:     "ordered-lists/ordered-list"
 // 	Path from root:       "/model/ordered-lists/ordered-list"
 func (n *ModelPathAny) OrderedListMap() *Model_OrderedListPathMapAny {
-	return &Model_OrderedListPathMapAny{
+	ps := &Model_OrderedListPathMapAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"ordered-lists"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Model_OrderedListPath represents the /openconfig-orderedlist/model/ordered-lists/ordered-list YANG schema element.

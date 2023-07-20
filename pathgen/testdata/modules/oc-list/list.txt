@@ -32,13 +32,14 @@ type ModelPathAny struct {
 // 	Path from parent:     "atomic-lists/atomic-list"
 // 	Path from root:       "/model/atomic-lists/atomic-list"
 func (n *ModelPath) AtomicListMap() *Model_AtomicListPathMap {
-	return &Model_AtomicListPathMap{
+	ps := &Model_AtomicListPathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"atomic-lists"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // AtomicListMap (list): 
@@ -47,13 +48,14 @@ func (n *ModelPath) AtomicListMap() *Model_AtomicListPathMap {
 // 	Path from parent:     "atomic-lists/atomic-list"
 // 	Path from root:       "/model/atomic-lists/atomic-list"
 func (n *ModelPathAny) AtomicListMap() *Model_AtomicListPathMapAny {
-	return &Model_AtomicListPathMapAny{
+	ps := &Model_AtomicListPathMapAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"atomic-lists"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // AtomicListElementAny (list): 
@@ -62,13 +64,14 @@ func (n *ModelPathAny) AtomicListMap() *Model_AtomicListPathMapAny {
 // 	Path from parent:     "atomic-list-elements/atomic-list-element"
 // 	Path from root:       "/model/atomic-list-elements/atomic-list-element"
 func (n *ModelPath) AtomicListElementAny() *Model_AtomicListElementPathAny {
-	return &Model_AtomicListElementPathAny{
+	ps := &Model_AtomicListElementPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"atomic-list-elements", "atomic-list-element"},
 			map[string]interface{}{"key": "*"},
 			n,
 		),
 	}
+	return ps
 }
 
 // AtomicListElementAny (list): 
@@ -77,13 +80,14 @@ func (n *ModelPath) AtomicListElementAny() *Model_AtomicListElementPathAny {
 // 	Path from parent:     "atomic-list-elements/atomic-list-element"
 // 	Path from root:       "/model/atomic-list-elements/atomic-list-element"
 func (n *ModelPathAny) AtomicListElementAny() *Model_AtomicListElementPathAny {
-	return &Model_AtomicListElementPathAny{
+	ps := &Model_AtomicListElementPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"atomic-list-elements", "atomic-list-element"},
 			map[string]interface{}{"key": "*"},
 			n,
 		),
 	}
+	return ps
 }
 
 // AtomicListElement (list): 
@@ -94,13 +98,14 @@ func (n *ModelPathAny) AtomicListElementAny() *Model_AtomicListElementPathAny {
 //
 // 	Key: string
 func (n *ModelPath) AtomicListElement(Key string) *Model_AtomicListElementPath {
-	return &Model_AtomicListElementPath{
+	ps := &Model_AtomicListElementPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"atomic-list-elements", "atomic-list-element"},
 			map[string]interface{}{"key": Key},
 			n,
 		),
 	}
+	return ps
 }
 
 // AtomicListElement (list): 
@@ -111,13 +116,14 @@ func (n *ModelPath) AtomicListElement(Key string) *Model_AtomicListElementPath {
 //
 // 	Key: string
 func (n *ModelPathAny) AtomicListElement(Key string) *Model_AtomicListElementPathAny {
-	return &Model_AtomicListElementPathAny{
+	ps := &Model_AtomicListElementPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"atomic-list-elements", "atomic-list-element"},
 			map[string]interface{}{"key": Key},
 			n,
 		),
 	}
+	return ps
 }
 
 // AtomicListElementMap (list): 
@@ -126,13 +132,14 @@ func (n *ModelPathAny) AtomicListElement(Key string) *Model_AtomicListElementPat
 // 	Path from parent:     "atomic-list-elements/atomic-list-element"
 // 	Path from root:       "/model/atomic-list-elements/atomic-list-element"
 func (n *ModelPath) AtomicListElementMap() *Model_AtomicListElementPathMap {
-	return &Model_AtomicListElementPathMap{
+	ps := &Model_AtomicListElementPathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"atomic-list-elements"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // AtomicListElementMap (list): 
@@ -141,13 +148,14 @@ func (n *ModelPath) AtomicListElementMap() *Model_AtomicListElementPathMap {
 // 	Path from parent:     "atomic-list-elements/atomic-list-element"
 // 	Path from root:       "/model/atomic-list-elements/atomic-list-element"
 func (n *ModelPathAny) AtomicListElementMap() *Model_AtomicListElementPathMapAny {
-	return &Model_AtomicListElementPathMapAny{
+	ps := &Model_AtomicListElementPathMapAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"atomic-list-elements"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // MultiKeyAny (list): 
@@ -156,13 +164,14 @@ func (n *ModelPathAny) AtomicListElementMap() *Model_AtomicListElementPathMapAny
 // 	Path from parent:     "b/multi-key"
 // 	Path from root:       "/model/b/multi-key"
 func (n *ModelPath) MultiKeyAny() *Model_MultiKeyPathAny {
-	return &Model_MultiKeyPathAny{
+	ps := &Model_MultiKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b", "multi-key"},
 			map[string]interface{}{"key1": "*", "key2": "*"},
 			n,
 		),
 	}
+	return ps
 }
 
 // MultiKeyAny (list): 
@@ -171,13 +180,14 @@ func (n *ModelPath) MultiKeyAny() *Model_MultiKeyPathAny {
 // 	Path from parent:     "b/multi-key"
 // 	Path from root:       "/model/b/multi-key"
 func (n *ModelPathAny) MultiKeyAny() *Model_MultiKeyPathAny {
-	return &Model_MultiKeyPathAny{
+	ps := &Model_MultiKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b", "multi-key"},
 			map[string]interface{}{"key1": "*", "key2": "*"},
 			n,
 		),
 	}
+	return ps
 }
 
 // WithKey1 sets Model_MultiKeyPathAny's key "key1" to the specified value.
@@ -203,13 +213,14 @@ func (n *Model_MultiKeyPathAny) WithKey2(Key2 uint64) *Model_MultiKeyPathAny {
 // 	Key1: uint32
 // 	Key2: uint64
 func (n *ModelPath) MultiKey(Key1 uint32, Key2 uint64) *Model_MultiKeyPath {
-	return &Model_MultiKeyPath{
+	ps := &Model_MultiKeyPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b", "multi-key"},
 			map[string]interface{}{"key1": Key1, "key2": Key2},
 			n,
 		),
 	}
+	return ps
 }
 
 // MultiKey (list): 
@@ -221,13 +232,14 @@ func (n *ModelPath) MultiKey(Key1 uint32, Key2 uint64) *Model_MultiKeyPath {
 // 	Key1: uint32
 // 	Key2: uint64
 func (n *ModelPathAny) MultiKey(Key1 uint32, Key2 uint64) *Model_MultiKeyPathAny {
-	return &Model_MultiKeyPathAny{
+	ps := &Model_MultiKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b", "multi-key"},
 			map[string]interface{}{"key1": Key1, "key2": Key2},
 			n,
 		),
 	}
+	return ps
 }
 
 // MultiKeyMap (list): 
@@ -236,13 +248,14 @@ func (n *ModelPathAny) MultiKey(Key1 uint32, Key2 uint64) *Model_MultiKeyPathAny
 // 	Path from parent:     "b/multi-key"
 // 	Path from root:       "/model/b/multi-key"
 func (n *ModelPath) MultiKeyMap() *Model_MultiKeyPathMap {
-	return &Model_MultiKeyPathMap{
+	ps := &Model_MultiKeyPathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // MultiKeyMap (list): 
@@ -251,13 +264,14 @@ func (n *ModelPath) MultiKeyMap() *Model_MultiKeyPathMap {
 // 	Path from parent:     "b/multi-key"
 // 	Path from root:       "/model/b/multi-key"
 func (n *ModelPathAny) MultiKeyMap() *Model_MultiKeyPathMapAny {
-	return &Model_MultiKeyPathMapAny{
+	ps := &Model_MultiKeyPathMapAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // NoKeyAny (list): 
@@ -266,13 +280,14 @@ func (n *ModelPathAny) MultiKeyMap() *Model_MultiKeyPathMapAny {
 // 	Path from parent:     "c/no-key"
 // 	Path from root:       "/model/c/no-key"
 func (n *ModelPath) NoKeyAny() *Model_NoKeyPathAny {
-	return &Model_NoKeyPathAny{
+	ps := &Model_NoKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"c", "no-key"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // NoKeyAny (list): 
@@ -281,13 +296,14 @@ func (n *ModelPath) NoKeyAny() *Model_NoKeyPathAny {
 // 	Path from parent:     "c/no-key"
 // 	Path from root:       "/model/c/no-key"
 func (n *ModelPathAny) NoKeyAny() *Model_NoKeyPathAny {
-	return &Model_NoKeyPathAny{
+	ps := &Model_NoKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"c", "no-key"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // SingleKeyAny (list): 
@@ -296,13 +312,14 @@ func (n *ModelPathAny) NoKeyAny() *Model_NoKeyPathAny {
 // 	Path from parent:     "a/single-key"
 // 	Path from root:       "/model/a/single-key"
 func (n *ModelPath) SingleKeyAny() *Model_SingleKeyPathAny {
-	return &Model_SingleKeyPathAny{
+	ps := &Model_SingleKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"a", "single-key"},
 			map[string]interface{}{"key": "*"},
 			n,
 		),
 	}
+	return ps
 }
 
 // SingleKeyAny (list): 
@@ -311,13 +328,14 @@ func (n *ModelPath) SingleKeyAny() *Model_SingleKeyPathAny {
 // 	Path from parent:     "a/single-key"
 // 	Path from root:       "/model/a/single-key"
 func (n *ModelPathAny) SingleKeyAny() *Model_SingleKeyPathAny {
-	return &Model_SingleKeyPathAny{
+	ps := &Model_SingleKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"a", "single-key"},
 			map[string]interface{}{"key": "*"},
 			n,
 		),
 	}
+	return ps
 }
 
 // SingleKey (list): 
@@ -328,13 +346,14 @@ func (n *ModelPathAny) SingleKeyAny() *Model_SingleKeyPathAny {
 //
 // 	Key: string
 func (n *ModelPath) SingleKey(Key string) *Model_SingleKeyPath {
-	return &Model_SingleKeyPath{
+	ps := &Model_SingleKeyPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"a", "single-key"},
 			map[string]interface{}{"key": Key},
 			n,
 		),
 	}
+	return ps
 }
 
 // SingleKey (list): 
@@ -345,13 +364,14 @@ func (n *ModelPath) SingleKey(Key string) *Model_SingleKeyPath {
 //
 // 	Key: string
 func (n *ModelPathAny) SingleKey(Key string) *Model_SingleKeyPathAny {
-	return &Model_SingleKeyPathAny{
+	ps := &Model_SingleKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"a", "single-key"},
 			map[string]interface{}{"key": Key},
 			n,
 		),
 	}
+	return ps
 }
 
 // SingleKeyMap (list): 
@@ -360,13 +380,14 @@ func (n *ModelPathAny) SingleKey(Key string) *Model_SingleKeyPathAny {
 // 	Path from parent:     "a/single-key"
 // 	Path from root:       "/model/a/single-key"
 func (n *ModelPath) SingleKeyMap() *Model_SingleKeyPathMap {
-	return &Model_SingleKeyPathMap{
+	ps := &Model_SingleKeyPathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"a"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // SingleKeyMap (list): 
@@ -375,13 +396,14 @@ func (n *ModelPath) SingleKeyMap() *Model_SingleKeyPathMap {
 // 	Path from parent:     "a/single-key"
 // 	Path from root:       "/model/a/single-key"
 func (n *ModelPathAny) SingleKeyMap() *Model_SingleKeyPathMapAny {
-	return &Model_SingleKeyPathMapAny{
+	ps := &Model_SingleKeyPathMapAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"a"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Model_AtomicListPath represents the /openconfig-withlist/model/atomic-lists/atomic-list YANG schema element.
@@ -470,13 +492,14 @@ type Model_MultiKeyPathMapAny struct {
 // 	Path from parent:     "state/key1"
 // 	Path from root:       "/model/b/multi-key/state/key1"
 func (n *Model_MultiKeyPath) Key1() *Model_MultiKey_Key1Path {
-	return &Model_MultiKey_Key1Path{
+	ps := &Model_MultiKey_Key1Path{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "key1"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Key1 (leaf): 
@@ -485,13 +508,14 @@ func (n *Model_MultiKeyPath) Key1() *Model_MultiKey_Key1Path {
 // 	Path from parent:     "state/key1"
 // 	Path from root:       "/model/b/multi-key/state/key1"
 func (n *Model_MultiKeyPathAny) Key1() *Model_MultiKey_Key1PathAny {
-	return &Model_MultiKey_Key1PathAny{
+	ps := &Model_MultiKey_Key1PathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "key1"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Key2 (leaf): 
@@ -500,13 +524,14 @@ func (n *Model_MultiKeyPathAny) Key1() *Model_MultiKey_Key1PathAny {
 // 	Path from parent:     "state/key2"
 // 	Path from root:       "/model/b/multi-key/state/key2"
 func (n *Model_MultiKeyPath) Key2() *Model_MultiKey_Key2Path {
-	return &Model_MultiKey_Key2Path{
+	ps := &Model_MultiKey_Key2Path{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "key2"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Key2 (leaf): 
@@ -515,13 +540,14 @@ func (n *Model_MultiKeyPath) Key2() *Model_MultiKey_Key2Path {
 // 	Path from parent:     "state/key2"
 // 	Path from root:       "/model/b/multi-key/state/key2"
 func (n *Model_MultiKeyPathAny) Key2() *Model_MultiKey_Key2PathAny {
-	return &Model_MultiKey_Key2PathAny{
+	ps := &Model_MultiKey_Key2PathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "key2"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Model_NoKeyPath represents the /openconfig-withlist/model/c/no-key YANG schema element.
@@ -570,13 +596,14 @@ type Model_SingleKeyPathMapAny struct {
 // 	Path from parent:     "state/key"
 // 	Path from root:       "/model/a/single-key/state/key"
 func (n *Model_SingleKeyPath) Key() *Model_SingleKey_KeyPath {
-	return &Model_SingleKey_KeyPath{
+	ps := &Model_SingleKey_KeyPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "key"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Key (leaf): 
@@ -585,11 +612,12 @@ func (n *Model_SingleKeyPath) Key() *Model_SingleKey_KeyPath {
 // 	Path from parent:     "state/key"
 // 	Path from root:       "/model/a/single-key/state/key"
 func (n *Model_SingleKeyPathAny) Key() *Model_SingleKey_KeyPathAny {
-	return &Model_SingleKey_KeyPathAny{
+	ps := &Model_SingleKey_KeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "key"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }

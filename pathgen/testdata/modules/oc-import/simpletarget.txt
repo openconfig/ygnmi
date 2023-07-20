@@ -42,13 +42,14 @@ type NativePathAny struct {
 // 	Path from parent:     "state/a"
 // 	Path from root:       "/native/state/a"
 func (n *NativePath) A() *Native_APath {
-	return &Native_APath{
+	ps := &Native_APath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "a"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // A (leaf): 
@@ -57,13 +58,14 @@ func (n *NativePath) A() *Native_APath {
 // 	Path from parent:     "state/a"
 // 	Path from root:       "/native/state/a"
 func (n *NativePathAny) A() *Native_APathAny {
-	return &Native_APathAny{
+	ps := &Native_APathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "a"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // TargetPath represents the /openconfig-simple-target/target YANG schema element.

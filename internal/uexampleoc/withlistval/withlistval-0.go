@@ -36,11 +36,13 @@ import (
 // OpenconfigWithlistval_ModelPath represents the /openconfig-withlistval/model YANG schema element.
 type OpenconfigWithlistval_ModelPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model]
 }
 
 // OpenconfigWithlistval_ModelPathAny represents the wildcard version of the /openconfig-withlistval/model YANG schema element.
 type OpenconfigWithlistval_ModelPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model]
 }
 
 // A (container):
@@ -50,13 +52,35 @@ type OpenconfigWithlistval_ModelPathAny struct {
 //	Path from parent:     "a"
 //	Path from root:       "/model/a"
 func (n *OpenconfigWithlistval_ModelPath) A() *OpenconfigWithlistval_Model_APath {
-	return &OpenconfigWithlistval_Model_APath{
+	ps := &OpenconfigWithlistval_Model_APath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"a"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A](
+		"OpenconfigWithlistval_Model_A",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // A (container):
@@ -66,13 +90,34 @@ func (n *OpenconfigWithlistval_ModelPath) A() *OpenconfigWithlistval_Model_APath
 //	Path from parent:     "a"
 //	Path from root:       "/model/a"
 func (n *OpenconfigWithlistval_ModelPathAny) A() *OpenconfigWithlistval_Model_APathAny {
-	return &OpenconfigWithlistval_Model_APathAny{
+	ps := &OpenconfigWithlistval_Model_APathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"a"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A](
+		"OpenconfigWithlistval_Model_A",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // B (container):
@@ -82,13 +127,35 @@ func (n *OpenconfigWithlistval_ModelPathAny) A() *OpenconfigWithlistval_Model_AP
 //	Path from parent:     "b"
 //	Path from root:       "/model/b"
 func (n *OpenconfigWithlistval_ModelPath) B() *OpenconfigWithlistval_Model_BPath {
-	return &OpenconfigWithlistval_Model_BPath{
+	ps := &OpenconfigWithlistval_Model_BPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_B](
+		"OpenconfigWithlistval_Model_B",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // B (container):
@@ -98,13 +165,34 @@ func (n *OpenconfigWithlistval_ModelPath) B() *OpenconfigWithlistval_Model_BPath
 //	Path from parent:     "b"
 //	Path from root:       "/model/b"
 func (n *OpenconfigWithlistval_ModelPathAny) B() *OpenconfigWithlistval_Model_BPathAny {
-	return &OpenconfigWithlistval_Model_BPathAny{
+	ps := &OpenconfigWithlistval_Model_BPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_B](
+		"OpenconfigWithlistval_Model_B",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // C (container):
@@ -114,13 +202,35 @@ func (n *OpenconfigWithlistval_ModelPathAny) B() *OpenconfigWithlistval_Model_BP
 //	Path from parent:     "c"
 //	Path from root:       "/model/c"
 func (n *OpenconfigWithlistval_ModelPath) C() *OpenconfigWithlistval_Model_CPath {
-	return &OpenconfigWithlistval_Model_CPath{
+	ps := &OpenconfigWithlistval_Model_CPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"c"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.SingletonQuery = ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_C](
+		"OpenconfigWithlistval_Model_C",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // C (container):
@@ -130,57 +240,21 @@ func (n *OpenconfigWithlistval_ModelPath) C() *OpenconfigWithlistval_Model_CPath
 //	Path from parent:     "c"
 //	Path from root:       "/model/c"
 func (n *OpenconfigWithlistval_ModelPathAny) C() *OpenconfigWithlistval_Model_CPathAny {
-	return &OpenconfigWithlistval_Model_CPathAny{
+	ps := &OpenconfigWithlistval_Model_CPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"c"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-func binarySliceToFloatSlice(in []oc.Binary) []float32 {
-	converted := make([]float32, 0, len(in))
-	for _, binary := range in {
-		converted = append(converted, ygot.BinaryToFloat32(binary))
-	}
-	return converted
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_ModelPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model](
-		"OpenconfigWithlistval_Model",
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_C](
+		"OpenconfigWithlistval_Model_C",
+		true,
 		false,
 		false,
 		false,
 		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_ModelPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model](
-		"OpenconfigWithlistval_Model",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
+		ps,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -192,16 +266,20 @@ func (n *OpenconfigWithlistval_ModelPathAny) Query() ygnmi.WildcardQuery[*oc.Ope
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigWithlistval_Model_APath represents the /openconfig-withlistval/model/a YANG schema element.
 type OpenconfigWithlistval_Model_APath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A]
 }
 
 // OpenconfigWithlistval_Model_APathAny represents the wildcard version of the /openconfig-withlistval/model/a YANG schema element.
 type OpenconfigWithlistval_Model_APathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A]
 }
 
 // SingleKeyAny (list):
@@ -211,13 +289,34 @@ type OpenconfigWithlistval_Model_APathAny struct {
 //	Path from parent:     "single-key"
 //	Path from root:       "/model/a/single-key"
 func (n *OpenconfigWithlistval_Model_APath) SingleKeyAny() *OpenconfigWithlistval_Model_A_SingleKeyPathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKeyPathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"single-key"},
 			map[string]interface{}{"key": "*"},
 			n,
 		),
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey](
+		"OpenconfigWithlistval_Model_A_SingleKey",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // SingleKeyAny (list):
@@ -227,13 +326,34 @@ func (n *OpenconfigWithlistval_Model_APath) SingleKeyAny() *OpenconfigWithlistva
 //	Path from parent:     "single-key"
 //	Path from root:       "/model/a/single-key"
 func (n *OpenconfigWithlistval_Model_APathAny) SingleKeyAny() *OpenconfigWithlistval_Model_A_SingleKeyPathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKeyPathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"single-key"},
 			map[string]interface{}{"key": "*"},
 			n,
 		),
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey](
+		"OpenconfigWithlistval_Model_A_SingleKey",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // SingleKey (list):
@@ -245,13 +365,35 @@ func (n *OpenconfigWithlistval_Model_APathAny) SingleKeyAny() *OpenconfigWithlis
 //
 //	Key: string
 func (n *OpenconfigWithlistval_Model_APath) SingleKey(Key string) *OpenconfigWithlistval_Model_A_SingleKeyPath {
-	return &OpenconfigWithlistval_Model_A_SingleKeyPath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKeyPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"single-key"},
 			map[string]interface{}{"key": Key},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey](
+		"OpenconfigWithlistval_Model_A_SingleKey",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // SingleKey (list):
@@ -263,13 +405,34 @@ func (n *OpenconfigWithlistval_Model_APath) SingleKey(Key string) *OpenconfigWit
 //
 //	Key: string
 func (n *OpenconfigWithlistval_Model_APathAny) SingleKey(Key string) *OpenconfigWithlistval_Model_A_SingleKeyPathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKeyPathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"single-key"},
 			map[string]interface{}{"key": Key},
 			n,
 		),
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey](
+		"OpenconfigWithlistval_Model_A_SingleKey",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // SingleKeyMap (list):
@@ -279,13 +442,38 @@ func (n *OpenconfigWithlistval_Model_APathAny) SingleKey(Key string) *Openconfig
 //	Path from parent:     "single-key"
 //	Path from root:       "/model/a/single-key"
 func (n *OpenconfigWithlistval_Model_APath) SingleKeyMap() *OpenconfigWithlistval_Model_A_SingleKeyPathMap {
-	return &OpenconfigWithlistval_Model_A_SingleKeyPathMap{
+	ps := &OpenconfigWithlistval_Model_A_SingleKeyPathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"single-key"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey](
+		"OpenconfigWithlistval_Model_A",
+		true,
+		false,
+		false,
+		false,
+		true,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A).SingleKey
+			return ret, ret != nil
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // SingleKeyMap (list):
@@ -295,51 +483,26 @@ func (n *OpenconfigWithlistval_Model_APath) SingleKeyMap() *OpenconfigWithlistva
 //	Path from parent:     "single-key"
 //	Path from root:       "/model/a/single-key"
 func (n *OpenconfigWithlistval_Model_APathAny) SingleKeyMap() *OpenconfigWithlistval_Model_A_SingleKeyPathMapAny {
-	return &OpenconfigWithlistval_Model_A_SingleKeyPathMapAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKeyPathMapAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"single-key"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_APath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A](
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey](
 		"OpenconfigWithlistval_Model_A",
+		true,
 		false,
 		false,
 		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
+		true,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A).SingleKey
+			return ret, ret != nil
 		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_APathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A](
-		"OpenconfigWithlistval_Model_A",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -349,117 +512,46 @@ func (n *OpenconfigWithlistval_Model_APathAny) Query() ygnmi.WildcardQuery[*oc.O
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_KeyPath represents the /openconfig-withlistval/model/a/single-key/key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_KeyPath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.ConfigQuery[string]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_KeyPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_KeyPathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key"
-//	Path from root:       "/model/a/single-key/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_KeyPath) Query() ygnmi.ConfigQuery[string] {
-	return ygnmi.NewConfigQuery[string](
-		"OpenconfigWithlistval_Model_A_SingleKey",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey).Key
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key"
-//	Path from root:       "/model/a/single-key/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_KeyPathAny) Query() ygnmi.WildcardQuery[string] {
-	return ygnmi.NewWildcardQuery[string](
-		"OpenconfigWithlistval_Model_A_SingleKey",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey).Key
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[string]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKeyPath represents the /openconfig-withlistval/model/a/single-key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKeyPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKeyPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKeyPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKeyPathMap represents the /openconfig-withlistval/model/a/single-key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKeyPathMap struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKeyPathMapAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKeyPathMapAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey]
 }
 
 // Config (container):
@@ -469,13 +561,35 @@ type OpenconfigWithlistval_Model_A_SingleKeyPathMapAny struct {
 //	Path from parent:     "config"
 //	Path from root:       "/model/a/single-key/config"
 func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) Config() *OpenconfigWithlistval_Model_A_SingleKey_ConfigPath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_ConfigPath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_ConfigPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"config"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_Config](
+		"OpenconfigWithlistval_Model_A_SingleKey_Config",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Config (container):
@@ -485,13 +599,34 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) Config() *OpenconfigWithli
 //	Path from parent:     "config"
 //	Path from root:       "/model/a/single-key/config"
 func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) Config() *OpenconfigWithlistval_Model_A_SingleKey_ConfigPathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_ConfigPathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_ConfigPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"config"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_Config](
+		"OpenconfigWithlistval_Model_A_SingleKey_Config",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // InnerA (container):
@@ -501,13 +636,35 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) Config() *OpenconfigWit
 //	Path from parent:     "inner-a"
 //	Path from root:       "/model/a/single-key/inner-a"
 func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) InnerA() *OpenconfigWithlistval_Model_A_SingleKey_InnerAPath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_InnerAPath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_InnerAPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"inner-a"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA](
+		"OpenconfigWithlistval_Model_A_SingleKey_InnerA",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // InnerA (container):
@@ -517,13 +674,34 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) InnerA() *OpenconfigWithli
 //	Path from parent:     "inner-a"
 //	Path from root:       "/model/a/single-key/inner-a"
 func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) InnerA() *OpenconfigWithlistval_Model_A_SingleKey_InnerAPathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_InnerAPathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_InnerAPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"inner-a"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA](
+		"OpenconfigWithlistval_Model_A_SingleKey_InnerA",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // Key (leaf):
@@ -533,7 +711,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) InnerA() *OpenconfigWit
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/key"
 func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) Key() *OpenconfigWithlistval_Model_A_SingleKey_KeyPath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_KeyPath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_KeyPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key"},
 			map[string]interface{}{},
@@ -541,6 +719,35 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) Key() *OpenconfigWithlistv
 		),
 		parent: n,
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[string](
+		"OpenconfigWithlistval_Model_A_SingleKey",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Key (leaf):
@@ -550,7 +757,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) Key() *OpenconfigWithlistv
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/key"
 func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) Key() *OpenconfigWithlistval_Model_A_SingleKey_KeyPathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_KeyPathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_KeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key"},
 			map[string]interface{}{},
@@ -558,6 +765,34 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) Key() *OpenconfigWithli
 		),
 		parent: n,
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[string](
+		"OpenconfigWithlistval_Model_A_SingleKey",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // OrderedLists (container):
@@ -567,13 +802,35 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) Key() *OpenconfigWithli
 //	Path from parent:     "ordered-lists"
 //	Path from root:       "/model/a/single-key/ordered-lists"
 func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) OrderedLists() *OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"ordered-lists"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists](
+		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // OrderedLists (container):
@@ -583,13 +840,34 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) OrderedLists() *Openconfig
 //	Path from parent:     "ordered-lists"
 //	Path from root:       "/model/a/single-key/ordered-lists"
 func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) OrderedLists() *OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"ordered-lists"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists](
+		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // State (container):
@@ -599,13 +877,35 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) OrderedLists() *Opencon
 //	Path from parent:     "state"
 //	Path from root:       "/model/a/single-key/state"
 func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) State() *OpenconfigWithlistval_Model_A_SingleKey_StatePath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_StatePath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_StatePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.SingletonQuery = ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_State](
+		"OpenconfigWithlistval_Model_A_SingleKey_State",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // State (container):
@@ -615,77 +915,23 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) State() *OpenconfigWithlis
 //	Path from parent:     "state"
 //	Path from root:       "/model/a/single-key/state"
 func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) State() *OpenconfigWithlistval_Model_A_SingleKey_StatePathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_StatePathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_StatePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey](
-		"OpenconfigWithlistval_Model_A_SingleKey",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey](
-		"OpenconfigWithlistval_Model_A_SingleKey",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKeyPathMap) Query() ygnmi.ConfigQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey] {
-	return ygnmi.NewConfigQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey](
-		"OpenconfigWithlistval_Model_A",
-		false,
-		false,
-		false,
-		false,
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_State](
+		"OpenconfigWithlistval_Model_A_SingleKey_State",
 		true,
-		n,
-		func(gs ygot.ValidatedGoStruct) (map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A).SingleKey
-			return ret, ret != nil
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A) },
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -694,226 +940,49 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPathMap) Query() ygnmi.ConfigQue
 			}
 		},
 		nil,
-		nil,
 	)
-}
 
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKeyPathMapAny) Query() ygnmi.WildcardQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey] {
-	return ygnmi.NewWildcardQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey](
-		"OpenconfigWithlistval_Model_A",
-		false,
-		false,
-		false,
-		false,
-		true,
-		n,
-		func(gs ygot.ValidatedGoStruct) (map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A).SingleKey
-			return ret, ret != nil
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	return ps
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_Config_KeyPath represents the /openconfig-withlistval/model/a/single-key/config/key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_Config_KeyPath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.ConfigQuery[string]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_Config_KeyPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/config/key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_Config_KeyPathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key"
-//	Path from root:       "/model/a/single-key/config/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_Config_KeyPath) Query() ygnmi.ConfigQuery[string] {
-	return ygnmi.NewConfigQuery[string](
-		"OpenconfigWithlistval_Model_A_SingleKey_Config",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_Config).Key
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_Config) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key"
-//	Path from root:       "/model/a/single-key/config/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_Config_KeyPathAny) Query() ygnmi.WildcardQuery[string] {
-	return ygnmi.NewWildcardQuery[string](
-		"OpenconfigWithlistval_Model_A_SingleKey_Config",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_Config).Key
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_Config) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[string]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_Config_ValuePath represents the /openconfig-withlistval/model/a/single-key/config/value YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_Config_ValuePath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.ConfigQuery[int64]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_Config_ValuePathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/config/value YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_Config_ValuePathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "value"
-//	Path from root:       "/model/a/single-key/config/value"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_Config_ValuePath) Query() ygnmi.ConfigQuery[int64] {
-	return ygnmi.NewConfigQuery[int64](
-		"OpenconfigWithlistval_Model_A_SingleKey_Config",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"value"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (int64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_Config).Value
-			if ret == nil {
-				var zero int64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_Config) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "value"
-//	Path from root:       "/model/a/single-key/config/value"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_Config_ValuePathAny) Query() ygnmi.WildcardQuery[int64] {
-	return ygnmi.NewWildcardQuery[int64](
-		"OpenconfigWithlistval_Model_A_SingleKey_Config",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"value"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (int64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_Config).Value
-			if ret == nil {
-				var zero int64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_Config) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[int64]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_ConfigPath represents the /openconfig-withlistval/model/a/single-key/config YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_ConfigPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_Config]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_ConfigPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/config YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_ConfigPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_Config]
 }
 
 // Key (leaf):
@@ -923,7 +992,7 @@ type OpenconfigWithlistval_Model_A_SingleKey_ConfigPathAny struct {
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/config/key"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPath) Key() *OpenconfigWithlistval_Model_A_SingleKey_Config_KeyPath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_Config_KeyPath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_Config_KeyPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key"},
 			map[string]interface{}{},
@@ -931,6 +1000,35 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPath) Key() *OpenconfigWi
 		),
 		parent: n,
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[string](
+		"OpenconfigWithlistval_Model_A_SingleKey_Config",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_Config).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_Config) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Key (leaf):
@@ -940,7 +1038,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPath) Key() *OpenconfigWi
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/config/key"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPathAny) Key() *OpenconfigWithlistval_Model_A_SingleKey_Config_KeyPathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_Config_KeyPathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_Config_KeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key"},
 			map[string]interface{}{},
@@ -948,6 +1046,34 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPathAny) Key() *Openconfi
 		),
 		parent: n,
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[string](
+		"OpenconfigWithlistval_Model_A_SingleKey_Config",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_Config).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_Config) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // Value (leaf):
@@ -957,7 +1083,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPathAny) Key() *Openconfi
 //	Path from parent:     "value"
 //	Path from root:       "/model/a/single-key/config/value"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPath) Value() *OpenconfigWithlistval_Model_A_SingleKey_Config_ValuePath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_Config_ValuePath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_Config_ValuePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"value"},
 			map[string]interface{}{},
@@ -965,6 +1091,35 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPath) Value() *Openconfig
 		),
 		parent: n,
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[int64](
+		"OpenconfigWithlistval_Model_A_SingleKey_Config",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (int64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_Config).Value
+			if ret == nil {
+				var zero int64
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_Config) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Value (leaf):
@@ -974,7 +1129,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPath) Value() *Openconfig
 //	Path from parent:     "value"
 //	Path from root:       "/model/a/single-key/config/value"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPathAny) Value() *OpenconfigWithlistval_Model_A_SingleKey_Config_ValuePathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_Config_ValuePathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_Config_ValuePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"value"},
 			map[string]interface{}{},
@@ -982,44 +1137,23 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPathAny) Value() *Opencon
 		),
 		parent: n,
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_Config] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_Config](
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[int64](
 		"OpenconfigWithlistval_Model_A_SingleKey_Config",
+		true,
+		true,
+		true,
 		false,
 		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (int64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_Config).Value
+			if ret == nil {
+				var zero int64
+				return zero, false
 			}
+			return *ret, true
 		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_Config] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_Config](
-		"OpenconfigWithlistval_Model_A_SingleKey_Config",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_Config) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1029,174 +1163,58 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPathAny) Query() ygnmi.Wi
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerAPath represents the /openconfig-withlistval/model/a/single-key/inner-a YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerAPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerAPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/inner-a YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerAPathAny struct {
 	*ygnmi.NodePath
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerAPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA](
-		"OpenconfigWithlistval_Model_A_SingleKey_InnerA",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerAPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA](
-		"OpenconfigWithlistval_Model_A_SingleKey_InnerA",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_KeyPath represents the /openconfig-withlistval/model/a/single-key/inner-a/single-key/key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_KeyPath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.ConfigQuery[string]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_KeyPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/inner-a/single-key/key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_KeyPathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key"
-//	Path from root:       "/model/a/single-key/inner-a/single-key/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_KeyPath) Query() ygnmi.ConfigQuery[string] {
-	return ygnmi.NewConfigQuery[string](
-		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey).Key
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key"
-//	Path from root:       "/model/a/single-key/inner-a/single-key/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_KeyPathAny) Query() ygnmi.WildcardQuery[string] {
-	return ygnmi.NewWildcardQuery[string](
-		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey).Key
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[string]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPath represents the /openconfig-withlistval/model/a/single-key/inner-a/single-key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/inner-a/single-key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathMap represents the /openconfig-withlistval/model/a/single-key/inner-a/single-key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathMap struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathMapAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/inner-a/single-key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathMapAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey]
 }
 
 // Config (container):
@@ -1206,13 +1224,35 @@ type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathMapAny struct {
 //	Path from parent:     "config"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/config"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPath) Config() *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"config"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config](
+		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Config (container):
@@ -1222,13 +1262,34 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPath) Config() 
 //	Path from parent:     "config"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/config"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathAny) Config() *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"config"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config](
+		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // Key (leaf):
@@ -1238,7 +1299,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathAny) Config
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/key"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPath) Key() *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_KeyPath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_KeyPath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_KeyPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key"},
 			map[string]interface{}{},
@@ -1246,6 +1307,35 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPath) Key() *Op
 		),
 		parent: n,
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[string](
+		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Key (leaf):
@@ -1255,7 +1345,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPath) Key() *Op
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/key"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathAny) Key() *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_KeyPathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_KeyPathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_KeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key"},
 			map[string]interface{}{},
@@ -1263,6 +1353,34 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathAny) Key() 
 		),
 		parent: n,
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[string](
+		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // State (container):
@@ -1272,13 +1390,35 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathAny) Key() 
 //	Path from parent:     "state"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/state"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPath) State() *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.SingletonQuery = ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State](
+		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // State (container):
@@ -1288,77 +1428,23 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPath) State() *
 //	Path from parent:     "state"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/state"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathAny) State() *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey](
-		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey](
-		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathMap) Query() ygnmi.ConfigQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey] {
-	return ygnmi.NewConfigQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey](
-		"OpenconfigWithlistval_Model_A_SingleKey_InnerA",
-		false,
-		false,
-		false,
-		false,
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State](
+		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State",
 		true,
-		n,
-		func(gs ygot.ValidatedGoStruct) (map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA).SingleKey
-			return ret, ret != nil
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA) },
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1367,234 +1453,49 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathMap) Query(
 			}
 		},
 		nil,
-		nil,
 	)
-}
 
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathMapAny) Query() ygnmi.WildcardQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey] {
-	return ygnmi.NewWildcardQuery[map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey](
-		"OpenconfigWithlistval_Model_A_SingleKey_InnerA",
-		false,
-		false,
-		false,
-		false,
-		true,
-		n,
-		func(gs ygot.ValidatedGoStruct) (map[string]*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA).SingleKey
-			return ret, ret != nil
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	return ps
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_KeyPath represents the /openconfig-withlistval/model/a/single-key/inner-a/single-key/config/key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_KeyPath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.ConfigQuery[string]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_KeyPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/inner-a/single-key/config/key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_KeyPathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key"
-//	Path from root:       "/model/a/single-key/inner-a/single-key/config/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_KeyPath) Query() ygnmi.ConfigQuery[string] {
-	return ygnmi.NewConfigQuery[string](
-		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config).Key
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct {
-			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config)
-		},
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key"
-//	Path from root:       "/model/a/single-key/inner-a/single-key/config/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_KeyPathAny) Query() ygnmi.WildcardQuery[string] {
-	return ygnmi.NewWildcardQuery[string](
-		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config).Key
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct {
-			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config)
-		},
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[string]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_ValuePath represents the /openconfig-withlistval/model/a/single-key/inner-a/single-key/config/value YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_ValuePath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.ConfigQuery[int64]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_ValuePathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/inner-a/single-key/config/value YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_ValuePathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "value"
-//	Path from root:       "/model/a/single-key/inner-a/single-key/config/value"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_ValuePath) Query() ygnmi.ConfigQuery[int64] {
-	return ygnmi.NewConfigQuery[int64](
-		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"value"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (int64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config).Value
-			if ret == nil {
-				var zero int64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct {
-			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config)
-		},
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "value"
-//	Path from root:       "/model/a/single-key/inner-a/single-key/config/value"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_ValuePathAny) Query() ygnmi.WildcardQuery[int64] {
-	return ygnmi.NewWildcardQuery[int64](
-		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"value"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (int64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config).Value
-			if ret == nil {
-				var zero int64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct {
-			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config)
-		},
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[int64]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPath represents the /openconfig-withlistval/model/a/single-key/inner-a/single-key/config YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/inner-a/single-key/config YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config]
 }
 
 // Key (leaf):
@@ -1604,7 +1505,7 @@ type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPathAny stru
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/config/key"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPath) Key() *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_KeyPath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_KeyPath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_KeyPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key"},
 			map[string]interface{}{},
@@ -1612,6 +1513,37 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPath) Ke
 		),
 		parent: n,
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[string](
+		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct {
+			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config)
+		},
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Key (leaf):
@@ -1621,7 +1553,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPath) Ke
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/config/key"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPathAny) Key() *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_KeyPathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_KeyPathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_KeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key"},
 			map[string]interface{}{},
@@ -1629,6 +1561,36 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPathAny)
 		),
 		parent: n,
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[string](
+		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct {
+			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config)
+		},
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // Value (leaf):
@@ -1638,7 +1600,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPathAny)
 //	Path from parent:     "value"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/config/value"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPath) Value() *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_ValuePath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_ValuePath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_ValuePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"value"},
 			map[string]interface{}{},
@@ -1646,6 +1608,37 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPath) Va
 		),
 		parent: n,
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[int64](
+		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (int64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config).Value
+			if ret == nil {
+				var zero int64
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct {
+			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config)
+		},
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Value (leaf):
@@ -1655,7 +1648,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPath) Va
 //	Path from parent:     "value"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/config/value"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPathAny) Value() *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_ValuePathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_ValuePathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config_ValuePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"value"},
 			map[string]interface{}{},
@@ -1663,44 +1656,25 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPathAny)
 		),
 		parent: n,
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config](
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[int64](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config",
+		true,
+		true,
+		true,
 		false,
 		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (int64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config).Value
+			if ret == nil {
+				var zero int64
+				return zero, false
 			}
+			return *ret, true
 		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config](
-		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
+		func() ygot.ValidatedGoStruct {
+			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_Config)
+		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1710,206 +1684,48 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPathAny)
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_KeyPath represents the /openconfig-withlistval/model/a/single-key/inner-a/single-key/state/key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_KeyPath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.SingletonQuery[string]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_KeyPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/inner-a/single-key/state/key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_KeyPathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key"
-//	Path from root:       "/model/a/single-key/inner-a/single-key/state/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_KeyPath) Query() ygnmi.ConfigQuery[string] {
-	return ygnmi.NewConfigQuery[string](
-		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State).Key
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct {
-			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State)
-		},
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key"
-//	Path from root:       "/model/a/single-key/inner-a/single-key/state/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_KeyPathAny) Query() ygnmi.WildcardQuery[string] {
-	return ygnmi.NewWildcardQuery[string](
-		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State).Key
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct {
-			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State)
-		},
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[string]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_ValuePath represents the /openconfig-withlistval/model/a/single-key/inner-a/single-key/state/value YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_ValuePath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.SingletonQuery[int64]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_ValuePathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/inner-a/single-key/state/value YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_ValuePathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "value"
-//	Path from root:       "/model/a/single-key/inner-a/single-key/state/value"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_ValuePath) Query() ygnmi.ConfigQuery[int64] {
-	return ygnmi.NewConfigQuery[int64](
-		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"value"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (int64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State).Value
-			if ret == nil {
-				var zero int64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct {
-			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State)
-		},
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "value"
-//	Path from root:       "/model/a/single-key/inner-a/single-key/state/value"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_ValuePathAny) Query() ygnmi.WildcardQuery[int64] {
-	return ygnmi.NewWildcardQuery[int64](
-		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"value"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (int64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State).Value
-			if ret == nil {
-				var zero int64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct {
-			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State)
-		},
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[int64]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePath represents the /openconfig-withlistval/model/a/single-key/inner-a/single-key/state YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePath struct {
 	*ygnmi.NodePath
+	ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/inner-a/single-key/state YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State]
 }
 
 // Key (leaf):
@@ -1919,7 +1735,7 @@ type OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePathAny struc
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/state/key"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePath) Key() *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_KeyPath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_KeyPath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_KeyPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key"},
 			map[string]interface{}{},
@@ -1927,6 +1743,37 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePath) Key
 		),
 		parent: n,
 	}
+	ps.SingletonQuery = ygnmi.NewSingletonQuery[string](
+		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct {
+			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State)
+		},
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Key (leaf):
@@ -1936,7 +1783,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePath) Key
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/state/key"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePathAny) Key() *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_KeyPathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_KeyPathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_KeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key"},
 			map[string]interface{}{},
@@ -1944,6 +1791,36 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePathAny) 
 		),
 		parent: n,
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[string](
+		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct {
+			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State)
+		},
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // Value (leaf):
@@ -1953,7 +1830,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePathAny) 
 //	Path from parent:     "value"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/state/value"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePath) Value() *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_ValuePath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_ValuePath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_ValuePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"value"},
 			map[string]interface{}{},
@@ -1961,6 +1838,37 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePath) Val
 		),
 		parent: n,
 	}
+	ps.SingletonQuery = ygnmi.NewSingletonQuery[int64](
+		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (int64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State).Value
+			if ret == nil {
+				var zero int64
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct {
+			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State)
+		},
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Value (leaf):
@@ -1970,7 +1878,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePath) Val
 //	Path from parent:     "value"
 //	Path from root:       "/model/a/single-key/inner-a/single-key/state/value"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePathAny) Value() *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_ValuePathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_ValuePathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State_ValuePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"value"},
 			map[string]interface{}{},
@@ -1978,44 +1886,25 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePathAny) 
 		),
 		parent: n,
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State](
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[int64](
 		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State",
+		true,
+		true,
+		true,
 		false,
 		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (int64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State).Value
+			if ret == nil {
+				var zero int64
+				return zero, false
 			}
+			return *ret, true
 		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State](
-		"OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
+		func() ygot.ValidatedGoStruct {
+			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_State)
+		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -2025,16 +1914,20 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePathAny) 
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPath represents the /openconfig-withlistval/model/a/single-key/ordered-lists YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/ordered-lists YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists]
 }
 
 // OrderedListMap (list):
@@ -2044,13 +1937,38 @@ type OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPathAny struct {
 //	Path from parent:     "ordered-list"
 //	Path from root:       "/model/a/single-key/ordered-lists/ordered-list"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPath) OrderedListMap() *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPathMap {
-	return &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPathMap{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"ordered-list"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap](
+		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists",
+		true,
+		false,
+		false,
+		false,
+		true,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists).OrderedList
+			return ret, ret != nil
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // OrderedListMap (list):
@@ -2060,51 +1978,26 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPath) OrderedListMa
 //	Path from parent:     "ordered-list"
 //	Path from root:       "/model/a/single-key/ordered-lists/ordered-list"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPathAny) OrderedListMap() *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPathMapAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPathMapAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPathMapAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"ordered-list"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists](
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists",
+		true,
 		false,
 		false,
 		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
+		true,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists).OrderedList
+			return ret, ret != nil
 		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists](
-		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -2114,6 +2007,8 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPathAny) Query() yg
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPath represents the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list YANG schema element.
@@ -2129,264 +2024,53 @@ type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPathAny str
 // OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPathMap represents the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPathMap struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPathMapAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPathMapAny struct {
 	*ygnmi.NodePath
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPathMap) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap](
-		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists",
-		false,
-		false,
-		false,
-		false,
-		true,
-		n,
-		func(gs ygot.ValidatedGoStruct) (*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists).OrderedList
-			return ret, ret != nil
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedListPathMapAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap](
-		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists",
-		false,
-		false,
-		false,
-		false,
-		true,
-		n,
-		func(gs ygot.ValidatedGoStruct) (*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists).OrderedList
-			return ret, ret != nil
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_KeyPath represents the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list/config/key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_KeyPath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.ConfigQuery[string]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_KeyPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list/config/key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_KeyPathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key"
-//	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/config/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_KeyPath) Query() ygnmi.ConfigQuery[string] {
-	return ygnmi.NewConfigQuery[string](
-		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config).Key
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct {
-			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config)
-		},
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key"
-//	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/config/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_KeyPathAny) Query() ygnmi.WildcardQuery[string] {
-	return ygnmi.NewWildcardQuery[string](
-		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config).Key
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct {
-			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config)
-		},
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[string]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_ValuePath represents the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list/config/value YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_ValuePath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.ConfigQuery[int64]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_ValuePathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list/config/value YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_ValuePathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "value"
-//	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/config/value"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_ValuePath) Query() ygnmi.ConfigQuery[int64] {
-	return ygnmi.NewConfigQuery[int64](
-		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"value"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (int64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config).Value
-			if ret == nil {
-				var zero int64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct {
-			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config)
-		},
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "value"
-//	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/config/value"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_ValuePathAny) Query() ygnmi.WildcardQuery[int64] {
-	return ygnmi.NewWildcardQuery[int64](
-		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"value"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (int64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config).Value
-			if ret == nil {
-				var zero int64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct {
-			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config)
-		},
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[int64]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_ConfigPath represents the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list/config YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_ConfigPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_ConfigPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list/config YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_ConfigPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config]
 }
 
 // Key (leaf):
@@ -2396,7 +2080,7 @@ type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_ConfigPath
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/config/key"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_ConfigPath) Key() *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_KeyPath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_KeyPath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_KeyPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key"},
 			map[string]interface{}{},
@@ -2404,6 +2088,37 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config
 		),
 		parent: n,
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[string](
+		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct {
+			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config)
+		},
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Key (leaf):
@@ -2413,7 +2128,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/config/key"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_ConfigPathAny) Key() *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_KeyPathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_KeyPathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_KeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key"},
 			map[string]interface{}{},
@@ -2421,6 +2136,36 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config
 		),
 		parent: n,
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[string](
+		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct {
+			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config)
+		},
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // Value (leaf):
@@ -2430,7 +2175,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config
 //	Path from parent:     "value"
 //	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/config/value"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_ConfigPath) Value() *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_ValuePath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_ValuePath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_ValuePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"value"},
 			map[string]interface{}{},
@@ -2438,6 +2183,37 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config
 		),
 		parent: n,
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[int64](
+		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (int64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config).Value
+			if ret == nil {
+				var zero int64
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct {
+			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config)
+		},
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Value (leaf):
@@ -2447,7 +2223,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config
 //	Path from parent:     "value"
 //	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/config/value"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_ConfigPathAny) Value() *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_ValuePathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_ValuePathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config_ValuePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"value"},
 			map[string]interface{}{},
@@ -2455,44 +2231,25 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config
 		),
 		parent: n,
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_ConfigPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config](
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[int64](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config",
+		true,
+		true,
+		true,
 		false,
 		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (int64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config).Value
+			if ret == nil {
+				var zero int64
+				return zero, false
 			}
+			return *ret, true
 		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_ConfigPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config](
-		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
+		func() ygot.ValidatedGoStruct {
+			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config)
+		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -2502,206 +2259,48 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_KeyPath represents the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list/state/key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_KeyPath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.SingletonQuery[string]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_KeyPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list/state/key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_KeyPathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key"
-//	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/state/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_KeyPath) Query() ygnmi.ConfigQuery[string] {
-	return ygnmi.NewConfigQuery[string](
-		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State).Key
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct {
-			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State)
-		},
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key"
-//	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/state/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_KeyPathAny) Query() ygnmi.WildcardQuery[string] {
-	return ygnmi.NewWildcardQuery[string](
-		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State).Key
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct {
-			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State)
-		},
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[string]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_ValuePath represents the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list/state/value YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_ValuePath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.SingletonQuery[int64]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_ValuePathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list/state/value YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_ValuePathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "value"
-//	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/state/value"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_ValuePath) Query() ygnmi.ConfigQuery[int64] {
-	return ygnmi.NewConfigQuery[int64](
-		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"value"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (int64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State).Value
-			if ret == nil {
-				var zero int64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct {
-			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State)
-		},
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "value"
-//	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/state/value"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_ValuePathAny) Query() ygnmi.WildcardQuery[int64] {
-	return ygnmi.NewWildcardQuery[int64](
-		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"value"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (int64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State).Value
-			if ret == nil {
-				var zero int64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct {
-			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State)
-		},
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[int64]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StatePath represents the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list/state YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StatePath struct {
 	*ygnmi.NodePath
+	ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StatePathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/ordered-lists/ordered-list/state YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StatePathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State]
 }
 
 // Key (leaf):
@@ -2711,7 +2310,7 @@ type OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StatePathA
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/state/key"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StatePath) Key() *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_KeyPath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_KeyPath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_KeyPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key"},
 			map[string]interface{}{},
@@ -2719,6 +2318,37 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StateP
 		),
 		parent: n,
 	}
+	ps.SingletonQuery = ygnmi.NewSingletonQuery[string](
+		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct {
+			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State)
+		},
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Key (leaf):
@@ -2728,7 +2358,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StateP
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/state/key"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StatePathAny) Key() *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_KeyPathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_KeyPathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_KeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key"},
 			map[string]interface{}{},
@@ -2736,6 +2366,36 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StateP
 		),
 		parent: n,
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[string](
+		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct {
+			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State)
+		},
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // Value (leaf):
@@ -2745,7 +2405,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StateP
 //	Path from parent:     "value"
 //	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/state/value"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StatePath) Value() *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_ValuePath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_ValuePath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_ValuePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"value"},
 			map[string]interface{}{},
@@ -2753,6 +2413,37 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StateP
 		),
 		parent: n,
 	}
+	ps.SingletonQuery = ygnmi.NewSingletonQuery[int64](
+		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (int64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State).Value
+			if ret == nil {
+				var zero int64
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct {
+			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State)
+		},
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Value (leaf):
@@ -2762,7 +2453,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StateP
 //	Path from parent:     "value"
 //	Path from root:       "/model/a/single-key/ordered-lists/ordered-list/state/value"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StatePathAny) Value() *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_ValuePathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_ValuePathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State_ValuePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"value"},
 			map[string]interface{}{},
@@ -2770,44 +2461,25 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StateP
 		),
 		parent: n,
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StatePath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State](
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[int64](
 		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State",
+		true,
+		true,
+		true,
 		false,
 		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (int64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State).Value
+			if ret == nil {
+				var zero int64
+				return zero, false
 			}
+			return *ret, true
 		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StatePathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State](
-		"OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
+		func() ygot.ValidatedGoStruct {
+			return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_State)
+		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -2817,198 +2489,48 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StateP
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_State_KeyPath represents the /openconfig-withlistval/model/a/single-key/state/key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_State_KeyPath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.SingletonQuery[string]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_State_KeyPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/state/key YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_State_KeyPathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key"
-//	Path from root:       "/model/a/single-key/state/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_State_KeyPath) Query() ygnmi.ConfigQuery[string] {
-	return ygnmi.NewConfigQuery[string](
-		"OpenconfigWithlistval_Model_A_SingleKey_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_State).Key
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key"
-//	Path from root:       "/model/a/single-key/state/key"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_State_KeyPathAny) Query() ygnmi.WildcardQuery[string] {
-	return ygnmi.NewWildcardQuery[string](
-		"OpenconfigWithlistval_Model_A_SingleKey_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_State).Key
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[string]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_State_ValuePath represents the /openconfig-withlistval/model/a/single-key/state/value YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_State_ValuePath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.SingletonQuery[int64]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_State_ValuePathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/state/value YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_State_ValuePathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "value"
-//	Path from root:       "/model/a/single-key/state/value"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_State_ValuePath) Query() ygnmi.ConfigQuery[int64] {
-	return ygnmi.NewConfigQuery[int64](
-		"OpenconfigWithlistval_Model_A_SingleKey_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"value"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (int64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_State).Value
-			if ret == nil {
-				var zero int64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "value"
-//	Path from root:       "/model/a/single-key/state/value"
-func (n *OpenconfigWithlistval_Model_A_SingleKey_State_ValuePathAny) Query() ygnmi.WildcardQuery[int64] {
-	return ygnmi.NewWildcardQuery[int64](
-		"OpenconfigWithlistval_Model_A_SingleKey_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"value"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (int64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_State).Value
-			if ret == nil {
-				var zero int64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[int64]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_StatePath represents the /openconfig-withlistval/model/a/single-key/state YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_StatePath struct {
 	*ygnmi.NodePath
+	ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_State]
 }
 
 // OpenconfigWithlistval_Model_A_SingleKey_StatePathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/state YANG schema element.
 type OpenconfigWithlistval_Model_A_SingleKey_StatePathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_State]
 }
 
 // Key (leaf):
@@ -3018,7 +2540,7 @@ type OpenconfigWithlistval_Model_A_SingleKey_StatePathAny struct {
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/state/key"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePath) Key() *OpenconfigWithlistval_Model_A_SingleKey_State_KeyPath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_State_KeyPath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_State_KeyPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key"},
 			map[string]interface{}{},
@@ -3026,6 +2548,35 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePath) Key() *OpenconfigWit
 		),
 		parent: n,
 	}
+	ps.SingletonQuery = ygnmi.NewSingletonQuery[string](
+		"OpenconfigWithlistval_Model_A_SingleKey_State",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_State).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Key (leaf):
@@ -3035,7 +2586,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePath) Key() *OpenconfigWit
 //	Path from parent:     "key"
 //	Path from root:       "/model/a/single-key/state/key"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePathAny) Key() *OpenconfigWithlistval_Model_A_SingleKey_State_KeyPathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_State_KeyPathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_State_KeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key"},
 			map[string]interface{}{},
@@ -3043,6 +2594,34 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePathAny) Key() *Openconfig
 		),
 		parent: n,
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[string](
+		"OpenconfigWithlistval_Model_A_SingleKey_State",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_State).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // Value (leaf):
@@ -3052,7 +2631,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePathAny) Key() *Openconfig
 //	Path from parent:     "value"
 //	Path from root:       "/model/a/single-key/state/value"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePath) Value() *OpenconfigWithlistval_Model_A_SingleKey_State_ValuePath {
-	return &OpenconfigWithlistval_Model_A_SingleKey_State_ValuePath{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_State_ValuePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"value"},
 			map[string]interface{}{},
@@ -3060,6 +2639,35 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePath) Value() *OpenconfigW
 		),
 		parent: n,
 	}
+	ps.SingletonQuery = ygnmi.NewSingletonQuery[int64](
+		"OpenconfigWithlistval_Model_A_SingleKey_State",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (int64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_State).Value
+			if ret == nil {
+				var zero int64
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Value (leaf):
@@ -3069,7 +2677,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePath) Value() *OpenconfigW
 //	Path from parent:     "value"
 //	Path from root:       "/model/a/single-key/state/value"
 func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePathAny) Value() *OpenconfigWithlistval_Model_A_SingleKey_State_ValuePathAny {
-	return &OpenconfigWithlistval_Model_A_SingleKey_State_ValuePathAny{
+	ps := &OpenconfigWithlistval_Model_A_SingleKey_State_ValuePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"value"},
 			map[string]interface{}{},
@@ -3077,44 +2685,23 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePathAny) Value() *Openconf
 		),
 		parent: n,
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_State] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_State](
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[int64](
 		"OpenconfigWithlistval_Model_A_SingleKey_State",
+		true,
+		true,
+		true,
 		false,
 		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (int64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_State).Value
+			if ret == nil {
+				var zero int64
+				return zero, false
 			}
+			return *ret, true
 		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_State] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A_SingleKey_State](
-		"OpenconfigWithlistval_Model_A_SingleKey_State",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -3124,16 +2711,20 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePathAny) Query() ygnmi.Wil
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigWithlistval_Model_BPath represents the /openconfig-withlistval/model/b YANG schema element.
 type OpenconfigWithlistval_Model_BPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_B]
 }
 
 // OpenconfigWithlistval_Model_BPathAny represents the wildcard version of the /openconfig-withlistval/model/b YANG schema element.
 type OpenconfigWithlistval_Model_BPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_B]
 }
 
 // MultiKeyAny (list):
@@ -3143,13 +2734,34 @@ type OpenconfigWithlistval_Model_BPathAny struct {
 //	Path from parent:     "multi-key"
 //	Path from root:       "/model/b/multi-key"
 func (n *OpenconfigWithlistval_Model_BPath) MultiKeyAny() *OpenconfigWithlistval_Model_B_MultiKeyPathAny {
-	return &OpenconfigWithlistval_Model_B_MultiKeyPathAny{
+	ps := &OpenconfigWithlistval_Model_B_MultiKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"multi-key"},
 			map[string]interface{}{"key1": "*", "key2": "*"},
 			n,
 		),
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey](
+		"OpenconfigWithlistval_Model_B_MultiKey",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // MultiKeyAny (list):
@@ -3159,13 +2771,34 @@ func (n *OpenconfigWithlistval_Model_BPath) MultiKeyAny() *OpenconfigWithlistval
 //	Path from parent:     "multi-key"
 //	Path from root:       "/model/b/multi-key"
 func (n *OpenconfigWithlistval_Model_BPathAny) MultiKeyAny() *OpenconfigWithlistval_Model_B_MultiKeyPathAny {
-	return &OpenconfigWithlistval_Model_B_MultiKeyPathAny{
+	ps := &OpenconfigWithlistval_Model_B_MultiKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"multi-key"},
 			map[string]interface{}{"key1": "*", "key2": "*"},
 			n,
 		),
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey](
+		"OpenconfigWithlistval_Model_B_MultiKey",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // WithKey1 sets OpenconfigWithlistval_Model_B_MultiKeyPathAny's key "key1" to the specified value.
@@ -3192,13 +2825,35 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPathAny) WithKey2(Key2 uint64) *O
 //	Key1: uint32
 //	Key2: uint64
 func (n *OpenconfigWithlistval_Model_BPath) MultiKey(Key1 uint32, Key2 uint64) *OpenconfigWithlistval_Model_B_MultiKeyPath {
-	return &OpenconfigWithlistval_Model_B_MultiKeyPath{
+	ps := &OpenconfigWithlistval_Model_B_MultiKeyPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"multi-key"},
 			map[string]interface{}{"key1": Key1, "key2": Key2},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey](
+		"OpenconfigWithlistval_Model_B_MultiKey",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // MultiKey (list):
@@ -3211,13 +2866,34 @@ func (n *OpenconfigWithlistval_Model_BPath) MultiKey(Key1 uint32, Key2 uint64) *
 //	Key1: uint32
 //	Key2: uint64
 func (n *OpenconfigWithlistval_Model_BPathAny) MultiKey(Key1 uint32, Key2 uint64) *OpenconfigWithlistval_Model_B_MultiKeyPathAny {
-	return &OpenconfigWithlistval_Model_B_MultiKeyPathAny{
+	ps := &OpenconfigWithlistval_Model_B_MultiKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"multi-key"},
 			map[string]interface{}{"key1": Key1, "key2": Key2},
 			n,
 		),
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey](
+		"OpenconfigWithlistval_Model_B_MultiKey",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // MultiKeyMap (list):
@@ -3227,13 +2903,38 @@ func (n *OpenconfigWithlistval_Model_BPathAny) MultiKey(Key1 uint32, Key2 uint64
 //	Path from parent:     "multi-key"
 //	Path from root:       "/model/b/multi-key"
 func (n *OpenconfigWithlistval_Model_BPath) MultiKeyMap() *OpenconfigWithlistval_Model_B_MultiKeyPathMap {
-	return &OpenconfigWithlistval_Model_B_MultiKeyPathMap{
+	ps := &OpenconfigWithlistval_Model_B_MultiKeyPathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"multi-key"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey](
+		"OpenconfigWithlistval_Model_B",
+		true,
+		false,
+		false,
+		false,
+		true,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_B).MultiKey
+			return ret, ret != nil
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // MultiKeyMap (list):
@@ -3243,51 +2944,26 @@ func (n *OpenconfigWithlistval_Model_BPath) MultiKeyMap() *OpenconfigWithlistval
 //	Path from parent:     "multi-key"
 //	Path from root:       "/model/b/multi-key"
 func (n *OpenconfigWithlistval_Model_BPathAny) MultiKeyMap() *OpenconfigWithlistval_Model_B_MultiKeyPathMapAny {
-	return &OpenconfigWithlistval_Model_B_MultiKeyPathMapAny{
+	ps := &OpenconfigWithlistval_Model_B_MultiKeyPathMapAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"multi-key"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_BPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_B] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_B](
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey](
 		"OpenconfigWithlistval_Model_B",
+		true,
 		false,
 		false,
 		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
+		true,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_B).MultiKey
+			return ret, ret != nil
 		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_BPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_B] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_B](
-		"OpenconfigWithlistval_Model_B",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -3297,208 +2973,60 @@ func (n *OpenconfigWithlistval_Model_BPathAny) Query() ygnmi.WildcardQuery[*oc.O
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigWithlistval_Model_B_MultiKey_Key1Path represents the /openconfig-withlistval/model/b/multi-key/key1 YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKey_Key1Path struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.ConfigQuery[uint32]
 }
 
 // OpenconfigWithlistval_Model_B_MultiKey_Key1PathAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key/key1 YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKey_Key1PathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key1"
-//	Path from root:       "/model/b/multi-key/key1"
-func (n *OpenconfigWithlistval_Model_B_MultiKey_Key1Path) Query() ygnmi.ConfigQuery[uint32] {
-	return ygnmi.NewConfigQuery[uint32](
-		"OpenconfigWithlistval_Model_B_MultiKey",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key1"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (uint32, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey).Key1
-			if ret == nil {
-				var zero uint32
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key1"
-//	Path from root:       "/model/b/multi-key/key1"
-func (n *OpenconfigWithlistval_Model_B_MultiKey_Key1PathAny) Query() ygnmi.WildcardQuery[uint32] {
-	return ygnmi.NewWildcardQuery[uint32](
-		"OpenconfigWithlistval_Model_B_MultiKey",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key1"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (uint32, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey).Key1
-			if ret == nil {
-				var zero uint32
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[uint32]
 }
 
 // OpenconfigWithlistval_Model_B_MultiKey_Key2Path represents the /openconfig-withlistval/model/b/multi-key/key2 YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKey_Key2Path struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.ConfigQuery[uint64]
 }
 
 // OpenconfigWithlistval_Model_B_MultiKey_Key2PathAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key/key2 YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKey_Key2PathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key2"
-//	Path from root:       "/model/b/multi-key/key2"
-func (n *OpenconfigWithlistval_Model_B_MultiKey_Key2Path) Query() ygnmi.ConfigQuery[uint64] {
-	return ygnmi.NewConfigQuery[uint64](
-		"OpenconfigWithlistval_Model_B_MultiKey",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key2"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (uint64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey).Key2
-			if ret == nil {
-				var zero uint64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key2"
-//	Path from root:       "/model/b/multi-key/key2"
-func (n *OpenconfigWithlistval_Model_B_MultiKey_Key2PathAny) Query() ygnmi.WildcardQuery[uint64] {
-	return ygnmi.NewWildcardQuery[uint64](
-		"OpenconfigWithlistval_Model_B_MultiKey",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key2"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (uint64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey).Key2
-			if ret == nil {
-				var zero uint64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[uint64]
 }
 
 // OpenconfigWithlistval_Model_B_MultiKeyPath represents the /openconfig-withlistval/model/b/multi-key YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKeyPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey]
 }
 
 // OpenconfigWithlistval_Model_B_MultiKeyPathAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKeyPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey]
 }
 
 // OpenconfigWithlistval_Model_B_MultiKeyPathMap represents the /openconfig-withlistval/model/b/multi-key YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKeyPathMap struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey]
 }
 
 // OpenconfigWithlistval_Model_B_MultiKeyPathMapAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKeyPathMapAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey]
 }
 
 // Config (container):
@@ -3508,13 +3036,35 @@ type OpenconfigWithlistval_Model_B_MultiKeyPathMapAny struct {
 //	Path from parent:     "config"
 //	Path from root:       "/model/b/multi-key/config"
 func (n *OpenconfigWithlistval_Model_B_MultiKeyPath) Config() *OpenconfigWithlistval_Model_B_MultiKey_ConfigPath {
-	return &OpenconfigWithlistval_Model_B_MultiKey_ConfigPath{
+	ps := &OpenconfigWithlistval_Model_B_MultiKey_ConfigPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"config"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_Config](
+		"OpenconfigWithlistval_Model_B_MultiKey_Config",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Config (container):
@@ -3524,13 +3074,34 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPath) Config() *OpenconfigWithlis
 //	Path from parent:     "config"
 //	Path from root:       "/model/b/multi-key/config"
 func (n *OpenconfigWithlistval_Model_B_MultiKeyPathAny) Config() *OpenconfigWithlistval_Model_B_MultiKey_ConfigPathAny {
-	return &OpenconfigWithlistval_Model_B_MultiKey_ConfigPathAny{
+	ps := &OpenconfigWithlistval_Model_B_MultiKey_ConfigPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"config"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_Config](
+		"OpenconfigWithlistval_Model_B_MultiKey_Config",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // Key1 (leaf):
@@ -3540,7 +3111,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPathAny) Config() *OpenconfigWith
 //	Path from parent:     "key1"
 //	Path from root:       "/model/b/multi-key/key1"
 func (n *OpenconfigWithlistval_Model_B_MultiKeyPath) Key1() *OpenconfigWithlistval_Model_B_MultiKey_Key1Path {
-	return &OpenconfigWithlistval_Model_B_MultiKey_Key1Path{
+	ps := &OpenconfigWithlistval_Model_B_MultiKey_Key1Path{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key1"},
 			map[string]interface{}{},
@@ -3548,6 +3119,35 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPath) Key1() *OpenconfigWithlistv
 		),
 		parent: n,
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[uint32](
+		"OpenconfigWithlistval_Model_B_MultiKey",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (uint32, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey).Key1
+			if ret == nil {
+				var zero uint32
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Key1 (leaf):
@@ -3557,7 +3157,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPath) Key1() *OpenconfigWithlistv
 //	Path from parent:     "key1"
 //	Path from root:       "/model/b/multi-key/key1"
 func (n *OpenconfigWithlistval_Model_B_MultiKeyPathAny) Key1() *OpenconfigWithlistval_Model_B_MultiKey_Key1PathAny {
-	return &OpenconfigWithlistval_Model_B_MultiKey_Key1PathAny{
+	ps := &OpenconfigWithlistval_Model_B_MultiKey_Key1PathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key1"},
 			map[string]interface{}{},
@@ -3565,6 +3165,34 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPathAny) Key1() *OpenconfigWithli
 		),
 		parent: n,
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[uint32](
+		"OpenconfigWithlistval_Model_B_MultiKey",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (uint32, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey).Key1
+			if ret == nil {
+				var zero uint32
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // Key2 (leaf):
@@ -3574,7 +3202,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPathAny) Key1() *OpenconfigWithli
 //	Path from parent:     "key2"
 //	Path from root:       "/model/b/multi-key/key2"
 func (n *OpenconfigWithlistval_Model_B_MultiKeyPath) Key2() *OpenconfigWithlistval_Model_B_MultiKey_Key2Path {
-	return &OpenconfigWithlistval_Model_B_MultiKey_Key2Path{
+	ps := &OpenconfigWithlistval_Model_B_MultiKey_Key2Path{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key2"},
 			map[string]interface{}{},
@@ -3582,6 +3210,35 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPath) Key2() *OpenconfigWithlistv
 		),
 		parent: n,
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[uint64](
+		"OpenconfigWithlistval_Model_B_MultiKey",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (uint64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey).Key2
+			if ret == nil {
+				var zero uint64
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Key2 (leaf):
@@ -3591,7 +3248,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPath) Key2() *OpenconfigWithlistv
 //	Path from parent:     "key2"
 //	Path from root:       "/model/b/multi-key/key2"
 func (n *OpenconfigWithlistval_Model_B_MultiKeyPathAny) Key2() *OpenconfigWithlistval_Model_B_MultiKey_Key2PathAny {
-	return &OpenconfigWithlistval_Model_B_MultiKey_Key2PathAny{
+	ps := &OpenconfigWithlistval_Model_B_MultiKey_Key2PathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key2"},
 			map[string]interface{}{},
@@ -3599,6 +3256,34 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPathAny) Key2() *OpenconfigWithli
 		),
 		parent: n,
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[uint64](
+		"OpenconfigWithlistval_Model_B_MultiKey",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (uint64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey).Key2
+			if ret == nil {
+				var zero uint64
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // State (container):
@@ -3608,13 +3293,35 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPathAny) Key2() *OpenconfigWithli
 //	Path from parent:     "state"
 //	Path from root:       "/model/b/multi-key/state"
 func (n *OpenconfigWithlistval_Model_B_MultiKeyPath) State() *OpenconfigWithlistval_Model_B_MultiKey_StatePath {
-	return &OpenconfigWithlistval_Model_B_MultiKey_StatePath{
+	ps := &OpenconfigWithlistval_Model_B_MultiKey_StatePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.SingletonQuery = ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_State](
+		"OpenconfigWithlistval_Model_B_MultiKey_State",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // State (container):
@@ -3624,77 +3331,23 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPath) State() *OpenconfigWithlist
 //	Path from parent:     "state"
 //	Path from root:       "/model/b/multi-key/state"
 func (n *OpenconfigWithlistval_Model_B_MultiKeyPathAny) State() *OpenconfigWithlistval_Model_B_MultiKey_StatePathAny {
-	return &OpenconfigWithlistval_Model_B_MultiKey_StatePathAny{
+	ps := &OpenconfigWithlistval_Model_B_MultiKey_StatePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_B_MultiKeyPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey](
-		"OpenconfigWithlistval_Model_B_MultiKey",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_B_MultiKeyPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey](
-		"OpenconfigWithlistval_Model_B_MultiKey",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_B_MultiKeyPathMap) Query() ygnmi.ConfigQuery[map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey] {
-	return ygnmi.NewConfigQuery[map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey](
-		"OpenconfigWithlistval_Model_B",
-		false,
-		false,
-		false,
-		false,
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_State](
+		"OpenconfigWithlistval_Model_B_MultiKey_State",
 		true,
-		n,
-		func(gs ygot.ValidatedGoStruct) (map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_B).MultiKey
-			return ret, ret != nil
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B) },
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -3703,226 +3356,49 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPathMap) Query() ygnmi.ConfigQuer
 			}
 		},
 		nil,
-		nil,
 	)
-}
 
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_B_MultiKeyPathMapAny) Query() ygnmi.WildcardQuery[map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey] {
-	return ygnmi.NewWildcardQuery[map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey](
-		"OpenconfigWithlistval_Model_B",
-		false,
-		false,
-		false,
-		false,
-		true,
-		n,
-		func(gs ygot.ValidatedGoStruct) (map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_B).MultiKey
-			return ret, ret != nil
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	return ps
 }
 
 // OpenconfigWithlistval_Model_B_MultiKey_Config_Key1Path represents the /openconfig-withlistval/model/b/multi-key/config/key1 YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKey_Config_Key1Path struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.ConfigQuery[uint32]
 }
 
 // OpenconfigWithlistval_Model_B_MultiKey_Config_Key1PathAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key/config/key1 YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKey_Config_Key1PathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key1"
-//	Path from root:       "/model/b/multi-key/config/key1"
-func (n *OpenconfigWithlistval_Model_B_MultiKey_Config_Key1Path) Query() ygnmi.ConfigQuery[uint32] {
-	return ygnmi.NewConfigQuery[uint32](
-		"OpenconfigWithlistval_Model_B_MultiKey_Config",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key1"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (uint32, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey_Config).Key1
-			if ret == nil {
-				var zero uint32
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey_Config) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key1"
-//	Path from root:       "/model/b/multi-key/config/key1"
-func (n *OpenconfigWithlistval_Model_B_MultiKey_Config_Key1PathAny) Query() ygnmi.WildcardQuery[uint32] {
-	return ygnmi.NewWildcardQuery[uint32](
-		"OpenconfigWithlistval_Model_B_MultiKey_Config",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key1"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (uint32, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey_Config).Key1
-			if ret == nil {
-				var zero uint32
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey_Config) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[uint32]
 }
 
 // OpenconfigWithlistval_Model_B_MultiKey_Config_Key2Path represents the /openconfig-withlistval/model/b/multi-key/config/key2 YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKey_Config_Key2Path struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.ConfigQuery[uint64]
 }
 
 // OpenconfigWithlistval_Model_B_MultiKey_Config_Key2PathAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key/config/key2 YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKey_Config_Key2PathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key2"
-//	Path from root:       "/model/b/multi-key/config/key2"
-func (n *OpenconfigWithlistval_Model_B_MultiKey_Config_Key2Path) Query() ygnmi.ConfigQuery[uint64] {
-	return ygnmi.NewConfigQuery[uint64](
-		"OpenconfigWithlistval_Model_B_MultiKey_Config",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key2"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (uint64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey_Config).Key2
-			if ret == nil {
-				var zero uint64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey_Config) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key2"
-//	Path from root:       "/model/b/multi-key/config/key2"
-func (n *OpenconfigWithlistval_Model_B_MultiKey_Config_Key2PathAny) Query() ygnmi.WildcardQuery[uint64] {
-	return ygnmi.NewWildcardQuery[uint64](
-		"OpenconfigWithlistval_Model_B_MultiKey_Config",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key2"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (uint64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey_Config).Key2
-			if ret == nil {
-				var zero uint64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey_Config) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[uint64]
 }
 
 // OpenconfigWithlistval_Model_B_MultiKey_ConfigPath represents the /openconfig-withlistval/model/b/multi-key/config YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKey_ConfigPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_Config]
 }
 
 // OpenconfigWithlistval_Model_B_MultiKey_ConfigPathAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key/config YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKey_ConfigPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_Config]
 }
 
 // Key1 (leaf):
@@ -3932,7 +3408,7 @@ type OpenconfigWithlistval_Model_B_MultiKey_ConfigPathAny struct {
 //	Path from parent:     "key1"
 //	Path from root:       "/model/b/multi-key/config/key1"
 func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPath) Key1() *OpenconfigWithlistval_Model_B_MultiKey_Config_Key1Path {
-	return &OpenconfigWithlistval_Model_B_MultiKey_Config_Key1Path{
+	ps := &OpenconfigWithlistval_Model_B_MultiKey_Config_Key1Path{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key1"},
 			map[string]interface{}{},
@@ -3940,6 +3416,35 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPath) Key1() *OpenconfigWi
 		),
 		parent: n,
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[uint32](
+		"OpenconfigWithlistval_Model_B_MultiKey_Config",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (uint32, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey_Config).Key1
+			if ret == nil {
+				var zero uint32
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey_Config) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Key1 (leaf):
@@ -3949,7 +3454,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPath) Key1() *OpenconfigWi
 //	Path from parent:     "key1"
 //	Path from root:       "/model/b/multi-key/config/key1"
 func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPathAny) Key1() *OpenconfigWithlistval_Model_B_MultiKey_Config_Key1PathAny {
-	return &OpenconfigWithlistval_Model_B_MultiKey_Config_Key1PathAny{
+	ps := &OpenconfigWithlistval_Model_B_MultiKey_Config_Key1PathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key1"},
 			map[string]interface{}{},
@@ -3957,6 +3462,34 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPathAny) Key1() *Openconfi
 		),
 		parent: n,
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[uint32](
+		"OpenconfigWithlistval_Model_B_MultiKey_Config",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (uint32, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey_Config).Key1
+			if ret == nil {
+				var zero uint32
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey_Config) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // Key2 (leaf):
@@ -3966,7 +3499,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPathAny) Key1() *Openconfi
 //	Path from parent:     "key2"
 //	Path from root:       "/model/b/multi-key/config/key2"
 func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPath) Key2() *OpenconfigWithlistval_Model_B_MultiKey_Config_Key2Path {
-	return &OpenconfigWithlistval_Model_B_MultiKey_Config_Key2Path{
+	ps := &OpenconfigWithlistval_Model_B_MultiKey_Config_Key2Path{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key2"},
 			map[string]interface{}{},
@@ -3974,6 +3507,35 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPath) Key2() *OpenconfigWi
 		),
 		parent: n,
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[uint64](
+		"OpenconfigWithlistval_Model_B_MultiKey_Config",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (uint64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey_Config).Key2
+			if ret == nil {
+				var zero uint64
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey_Config) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Key2 (leaf):
@@ -3983,7 +3545,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPath) Key2() *OpenconfigWi
 //	Path from parent:     "key2"
 //	Path from root:       "/model/b/multi-key/config/key2"
 func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPathAny) Key2() *OpenconfigWithlistval_Model_B_MultiKey_Config_Key2PathAny {
-	return &OpenconfigWithlistval_Model_B_MultiKey_Config_Key2PathAny{
+	ps := &OpenconfigWithlistval_Model_B_MultiKey_Config_Key2PathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key2"},
 			map[string]interface{}{},
@@ -3991,44 +3553,23 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPathAny) Key2() *Openconfi
 		),
 		parent: n,
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_Config] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_Config](
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[uint64](
 		"OpenconfigWithlistval_Model_B_MultiKey_Config",
+		true,
+		true,
+		true,
 		false,
 		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (uint64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey_Config).Key2
+			if ret == nil {
+				var zero uint64
+				return zero, false
 			}
+			return *ret, true
 		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_Config] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_Config](
-		"OpenconfigWithlistval_Model_B_MultiKey_Config",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey_Config) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -4038,198 +3579,48 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPathAny) Query() ygnmi.Wil
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigWithlistval_Model_B_MultiKey_State_Key1Path represents the /openconfig-withlistval/model/b/multi-key/state/key1 YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKey_State_Key1Path struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.SingletonQuery[uint32]
 }
 
 // OpenconfigWithlistval_Model_B_MultiKey_State_Key1PathAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key/state/key1 YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKey_State_Key1PathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key1"
-//	Path from root:       "/model/b/multi-key/state/key1"
-func (n *OpenconfigWithlistval_Model_B_MultiKey_State_Key1Path) Query() ygnmi.ConfigQuery[uint32] {
-	return ygnmi.NewConfigQuery[uint32](
-		"OpenconfigWithlistval_Model_B_MultiKey_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key1"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (uint32, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey_State).Key1
-			if ret == nil {
-				var zero uint32
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey_State) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key1"
-//	Path from root:       "/model/b/multi-key/state/key1"
-func (n *OpenconfigWithlistval_Model_B_MultiKey_State_Key1PathAny) Query() ygnmi.WildcardQuery[uint32] {
-	return ygnmi.NewWildcardQuery[uint32](
-		"OpenconfigWithlistval_Model_B_MultiKey_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key1"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (uint32, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey_State).Key1
-			if ret == nil {
-				var zero uint32
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey_State) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[uint32]
 }
 
 // OpenconfigWithlistval_Model_B_MultiKey_State_Key2Path represents the /openconfig-withlistval/model/b/multi-key/state/key2 YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKey_State_Key2Path struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.SingletonQuery[uint64]
 }
 
 // OpenconfigWithlistval_Model_B_MultiKey_State_Key2PathAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key/state/key2 YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKey_State_Key2PathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key2"
-//	Path from root:       "/model/b/multi-key/state/key2"
-func (n *OpenconfigWithlistval_Model_B_MultiKey_State_Key2Path) Query() ygnmi.ConfigQuery[uint64] {
-	return ygnmi.NewConfigQuery[uint64](
-		"OpenconfigWithlistval_Model_B_MultiKey_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key2"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (uint64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey_State).Key2
-			if ret == nil {
-				var zero uint64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey_State) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key2"
-//	Path from root:       "/model/b/multi-key/state/key2"
-func (n *OpenconfigWithlistval_Model_B_MultiKey_State_Key2PathAny) Query() ygnmi.WildcardQuery[uint64] {
-	return ygnmi.NewWildcardQuery[uint64](
-		"OpenconfigWithlistval_Model_B_MultiKey_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key2"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (uint64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey_State).Key2
-			if ret == nil {
-				var zero uint64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey_State) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[uint64]
 }
 
 // OpenconfigWithlistval_Model_B_MultiKey_StatePath represents the /openconfig-withlistval/model/b/multi-key/state YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKey_StatePath struct {
 	*ygnmi.NodePath
+	ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_State]
 }
 
 // OpenconfigWithlistval_Model_B_MultiKey_StatePathAny represents the wildcard version of the /openconfig-withlistval/model/b/multi-key/state YANG schema element.
 type OpenconfigWithlistval_Model_B_MultiKey_StatePathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_State]
 }
 
 // Key1 (leaf):
@@ -4239,7 +3630,7 @@ type OpenconfigWithlistval_Model_B_MultiKey_StatePathAny struct {
 //	Path from parent:     "key1"
 //	Path from root:       "/model/b/multi-key/state/key1"
 func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePath) Key1() *OpenconfigWithlistval_Model_B_MultiKey_State_Key1Path {
-	return &OpenconfigWithlistval_Model_B_MultiKey_State_Key1Path{
+	ps := &OpenconfigWithlistval_Model_B_MultiKey_State_Key1Path{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key1"},
 			map[string]interface{}{},
@@ -4247,6 +3638,35 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePath) Key1() *OpenconfigWit
 		),
 		parent: n,
 	}
+	ps.SingletonQuery = ygnmi.NewSingletonQuery[uint32](
+		"OpenconfigWithlistval_Model_B_MultiKey_State",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (uint32, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey_State).Key1
+			if ret == nil {
+				var zero uint32
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey_State) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Key1 (leaf):
@@ -4256,7 +3676,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePath) Key1() *OpenconfigWit
 //	Path from parent:     "key1"
 //	Path from root:       "/model/b/multi-key/state/key1"
 func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePathAny) Key1() *OpenconfigWithlistval_Model_B_MultiKey_State_Key1PathAny {
-	return &OpenconfigWithlistval_Model_B_MultiKey_State_Key1PathAny{
+	ps := &OpenconfigWithlistval_Model_B_MultiKey_State_Key1PathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key1"},
 			map[string]interface{}{},
@@ -4264,6 +3684,34 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePathAny) Key1() *Openconfig
 		),
 		parent: n,
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[uint32](
+		"OpenconfigWithlistval_Model_B_MultiKey_State",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (uint32, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey_State).Key1
+			if ret == nil {
+				var zero uint32
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey_State) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // Key2 (leaf):
@@ -4273,7 +3721,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePathAny) Key1() *Openconfig
 //	Path from parent:     "key2"
 //	Path from root:       "/model/b/multi-key/state/key2"
 func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePath) Key2() *OpenconfigWithlistval_Model_B_MultiKey_State_Key2Path {
-	return &OpenconfigWithlistval_Model_B_MultiKey_State_Key2Path{
+	ps := &OpenconfigWithlistval_Model_B_MultiKey_State_Key2Path{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key2"},
 			map[string]interface{}{},
@@ -4281,6 +3729,35 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePath) Key2() *OpenconfigWit
 		),
 		parent: n,
 	}
+	ps.SingletonQuery = ygnmi.NewSingletonQuery[uint64](
+		"OpenconfigWithlistval_Model_B_MultiKey_State",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (uint64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey_State).Key2
+			if ret == nil {
+				var zero uint64
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey_State) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Key2 (leaf):
@@ -4290,7 +3767,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePath) Key2() *OpenconfigWit
 //	Path from parent:     "key2"
 //	Path from root:       "/model/b/multi-key/state/key2"
 func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePathAny) Key2() *OpenconfigWithlistval_Model_B_MultiKey_State_Key2PathAny {
-	return &OpenconfigWithlistval_Model_B_MultiKey_State_Key2PathAny{
+	ps := &OpenconfigWithlistval_Model_B_MultiKey_State_Key2PathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key2"},
 			map[string]interface{}{},
@@ -4298,44 +3775,23 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePathAny) Key2() *Openconfig
 		),
 		parent: n,
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_State] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_State](
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[uint64](
 		"OpenconfigWithlistval_Model_B_MultiKey_State",
+		true,
+		true,
+		true,
 		false,
 		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (uint64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_B_MultiKey_State).Key2
+			if ret == nil {
+				var zero uint64
+				return zero, false
 			}
+			return *ret, true
 		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_State] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_State](
-		"OpenconfigWithlistval_Model_B_MultiKey_State",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_B_MultiKey_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -4345,16 +3801,20 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePathAny) Query() ygnmi.Wild
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigWithlistval_Model_CPath represents the /openconfig-withlistval/model/c YANG schema element.
 type OpenconfigWithlistval_Model_CPath struct {
 	*ygnmi.NodePath
+	ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_C]
 }
 
 // OpenconfigWithlistval_Model_CPathAny represents the wildcard version of the /openconfig-withlistval/model/c YANG schema element.
 type OpenconfigWithlistval_Model_CPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_C]
 }
 
 // NoKeyAny (list):
@@ -4364,13 +3824,34 @@ type OpenconfigWithlistval_Model_CPathAny struct {
 //	Path from parent:     "no-key"
 //	Path from root:       "/model/c/no-key"
 func (n *OpenconfigWithlistval_Model_CPath) NoKeyAny() *OpenconfigWithlistval_Model_C_NoKeyPathAny {
-	return &OpenconfigWithlistval_Model_C_NoKeyPathAny{
+	ps := &OpenconfigWithlistval_Model_C_NoKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"no-key"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey](
+		"OpenconfigWithlistval_Model_C_NoKey",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // NoKeyAny (list):
@@ -4380,49 +3861,21 @@ func (n *OpenconfigWithlistval_Model_CPath) NoKeyAny() *OpenconfigWithlistval_Mo
 //	Path from parent:     "no-key"
 //	Path from root:       "/model/c/no-key"
 func (n *OpenconfigWithlistval_Model_CPathAny) NoKeyAny() *OpenconfigWithlistval_Model_C_NoKeyPathAny {
-	return &OpenconfigWithlistval_Model_C_NoKeyPathAny{
+	ps := &OpenconfigWithlistval_Model_C_NoKeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"no-key"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_CPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_C] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_C](
-		"OpenconfigWithlistval_Model_C",
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey](
+		"OpenconfigWithlistval_Model_C_NoKey",
+		true,
 		false,
 		false,
 		false,
 		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_CPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_C] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_C](
-		"OpenconfigWithlistval_Model_C",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
+		ps,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -4434,73 +3887,32 @@ func (n *OpenconfigWithlistval_Model_CPathAny) Query() ygnmi.WildcardQuery[*oc.O
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigWithlistval_Model_C_NoKeyPath represents the /openconfig-withlistval/model/c/no-key YANG schema element.
 type OpenconfigWithlistval_Model_C_NoKeyPath struct {
 	*ygnmi.NodePath
+	ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_C_NoKey]
 }
 
 // OpenconfigWithlistval_Model_C_NoKeyPathAny represents the wildcard version of the /openconfig-withlistval/model/c/no-key YANG schema element.
 type OpenconfigWithlistval_Model_C_NoKeyPathAny struct {
 	*ygnmi.NodePath
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_C_NoKeyPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_C_NoKey] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_C_NoKey](
-		"OpenconfigWithlistval_Model_C_NoKey",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_C_NoKeyPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey](
-		"OpenconfigWithlistval_Model_C_NoKey",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey]
 }
 
 // OpenconfigWithlistval_Model_C_NoKey_FooPath represents the /openconfig-withlistval/model/c/no-key/foo YANG schema element.
 type OpenconfigWithlistval_Model_C_NoKey_FooPath struct {
 	*ygnmi.NodePath
+	ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo]
 }
 
 // OpenconfigWithlistval_Model_C_NoKey_FooPathAny represents the wildcard version of the /openconfig-withlistval/model/c/no-key/foo YANG schema element.
 type OpenconfigWithlistval_Model_C_NoKey_FooPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo]
 }
 
 // State (container):
@@ -4510,13 +3922,35 @@ type OpenconfigWithlistval_Model_C_NoKey_FooPathAny struct {
 //	Path from parent:     "state"
 //	Path from root:       "/model/c/no-key/foo/state"
 func (n *OpenconfigWithlistval_Model_C_NoKey_FooPath) State() *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath {
-	return &OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath{
+	ps := &OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.SingletonQuery = ygnmi.NewSingletonQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State](
+		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // State (container):
@@ -4526,49 +3960,21 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_FooPath) State() *OpenconfigWithlis
 //	Path from parent:     "state"
 //	Path from root:       "/model/c/no-key/foo/state"
 func (n *OpenconfigWithlistval_Model_C_NoKey_FooPathAny) State() *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny {
-	return &OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny{
+	ps := &OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_C_NoKey_FooPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo](
-		"OpenconfigWithlistval_Model_C_NoKey_Foo",
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State](
+		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
+		true,
 		false,
 		false,
 		false,
 		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_C_NoKey_FooPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo](
-		"OpenconfigWithlistval_Model_C_NoKey_Foo",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
+		ps,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -4580,198 +3986,48 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_FooPathAny) Query() ygnmi.WildcardQ
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigWithlistval_Model_C_NoKey_Foo_State_KeyPath represents the /openconfig-withlistval/model/c/no-key/foo/state/key YANG schema element.
 type OpenconfigWithlistval_Model_C_NoKey_Foo_State_KeyPath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.SingletonQuery[string]
 }
 
 // OpenconfigWithlistval_Model_C_NoKey_Foo_State_KeyPathAny represents the wildcard version of the /openconfig-withlistval/model/c/no-key/foo/state/key YANG schema element.
 type OpenconfigWithlistval_Model_C_NoKey_Foo_State_KeyPathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key"
-//	Path from root:       "/model/c/no-key/foo/state/key"
-func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_State_KeyPath) Query() ygnmi.ConfigQuery[string] {
-	return ygnmi.NewConfigQuery[string](
-		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State).Key
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "key"
-//	Path from root:       "/model/c/no-key/foo/state/key"
-func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_State_KeyPathAny) Query() ygnmi.WildcardQuery[string] {
-	return ygnmi.NewWildcardQuery[string](
-		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"key"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State).Key
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[string]
 }
 
 // OpenconfigWithlistval_Model_C_NoKey_Foo_State_ValuePath represents the /openconfig-withlistval/model/c/no-key/foo/state/value YANG schema element.
 type OpenconfigWithlistval_Model_C_NoKey_Foo_State_ValuePath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.SingletonQuery[int64]
 }
 
 // OpenconfigWithlistval_Model_C_NoKey_Foo_State_ValuePathAny represents the wildcard version of the /openconfig-withlistval/model/c/no-key/foo/state/value YANG schema element.
 type OpenconfigWithlistval_Model_C_NoKey_Foo_State_ValuePathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "value"
-//	Path from root:       "/model/c/no-key/foo/state/value"
-func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_State_ValuePath) Query() ygnmi.ConfigQuery[int64] {
-	return ygnmi.NewConfigQuery[int64](
-		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"value"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (int64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State).Value
-			if ret == nil {
-				var zero int64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-withlistval"
-//	Instantiating module: "openconfig-withlistval"
-//	Path from parent:     "value"
-//	Path from root:       "/model/c/no-key/foo/state/value"
-func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_State_ValuePathAny) Query() ygnmi.WildcardQuery[int64] {
-	return ygnmi.NewWildcardQuery[int64](
-		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"value"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (int64, bool) {
-			ret := gs.(*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State).Value
-			if ret == nil {
-				var zero int64
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[int64]
 }
 
 // OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath represents the /openconfig-withlistval/model/c/no-key/foo/state YANG schema element.
 type OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath struct {
 	*ygnmi.NodePath
+	ygnmi.SingletonQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State]
 }
 
 // OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny represents the wildcard version of the /openconfig-withlistval/model/c/no-key/foo/state YANG schema element.
 type OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State]
 }
 
 // Key (leaf):
@@ -4781,7 +4037,7 @@ type OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny struct {
 //	Path from parent:     "key"
 //	Path from root:       "/model/c/no-key/foo/state/key"
 func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath) Key() *OpenconfigWithlistval_Model_C_NoKey_Foo_State_KeyPath {
-	return &OpenconfigWithlistval_Model_C_NoKey_Foo_State_KeyPath{
+	ps := &OpenconfigWithlistval_Model_C_NoKey_Foo_State_KeyPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key"},
 			map[string]interface{}{},
@@ -4789,6 +4045,35 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath) Key() *OpenconfigWit
 		),
 		parent: n,
 	}
+	ps.SingletonQuery = ygnmi.NewSingletonQuery[string](
+		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Key (leaf):
@@ -4798,7 +4083,7 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath) Key() *OpenconfigWit
 //	Path from parent:     "key"
 //	Path from root:       "/model/c/no-key/foo/state/key"
 func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny) Key() *OpenconfigWithlistval_Model_C_NoKey_Foo_State_KeyPathAny {
-	return &OpenconfigWithlistval_Model_C_NoKey_Foo_State_KeyPathAny{
+	ps := &OpenconfigWithlistval_Model_C_NoKey_Foo_State_KeyPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key"},
 			map[string]interface{}{},
@@ -4806,6 +4091,34 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny) Key() *Openconfig
 		),
 		parent: n,
 	}
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[string](
+		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+	)
+
+	return ps
 }
 
 // Value (leaf):
@@ -4815,7 +4128,7 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny) Key() *Openconfig
 //	Path from parent:     "value"
 //	Path from root:       "/model/c/no-key/foo/state/value"
 func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath) Value() *OpenconfigWithlistval_Model_C_NoKey_Foo_State_ValuePath {
-	return &OpenconfigWithlistval_Model_C_NoKey_Foo_State_ValuePath{
+	ps := &OpenconfigWithlistval_Model_C_NoKey_Foo_State_ValuePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"value"},
 			map[string]interface{}{},
@@ -4823,6 +4136,35 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath) Value() *OpenconfigW
 		),
 		parent: n,
 	}
+	ps.SingletonQuery = ygnmi.NewSingletonQuery[int64](
+		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (int64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State).Value
+			if ret == nil {
+				var zero int64
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Value (leaf):
@@ -4832,7 +4174,7 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath) Value() *OpenconfigW
 //	Path from parent:     "value"
 //	Path from root:       "/model/c/no-key/foo/state/value"
 func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny) Value() *OpenconfigWithlistval_Model_C_NoKey_Foo_State_ValuePathAny {
-	return &OpenconfigWithlistval_Model_C_NoKey_Foo_State_ValuePathAny{
+	ps := &OpenconfigWithlistval_Model_C_NoKey_Foo_State_ValuePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"value"},
 			map[string]interface{}{},
@@ -4840,44 +4182,23 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny) Value() *Openconf
 		),
 		parent: n,
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath) Query() ygnmi.ConfigQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State](
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[int64](
 		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
+		true,
+		true,
+		true,
 		false,
 		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (int64, bool) {
+			ret := gs.(*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State).Value
+			if ret == nil {
+				var zero int64
+				return zero, false
 			}
+			return *ret, true
 		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State](
-		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -4887,4 +4208,6 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny) Query() ygnmi.Wil
 		},
 		nil,
 	)
+
+	return ps
 }

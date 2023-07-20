@@ -516,7 +516,7 @@ func (n *Root) Config() ygnmi.ConfigQuery[*oc.Root] {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			got, err := GNMIGenerator(tt.pathStructName, tt.dir, tt.node, true)
+			got, err := GNMIGenerator(tt.pathStructName, tt.dir, tt.node, true, false)
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
 				t.Fatalf("GNMIGenerator(%q, %v, %v) returned unexpected error diff: %s", tt.pathStructName, tt.dir, tt.node, diff)
 			}

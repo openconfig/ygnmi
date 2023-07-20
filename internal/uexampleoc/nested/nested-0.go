@@ -36,11 +36,13 @@ import (
 // OpenconfigNested_APath represents the /openconfig-nested/a YANG schema element.
 type OpenconfigNested_APath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigNested_A]
 }
 
 // OpenconfigNested_APathAny represents the wildcard version of the /openconfig-nested/a YANG schema element.
 type OpenconfigNested_APathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigNested_A]
 }
 
 // B (container):
@@ -50,13 +52,35 @@ type OpenconfigNested_APathAny struct {
 //	Path from parent:     "b"
 //	Path from root:       "/a/b"
 func (n *OpenconfigNested_APath) B() *OpenconfigNested_A_BPath {
-	return &OpenconfigNested_A_BPath{
+	ps := &OpenconfigNested_A_BPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B](
+		"OpenconfigNested_A_B",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // B (container):
@@ -66,57 +90,21 @@ func (n *OpenconfigNested_APath) B() *OpenconfigNested_A_BPath {
 //	Path from parent:     "b"
 //	Path from root:       "/a/b"
 func (n *OpenconfigNested_APathAny) B() *OpenconfigNested_A_BPathAny {
-	return &OpenconfigNested_A_BPathAny{
+	ps := &OpenconfigNested_A_BPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-func binarySliceToFloatSlice(in []oc.Binary) []float32 {
-	converted := make([]float32, 0, len(in))
-	for _, binary := range in {
-		converted = append(converted, ygot.BinaryToFloat32(binary))
-	}
-	return converted
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_APath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A](
-		"OpenconfigNested_A",
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B](
+		"OpenconfigNested_A_B",
+		true,
 		false,
 		false,
 		false,
 		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_APathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A](
-		"OpenconfigNested_A",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
+		ps,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -128,16 +116,20 @@ func (n *OpenconfigNested_APathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNe
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigNested_A_BPath represents the /openconfig-nested/a/b YANG schema element.
 type OpenconfigNested_A_BPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B]
 }
 
 // OpenconfigNested_A_BPathAny represents the wildcard version of the /openconfig-nested/a/b YANG schema element.
 type OpenconfigNested_A_BPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B]
 }
 
 // C (container):
@@ -147,13 +139,35 @@ type OpenconfigNested_A_BPathAny struct {
 //	Path from parent:     "c"
 //	Path from root:       "/a/b/c"
 func (n *OpenconfigNested_A_BPath) C() *OpenconfigNested_A_B_CPath {
-	return &OpenconfigNested_A_B_CPath{
+	ps := &OpenconfigNested_A_B_CPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"c"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C](
+		"OpenconfigNested_A_B_C",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // C (container):
@@ -163,49 +177,21 @@ func (n *OpenconfigNested_A_BPath) C() *OpenconfigNested_A_B_CPath {
 //	Path from parent:     "c"
 //	Path from root:       "/a/b/c"
 func (n *OpenconfigNested_A_BPathAny) C() *OpenconfigNested_A_B_CPathAny {
-	return &OpenconfigNested_A_B_CPathAny{
+	ps := &OpenconfigNested_A_B_CPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"c"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_BPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B](
-		"OpenconfigNested_A_B",
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C](
+		"OpenconfigNested_A_B_C",
+		true,
 		false,
 		false,
 		false,
 		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_BPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B](
-		"OpenconfigNested_A_B",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
+		ps,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -217,16 +203,20 @@ func (n *OpenconfigNested_A_BPathAny) Query() ygnmi.WildcardQuery[*oc.Openconfig
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigNested_A_B_CPath represents the /openconfig-nested/a/b/c YANG schema element.
 type OpenconfigNested_A_B_CPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C]
 }
 
 // OpenconfigNested_A_B_CPathAny represents the wildcard version of the /openconfig-nested/a/b/c YANG schema element.
 type OpenconfigNested_A_B_CPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C]
 }
 
 // D (container):
@@ -236,13 +226,35 @@ type OpenconfigNested_A_B_CPathAny struct {
 //	Path from parent:     "d"
 //	Path from root:       "/a/b/c/d"
 func (n *OpenconfigNested_A_B_CPath) D() *OpenconfigNested_A_B_C_DPath {
-	return &OpenconfigNested_A_B_C_DPath{
+	ps := &OpenconfigNested_A_B_C_DPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"d"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D](
+		"OpenconfigNested_A_B_C_D",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // D (container):
@@ -252,49 +264,21 @@ func (n *OpenconfigNested_A_B_CPath) D() *OpenconfigNested_A_B_C_DPath {
 //	Path from parent:     "d"
 //	Path from root:       "/a/b/c/d"
 func (n *OpenconfigNested_A_B_CPathAny) D() *OpenconfigNested_A_B_C_DPathAny {
-	return &OpenconfigNested_A_B_C_DPathAny{
+	ps := &OpenconfigNested_A_B_C_DPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"d"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_CPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C](
-		"OpenconfigNested_A_B_C",
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D](
+		"OpenconfigNested_A_B_C_D",
+		true,
 		false,
 		false,
 		false,
 		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_CPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C](
-		"OpenconfigNested_A_B_C",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
+		ps,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -306,16 +290,20 @@ func (n *OpenconfigNested_A_B_CPathAny) Query() ygnmi.WildcardQuery[*oc.Openconf
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigNested_A_B_C_DPath represents the /openconfig-nested/a/b/c/d YANG schema element.
 type OpenconfigNested_A_B_C_DPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D]
 }
 
 // OpenconfigNested_A_B_C_DPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d YANG schema element.
 type OpenconfigNested_A_B_C_DPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D]
 }
 
 // E (container):
@@ -325,13 +313,35 @@ type OpenconfigNested_A_B_C_DPathAny struct {
 //	Path from parent:     "e"
 //	Path from root:       "/a/b/c/d/e"
 func (n *OpenconfigNested_A_B_C_DPath) E() *OpenconfigNested_A_B_C_D_EPath {
-	return &OpenconfigNested_A_B_C_D_EPath{
+	ps := &OpenconfigNested_A_B_C_D_EPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"e"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E](
+		"OpenconfigNested_A_B_C_D_E",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // E (container):
@@ -341,49 +351,21 @@ func (n *OpenconfigNested_A_B_C_DPath) E() *OpenconfigNested_A_B_C_D_EPath {
 //	Path from parent:     "e"
 //	Path from root:       "/a/b/c/d/e"
 func (n *OpenconfigNested_A_B_C_DPathAny) E() *OpenconfigNested_A_B_C_D_EPathAny {
-	return &OpenconfigNested_A_B_C_D_EPathAny{
+	ps := &OpenconfigNested_A_B_C_D_EPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"e"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_DPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D](
-		"OpenconfigNested_A_B_C_D",
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E](
+		"OpenconfigNested_A_B_C_D_E",
+		true,
 		false,
 		false,
 		false,
 		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_DPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D](
-		"OpenconfigNested_A_B_C_D",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
+		ps,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -395,16 +377,20 @@ func (n *OpenconfigNested_A_B_C_DPathAny) Query() ygnmi.WildcardQuery[*oc.Openco
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigNested_A_B_C_D_EPath represents the /openconfig-nested/a/b/c/d/e YANG schema element.
 type OpenconfigNested_A_B_C_D_EPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E]
 }
 
 // OpenconfigNested_A_B_C_D_EPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e YANG schema element.
 type OpenconfigNested_A_B_C_D_EPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E]
 }
 
 // F (container):
@@ -414,13 +400,35 @@ type OpenconfigNested_A_B_C_D_EPathAny struct {
 //	Path from parent:     "f"
 //	Path from root:       "/a/b/c/d/e/f"
 func (n *OpenconfigNested_A_B_C_D_EPath) F() *OpenconfigNested_A_B_C_D_E_FPath {
-	return &OpenconfigNested_A_B_C_D_E_FPath{
+	ps := &OpenconfigNested_A_B_C_D_E_FPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"f"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F](
+		"OpenconfigNested_A_B_C_D_E_F",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // F (container):
@@ -430,49 +438,21 @@ func (n *OpenconfigNested_A_B_C_D_EPath) F() *OpenconfigNested_A_B_C_D_E_FPath {
 //	Path from parent:     "f"
 //	Path from root:       "/a/b/c/d/e/f"
 func (n *OpenconfigNested_A_B_C_D_EPathAny) F() *OpenconfigNested_A_B_C_D_E_FPathAny {
-	return &OpenconfigNested_A_B_C_D_E_FPathAny{
+	ps := &OpenconfigNested_A_B_C_D_E_FPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"f"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_EPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E](
-		"OpenconfigNested_A_B_C_D_E",
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F](
+		"OpenconfigNested_A_B_C_D_E_F",
+		true,
 		false,
 		false,
 		false,
 		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_EPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E](
-		"OpenconfigNested_A_B_C_D_E",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
+		ps,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -484,16 +464,20 @@ func (n *OpenconfigNested_A_B_C_D_EPathAny) Query() ygnmi.WildcardQuery[*oc.Open
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigNested_A_B_C_D_E_FPath represents the /openconfig-nested/a/b/c/d/e/f YANG schema element.
 type OpenconfigNested_A_B_C_D_E_FPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F]
 }
 
 // OpenconfigNested_A_B_C_D_E_FPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f YANG schema element.
 type OpenconfigNested_A_B_C_D_E_FPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F]
 }
 
 // G (container):
@@ -503,13 +487,35 @@ type OpenconfigNested_A_B_C_D_E_FPathAny struct {
 //	Path from parent:     "g"
 //	Path from root:       "/a/b/c/d/e/f/g"
 func (n *OpenconfigNested_A_B_C_D_E_FPath) G() *OpenconfigNested_A_B_C_D_E_F_GPath {
-	return &OpenconfigNested_A_B_C_D_E_F_GPath{
+	ps := &OpenconfigNested_A_B_C_D_E_F_GPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"g"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G](
+		"OpenconfigNested_A_B_C_D_E_F_G",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // G (container):
@@ -519,49 +525,21 @@ func (n *OpenconfigNested_A_B_C_D_E_FPath) G() *OpenconfigNested_A_B_C_D_E_F_GPa
 //	Path from parent:     "g"
 //	Path from root:       "/a/b/c/d/e/f/g"
 func (n *OpenconfigNested_A_B_C_D_E_FPathAny) G() *OpenconfigNested_A_B_C_D_E_F_GPathAny {
-	return &OpenconfigNested_A_B_C_D_E_F_GPathAny{
+	ps := &OpenconfigNested_A_B_C_D_E_F_GPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"g"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_FPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F](
-		"OpenconfigNested_A_B_C_D_E_F",
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G](
+		"OpenconfigNested_A_B_C_D_E_F_G",
+		true,
 		false,
 		false,
 		false,
 		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_FPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F](
-		"OpenconfigNested_A_B_C_D_E_F",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
+		ps,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -573,16 +551,20 @@ func (n *OpenconfigNested_A_B_C_D_E_FPathAny) Query() ygnmi.WildcardQuery[*oc.Op
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigNested_A_B_C_D_E_F_GPath represents the /openconfig-nested/a/b/c/d/e/f/g YANG schema element.
 type OpenconfigNested_A_B_C_D_E_F_GPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G]
 }
 
 // OpenconfigNested_A_B_C_D_E_F_GPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g YANG schema element.
 type OpenconfigNested_A_B_C_D_E_F_GPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G]
 }
 
 // H (container):
@@ -592,13 +574,35 @@ type OpenconfigNested_A_B_C_D_E_F_GPathAny struct {
 //	Path from parent:     "h"
 //	Path from root:       "/a/b/c/d/e/f/g/h"
 func (n *OpenconfigNested_A_B_C_D_E_F_GPath) H() *OpenconfigNested_A_B_C_D_E_F_G_HPath {
-	return &OpenconfigNested_A_B_C_D_E_F_G_HPath{
+	ps := &OpenconfigNested_A_B_C_D_E_F_G_HPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"h"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H](
+		"OpenconfigNested_A_B_C_D_E_F_G_H",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // H (container):
@@ -608,49 +612,21 @@ func (n *OpenconfigNested_A_B_C_D_E_F_GPath) H() *OpenconfigNested_A_B_C_D_E_F_G
 //	Path from parent:     "h"
 //	Path from root:       "/a/b/c/d/e/f/g/h"
 func (n *OpenconfigNested_A_B_C_D_E_F_GPathAny) H() *OpenconfigNested_A_B_C_D_E_F_G_HPathAny {
-	return &OpenconfigNested_A_B_C_D_E_F_G_HPathAny{
+	ps := &OpenconfigNested_A_B_C_D_E_F_G_HPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"h"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_GPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G](
-		"OpenconfigNested_A_B_C_D_E_F_G",
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H](
+		"OpenconfigNested_A_B_C_D_E_F_G_H",
+		true,
 		false,
 		false,
 		false,
 		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_GPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G](
-		"OpenconfigNested_A_B_C_D_E_F_G",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
+		ps,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -662,16 +638,20 @@ func (n *OpenconfigNested_A_B_C_D_E_F_GPathAny) Query() ygnmi.WildcardQuery[*oc.
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigNested_A_B_C_D_E_F_G_HPath represents the /openconfig-nested/a/b/c/d/e/f/g/h YANG schema element.
 type OpenconfigNested_A_B_C_D_E_F_G_HPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H]
 }
 
 // OpenconfigNested_A_B_C_D_E_F_G_HPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h YANG schema element.
 type OpenconfigNested_A_B_C_D_E_F_G_HPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H]
 }
 
 // I (container):
@@ -681,13 +661,35 @@ type OpenconfigNested_A_B_C_D_E_F_G_HPathAny struct {
 //	Path from parent:     "i"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i"
 func (n *OpenconfigNested_A_B_C_D_E_F_G_HPath) I() *OpenconfigNested_A_B_C_D_E_F_G_H_IPath {
-	return &OpenconfigNested_A_B_C_D_E_F_G_H_IPath{
+	ps := &OpenconfigNested_A_B_C_D_E_F_G_H_IPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"i"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I](
+		"OpenconfigNested_A_B_C_D_E_F_G_H_I",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // I (container):
@@ -697,49 +699,21 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_HPath) I() *OpenconfigNested_A_B_C_D_E_F
 //	Path from parent:     "i"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i"
 func (n *OpenconfigNested_A_B_C_D_E_F_G_HPathAny) I() *OpenconfigNested_A_B_C_D_E_F_G_H_IPathAny {
-	return &OpenconfigNested_A_B_C_D_E_F_G_H_IPathAny{
+	ps := &OpenconfigNested_A_B_C_D_E_F_G_H_IPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"i"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_HPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H](
-		"OpenconfigNested_A_B_C_D_E_F_G_H",
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I](
+		"OpenconfigNested_A_B_C_D_E_F_G_H_I",
+		true,
 		false,
 		false,
 		false,
 		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_HPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H](
-		"OpenconfigNested_A_B_C_D_E_F_G_H",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
+		ps,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -751,16 +725,20 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_HPathAny) Query() ygnmi.WildcardQuery[*o
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigNested_A_B_C_D_E_F_G_H_IPath represents the /openconfig-nested/a/b/c/d/e/f/g/h/i YANG schema element.
 type OpenconfigNested_A_B_C_D_E_F_G_H_IPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I]
 }
 
 // OpenconfigNested_A_B_C_D_E_F_G_H_IPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h/i YANG schema element.
 type OpenconfigNested_A_B_C_D_E_F_G_H_IPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I]
 }
 
 // J (container):
@@ -770,13 +748,35 @@ type OpenconfigNested_A_B_C_D_E_F_G_H_IPathAny struct {
 //	Path from parent:     "j"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j"
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_IPath) J() *OpenconfigNested_A_B_C_D_E_F_G_H_I_JPath {
-	return &OpenconfigNested_A_B_C_D_E_F_G_H_I_JPath{
+	ps := &OpenconfigNested_A_B_C_D_E_F_G_H_I_JPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"j"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J](
+		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // J (container):
@@ -786,49 +786,21 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_IPath) J() *OpenconfigNested_A_B_C_D_E
 //	Path from parent:     "j"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j"
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_IPathAny) J() *OpenconfigNested_A_B_C_D_E_F_G_H_I_JPathAny {
-	return &OpenconfigNested_A_B_C_D_E_F_G_H_I_JPathAny{
+	ps := &OpenconfigNested_A_B_C_D_E_F_G_H_I_JPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"j"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_IPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I](
-		"OpenconfigNested_A_B_C_D_E_F_G_H_I",
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J](
+		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J",
+		true,
 		false,
 		false,
 		false,
 		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_IPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I](
-		"OpenconfigNested_A_B_C_D_E_F_G_H_I",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
+		ps,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -840,16 +812,20 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_IPathAny) Query() ygnmi.WildcardQuery[
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigNested_A_B_C_D_E_F_G_H_I_JPath represents the /openconfig-nested/a/b/c/d/e/f/g/h/i/j YANG schema element.
 type OpenconfigNested_A_B_C_D_E_F_G_H_I_JPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J]
 }
 
 // OpenconfigNested_A_B_C_D_E_F_G_H_I_JPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h/i/j YANG schema element.
 type OpenconfigNested_A_B_C_D_E_F_G_H_I_JPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J]
 }
 
 // K (container):
@@ -859,13 +835,35 @@ type OpenconfigNested_A_B_C_D_E_F_G_H_I_JPathAny struct {
 //	Path from parent:     "k"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k"
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_JPath) K() *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPath {
-	return &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPath{
+	ps := &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"k"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K](
+		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // K (container):
@@ -875,49 +873,21 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_JPath) K() *OpenconfigNested_A_B_C_D
 //	Path from parent:     "k"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k"
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_JPathAny) K() *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPathAny {
-	return &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPathAny{
+	ps := &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"k"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_JPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J](
-		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J",
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K](
+		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K",
+		true,
 		false,
 		false,
 		false,
 		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_JPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J](
-		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
+		ps,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -929,16 +899,20 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_JPathAny) Query() ygnmi.WildcardQuer
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPath represents the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k YANG schema element.
 type OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K]
 }
 
 // OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k YANG schema element.
 type OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K]
 }
 
 // L (container):
@@ -948,13 +922,35 @@ type OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPathAny struct {
 //	Path from parent:     "l"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l"
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPath) L() *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPath {
-	return &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPath{
+	ps := &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"l"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L](
+		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // L (container):
@@ -964,49 +960,21 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPath) L() *OpenconfigNested_A_B_C
 //	Path from parent:     "l"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l"
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPathAny) L() *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPathAny {
-	return &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPathAny{
+	ps := &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"l"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K](
-		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K",
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L](
+		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L",
+		true,
 		false,
 		false,
 		false,
 		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K](
-		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
+		ps,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -1018,16 +986,20 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPathAny) Query() ygnmi.WildcardQu
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPath represents the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l YANG schema element.
 type OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L]
 }
 
 // OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l YANG schema element.
 type OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L]
 }
 
 // M (container):
@@ -1037,13 +1009,35 @@ type OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPathAny struct {
 //	Path from parent:     "m"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m"
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPath) M() *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPath {
-	return &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPath{
+	ps := &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"m"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M](
+		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // M (container):
@@ -1053,49 +1047,21 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPath) M() *OpenconfigNested_A_B
 //	Path from parent:     "m"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m"
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPathAny) M() *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPathAny {
-	return &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPathAny{
+	ps := &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"m"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L](
-		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L",
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M](
+		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M",
+		true,
 		false,
 		false,
 		false,
 		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L](
-		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
+		ps,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -1107,16 +1073,20 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPathAny) Query() ygnmi.Wildcard
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPath represents the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m YANG schema element.
 type OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M]
 }
 
 // OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m YANG schema element.
 type OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M]
 }
 
 // State (container):
@@ -1126,13 +1096,35 @@ type OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPathAny struct {
 //	Path from parent:     "state"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m/state"
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPath) State() *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePath {
-	return &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePath{
+	ps := &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.SingletonQuery = ygnmi.NewSingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State](
+		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // State (container):
@@ -1142,49 +1134,21 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPath) State() *OpenconfigNest
 //	Path from parent:     "state"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m/state"
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) State() *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePathAny {
-	return &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePathAny{
+	ps := &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M](
-		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M",
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State](
+		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State",
+		true,
 		false,
 		false,
 		false,
 		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M](
-		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
+		ps,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -1196,107 +1160,34 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Query() ygnmi.Wildca
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State_FooPath represents the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo YANG schema element.
 type OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State_FooPath struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
+	ygnmi.SingletonQuery[string]
 }
 
 // OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State_FooPathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo YANG schema element.
 type OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State_FooPathAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-nested"
-//	Instantiating module: "openconfig-nested"
-//	Path from parent:     "foo"
-//	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State_FooPath) Query() ygnmi.ConfigQuery[string] {
-	return ygnmi.NewConfigQuery[string](
-		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"foo"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State).Foo
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-//
-//	Defining module:      "openconfig-nested"
-//	Instantiating module: "openconfig-nested"
-//	Path from parent:     "foo"
-//	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State_FooPathAny) Query() ygnmi.WildcardQuery[string] {
-	return ygnmi.NewWildcardQuery[string](
-		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State",
-		false,
-		true,
-		true,
-		false,
-		false,
-		ygnmi.NewNodePath(
-			[]string{"foo"},
-			nil,
-			n.parent,
-		),
-		func(gs ygot.ValidatedGoStruct) (string, bool) {
-			ret := gs.(*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State).Foo
-			if ret == nil {
-				var zero string
-				return zero, false
-			}
-			return *ret, true
-		},
-		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State) },
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[string]
 }
 
 // OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePath represents the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m/state YANG schema element.
 type OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePath struct {
 	*ygnmi.NodePath
+	ygnmi.SingletonQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State]
 }
 
 // OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePathAny represents the wildcard version of the /openconfig-nested/a/b/c/d/e/f/g/h/i/j/k/l/m/state YANG schema element.
 type OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePathAny struct {
 	*ygnmi.NodePath
+	ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State]
 }
 
 // Foo (leaf):
@@ -1306,7 +1197,7 @@ type OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePathAny struct {
 //	Path from parent:     "foo"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePath) Foo() *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State_FooPath {
-	return &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State_FooPath{
+	ps := &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State_FooPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"foo"},
 			map[string]interface{}{},
@@ -1314,6 +1205,35 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePath) Foo() *Openconfig
 		),
 		parent: n,
 	}
+	ps.SingletonQuery = ygnmi.NewSingletonQuery[string](
+		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State",
+		true,
+		true,
+		true,
+		false,
+		false,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State).Foo
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Foo (leaf):
@@ -1323,7 +1243,7 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePath) Foo() *Openconfig
 //	Path from parent:     "foo"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"
 func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePathAny) Foo() *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State_FooPathAny {
-	return &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State_FooPathAny{
+	ps := &OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State_FooPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"foo"},
 			map[string]interface{}{},
@@ -1331,44 +1251,23 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePathAny) Foo() *Opencon
 		),
 		parent: n,
 	}
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State](
+	ps.WildcardQuery = ygnmi.NewWildcardQuery[string](
 		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State",
+		true,
+		true,
+		true,
 		false,
 		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
+		ps,
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State).Foo
+			if ret == nil {
+				var zero string
+				return zero, false
 			}
+			return *ret, true
 		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State](
-		"OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
+		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
 				Root:       &oc.Root{},
@@ -1378,61 +1277,18 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePathAny) Query() ygnmi.
 		},
 		nil,
 	)
+
+	return ps
 }
 
 // OpenconfigNested_ContainerPath represents the /openconfig-nested/container YANG schema element.
 type OpenconfigNested_ContainerPath struct {
 	*ygnmi.NodePath
+	ygnmi.ConfigQuery[*oc.OpenconfigNested_Container]
 }
 
 // OpenconfigNested_ContainerPathAny represents the wildcard version of the /openconfig-nested/container YANG schema element.
 type OpenconfigNested_ContainerPathAny struct {
 	*ygnmi.NodePath
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_ContainerPath) Query() ygnmi.ConfigQuery[*oc.OpenconfigNested_Container] {
-	return ygnmi.NewConfigQuery[*oc.OpenconfigNested_Container](
-		"OpenconfigNested_Container",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-		nil,
-	)
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *OpenconfigNested_ContainerPathAny) Query() ygnmi.WildcardQuery[*oc.OpenconfigNested_Container] {
-	return ygnmi.NewWildcardQuery[*oc.OpenconfigNested_Container](
-		"OpenconfigNested_Container",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		nil,
-	)
+	ygnmi.WildcardQuery[*oc.OpenconfigNested_Container]
 }

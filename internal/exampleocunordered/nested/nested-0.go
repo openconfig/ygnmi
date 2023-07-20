@@ -50,13 +50,14 @@ type APathAny struct {
 //	Path from parent:     "b"
 //	Path from root:       "/a/b"
 func (n *APath) B() *A_BPath {
-	return &A_BPath{
+	ps := &A_BPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // B (container):
@@ -66,13 +67,14 @@ func (n *APath) B() *A_BPath {
 //	Path from parent:     "b"
 //	Path from root:       "/a/b"
 func (n *APathAny) B() *A_BPathAny {
-	return &A_BPathAny{
+	ps := &A_BPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 func binarySliceToFloatSlice(in []oc.Binary) []float32 {
@@ -194,13 +196,14 @@ type A_BPathAny struct {
 //	Path from parent:     "c"
 //	Path from root:       "/a/b/c"
 func (n *A_BPath) C() *A_B_CPath {
-	return &A_B_CPath{
+	ps := &A_B_CPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"c"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // C (container):
@@ -210,13 +213,14 @@ func (n *A_BPath) C() *A_B_CPath {
 //	Path from parent:     "c"
 //	Path from root:       "/a/b/c"
 func (n *A_BPathAny) C() *A_B_CPathAny {
-	return &A_B_CPathAny{
+	ps := &A_B_CPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"c"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -330,13 +334,14 @@ type A_B_CPathAny struct {
 //	Path from parent:     "d"
 //	Path from root:       "/a/b/c/d"
 func (n *A_B_CPath) D() *A_B_C_DPath {
-	return &A_B_C_DPath{
+	ps := &A_B_C_DPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"d"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // D (container):
@@ -346,13 +351,14 @@ func (n *A_B_CPath) D() *A_B_C_DPath {
 //	Path from parent:     "d"
 //	Path from root:       "/a/b/c/d"
 func (n *A_B_CPathAny) D() *A_B_C_DPathAny {
-	return &A_B_C_DPathAny{
+	ps := &A_B_C_DPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"d"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -466,13 +472,14 @@ type A_B_C_DPathAny struct {
 //	Path from parent:     "e"
 //	Path from root:       "/a/b/c/d/e"
 func (n *A_B_C_DPath) E() *A_B_C_D_EPath {
-	return &A_B_C_D_EPath{
+	ps := &A_B_C_D_EPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"e"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // E (container):
@@ -482,13 +489,14 @@ func (n *A_B_C_DPath) E() *A_B_C_D_EPath {
 //	Path from parent:     "e"
 //	Path from root:       "/a/b/c/d/e"
 func (n *A_B_C_DPathAny) E() *A_B_C_D_EPathAny {
-	return &A_B_C_D_EPathAny{
+	ps := &A_B_C_D_EPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"e"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -602,13 +610,14 @@ type A_B_C_D_EPathAny struct {
 //	Path from parent:     "f"
 //	Path from root:       "/a/b/c/d/e/f"
 func (n *A_B_C_D_EPath) F() *A_B_C_D_E_FPath {
-	return &A_B_C_D_E_FPath{
+	ps := &A_B_C_D_E_FPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"f"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // F (container):
@@ -618,13 +627,14 @@ func (n *A_B_C_D_EPath) F() *A_B_C_D_E_FPath {
 //	Path from parent:     "f"
 //	Path from root:       "/a/b/c/d/e/f"
 func (n *A_B_C_D_EPathAny) F() *A_B_C_D_E_FPathAny {
-	return &A_B_C_D_E_FPathAny{
+	ps := &A_B_C_D_E_FPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"f"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -738,13 +748,14 @@ type A_B_C_D_E_FPathAny struct {
 //	Path from parent:     "g"
 //	Path from root:       "/a/b/c/d/e/f/g"
 func (n *A_B_C_D_E_FPath) G() *A_B_C_D_E_F_GPath {
-	return &A_B_C_D_E_F_GPath{
+	ps := &A_B_C_D_E_F_GPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"g"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // G (container):
@@ -754,13 +765,14 @@ func (n *A_B_C_D_E_FPath) G() *A_B_C_D_E_F_GPath {
 //	Path from parent:     "g"
 //	Path from root:       "/a/b/c/d/e/f/g"
 func (n *A_B_C_D_E_FPathAny) G() *A_B_C_D_E_F_GPathAny {
-	return &A_B_C_D_E_F_GPathAny{
+	ps := &A_B_C_D_E_F_GPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"g"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -874,13 +886,14 @@ type A_B_C_D_E_F_GPathAny struct {
 //	Path from parent:     "h"
 //	Path from root:       "/a/b/c/d/e/f/g/h"
 func (n *A_B_C_D_E_F_GPath) H() *A_B_C_D_E_F_G_HPath {
-	return &A_B_C_D_E_F_G_HPath{
+	ps := &A_B_C_D_E_F_G_HPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"h"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // H (container):
@@ -890,13 +903,14 @@ func (n *A_B_C_D_E_F_GPath) H() *A_B_C_D_E_F_G_HPath {
 //	Path from parent:     "h"
 //	Path from root:       "/a/b/c/d/e/f/g/h"
 func (n *A_B_C_D_E_F_GPathAny) H() *A_B_C_D_E_F_G_HPathAny {
-	return &A_B_C_D_E_F_G_HPathAny{
+	ps := &A_B_C_D_E_F_G_HPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"h"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -1010,13 +1024,14 @@ type A_B_C_D_E_F_G_HPathAny struct {
 //	Path from parent:     "i"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i"
 func (n *A_B_C_D_E_F_G_HPath) I() *A_B_C_D_E_F_G_H_IPath {
-	return &A_B_C_D_E_F_G_H_IPath{
+	ps := &A_B_C_D_E_F_G_H_IPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"i"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // I (container):
@@ -1026,13 +1041,14 @@ func (n *A_B_C_D_E_F_G_HPath) I() *A_B_C_D_E_F_G_H_IPath {
 //	Path from parent:     "i"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i"
 func (n *A_B_C_D_E_F_G_HPathAny) I() *A_B_C_D_E_F_G_H_IPathAny {
-	return &A_B_C_D_E_F_G_H_IPathAny{
+	ps := &A_B_C_D_E_F_G_H_IPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"i"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -1146,13 +1162,14 @@ type A_B_C_D_E_F_G_H_IPathAny struct {
 //	Path from parent:     "j"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j"
 func (n *A_B_C_D_E_F_G_H_IPath) J() *A_B_C_D_E_F_G_H_I_JPath {
-	return &A_B_C_D_E_F_G_H_I_JPath{
+	ps := &A_B_C_D_E_F_G_H_I_JPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"j"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // J (container):
@@ -1162,13 +1179,14 @@ func (n *A_B_C_D_E_F_G_H_IPath) J() *A_B_C_D_E_F_G_H_I_JPath {
 //	Path from parent:     "j"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j"
 func (n *A_B_C_D_E_F_G_H_IPathAny) J() *A_B_C_D_E_F_G_H_I_JPathAny {
-	return &A_B_C_D_E_F_G_H_I_JPathAny{
+	ps := &A_B_C_D_E_F_G_H_I_JPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"j"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -1282,13 +1300,14 @@ type A_B_C_D_E_F_G_H_I_JPathAny struct {
 //	Path from parent:     "k"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k"
 func (n *A_B_C_D_E_F_G_H_I_JPath) K() *A_B_C_D_E_F_G_H_I_J_KPath {
-	return &A_B_C_D_E_F_G_H_I_J_KPath{
+	ps := &A_B_C_D_E_F_G_H_I_J_KPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"k"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // K (container):
@@ -1298,13 +1317,14 @@ func (n *A_B_C_D_E_F_G_H_I_JPath) K() *A_B_C_D_E_F_G_H_I_J_KPath {
 //	Path from parent:     "k"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k"
 func (n *A_B_C_D_E_F_G_H_I_JPathAny) K() *A_B_C_D_E_F_G_H_I_J_KPathAny {
-	return &A_B_C_D_E_F_G_H_I_J_KPathAny{
+	ps := &A_B_C_D_E_F_G_H_I_J_KPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"k"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -1418,13 +1438,14 @@ type A_B_C_D_E_F_G_H_I_J_KPathAny struct {
 //	Path from parent:     "l"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l"
 func (n *A_B_C_D_E_F_G_H_I_J_KPath) L() *A_B_C_D_E_F_G_H_I_J_K_LPath {
-	return &A_B_C_D_E_F_G_H_I_J_K_LPath{
+	ps := &A_B_C_D_E_F_G_H_I_J_K_LPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"l"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // L (container):
@@ -1434,13 +1455,14 @@ func (n *A_B_C_D_E_F_G_H_I_J_KPath) L() *A_B_C_D_E_F_G_H_I_J_K_LPath {
 //	Path from parent:     "l"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l"
 func (n *A_B_C_D_E_F_G_H_I_J_KPathAny) L() *A_B_C_D_E_F_G_H_I_J_K_LPathAny {
-	return &A_B_C_D_E_F_G_H_I_J_K_LPathAny{
+	ps := &A_B_C_D_E_F_G_H_I_J_K_LPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"l"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -1554,13 +1576,14 @@ type A_B_C_D_E_F_G_H_I_J_K_LPathAny struct {
 //	Path from parent:     "m"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m"
 func (n *A_B_C_D_E_F_G_H_I_J_K_LPath) M() *A_B_C_D_E_F_G_H_I_J_K_L_MPath {
-	return &A_B_C_D_E_F_G_H_I_J_K_L_MPath{
+	ps := &A_B_C_D_E_F_G_H_I_J_K_L_MPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"m"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // M (container):
@@ -1570,13 +1593,14 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_LPath) M() *A_B_C_D_E_F_G_H_I_J_K_L_MPath {
 //	Path from parent:     "m"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m"
 func (n *A_B_C_D_E_F_G_H_I_J_K_LPathAny) M() *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny {
-	return &A_B_C_D_E_F_G_H_I_J_K_L_MPathAny{
+	ps := &A_B_C_D_E_F_G_H_I_J_K_L_MPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"m"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -1781,7 +1805,7 @@ type A_B_C_D_E_F_G_H_I_J_K_L_MPathAny struct {
 //	Path from parent:     "state/foo"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"
 func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath {
-	return &A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath{
+	ps := &A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "foo"},
 			map[string]interface{}{},
@@ -1789,6 +1813,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath
 		),
 		parent: n,
 	}
+	return ps
 }
 
 // Foo (leaf):
@@ -1798,7 +1823,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPath) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPath
 //	Path from parent:     "state/foo"
 //	Path from root:       "/a/b/c/d/e/f/g/h/i/j/k/l/m/state/foo"
 func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny {
-	return &A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny{
+	ps := &A_B_C_D_E_F_G_H_I_J_K_L_M_FooPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "foo"},
 			map[string]interface{}{},
@@ -1806,6 +1831,7 @@ func (n *A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) Foo() *A_B_C_D_E_F_G_H_I_J_K_L_M_FooP
 		),
 		parent: n,
 	}
+	return ps
 }
 
 // State returns a Query that can be used in gNMI operations.
@@ -2010,7 +2036,7 @@ type ContainerPathAny struct {
 //	Path from parent:     "enabled"
 //	Path from root:       "/container/enabled"
 func (n *ContainerPath) Enabled() *Container_EnabledPath {
-	return &Container_EnabledPath{
+	ps := &Container_EnabledPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"enabled"},
 			map[string]interface{}{},
@@ -2018,6 +2044,7 @@ func (n *ContainerPath) Enabled() *Container_EnabledPath {
 		),
 		parent: n,
 	}
+	return ps
 }
 
 // Enabled (leaf):
@@ -2027,7 +2054,7 @@ func (n *ContainerPath) Enabled() *Container_EnabledPath {
 //	Path from parent:     "enabled"
 //	Path from root:       "/container/enabled"
 func (n *ContainerPathAny) Enabled() *Container_EnabledPathAny {
-	return &Container_EnabledPathAny{
+	ps := &Container_EnabledPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"enabled"},
 			map[string]interface{}{},
@@ -2035,6 +2062,7 @@ func (n *ContainerPathAny) Enabled() *Container_EnabledPathAny {
 		),
 		parent: n,
 	}
+	return ps
 }
 
 // State returns a Query that can be used in gNMI operations.

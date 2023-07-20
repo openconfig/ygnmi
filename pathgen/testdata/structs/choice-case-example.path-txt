@@ -52,13 +52,14 @@ type ChoiceCaseAnonymousCasePathAny struct {
 // 	Path from parent:     "a"
 // 	Path from root:       "/choice-case-anonymous-case/a"
 func (n *ChoiceCaseAnonymousCasePath) A() *ChoiceCaseAnonymousCase_APath {
-	return &ChoiceCaseAnonymousCase_APath{
+	ps := &ChoiceCaseAnonymousCase_APath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"a"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // A (leaf): 
@@ -67,13 +68,14 @@ func (n *ChoiceCaseAnonymousCasePath) A() *ChoiceCaseAnonymousCase_APath {
 // 	Path from parent:     "a"
 // 	Path from root:       "/choice-case-anonymous-case/a"
 func (n *ChoiceCaseAnonymousCasePathAny) A() *ChoiceCaseAnonymousCase_APathAny {
-	return &ChoiceCaseAnonymousCase_APathAny{
+	ps := &ChoiceCaseAnonymousCase_APathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"a"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // B (leaf): 
@@ -82,13 +84,14 @@ func (n *ChoiceCaseAnonymousCasePathAny) A() *ChoiceCaseAnonymousCase_APathAny {
 // 	Path from parent:     "b"
 // 	Path from root:       "/choice-case-anonymous-case/b"
 func (n *ChoiceCaseAnonymousCasePath) B() *ChoiceCaseAnonymousCase_BPath {
-	return &ChoiceCaseAnonymousCase_BPath{
+	ps := &ChoiceCaseAnonymousCase_BPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // B (leaf): 
@@ -97,13 +100,14 @@ func (n *ChoiceCaseAnonymousCasePath) B() *ChoiceCaseAnonymousCase_BPath {
 // 	Path from parent:     "b"
 // 	Path from root:       "/choice-case-anonymous-case/b"
 func (n *ChoiceCaseAnonymousCasePathAny) B() *ChoiceCaseAnonymousCase_BPathAny {
-	return &ChoiceCaseAnonymousCase_BPathAny{
+	ps := &ChoiceCaseAnonymousCase_BPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // ChoiceCaseWithLeafref_PtrPath represents the /choice-case-example/choice-case-with-leafref/foo/bar/ptr YANG schema element.
@@ -142,13 +146,14 @@ type ChoiceCaseWithLeafrefPathAny struct {
 // 	Path from parent:     "ptr"
 // 	Path from root:       "/choice-case-with-leafref/ptr"
 func (n *ChoiceCaseWithLeafrefPath) Ptr() *ChoiceCaseWithLeafref_PtrPath {
-	return &ChoiceCaseWithLeafref_PtrPath{
+	ps := &ChoiceCaseWithLeafref_PtrPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"ptr"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Ptr (leaf): 
@@ -157,13 +162,14 @@ func (n *ChoiceCaseWithLeafrefPath) Ptr() *ChoiceCaseWithLeafref_PtrPath {
 // 	Path from parent:     "ptr"
 // 	Path from root:       "/choice-case-with-leafref/ptr"
 func (n *ChoiceCaseWithLeafrefPathAny) Ptr() *ChoiceCaseWithLeafref_PtrPathAny {
-	return &ChoiceCaseWithLeafref_PtrPathAny{
+	ps := &ChoiceCaseWithLeafref_PtrPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"ptr"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Referenced (leaf): 
@@ -172,13 +178,14 @@ func (n *ChoiceCaseWithLeafrefPathAny) Ptr() *ChoiceCaseWithLeafref_PtrPathAny {
 // 	Path from parent:     "referenced"
 // 	Path from root:       "/choice-case-with-leafref/referenced"
 func (n *ChoiceCaseWithLeafrefPath) Referenced() *ChoiceCaseWithLeafref_ReferencedPath {
-	return &ChoiceCaseWithLeafref_ReferencedPath{
+	ps := &ChoiceCaseWithLeafref_ReferencedPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"referenced"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Referenced (leaf): 
@@ -187,13 +194,14 @@ func (n *ChoiceCaseWithLeafrefPath) Referenced() *ChoiceCaseWithLeafref_Referenc
 // 	Path from parent:     "referenced"
 // 	Path from root:       "/choice-case-with-leafref/referenced"
 func (n *ChoiceCaseWithLeafrefPathAny) Referenced() *ChoiceCaseWithLeafref_ReferencedPathAny {
-	return &ChoiceCaseWithLeafref_ReferencedPathAny{
+	ps := &ChoiceCaseWithLeafref_ReferencedPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"referenced"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // DevicePath represents the /device YANG schema element.
@@ -212,13 +220,14 @@ func Root() *DevicePath {
 // 	Path from parent:     "choice-case-anonymous-case"
 // 	Path from root:       "/choice-case-anonymous-case"
 func (n *DevicePath) ChoiceCaseAnonymousCase() *ChoiceCaseAnonymousCasePath {
-	return &ChoiceCaseAnonymousCasePath{
+	ps := &ChoiceCaseAnonymousCasePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"choice-case-anonymous-case"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // ChoiceCaseWithLeafref (container): 
@@ -227,13 +236,14 @@ func (n *DevicePath) ChoiceCaseAnonymousCase() *ChoiceCaseAnonymousCasePath {
 // 	Path from parent:     "choice-case-with-leafref"
 // 	Path from root:       "/choice-case-with-leafref"
 func (n *DevicePath) ChoiceCaseWithLeafref() *ChoiceCaseWithLeafrefPath {
-	return &ChoiceCaseWithLeafrefPath{
+	ps := &ChoiceCaseWithLeafrefPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"choice-case-with-leafref"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // SimpleChoiceCase (container): 
@@ -242,13 +252,14 @@ func (n *DevicePath) ChoiceCaseWithLeafref() *ChoiceCaseWithLeafrefPath {
 // 	Path from parent:     "simple-choice-case"
 // 	Path from root:       "/simple-choice-case"
 func (n *DevicePath) SimpleChoiceCase() *SimpleChoiceCasePath {
-	return &SimpleChoiceCasePath{
+	ps := &SimpleChoiceCasePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"simple-choice-case"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // SimpleChoiceCase_APath represents the /choice-case-example/simple-choice-case/foo/bar/a YANG schema element.
@@ -287,13 +298,14 @@ type SimpleChoiceCasePathAny struct {
 // 	Path from parent:     "a"
 // 	Path from root:       "/simple-choice-case/a"
 func (n *SimpleChoiceCasePath) A() *SimpleChoiceCase_APath {
-	return &SimpleChoiceCase_APath{
+	ps := &SimpleChoiceCase_APath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"a"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // A (leaf): 
@@ -302,13 +314,14 @@ func (n *SimpleChoiceCasePath) A() *SimpleChoiceCase_APath {
 // 	Path from parent:     "a"
 // 	Path from root:       "/simple-choice-case/a"
 func (n *SimpleChoiceCasePathAny) A() *SimpleChoiceCase_APathAny {
-	return &SimpleChoiceCase_APathAny{
+	ps := &SimpleChoiceCase_APathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"a"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // B (leaf): 
@@ -317,13 +330,14 @@ func (n *SimpleChoiceCasePathAny) A() *SimpleChoiceCase_APathAny {
 // 	Path from parent:     "b"
 // 	Path from root:       "/simple-choice-case/b"
 func (n *SimpleChoiceCasePath) B() *SimpleChoiceCase_BPath {
-	return &SimpleChoiceCase_BPath{
+	ps := &SimpleChoiceCase_BPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // B (leaf): 
@@ -332,11 +346,12 @@ func (n *SimpleChoiceCasePath) B() *SimpleChoiceCase_BPath {
 // 	Path from parent:     "b"
 // 	Path from root:       "/simple-choice-case/b"
 func (n *SimpleChoiceCasePathAny) B() *SimpleChoiceCase_BPathAny {
-	return &SimpleChoiceCase_BPathAny{
+	ps := &SimpleChoiceCase_BPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }

@@ -3551,7 +3551,7 @@ func TestReplace(t *testing.T) {
 			}
 			ol.GetOrCreateConfig().SetKey("baz")
 			ol.GetOrCreateConfig().SetValue(44)
-			return ygnmi.Replace(context.Background(), c, uexampleocpath.Root().Model().A().SingleKey("foo").OrderedLists().OrderedListMap().Query(), om)
+			return ygnmi.Replace(context.Background(), c, uexampleocpath.Root().Model().A().SingleKey("foo").OrderedLists().OrderedListMap(), om)
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{

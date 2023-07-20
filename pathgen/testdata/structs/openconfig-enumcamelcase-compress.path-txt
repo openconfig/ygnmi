@@ -32,13 +32,14 @@ func Root() *DevicePath {
 // 	Path from parent:     "foo"
 // 	Path from root:       "/foo"
 func (n *DevicePath) Foo() *FooPath {
-	return &FooPath{
+	ps := &FooPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"foo"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Foo_BarPath represents the /openconfig-enumcamelcase/foo/bar YANG schema element.
@@ -77,13 +78,14 @@ type FooPathAny struct {
 // 	Path from parent:     "bar"
 // 	Path from root:       "/foo/bar"
 func (n *FooPath) Bar() *Foo_BarPath {
-	return &Foo_BarPath{
+	ps := &Foo_BarPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"bar"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Bar (leaf): 
@@ -92,13 +94,14 @@ func (n *FooPath) Bar() *Foo_BarPath {
 // 	Path from parent:     "bar"
 // 	Path from root:       "/foo/bar"
 func (n *FooPathAny) Bar() *Foo_BarPathAny {
-	return &Foo_BarPathAny{
+	ps := &Foo_BarPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"bar"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Baz (leaf): 
@@ -107,13 +110,14 @@ func (n *FooPathAny) Bar() *Foo_BarPathAny {
 // 	Path from parent:     "baz"
 // 	Path from root:       "/foo/baz"
 func (n *FooPath) Baz() *Foo_BazPath {
-	return &Foo_BazPath{
+	ps := &Foo_BazPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"baz"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Baz (leaf): 
@@ -122,11 +126,12 @@ func (n *FooPath) Baz() *Foo_BazPath {
 // 	Path from parent:     "baz"
 // 	Path from root:       "/foo/baz"
 func (n *FooPathAny) Baz() *Foo_BazPathAny {
-	return &Foo_BazPathAny{
+	ps := &Foo_BazPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"baz"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }

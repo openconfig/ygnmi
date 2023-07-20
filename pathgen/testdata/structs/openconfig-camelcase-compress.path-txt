@@ -32,13 +32,14 @@ type BGPPathAny struct {
 // 	Path from parent:     "neighbors/neighbor"
 // 	Path from root:       "/bgp/neighbors/neighbor"
 func (n *BGPPath) NeighborAny() *BGP_NeighborPathAny {
-	return &BGP_NeighborPathAny{
+	ps := &BGP_NeighborPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"neighbors", "neighbor"},
 			map[string]interface{}{"peer-ip": "*"},
 			n,
 		),
 	}
+	return ps
 }
 
 // NeighborAny (list): 
@@ -47,13 +48,14 @@ func (n *BGPPath) NeighborAny() *BGP_NeighborPathAny {
 // 	Path from parent:     "neighbors/neighbor"
 // 	Path from root:       "/bgp/neighbors/neighbor"
 func (n *BGPPathAny) NeighborAny() *BGP_NeighborPathAny {
-	return &BGP_NeighborPathAny{
+	ps := &BGP_NeighborPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"neighbors", "neighbor"},
 			map[string]interface{}{"peer-ip": "*"},
 			n,
 		),
 	}
+	return ps
 }
 
 // Neighbor (list): 
@@ -64,13 +66,14 @@ func (n *BGPPathAny) NeighborAny() *BGP_NeighborPathAny {
 //
 // 	PeerIP: string
 func (n *BGPPath) Neighbor(PeerIP string) *BGP_NeighborPath {
-	return &BGP_NeighborPath{
+	ps := &BGP_NeighborPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"neighbors", "neighbor"},
 			map[string]interface{}{"peer-ip": PeerIP},
 			n,
 		),
 	}
+	return ps
 }
 
 // Neighbor (list): 
@@ -81,13 +84,14 @@ func (n *BGPPath) Neighbor(PeerIP string) *BGP_NeighborPath {
 //
 // 	PeerIP: string
 func (n *BGPPathAny) Neighbor(PeerIP string) *BGP_NeighborPathAny {
-	return &BGP_NeighborPathAny{
+	ps := &BGP_NeighborPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"neighbors", "neighbor"},
 			map[string]interface{}{"peer-ip": PeerIP},
 			n,
 		),
 	}
+	return ps
 }
 
 // NeighborMap (list): 
@@ -96,13 +100,14 @@ func (n *BGPPathAny) Neighbor(PeerIP string) *BGP_NeighborPathAny {
 // 	Path from parent:     "neighbors/neighbor"
 // 	Path from root:       "/bgp/neighbors/neighbor"
 func (n *BGPPath) NeighborMap() *BGP_NeighborPathMap {
-	return &BGP_NeighborPathMap{
+	ps := &BGP_NeighborPathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"neighbors"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // NeighborMap (list): 
@@ -111,13 +116,14 @@ func (n *BGPPath) NeighborMap() *BGP_NeighborPathMap {
 // 	Path from parent:     "neighbors/neighbor"
 // 	Path from root:       "/bgp/neighbors/neighbor"
 func (n *BGPPathAny) NeighborMap() *BGP_NeighborPathMapAny {
-	return &BGP_NeighborPathMapAny{
+	ps := &BGP_NeighborPathMapAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"neighbors"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // BGP_Neighbor_PeerIPPath represents the /openconfig-camelcase/bgp/neighbors/neighbor/state/peer-ip YANG schema element.
@@ -156,13 +162,14 @@ type BGP_NeighborPathMapAny struct {
 // 	Path from parent:     "state/peer-ip"
 // 	Path from root:       "/bgp/neighbors/neighbor/state/peer-ip"
 func (n *BGP_NeighborPath) PeerIP() *BGP_Neighbor_PeerIPPath {
-	return &BGP_Neighbor_PeerIPPath{
+	ps := &BGP_Neighbor_PeerIPPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "peer-ip"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // PeerIP (leaf): 
@@ -171,13 +178,14 @@ func (n *BGP_NeighborPath) PeerIP() *BGP_Neighbor_PeerIPPath {
 // 	Path from parent:     "state/peer-ip"
 // 	Path from root:       "/bgp/neighbors/neighbor/state/peer-ip"
 func (n *BGP_NeighborPathAny) PeerIP() *BGP_Neighbor_PeerIPPathAny {
-	return &BGP_Neighbor_PeerIPPathAny{
+	ps := &BGP_Neighbor_PeerIPPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "peer-ip"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // DevicePath represents the /device YANG schema element.
@@ -196,11 +204,12 @@ func Root() *DevicePath {
 // 	Path from parent:     "bgp"
 // 	Path from root:       "/bgp"
 func (n *DevicePath) BGP() *BGPPath {
-	return &BGPPath{
+	ps := &BGPPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"bgp"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }

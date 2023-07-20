@@ -51,7 +51,7 @@ func TestUncompressed(t *testing.T) {
 
 		lookupCheckFn(
 			t, fakeGNMI, c,
-			ygnmi.SingletonQuery[string](uexampleocpath.Root().Model().A().SingleKey("foo").Config().Key().Query()),
+			ygnmi.SingletonQuery[string](uexampleocpath.Root().Model().A().SingleKey("foo").Config().Key()),
 			"",
 			testutil.GNMIPath(t, `/model/a/single-key[key=foo]/config/key`),
 			(&ygnmi.Value[string]{
@@ -72,7 +72,7 @@ func TestUncompressed(t *testing.T) {
 
 		lookupCheckFn(
 			t, fakeGNMI, c,
-			ygnmi.SingletonQuery[string](uexampleocpath.Root().Model().A().SingleKey("foo").State().Key().Query()),
+			ygnmi.SingletonQuery[string](uexampleocpath.Root().Model().A().SingleKey("foo").State().Key()),
 			"",
 			testutil.GNMIPath(t, `/model/a/single-key[key=foo]/state/key`),
 			(&ygnmi.Value[string]{
@@ -121,7 +121,7 @@ func TestUncompressed(t *testing.T) {
 
 		lookupCheckFn(
 			t, fakeGNMI, c,
-			ygnmi.SingletonQuery[*uexampleoc.OpenconfigWithlistval_Model_A](uexampleocpath.Root().Model().A().Query()),
+			uexampleocpath.Root().Model().A(),
 			"",
 			testutil.GNMIPath(t, "/model/a"),
 			(&ygnmi.Value[*uexampleoc.OpenconfigWithlistval_Model_A]{
@@ -170,7 +170,7 @@ func TestUncompressed(t *testing.T) {
 
 		lookupCheckFn(
 			t, fakeGNMI, c,
-			ygnmi.SingletonQuery[map[string]*uexampleoc.OpenconfigWithlistval_Model_A_SingleKey](uexampleocpath.Root().Model().A().SingleKeyMap().Query()),
+			ygnmi.SingletonQuery[map[string]*uexampleoc.OpenconfigWithlistval_Model_A_SingleKey](uexampleocpath.Root().Model().A().SingleKeyMap()),
 			"",
 			testutil.GNMIPath(t, "/model/a/single-key"),
 			(&ygnmi.Value[map[string]*uexampleoc.OpenconfigWithlistval_Model_A_SingleKey]{
@@ -198,7 +198,7 @@ func TestUncompressed(t *testing.T) {
 
 		collectCheckFn(
 			t, fakeGNMI, c,
-			ygnmi.SingletonQuery[string](uexampleocpath.Root().Model().A().SingleKey("foo").Config().Key().Query()),
+			ygnmi.SingletonQuery[string](uexampleocpath.Root().Model().A().SingleKey("foo").Config().Key()),
 			"EOF",
 			testutil.GNMIPath(t, `/model/a/single-key[key=foo]/config/key`),
 			[]*ygnmi.Value[string]{

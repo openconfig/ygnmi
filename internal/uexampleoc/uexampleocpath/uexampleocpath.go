@@ -32,7 +32,6 @@ import (
 	"github.com/openconfig/ygnmi/internal/uexampleoc/simple"
 	"github.com/openconfig/ygnmi/internal/uexampleoc/withlistval"
 	"github.com/openconfig/ygnmi/ygnmi"
-	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygot/ytypes"
 )
 
@@ -53,13 +52,35 @@ func Root() *RootPath {
 //	Path from parent:     "a"
 //	Path from root:       "/a"
 func (n *RootPath) A() *nested.OpenconfigNested_APath {
-	return &nested.OpenconfigNested_APath{
+	ps := &nested.OpenconfigNested_APath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"a"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigNested_A](
+		"OpenconfigNested_A",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Container (container):
@@ -69,13 +90,35 @@ func (n *RootPath) A() *nested.OpenconfigNested_APath {
 //	Path from parent:     "container"
 //	Path from root:       "/container"
 func (n *RootPath) Container() *nested.OpenconfigNested_ContainerPath {
-	return &nested.OpenconfigNested_ContainerPath{
+	ps := &nested.OpenconfigNested_ContainerPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"container"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigNested_Container](
+		"OpenconfigNested_Container",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Model (container):
@@ -85,13 +128,35 @@ func (n *RootPath) Container() *nested.OpenconfigNested_ContainerPath {
 //	Path from parent:     "model"
 //	Path from root:       "/model"
 func (n *RootPath) Model() *withlistval.OpenconfigWithlistval_ModelPath {
-	return &withlistval.OpenconfigWithlistval_ModelPath{
+	ps := &withlistval.OpenconfigWithlistval_ModelPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"model"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model](
+		"OpenconfigWithlistval_Model",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // Parent (container): I am a parent container
@@ -102,13 +167,35 @@ func (n *RootPath) Model() *withlistval.OpenconfigWithlistval_ModelPath {
 //	Path from parent:     "parent"
 //	Path from root:       "/parent"
 func (n *RootPath) Parent() *simple.OpenconfigSimple_ParentPath {
-	return &simple.OpenconfigSimple_ParentPath{
+	ps := &simple.OpenconfigSimple_ParentPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"parent"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigSimple_Parent](
+		"OpenconfigSimple_Parent",
+		true,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
 }
 
 // RemoteContainer (container):
@@ -118,72 +205,21 @@ func (n *RootPath) Parent() *simple.OpenconfigSimple_ParentPath {
 //	Path from parent:     "remote-container"
 //	Path from root:       "/remote-container"
 func (n *RootPath) RemoteContainer() *simple.OpenconfigSimple_RemoteContainerPath {
-	return &simple.OpenconfigSimple_RemoteContainerPath{
+	ps := &simple.OpenconfigSimple_RemoteContainerPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"remote-container"},
 			map[string]interface{}{},
 			n,
 		),
 	}
-}
-
-// Batch contains a collection of paths.
-// Use batch to call Lookup, Watch, etc. on multiple paths at once.
-type Batch struct {
-	paths []ygnmi.PathStruct
-}
-
-// AddPaths adds the paths to the batch.
-func (b *Batch) AddPaths(paths ...ygnmi.PathStruct) *Batch {
-	b.paths = append(b.paths, paths...)
-	return b
-}
-
-// State returns a Query that can be used in gNMI operations.
-// The returned query is immutable, adding paths does not modify existing queries.
-func (b *Batch) State() ygnmi.SingletonQuery[*oc.Root] {
-	queryPaths := make([]ygnmi.PathStruct, len(b.paths))
-	copy(queryPaths, b.paths)
-	return ygnmi.NewSingletonQuery[*oc.Root](
-		"Root",
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigSimple_RemoteContainer](
+		"OpenconfigSimple_RemoteContainer",
 		true,
 		false,
 		false,
 		false,
 		false,
-		ygnmi.NewDeviceRootBase(),
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &oc.Root{},
-				SchemaTree: oc.SchemaTree,
-				Unmarshal:  oc.Unmarshal,
-			}
-		},
-		queryPaths,
-		nil,
-	)
-}
-
-func binarySliceToFloatSlice(in []oc.Binary) []float32 {
-	converted := make([]float32, 0, len(in))
-	for _, binary := range in {
-		converted = append(converted, ygot.BinaryToFloat32(binary))
-	}
-	return converted
-}
-
-// Query returns a Query that can be used in gNMI operations.
-func (n *RootPath) Query() ygnmi.ConfigQuery[*oc.Root] {
-	return ygnmi.NewConfigQuery[*oc.Root](
-		"Root",
-		false,
-		false,
-		false,
-		false,
-		false,
-		n,
+		ps,
 		nil,
 		nil,
 		func() *ytypes.Schema {
@@ -196,4 +232,6 @@ func (n *RootPath) Query() ygnmi.ConfigQuery[*oc.Root] {
 		nil,
 		nil,
 	)
+
+	return ps
 }

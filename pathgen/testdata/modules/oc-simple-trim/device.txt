@@ -34,13 +34,14 @@ func Root() *DevicePath {
 // 	Path from parent:     "parent"
 // 	Path from root:       "/parent"
 func (n *DevicePath) Parent() *simplepath.ParentPath {
-	return &simplepath.ParentPath{
+	ps := &simplepath.ParentPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"parent"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // RemoteContainer (container): 
@@ -49,11 +50,12 @@ func (n *DevicePath) Parent() *simplepath.ParentPath {
 // 	Path from parent:     "remote-container"
 // 	Path from root:       "/remote-container"
 func (n *DevicePath) RemoteContainer() *simplepath.RemoteContainerPath {
-	return &simplepath.RemoteContainerPath{
+	ps := &simplepath.RemoteContainerPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"remote-container"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }

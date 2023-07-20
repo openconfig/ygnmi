@@ -32,13 +32,14 @@ type Parent_ChildPathAny struct {
 // 	Path from parent:     "state/five"
 // 	Path from root:       "/parent/child/state/five"
 func (n *Parent_ChildPath) Five() *Parent_Child_FivePath {
-	return &Parent_Child_FivePath{
+	ps := &Parent_Child_FivePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "five"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Five (leaf): 
@@ -47,13 +48,14 @@ func (n *Parent_ChildPath) Five() *Parent_Child_FivePath {
 // 	Path from parent:     "state/five"
 // 	Path from root:       "/parent/child/state/five"
 func (n *Parent_ChildPathAny) Five() *Parent_Child_FivePathAny {
-	return &Parent_Child_FivePathAny{
+	ps := &Parent_Child_FivePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "five"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Four (leaf): 
@@ -62,13 +64,14 @@ func (n *Parent_ChildPathAny) Five() *Parent_Child_FivePathAny {
 // 	Path from parent:     "state/four"
 // 	Path from root:       "/parent/child/state/four"
 func (n *Parent_ChildPath) Four() *Parent_Child_FourPath {
-	return &Parent_Child_FourPath{
+	ps := &Parent_Child_FourPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "four"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Four (leaf): 
@@ -77,13 +80,14 @@ func (n *Parent_ChildPath) Four() *Parent_Child_FourPath {
 // 	Path from parent:     "state/four"
 // 	Path from root:       "/parent/child/state/four"
 func (n *Parent_ChildPathAny) Four() *Parent_Child_FourPathAny {
-	return &Parent_Child_FourPathAny{
+	ps := &Parent_Child_FourPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "four"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // One (leaf): 
@@ -92,13 +96,14 @@ func (n *Parent_ChildPathAny) Four() *Parent_Child_FourPathAny {
 // 	Path from parent:     "state/one"
 // 	Path from root:       "/parent/child/state/one"
 func (n *Parent_ChildPath) One() *Parent_Child_OnePath {
-	return &Parent_Child_OnePath{
+	ps := &Parent_Child_OnePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "one"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // One (leaf): 
@@ -107,13 +112,14 @@ func (n *Parent_ChildPath) One() *Parent_Child_OnePath {
 // 	Path from parent:     "state/one"
 // 	Path from root:       "/parent/child/state/one"
 func (n *Parent_ChildPathAny) One() *Parent_Child_OnePathAny {
-	return &Parent_Child_OnePathAny{
+	ps := &Parent_Child_OnePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "one"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Six (leaf-list): 
@@ -122,13 +128,14 @@ func (n *Parent_ChildPathAny) One() *Parent_Child_OnePathAny {
 // 	Path from parent:     "state/six"
 // 	Path from root:       "/parent/child/state/six"
 func (n *Parent_ChildPath) Six() *Parent_Child_SixPath {
-	return &Parent_Child_SixPath{
+	ps := &Parent_Child_SixPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "six"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Six (leaf-list): 
@@ -137,13 +144,14 @@ func (n *Parent_ChildPath) Six() *Parent_Child_SixPath {
 // 	Path from parent:     "state/six"
 // 	Path from root:       "/parent/child/state/six"
 func (n *Parent_ChildPathAny) Six() *Parent_Child_SixPathAny {
-	return &Parent_Child_SixPathAny{
+	ps := &Parent_Child_SixPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "six"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Three (leaf): 
@@ -152,13 +160,14 @@ func (n *Parent_ChildPathAny) Six() *Parent_Child_SixPathAny {
 // 	Path from parent:     "state/three"
 // 	Path from root:       "/parent/child/state/three"
 func (n *Parent_ChildPath) Three() *Parent_Child_ThreePath {
-	return &Parent_Child_ThreePath{
+	ps := &Parent_Child_ThreePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "three"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Three (leaf): 
@@ -167,13 +176,14 @@ func (n *Parent_ChildPath) Three() *Parent_Child_ThreePath {
 // 	Path from parent:     "state/three"
 // 	Path from root:       "/parent/child/state/three"
 func (n *Parent_ChildPathAny) Three() *Parent_Child_ThreePathAny {
-	return &Parent_Child_ThreePathAny{
+	ps := &Parent_Child_ThreePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "three"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Two (leaf): 
@@ -182,13 +192,14 @@ func (n *Parent_ChildPathAny) Three() *Parent_Child_ThreePathAny {
 // 	Path from parent:     "state/two"
 // 	Path from root:       "/parent/child/state/two"
 func (n *Parent_ChildPath) Two() *Parent_Child_TwoPath {
-	return &Parent_Child_TwoPath{
+	ps := &Parent_Child_TwoPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "two"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Two (leaf): 
@@ -197,13 +208,14 @@ func (n *Parent_ChildPath) Two() *Parent_Child_TwoPath {
 // 	Path from parent:     "state/two"
 // 	Path from root:       "/parent/child/state/two"
 func (n *Parent_ChildPathAny) Two() *Parent_Child_TwoPathAny {
-	return &Parent_Child_TwoPathAny{
+	ps := &Parent_Child_TwoPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "two"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // RemoteContainer_ALeafPath represents the /openconfig-simple/remote-container/state/a-leaf YANG schema element.

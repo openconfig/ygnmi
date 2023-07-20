@@ -33,11 +33,12 @@ func Root() *DevicePath {
 // 	Path from parent:     "model"
 // 	Path from root:       "/model"
 func (n *DevicePath) Model() *openconfigwithlistpath.ModelPath {
-	return &openconfigwithlistpath.ModelPath{
+	ps := &openconfigwithlistpath.ModelPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"model"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }

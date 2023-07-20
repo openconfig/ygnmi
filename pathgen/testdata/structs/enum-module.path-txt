@@ -52,13 +52,14 @@ type AListPathMapAny struct {
 // 	Path from parent:     "state/value"
 // 	Path from root:       "/a-lists/a-list/state/value"
 func (n *AListPath) Value() *AList_ValuePath {
-	return &AList_ValuePath{
+	ps := &AList_ValuePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "value"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Value (leaf): 
@@ -67,13 +68,14 @@ func (n *AListPath) Value() *AList_ValuePath {
 // 	Path from parent:     "state/value"
 // 	Path from root:       "/a-lists/a-list/state/value"
 func (n *AListPathAny) Value() *AList_ValuePathAny {
-	return &AList_ValuePathAny{
+	ps := &AList_ValuePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "value"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // BList_ValuePath represents the /enum-module/b-lists/b-list/state/value YANG schema element.
@@ -112,13 +114,14 @@ type BListPathMapAny struct {
 // 	Path from parent:     "state/value"
 // 	Path from root:       "/b-lists/b-list/state/value"
 func (n *BListPath) Value() *BList_ValuePath {
-	return &BList_ValuePath{
+	ps := &BList_ValuePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "value"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Value (leaf): 
@@ -127,13 +130,14 @@ func (n *BListPath) Value() *BList_ValuePath {
 // 	Path from parent:     "state/value"
 // 	Path from root:       "/b-lists/b-list/state/value"
 func (n *BListPathAny) Value() *BList_ValuePathAny {
-	return &BList_ValuePathAny{
+	ps := &BList_ValuePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "value"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // C_ClPath represents the /enum-module/c/cl YANG schema element.
@@ -162,13 +166,14 @@ type CPathAny struct {
 // 	Path from parent:     "cl"
 // 	Path from root:       "/c/cl"
 func (n *CPath) Cl() *C_ClPath {
-	return &C_ClPath{
+	ps := &C_ClPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"cl"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Cl (leaf): 
@@ -177,13 +182,14 @@ func (n *CPath) Cl() *C_ClPath {
 // 	Path from parent:     "cl"
 // 	Path from root:       "/c/cl"
 func (n *CPathAny) Cl() *C_ClPathAny {
-	return &C_ClPathAny{
+	ps := &C_ClPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"cl"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // DevicePath represents the /device YANG schema element.
@@ -202,13 +208,14 @@ func Root() *DevicePath {
 // 	Path from parent:     "a-lists/a-list"
 // 	Path from root:       "/a-lists/a-list"
 func (n *DevicePath) AListAny() *AListPathAny {
-	return &AListPathAny{
+	ps := &AListPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"a-lists", "a-list"},
 			map[string]interface{}{"value": "*"},
 			n,
 		),
 	}
+	return ps
 }
 
 // AList (list): 
@@ -219,13 +226,14 @@ func (n *DevicePath) AListAny() *AListPathAny {
 //
 // 	Value: [UnionUint32, E_EnumTypes_Td_Enum]
 func (n *DevicePath) AList(Value AList_Value_Union) *AListPath {
-	return &AListPath{
+	ps := &AListPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"a-lists", "a-list"},
 			map[string]interface{}{"value": Value},
 			n,
 		),
 	}
+	return ps
 }
 
 // AListMap (list): 
@@ -234,13 +242,14 @@ func (n *DevicePath) AList(Value AList_Value_Union) *AListPath {
 // 	Path from parent:     "a-lists/a-list"
 // 	Path from root:       "/a-lists/a-list"
 func (n *DevicePath) AListMap() *AListPathMap {
-	return &AListPathMap{
+	ps := &AListPathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"a-lists"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // BListAny (list): 
@@ -249,13 +258,14 @@ func (n *DevicePath) AListMap() *AListPathMap {
 // 	Path from parent:     "b-lists/b-list"
 // 	Path from root:       "/b-lists/b-list"
 func (n *DevicePath) BListAny() *BListPathAny {
-	return &BListPathAny{
+	ps := &BListPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b-lists", "b-list"},
 			map[string]interface{}{"value": "*"},
 			n,
 		),
 	}
+	return ps
 }
 
 // BList (list): 
@@ -266,13 +276,14 @@ func (n *DevicePath) BListAny() *BListPathAny {
 //
 // 	Value: [UnionUint32, E_EnumTypes_Td_Enum]
 func (n *DevicePath) BList(Value BList_Value_Union) *BListPath {
-	return &BListPath{
+	ps := &BListPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b-lists", "b-list"},
 			map[string]interface{}{"value": Value},
 			n,
 		),
 	}
+	return ps
 }
 
 // BListMap (list): 
@@ -281,13 +292,14 @@ func (n *DevicePath) BList(Value BList_Value_Union) *BListPath {
 // 	Path from parent:     "b-lists/b-list"
 // 	Path from root:       "/b-lists/b-list"
 func (n *DevicePath) BListMap() *BListPathMap {
-	return &BListPathMap{
+	ps := &BListPathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"b-lists"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // C (container): 
@@ -296,13 +308,14 @@ func (n *DevicePath) BListMap() *BListPathMap {
 // 	Path from parent:     "c"
 // 	Path from root:       "/c"
 func (n *DevicePath) C() *CPath {
-	return &CPath{
+	ps := &CPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"c"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Parent (container): 
@@ -311,13 +324,14 @@ func (n *DevicePath) C() *CPath {
 // 	Path from parent:     "parent"
 // 	Path from root:       "/parent"
 func (n *DevicePath) Parent() *ParentPath {
-	return &ParentPath{
+	ps := &ParentPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"parent"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // ParentPath represents the /enum-module/parent YANG schema element.
@@ -336,13 +350,14 @@ type ParentPathAny struct {
 // 	Path from parent:     "child"
 // 	Path from root:       "/parent/child"
 func (n *ParentPath) Child() *Parent_ChildPath {
-	return &Parent_ChildPath{
+	ps := &Parent_ChildPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"child"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Child (container): 
@@ -351,13 +366,14 @@ func (n *ParentPath) Child() *Parent_ChildPath {
 // 	Path from parent:     "child"
 // 	Path from root:       "/parent/child"
 func (n *ParentPathAny) Child() *Parent_ChildPathAny {
-	return &Parent_ChildPathAny{
+	ps := &Parent_ChildPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"child"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Parent_Child_EnumPath represents the /enum-module/parent/child/state/enum YANG schema element.
@@ -416,13 +432,14 @@ type Parent_ChildPathAny struct {
 // 	Path from parent:     "state/enum"
 // 	Path from root:       "/parent/child/state/enum"
 func (n *Parent_ChildPath) Enum() *Parent_Child_EnumPath {
-	return &Parent_Child_EnumPath{
+	ps := &Parent_Child_EnumPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "enum"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Enum (leaf): 
@@ -431,13 +448,14 @@ func (n *Parent_ChildPath) Enum() *Parent_Child_EnumPath {
 // 	Path from parent:     "state/enum"
 // 	Path from root:       "/parent/child/state/enum"
 func (n *Parent_ChildPathAny) Enum() *Parent_Child_EnumPathAny {
-	return &Parent_Child_EnumPathAny{
+	ps := &Parent_Child_EnumPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "enum"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Id (leaf): 
@@ -446,13 +464,14 @@ func (n *Parent_ChildPathAny) Enum() *Parent_Child_EnumPathAny {
 // 	Path from parent:     "state/id"
 // 	Path from root:       "/parent/child/state/id"
 func (n *Parent_ChildPath) Id() *Parent_Child_IdPath {
-	return &Parent_Child_IdPath{
+	ps := &Parent_Child_IdPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "id"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Id (leaf): 
@@ -461,13 +480,14 @@ func (n *Parent_ChildPath) Id() *Parent_Child_IdPath {
 // 	Path from parent:     "state/id"
 // 	Path from root:       "/parent/child/state/id"
 func (n *Parent_ChildPathAny) Id() *Parent_Child_IdPathAny {
-	return &Parent_Child_IdPathAny{
+	ps := &Parent_Child_IdPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "id"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Id2 (leaf): 
@@ -476,13 +496,14 @@ func (n *Parent_ChildPathAny) Id() *Parent_Child_IdPathAny {
 // 	Path from parent:     "state/id2"
 // 	Path from root:       "/parent/child/state/id2"
 func (n *Parent_ChildPath) Id2() *Parent_Child_Id2Path {
-	return &Parent_Child_Id2Path{
+	ps := &Parent_Child_Id2Path{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "id2"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Id2 (leaf): 
@@ -491,13 +512,14 @@ func (n *Parent_ChildPath) Id2() *Parent_Child_Id2Path {
 // 	Path from parent:     "state/id2"
 // 	Path from root:       "/parent/child/state/id2"
 func (n *Parent_ChildPathAny) Id2() *Parent_Child_Id2PathAny {
-	return &Parent_Child_Id2PathAny{
+	ps := &Parent_Child_Id2PathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "id2"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // InlineEnum (leaf): 
@@ -506,13 +528,14 @@ func (n *Parent_ChildPathAny) Id2() *Parent_Child_Id2PathAny {
 // 	Path from parent:     "state/inline-enum"
 // 	Path from root:       "/parent/child/state/inline-enum"
 func (n *Parent_ChildPath) InlineEnum() *Parent_Child_InlineEnumPath {
-	return &Parent_Child_InlineEnumPath{
+	ps := &Parent_Child_InlineEnumPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "inline-enum"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // InlineEnum (leaf): 
@@ -521,11 +544,12 @@ func (n *Parent_ChildPath) InlineEnum() *Parent_Child_InlineEnumPath {
 // 	Path from parent:     "state/inline-enum"
 // 	Path from root:       "/parent/child/state/inline-enum"
 func (n *Parent_ChildPathAny) InlineEnum() *Parent_Child_InlineEnumPathAny {
-	return &Parent_Child_InlineEnumPathAny{
+	ps := &Parent_Child_InlineEnumPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "inline-enum"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }

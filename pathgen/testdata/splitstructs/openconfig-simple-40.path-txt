@@ -34,13 +34,14 @@ func Root() *Device {
 // 	Path from parent:     "parent"
 // 	Path from root:       "/parent"
 func (n *Device) Parent() *Parent {
-	return &Parent{
+	ps := &Parent{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"parent"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // RemoteContainer (container): 
@@ -49,13 +50,14 @@ func (n *Device) Parent() *Parent {
 // 	Path from parent:     "remote-container"
 // 	Path from root:       "/remote-container"
 func (n *Device) RemoteContainer() *RemoteContainer {
-	return &RemoteContainer{
+	ps := &RemoteContainer{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"remote-container"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Parent represents the /openconfig-simple/parent YANG schema element.
@@ -74,13 +76,14 @@ type ParentAny struct {
 // 	Path from parent:     "child"
 // 	Path from root:       "/parent/child"
 func (n *Parent) Child() *Parent_Child {
-	return &Parent_Child{
+	ps := &Parent_Child{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"child"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Child (container): 
@@ -89,13 +92,14 @@ func (n *Parent) Child() *Parent_Child {
 // 	Path from parent:     "child"
 // 	Path from root:       "/parent/child"
 func (n *ParentAny) Child() *Parent_ChildAny {
-	return &Parent_ChildAny{
+	ps := &Parent_ChildAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"child"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Parent_Child_Five represents the /openconfig-simple/parent/child/state/five YANG schema element.

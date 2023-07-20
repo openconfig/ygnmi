@@ -53,13 +53,14 @@ func Root() *RootPath {
 //	Path from parent:     "a"
 //	Path from root:       "/a"
 func (n *RootPath) A() *nested.APath {
-	return &nested.APath{
+	ps := &nested.APath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"a"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Container (container):
@@ -69,13 +70,14 @@ func (n *RootPath) A() *nested.APath {
 //	Path from parent:     "container"
 //	Path from root:       "/container"
 func (n *RootPath) Container() *nested.ContainerPath {
-	return &nested.ContainerPath{
+	ps := &nested.ContainerPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"container"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Model (container):
@@ -85,13 +87,14 @@ func (n *RootPath) Container() *nested.ContainerPath {
 //	Path from parent:     "model"
 //	Path from root:       "/model"
 func (n *RootPath) Model() *withlistval.ModelPath {
-	return &withlistval.ModelPath{
+	ps := &withlistval.ModelPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"model"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Parent (container): I am a parent container
@@ -102,13 +105,14 @@ func (n *RootPath) Model() *withlistval.ModelPath {
 //	Path from parent:     "parent"
 //	Path from root:       "/parent"
 func (n *RootPath) Parent() *simple.ParentPath {
-	return &simple.ParentPath{
+	ps := &simple.ParentPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"parent"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // RemoteContainer (container):
@@ -118,13 +122,14 @@ func (n *RootPath) Parent() *simple.ParentPath {
 //	Path from parent:     "remote-container"
 //	Path from root:       "/remote-container"
 func (n *RootPath) RemoteContainer() *simple.RemoteContainerPath {
-	return &simple.RemoteContainerPath{
+	ps := &simple.RemoteContainerPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"remote-container"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Batch contains a collection of paths.

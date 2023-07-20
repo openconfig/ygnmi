@@ -32,13 +32,14 @@ func Root() *DevicePath {
 // 	Path from parent:     "dup-enum"
 // 	Path from root:       "/dup-enum"
 func (n *DevicePath) DupEnum() *DupEnumPath {
-	return &DupEnumPath{
+	ps := &DupEnumPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"dup-enum"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Platform (container): 
@@ -47,13 +48,14 @@ func (n *DevicePath) DupEnum() *DupEnumPath {
 // 	Path from parent:     "platform"
 // 	Path from root:       "/platform"
 func (n *DevicePath) Platform() *PlatformPath {
-	return &PlatformPath{
+	ps := &PlatformPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"platform"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // DupEnum_APath represents the /openconfig-unione/dup-enum/state/A YANG schema element.
@@ -92,13 +94,14 @@ type DupEnumPathAny struct {
 // 	Path from parent:     "state/A"
 // 	Path from root:       "/dup-enum/state/A"
 func (n *DupEnumPath) A() *DupEnum_APath {
-	return &DupEnum_APath{
+	ps := &DupEnum_APath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "A"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // A (leaf): 
@@ -107,13 +110,14 @@ func (n *DupEnumPath) A() *DupEnum_APath {
 // 	Path from parent:     "state/A"
 // 	Path from root:       "/dup-enum/state/A"
 func (n *DupEnumPathAny) A() *DupEnum_APathAny {
-	return &DupEnum_APathAny{
+	ps := &DupEnum_APathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "A"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // B (leaf): 
@@ -122,13 +126,14 @@ func (n *DupEnumPathAny) A() *DupEnum_APathAny {
 // 	Path from parent:     "state/B"
 // 	Path from root:       "/dup-enum/state/B"
 func (n *DupEnumPath) B() *DupEnum_BPath {
-	return &DupEnum_BPath{
+	ps := &DupEnum_BPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "B"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // B (leaf): 
@@ -137,13 +142,14 @@ func (n *DupEnumPath) B() *DupEnum_BPath {
 // 	Path from parent:     "state/B"
 // 	Path from root:       "/dup-enum/state/B"
 func (n *DupEnumPathAny) B() *DupEnum_BPathAny {
-	return &DupEnum_BPathAny{
+	ps := &DupEnum_BPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "B"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // PlatformPath represents the /openconfig-unione/platform YANG schema element.
@@ -162,13 +168,14 @@ type PlatformPathAny struct {
 // 	Path from parent:     "component"
 // 	Path from root:       "/platform/component"
 func (n *PlatformPath) Component() *Platform_ComponentPath {
-	return &Platform_ComponentPath{
+	ps := &Platform_ComponentPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"component"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Component (container): 
@@ -177,13 +184,14 @@ func (n *PlatformPath) Component() *Platform_ComponentPath {
 // 	Path from parent:     "component"
 // 	Path from root:       "/platform/component"
 func (n *PlatformPathAny) Component() *Platform_ComponentPathAny {
-	return &Platform_ComponentPathAny{
+	ps := &Platform_ComponentPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"component"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Platform_Component_E1Path represents the /openconfig-unione/platform/component/state/e1 YANG schema element.
@@ -252,13 +260,14 @@ type Platform_ComponentPathAny struct {
 // 	Path from parent:     "state/e1"
 // 	Path from root:       "/platform/component/state/e1"
 func (n *Platform_ComponentPath) E1() *Platform_Component_E1Path {
-	return &Platform_Component_E1Path{
+	ps := &Platform_Component_E1Path{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "e1"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // E1 (leaf): 
@@ -267,13 +276,14 @@ func (n *Platform_ComponentPath) E1() *Platform_Component_E1Path {
 // 	Path from parent:     "state/e1"
 // 	Path from root:       "/platform/component/state/e1"
 func (n *Platform_ComponentPathAny) E1() *Platform_Component_E1PathAny {
-	return &Platform_Component_E1PathAny{
+	ps := &Platform_Component_E1PathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "e1"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Enumerated (leaf): 
@@ -282,13 +292,14 @@ func (n *Platform_ComponentPathAny) E1() *Platform_Component_E1PathAny {
 // 	Path from parent:     "state/enumerated"
 // 	Path from root:       "/platform/component/state/enumerated"
 func (n *Platform_ComponentPath) Enumerated() *Platform_Component_EnumeratedPath {
-	return &Platform_Component_EnumeratedPath{
+	ps := &Platform_Component_EnumeratedPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "enumerated"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Enumerated (leaf): 
@@ -297,13 +308,14 @@ func (n *Platform_ComponentPath) Enumerated() *Platform_Component_EnumeratedPath
 // 	Path from parent:     "state/enumerated"
 // 	Path from root:       "/platform/component/state/enumerated"
 func (n *Platform_ComponentPathAny) Enumerated() *Platform_Component_EnumeratedPathAny {
-	return &Platform_Component_EnumeratedPathAny{
+	ps := &Platform_Component_EnumeratedPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "enumerated"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Power (leaf): 
@@ -312,13 +324,14 @@ func (n *Platform_ComponentPathAny) Enumerated() *Platform_Component_EnumeratedP
 // 	Path from parent:     "state/power"
 // 	Path from root:       "/platform/component/state/power"
 func (n *Platform_ComponentPath) Power() *Platform_Component_PowerPath {
-	return &Platform_Component_PowerPath{
+	ps := &Platform_Component_PowerPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "power"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Power (leaf): 
@@ -327,13 +340,14 @@ func (n *Platform_ComponentPath) Power() *Platform_Component_PowerPath {
 // 	Path from parent:     "state/power"
 // 	Path from root:       "/platform/component/state/power"
 func (n *Platform_ComponentPathAny) Power() *Platform_Component_PowerPathAny {
-	return &Platform_Component_PowerPathAny{
+	ps := &Platform_Component_PowerPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "power"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // R1 (leaf): 
@@ -342,13 +356,14 @@ func (n *Platform_ComponentPathAny) Power() *Platform_Component_PowerPathAny {
 // 	Path from parent:     "state/r1"
 // 	Path from root:       "/platform/component/state/r1"
 func (n *Platform_ComponentPath) R1() *Platform_Component_R1Path {
-	return &Platform_Component_R1Path{
+	ps := &Platform_Component_R1Path{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "r1"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // R1 (leaf): 
@@ -357,13 +372,14 @@ func (n *Platform_ComponentPath) R1() *Platform_Component_R1Path {
 // 	Path from parent:     "state/r1"
 // 	Path from root:       "/platform/component/state/r1"
 func (n *Platform_ComponentPathAny) R1() *Platform_Component_R1PathAny {
-	return &Platform_Component_R1PathAny{
+	ps := &Platform_Component_R1PathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "r1"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Type (leaf): 
@@ -372,13 +388,14 @@ func (n *Platform_ComponentPathAny) R1() *Platform_Component_R1PathAny {
 // 	Path from parent:     "state/type"
 // 	Path from root:       "/platform/component/state/type"
 func (n *Platform_ComponentPath) Type() *Platform_Component_TypePath {
-	return &Platform_Component_TypePath{
+	ps := &Platform_Component_TypePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "type"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Type (leaf): 
@@ -387,11 +404,12 @@ func (n *Platform_ComponentPath) Type() *Platform_Component_TypePath {
 // 	Path from parent:     "state/type"
 // 	Path from root:       "/platform/component/state/type"
 func (n *Platform_ComponentPathAny) Type() *Platform_Component_TypePathAny {
-	return &Platform_Component_TypePathAny{
+	ps := &Platform_Component_TypePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "type"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
