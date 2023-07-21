@@ -271,3 +271,39 @@ func BenchmarkWatchAll(b *testing.B) {
 		return ygnmi.Continue
 	}).Await()
 }
+
+func BenchmarkLookupListParent(b *testing.B) {
+	sc := &dynamicClient{
+		numResponses: b.N,
+		respFn: func(i int) []*gpb.SubscribeResponse {
+			if i == b.N {
+				return []*gpb.SubscribeResponse{{Response: &gpb.SubscribeResponse_SyncResponse{}}}
+			}
+			return []*gpb.SubscribeResponse{{
+				Response: &gpb.SubscribeResponse_Update{
+					Update: &gpb.Notification{
+						Update: []*gpb.Update{{
+							Path: testutil.GNMIPath(b, fmt.Sprintf("/model/a/single-key[key=%d]/state/value", i)),
+							Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: int64(i)}},
+						}},
+					},
+				},
+			}}
+		},
+	}
+
+	bc := &benchmarkClient{sc: sc}
+	c, err := ygnmi.NewClient(bc)
+	if err != nil {
+		b.Fatalf("failed to create client: %v", err)
+	}
+	ctx := context.Background()
+	q := exampleocpath.Root().Model().State()
+	v, err := ygnmi.Lookup(ctx, c, q)
+	if err != nil {
+		b.Fatalf("failed to lookup: %v", err)
+	}
+	if !v.IsPresent() {
+		b.Fatal("value not present")
+	}
+}
