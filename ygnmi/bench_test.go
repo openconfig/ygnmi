@@ -273,18 +273,19 @@ func BenchmarkWatchAll(b *testing.B) {
 }
 
 func BenchmarkLookupListParent(b *testing.B) {
+	responseN := 4000
 	sc := &dynamicClient{
-		numResponses: b.N,
+		numResponses: responseN,
 		respFn: func(i int) []*gpb.SubscribeResponse {
-			if i == b.N {
+			if i == responseN {
 				return []*gpb.SubscribeResponse{{Response: &gpb.SubscribeResponse_SyncResponse{}}}
 			}
 			return []*gpb.SubscribeResponse{{
 				Response: &gpb.SubscribeResponse_Update{
 					Update: &gpb.Notification{
 						Update: []*gpb.Update{{
-							Path: testutil.GNMIPath(b, fmt.Sprintf("/model/a/single-key[key=%d]/state/value", i)),
-							Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: int64(i)}},
+							Path: testutil.GNMIPath(b, fmt.Sprintf("/model/a/single-key[key=2]/state/value")),
+							Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 2}},
 						}},
 					},
 				},
@@ -299,11 +300,13 @@ func BenchmarkLookupListParent(b *testing.B) {
 	}
 	ctx := context.Background()
 	q := exampleocpath.Root().Model().State()
-	v, err := ygnmi.Lookup(ctx, c, q)
-	if err != nil {
-		b.Fatalf("failed to lookup: %v", err)
-	}
-	if !v.IsPresent() {
-		b.Fatal("value not present")
+	for i := 0; i != b.N; i++ {
+		v, err := ygnmi.Lookup(ctx, c, q)
+		if err != nil {
+			b.Fatalf("failed to lookup: %v", err)
+		}
+		if !v.IsPresent() {
+			b.Fatal("value not present")
+		}
 	}
 }
