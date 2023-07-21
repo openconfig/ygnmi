@@ -271,3 +271,59 @@ func BenchmarkWatchAll(b *testing.B) {
 		return ygnmi.Continue
 	}).Await()
 }
+
+func BenchmarkLookupListParent(b *testing.B) {
+	benchs := []struct {
+		desc    string
+		listLen int
+	}{{
+		desc:    "len 1000",
+		listLen: 1000,
+	}, {
+		desc:    "len 2000",
+		listLen: 2000,
+	}, {
+		desc:    "len 4000",
+		listLen: 4000,
+	}}
+	for _, bb := range benchs {
+		b.Run(bb.desc, func(b *testing.B) {
+			sc := &dynamicClient{
+				numResponses: bb.listLen,
+				respFn: func(i int) []*gpb.SubscribeResponse {
+					if i == bb.listLen {
+						return []*gpb.SubscribeResponse{{Response: &gpb.SubscribeResponse_SyncResponse{}}}
+					}
+					return []*gpb.SubscribeResponse{{
+						Response: &gpb.SubscribeResponse_Update{
+							Update: &gpb.Notification{
+								Update: []*gpb.Update{{
+									Path: testutil.GNMIPath(b, fmt.Sprintf("/model/a/single-key[key=%d]/state/value", i)),
+									Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: int64(i)}},
+								}},
+							},
+						},
+					}}
+				},
+			}
+
+			bc := &benchmarkClient{sc: sc}
+			c, err := ygnmi.NewClient(bc)
+			if err != nil {
+				b.Fatalf("failed to create client: %v", err)
+			}
+			ctx := context.Background()
+			q := exampleocpath.Root().Model().State()
+
+			for i := 0; i < b.N; i++ {
+				v, err := ygnmi.Lookup(ctx, c, q)
+				if err != nil {
+					b.Fatalf("failed to lookup: %v", err)
+				}
+				if !v.IsPresent() {
+					b.Fatal("value not present")
+				}
+			}
+		})
+	}
+}
