@@ -283,8 +283,8 @@ func BenchmarkLookupListParent(b *testing.B) {
 		desc:    "len 2000",
 		listLen: 2000,
 	}, {
-		desc:    "len 4000",
-		listLen: 4000,
+		desc:    "len 3000",
+		listLen: 3000,
 	}}
 	for _, bb := range benchs {
 		b.Run(bb.desc, func(b *testing.B) {
