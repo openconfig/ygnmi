@@ -15,6 +15,7 @@
 package ygnmi_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -211,6 +212,102 @@ func TestUncompressedTelemetry(t *testing.T) {
 					Timestamp: startTime.Add(time.Millisecond),
 				}).SetVal("bar"),
 			},
+		)
+	})
+}
+
+func TestUncompressedConfig(t *testing.T) {
+	setClient := &testutil.SetClient{}
+	c, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
+	if err != nil {
+		t.Fatalf("Unexpected error creating client: %v", err)
+	}
+
+	t.Run("YANG ordered list for uncompressed schema", func(t *testing.T) {
+		configCheckFn(t, setClient, c,
+			func(c *ygnmi.Client) (*ygnmi.Result, error) {
+				om := &uexampleoc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap{}
+				ol, err := om.AppendNew("foo")
+				if err != nil {
+					t.Fatal(err)
+				}
+				ol.GetOrCreateConfig().SetKey("foo")
+				ol.GetOrCreateConfig().SetValue(42)
+				ol, err = om.AppendNew("bar")
+				if err != nil {
+					t.Fatal(err)
+				}
+				ol.GetOrCreateConfig().SetKey("bar")
+				ol.GetOrCreateConfig().SetValue(43)
+				ol, err = om.AppendNew("baz")
+				if err != nil {
+					t.Fatal(err)
+				}
+				ol.GetOrCreateConfig().SetKey("baz")
+				ol.GetOrCreateConfig().SetValue(44)
+				return ygnmi.Replace(context.Background(), c, uexampleocpath.Root().Model().A().SingleKey("foo").OrderedLists().OrderedListMap(), om)
+			},
+			&gpb.SetRequest{
+				Prefix: &gpb.Path{
+					Target: "dut",
+				},
+				Replace: []*gpb.Update{{
+					Path: testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists/ordered-list"),
+					Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`[
+  {
+    "openconfig-withlistval:config": {
+      "key": "foo",
+      "value": "42"
+    },
+    "openconfig-withlistval:key": "foo"
+  },
+  {
+    "openconfig-withlistval:config": {
+      "key": "bar",
+      "value": "43"
+    },
+    "openconfig-withlistval:key": "bar"
+  },
+  {
+    "openconfig-withlistval:config": {
+      "key": "baz",
+      "value": "44"
+    },
+    "openconfig-withlistval:key": "baz"
+  }
+]`)}},
+				}},
+			},
+			&gpb.SetResponse{
+				Prefix: &gpb.Path{
+					Target: "dut",
+				},
+			},
+			"",
+			nil,
+		)
+	})
+
+	t.Run("whole multi-keyed list for uncompressed schema", func(t *testing.T) {
+		configCheckFn(t, setClient, c,
+			func(c *ygnmi.Client) (*ygnmi.Result, error) {
+				return ygnmi.Delete(context.Background(), c, uexampleocpath.Root().Model().B().MultiKeyMap())
+			},
+			&gpb.SetRequest{
+				Prefix: &gpb.Path{
+					Target: "dut",
+				},
+				Delete: []*gpb.Path{
+					testutil.GNMIPath(t, "/model/b/multi-key"),
+				},
+			},
+			&gpb.SetResponse{
+				Prefix: &gpb.Path{
+					Target: "dut",
+				},
+			},
+			"",
+			nil,
 		)
 	})
 }
