@@ -8,6 +8,20 @@ module openconfig-withlistval {
     "A simple test module that is used to verify code generation for a
     schema that contains lists";
 
+  typedef ieeefloat32 {
+    type binary {
+      length "4";
+    }
+    description
+      "An IEEE 32-bit floating point number. The format of this number
+      is of the form:
+        1-bit  sign
+        8-bit  exponent
+        23-bit fraction
+      The floating point value is calculated using:
+        (-1)**S * 2**(Exponent-127) * (1+Fraction)";
+  }
+
   grouping single-key-config {
     leaf key { type string; }
     leaf value { type int64; }
@@ -37,6 +51,12 @@ module openconfig-withlistval {
           container state {
             config false;
             uses single-key-config;
+            leaf counter {
+              type ieeefloat32;
+            }
+            leaf-list counters {
+              type ieeefloat32;
+            }
           }
 
           container ordered-lists {

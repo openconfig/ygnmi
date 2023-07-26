@@ -87,6 +87,7 @@ func generate(cmd *cobra.Command, args []string) error {
 	extraGenerators := pathgen.ExtraGenerators{
 		StructFields: []pathgen.Generator{pathgen.GNMIFieldGenerator},
 		StructInits:  []pathgen.Generator{pathgen.GNMIInitGenerator},
+		Extras:       []pathgen.Generator{pathgen.GNMIGeneratorUncompressed},
 	}
 	compressBehaviour := genutil.Uncompressed
 	if viper.GetBool("compress_paths") {
