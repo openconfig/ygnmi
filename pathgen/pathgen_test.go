@@ -24,6 +24,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/openconfig/gnmi/errdiff"
+	"github.com/openconfig/ygot/genutil"
 	"github.com/openconfig/ygot/testutil"
 	"github.com/openconfig/ygot/ygen"
 	"github.com/openconfig/ygot/ygot"
@@ -49,11 +50,8 @@ func TestGeneratePathCode(t *testing.T) {
 		// inFiles is the set of inputFiles for the test.
 		inFiles []string
 		// inIncludePaths is the set of paths that should be searched for imports.
-		inIncludePaths []string
-		// inPreferOperationalState says whether to prefer operational state over intended config in the path-building methods.
-		inPreferOperationalState bool
-		// inExcludeState determines whether derived state leaves are excluded from the path-building methods.
-		inExcludeState bool
+		inIncludePaths      []string
+		inCompressBehaviour genutil.CompressBehaviour
 		// inShortenEnumLeafNames says whether the enum leaf names are shortened (i.e. module name removed) in the generated Go code corresponding to the generated path library.
 		inShortenEnumLeafNames bool
 		// inUseDefiningModuleForTypedefEnumNames uses the defining module name to prefix typedef enumerated types instead of the module where the typedef enumerated value is used.
@@ -72,15 +70,15 @@ func TestGeneratePathCode(t *testing.T) {
 		// wantErr specifies whether the test should expect an error.
 		wantErr bool
 	}{{
-		name:                     "simple openconfig test",
-		inFiles:                  []string{filepath.Join(datapath, "openconfig-simple.yang")},
-		wantStructsCodeFile:      filepath.Join(TestRoot, "testdata/structs/openconfig-simple.path-txt"),
-		inPreferOperationalState: true,
-		inShortenEnumLeafNames:   true,
-		inGenerateWildcardPaths:  true,
-		inSchemaStructPkgPath:    "",
-		inPathStructSuffix:       "Path",
-		checkYANGPath:            true,
+		name:                    "simple openconfig test",
+		inFiles:                 []string{filepath.Join(datapath, "openconfig-simple.yang")},
+		wantStructsCodeFile:     filepath.Join(TestRoot, "testdata/structs/openconfig-simple.path-txt"),
+		inCompressBehaviour:     genutil.PreferOperationalState,
+		inShortenEnumLeafNames:  true,
+		inGenerateWildcardPaths: true,
+		inSchemaStructPkgPath:   "",
+		inPathStructSuffix:      "Path",
+		checkYANGPath:           true,
 		wantNodeDataMap: NodeDataMap{
 			"DevicePath": {
 				GoTypeName:            "*Device",
@@ -226,6 +224,7 @@ func TestGeneratePathCode(t *testing.T) {
 	}, {
 		name:                                   "simple openconfig test with preferOperationalState=false",
 		inFiles:                                []string{filepath.Join(datapath, "openconfig-simple.yang")},
+		inCompressBehaviour:                    genutil.PreferIntendedConfig,
 		inShortenEnumLeafNames:                 true,
 		inGenerateWildcardPaths:                true,
 		inUseDefiningModuleForTypedefEnumNames: true,
@@ -369,7 +368,7 @@ func TestGeneratePathCode(t *testing.T) {
 	}, {
 		name:                                   "simple openconfig test with excludeState=true",
 		inFiles:                                []string{filepath.Join(datapath, "openconfig-simple.yang")},
-		inExcludeState:                         true,
+		inCompressBehaviour:                    genutil.ExcludeDerivedState,
 		inShortenEnumLeafNames:                 true,
 		inUseDefiningModuleForTypedefEnumNames: true,
 		inGenerateWildcardPaths:                true,
@@ -500,7 +499,7 @@ func TestGeneratePathCode(t *testing.T) {
 	}, {
 		name:                                   "simple openconfig test with ordered list",
 		inFiles:                                []string{filepath.Join(datapath, "openconfig-orderedlist.yang")},
-		inPreferOperationalState:               true,
+		inCompressBehaviour:                    genutil.PreferOperationalState,
 		inShortenEnumLeafNames:                 true,
 		inUseDefiningModuleForTypedefEnumNames: true,
 		inGenerateWildcardPaths:                true,
@@ -555,7 +554,7 @@ func TestGeneratePathCode(t *testing.T) {
 	}, {
 		name:                                   "simple openconfig test with ordered list but atomic generation turned off",
 		inFiles:                                []string{filepath.Join(datapath, "openconfig-orderedlist.yang")},
-		inPreferOperationalState:               true,
+		inCompressBehaviour:                    genutil.PreferOperationalState,
 		inShortenEnumLeafNames:                 true,
 		inUseDefiningModuleForTypedefEnumNames: true,
 		inGenerateWildcardPaths:                true,
@@ -607,7 +606,7 @@ func TestGeneratePathCode(t *testing.T) {
 	}, {
 		name:                                   "simple openconfig test with list",
 		inFiles:                                []string{filepath.Join(datapath, "openconfig-withlist.yang")},
-		inPreferOperationalState:               true,
+		inCompressBehaviour:                    genutil.PreferOperationalState,
 		inShortenEnumLeafNames:                 true,
 		inUseDefiningModuleForTypedefEnumNames: true,
 		inGenerateWildcardPaths:                true,
@@ -617,7 +616,7 @@ func TestGeneratePathCode(t *testing.T) {
 	}, {
 		name:                                   "simple openconfig test with list without wildcard paths",
 		inFiles:                                []string{filepath.Join(datapath, "openconfig-withlist.yang")},
-		inPreferOperationalState:               true,
+		inCompressBehaviour:                    genutil.PreferOperationalState,
 		inShortenEnumLeafNames:                 true,
 		inUseDefiningModuleForTypedefEnumNames: true,
 		inGenerateWildcardPaths:                false,
@@ -627,7 +626,7 @@ func TestGeneratePathCode(t *testing.T) {
 	}, {
 		name:                                   "simple openconfig test with list in separate package",
 		inFiles:                                []string{filepath.Join(datapath, "openconfig-withlist.yang")},
-		inPreferOperationalState:               true,
+		inCompressBehaviour:                    genutil.PreferOperationalState,
 		inShortenEnumLeafNames:                 true,
 		inUseDefiningModuleForTypedefEnumNames: true,
 		inGenerateWildcardPaths:                true,
@@ -637,7 +636,7 @@ func TestGeneratePathCode(t *testing.T) {
 	}, {
 		name:                                   "simple openconfig test with list in builder API",
 		inFiles:                                []string{filepath.Join(datapath, "openconfig-withlist.yang")},
-		inPreferOperationalState:               true,
+		inCompressBehaviour:                    genutil.PreferOperationalState,
 		inShortenEnumLeafNames:                 true,
 		inUseDefiningModuleForTypedefEnumNames: true,
 		inGenerateWildcardPaths:                true,
@@ -647,7 +646,7 @@ func TestGeneratePathCode(t *testing.T) {
 	}, {
 		name:                                   "simple openconfig test with union & typedef & identity & enum",
 		inFiles:                                []string{filepath.Join(datapath, "openconfig-unione.yang")},
-		inPreferOperationalState:               true,
+		inCompressBehaviour:                    genutil.PreferOperationalState,
 		inShortenEnumLeafNames:                 true,
 		inUseDefiningModuleForTypedefEnumNames: true,
 		inGenerateWildcardPaths:                true,
@@ -791,13 +790,13 @@ func TestGeneratePathCode(t *testing.T) {
 				YANGFieldName:         "type",
 			}},
 	}, {
-		name:                     "simple openconfig test with union & typedef & identity & enum, with enum names not shortened",
-		inFiles:                  []string{filepath.Join(datapath, "openconfig-unione.yang")},
-		inPreferOperationalState: true,
-		inGenerateWildcardPaths:  true,
-		inSchemaStructPkgPath:    "",
-		inPathStructSuffix:       "Path",
-		wantStructsCodeFile:      filepath.Join(TestRoot, "testdata/structs/openconfig-unione.path-txt"),
+		name:                    "simple openconfig test with union & typedef & identity & enum, with enum names not shortened",
+		inFiles:                 []string{filepath.Join(datapath, "openconfig-unione.yang")},
+		inCompressBehaviour:     genutil.PreferOperationalState,
+		inGenerateWildcardPaths: true,
+		inSchemaStructPkgPath:   "",
+		inPathStructSuffix:      "Path",
+		wantStructsCodeFile:     filepath.Join(TestRoot, "testdata/structs/openconfig-unione.path-txt"),
 		wantNodeDataMap: NodeDataMap{
 			"DevicePath": {
 				GoTypeName:            "*Device",
@@ -937,7 +936,7 @@ func TestGeneratePathCode(t *testing.T) {
 	}, {
 		name:                                   "simple openconfig test with submodule and union list key",
 		inFiles:                                []string{filepath.Join(datapath, "enum-module.yang")},
-		inPreferOperationalState:               true,
+		inCompressBehaviour:                    genutil.PreferOperationalState,
 		inShortenEnumLeafNames:                 true,
 		inUseDefiningModuleForTypedefEnumNames: true,
 		inGenerateWildcardPaths:                true,
@@ -1127,7 +1126,7 @@ func TestGeneratePathCode(t *testing.T) {
 	}, {
 		name:                                   "simple openconfig test with choice and cases",
 		inFiles:                                []string{filepath.Join(datapath, "choice-case-example.yang")},
-		inPreferOperationalState:               true,
+		inCompressBehaviour:                    genutil.PreferOperationalState,
 		inShortenEnumLeafNames:                 true,
 		inUseDefiningModuleForTypedefEnumNames: true,
 		inGenerateWildcardPaths:                true,
@@ -1140,7 +1139,7 @@ func TestGeneratePathCode(t *testing.T) {
 			filepath.Join(datapath, "openconfig-simple-target.yang"),
 			filepath.Join(datapath, "openconfig-simple-augment.yang"),
 		},
-		inPreferOperationalState:               true,
+		inCompressBehaviour:                    genutil.PreferOperationalState,
 		inShortenEnumLeafNames:                 true,
 		inUseDefiningModuleForTypedefEnumNames: true,
 		inGenerateWildcardPaths:                true,
@@ -1234,7 +1233,7 @@ func TestGeneratePathCode(t *testing.T) {
 	}, {
 		name:                                   "simple openconfig test with camelcase-name extension",
 		inFiles:                                []string{filepath.Join(datapath, "openconfig-enumcamelcase.yang")},
-		inPreferOperationalState:               true,
+		inCompressBehaviour:                    genutil.PreferOperationalState,
 		inShortenEnumLeafNames:                 true,
 		inUseDefiningModuleForTypedefEnumNames: true,
 		inGenerateWildcardPaths:                true,
@@ -1244,7 +1243,7 @@ func TestGeneratePathCode(t *testing.T) {
 	}, {
 		name:                                   "simple openconfig test with camelcase-name extension in container and leaf",
 		inFiles:                                []string{filepath.Join(datapath, "openconfig-camelcase.yang")},
-		inPreferOperationalState:               true,
+		inCompressBehaviour:                    genutil.PreferOperationalState,
 		inShortenEnumLeafNames:                 true,
 		inUseDefiningModuleForTypedefEnumNames: true,
 		inGenerateWildcardPaths:                true,
@@ -1262,8 +1261,7 @@ func TestGeneratePathCode(t *testing.T) {
 				cg.GeneratingBinary = "pathgen-tests"
 				cg.FakeRootName = "device"
 				cg.PathStructSuffix = tt.inPathStructSuffix
-				cg.PreferOperationalState = tt.inPreferOperationalState
-				cg.ExcludeState = tt.inExcludeState
+				cg.CompressBehaviour = tt.inCompressBehaviour
 				cg.ShortenEnumLeafNames = tt.inShortenEnumLeafNames
 				cg.UseDefiningModuleForTypedefEnumNames = tt.inUseDefiningModuleForTypedefEnumNames
 				cg.GenerateWildcardPaths = tt.inGenerateWildcardPaths
@@ -1405,7 +1403,7 @@ func TestGeneratePathCodeSplitFiles(t *testing.T) {
 				} else {
 					cg.PathStructSuffix = ""
 				}
-				cg.PreferOperationalState = true
+				cg.CompressBehaviour = genutil.PreferOperationalState
 				cg.GenerateWildcardPaths = true
 				cg.PackageName = "ocstructs"
 
@@ -1511,7 +1509,7 @@ func TestGeneratePathCodeSplitModules(t *testing.T) {
 				cg.GeneratingBinary = "pathgen-tests"
 				cg.FakeRootName = "device"
 				cg.PackageName = "device"
-				cg.PreferOperationalState = true
+				cg.CompressBehaviour = genutil.PreferOperationalState
 				cg.GenerateWildcardPaths = true
 				cg.SplitByModule = true
 				cg.BasePackagePath = "example.com"
