@@ -56,7 +56,8 @@ const (
 
 var packagesSeen = map[string]bool{}
 
-// GNMIGenerator is a plugin generator for generating ygnmi query objects.
+// GNMIGenerator is a plugin generator for generating ygnmi query objects for
+// compressed structs.
 //
 // - pathStructName is the name of the PathStruct of the node.
 // - node contains information of the node.
@@ -65,8 +66,7 @@ var packagesSeen = map[string]bool{}
 //
 // Note: GNMIGenerator requires that PreferOperationalState be true when generating PathStructs.
 // TODO(DanG100): pass schema from parent to child.
-func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeData, compressPaths, _ bool) (string, error) {
-	methodName := "State"
+func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeData, _ bool) (string, error) {
 	tmplStruct := gnmiStruct{
 		PathStructName:          pathStructName,
 		GoTypeName:              node.GoTypeName,
@@ -75,8 +75,8 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		GoFieldName:             node.GoFieldName,
 		SchemaStructPkgAccessor: "oc.",
 		IsState:                 true,
-		IsCompressedSchema:      compressPaths,
-		MethodName:              methodName,
+		IsCompressedSchema:      true,
+		MethodName:              "State",
 		SingletonTypeName:       "SingletonQuery",
 		WildcardTypeName:        "WildcardQuery",
 		IsScalar:                node.IsScalarField,
@@ -94,15 +94,11 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		if err := batchTemplate.Execute(&b, &tmplStruct); err != nil {
 			return "", err
 		}
-		if compressPaths {
-			tmplStruct := tmplStruct
-			tmplStruct.MethodName = "Config"
-			// TODO: Should this be here? If not, add a comment for why.
-			// tmplStruct.SingletonTypeName = "ConfigQuery"
-			tmplStruct.IsState = false
-			if err := batchTemplate.Execute(&b, &tmplStruct); err != nil {
-				return "", err
-			}
+		tmplStruct := tmplStruct
+		tmplStruct.MethodName = "Config"
+		tmplStruct.IsState = false
+		if err := batchTemplate.Execute(&b, &tmplStruct); err != nil {
+			return "", err
 		}
 	}
 	if !packagesSeen[node.GoPathPackageName] {
@@ -139,17 +135,11 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		return tmpl.Execute(&b, &tmplStruct)
 	}
 
-	// TODO(wenbli): This logic is confusing -- fix up after deciding on API for uncompressed.
-	if !compressPaths {
-		tmplStruct.MethodName = "Query"
-		tmplStruct.SingletonTypeName = "ConfigQuery"
-		tmplStruct.IsState = false
-	}
 	if err := generate(tmplStruct, false); err != nil {
 		return "", err
 	}
 
-	if !generateConfigFunc(dir, node) || !compressPaths {
+	if !generateConfigFunc(dir, node) {
 		return b.String(), nil
 	}
 
@@ -163,20 +153,30 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 	return b.String(), nil
 }
 
-func GNMIFieldGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeData, compressPaths, wildcard bool) (string, error) {
-	queryTypeName := "ConfigQuery"
-	// FIXME: Check config false of field, not the parent.
-	if dir.ConfigFalse {
-		queryTypeName = "SingletonQuery"
-	}
-	if wildcard {
+// GNMIFieldGenerator generates an embedded query field for a PathStruct.
+//
+// This is meant to be used for uncompressed generation, where there is no need
+// to distinguish between config and state queries.
+func GNMIFieldGenerator(pathStructName string, _ *ygen.ParsedDirectory, node *NodeData, wildcard bool) (string, error) {
+	var queryTypeName string
+	switch {
+	case wildcard:
 		queryTypeName = "WildcardQuery"
+	case node.ConfigFalse:
+		queryTypeName = "SingletonQuery"
+	default:
+		queryTypeName = "ConfigQuery"
 	}
 
 	return fmt.Sprintf("\n\tygnmi.%s[%s]", queryTypeName, node.GoTypeName), nil
 }
 
-func GNMIInitGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeData, compressPaths, wildcard bool) (string, error) {
+// GNMIInitGenerator generates the initialization for an embedded query field
+// for a PathStruct.
+//
+// This is meant to be used for uncompressed generation, where there is no need
+// to distinguish between config and state queries.
+func GNMIInitGenerator(pathStructName string, _ *ygen.ParsedDirectory, node *NodeData, wildcard bool) (string, error) {
 	tmplStruct := gnmiStruct{
 		PathStructName:          pathStructName,
 		GoTypeName:              node.GoTypeName,
@@ -185,7 +185,7 @@ func GNMIInitGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *N
 		GoFieldName:             node.GoFieldName,
 		SchemaStructPkgAccessor: "oc.",
 		IsState:                 true,
-		IsCompressedSchema:      compressPaths,
+		IsCompressedSchema:      false,
 		SingletonTypeName:       "ConfigQuery",
 		WildcardTypeName:        "WildcardQuery",
 		IsScalar:                node.IsScalarField,
@@ -196,14 +196,15 @@ func GNMIInitGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *N
 		IsListContainer:         node.IsListContainer,
 	}
 
-	queryTypeName := "ConfigQuery"
-	// FIXME: Check config false of field, not the parent.
-	if dir.ConfigFalse {
+	var queryTypeName string
+	switch {
+	case wildcard:
+		queryTypeName = "WildcardQuery"
+	case node.ConfigFalse:
 		tmplStruct.SingletonTypeName = "SingletonQuery"
 		queryTypeName = "SingletonQuery"
-	}
-	if wildcard {
-		queryTypeName = "WildcardQuery"
+	default:
+		queryTypeName = "ConfigQuery"
 	}
 
 	var tmpl *template.Template
@@ -254,14 +255,17 @@ func populateTmplForLeaf(dir *ygen.ParsedDirectory, fieldName string, shadow boo
 // For non-leaves, it checks if the directory or any of its descendants are config nodes.
 func generateConfigFunc(dir *ygen.ParsedDirectory, node *NodeData) bool {
 	if node.IsLeaf {
+		// Since we're generating with PreferOperationalState, we need
+		// to check shadow-fields to know whether this has a config
+		// sibling.
 		field, ok := dir.Fields[node.YANGFieldName]
 		return ok && len(field.ShadowMappedPaths) > 0
 	}
-	return !dir.ConfigFalse
+	return !node.ConfigFalse
 }
 
-// FIXME(wenbli): fix
-// mustParseDownstreamTemplate generates a template.Template for a particular named source template
+// mustParseDownstreamTemplate parses a new template.Template with the given
+// tmpl as the associated template.
 func mustParseDownstreamTemplate(tmpl *template.Template, src string) *template.Template {
 	tmpl, err := template.Must(tmpl.Clone()).Parse(src)
 	if err != nil {

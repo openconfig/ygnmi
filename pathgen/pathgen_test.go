@@ -127,6 +127,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "four",
+				ConfigFalse:           true,
 			},
 			"Parent_Child_OnePath": {
 				GoTypeName:            "string",
@@ -141,6 +142,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "one",
+				ConfigFalse:           true,
 			},
 			"Parent_Child_ThreePath": {
 				GoTypeName:            "E_Child_Three",
@@ -155,6 +157,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "three",
+				ConfigFalse:           true,
 			},
 			"Parent_Child_TwoPath": {
 				GoTypeName:            "string",
@@ -169,6 +172,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "two",
+				ConfigFalse:           true,
 			},
 			"Parent_Child_FivePath": {
 				GoTypeName:            "Binary",
@@ -181,6 +185,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				YANGFieldName:         "five",
 				DirectoryName:         "/openconfig-simple/parent/child",
+				ConfigFalse:           true,
 			},
 			"Parent_Child_SixPath": {
 				GoTypeName:            "[]Binary",
@@ -193,6 +198,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				YANGFieldName:         "six",
 				DirectoryName:         "/openconfig-simple/parent/child",
+				ConfigFalse:           true,
 			},
 			"RemoteContainerPath": {
 				GoTypeName:            "*RemoteContainer",
@@ -220,6 +226,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/remote-container",
 				YANGFieldName:         "a-leaf",
+				ConfigFalse:           true,
 			}},
 	}, {
 		name:                    "simple openconfig test with compression off",
@@ -470,6 +477,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "two",
+				ConfigFalse:           true,
 			},
 			"Parent_Child_FivePath": {
 				GoTypeName:            "Binary",
@@ -609,7 +617,7 @@ func TestGeneratePathCode(t *testing.T) {
 				SubsumingGoStructName: "Parent_Child",
 				IsLeaf:                true,
 				YANGTypeName:          "ieeefloat32",
-				YANGPath:              "/openconfig-simple/parent/child/state/five",
+				YANGPath:              "/openconfig-simple/parent/child/config/five",
 				GoPathPackageName:     "ocstructs",
 				YANGFieldName:         "five",
 				DirectoryName:         "/openconfig-simple/parent/child",
@@ -621,7 +629,7 @@ func TestGeneratePathCode(t *testing.T) {
 				SubsumingGoStructName: "Parent_Child",
 				IsLeaf:                true,
 				YANGTypeName:          "ieeefloat32",
-				YANGPath:              "/openconfig-simple/parent/child/state/six",
+				YANGPath:              "/openconfig-simple/parent/child/config/six",
 				GoPathPackageName:     "ocstructs",
 				YANGFieldName:         "six",
 				DirectoryName:         "/openconfig-simple/parent/child",
@@ -706,6 +714,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				YANGFieldName:         "key",
 				DirectoryName:         "/openconfig-orderedlist/model/ordered-lists/ordered-list",
+				ConfigFalse:           true,
 			}},
 	}, {
 		name:                                   "simple openconfig test with ordered list but atomic generation turned off",
@@ -758,6 +767,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				YANGFieldName:         "key",
 				DirectoryName:         "/openconfig-orderedlist/model/ordered-lists/ordered-list",
+				ConfigFalse:           true,
 			}},
 	}, {
 		name:                                   "simple openconfig test with list",
@@ -1143,6 +1153,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/enum-module/a-lists/a-list",
 				YANGFieldName:         "value",
+				ConfigFalse:           true,
 			},
 			"BListPath": {
 				GoTypeName:            "*BList",
@@ -1179,6 +1190,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/enum-module/b-lists/b-list",
 				YANGFieldName:         "value",
+				ConfigFalse:           true,
 			},
 			"CPath": {
 				GoTypeName:            "*C",
@@ -1204,6 +1216,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/enum-module/c",
 				YANGFieldName:         "cl",
+				ConfigFalse:           false,
 			},
 			"ParentPath": {
 				GoTypeName:            "*Parent",
@@ -1241,6 +1254,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				YANGFieldName:         "id",
 				DirectoryName:         "/enum-module/parent/child",
+				ConfigFalse:           true,
 			},
 			"Parent_Child_Id2Path": {
 				GoTypeName:            "E_EnumTypes_ID",
@@ -1254,6 +1268,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/enum-module/parent/child",
 				YANGFieldName:         "id2",
+				ConfigFalse:           true,
 			},
 			"Parent_Child_EnumPath": {
 				GoTypeName:            "E_EnumTypes_TdEnum",
@@ -1267,6 +1282,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/enum-module/parent/child",
 				YANGFieldName:         "enum",
+				ConfigFalse:           true,
 			},
 			"Parent_Child_InlineEnumPath": {
 				GoTypeName:            "E_Child_InlineEnum",
@@ -1280,6 +1296,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/enum-module/parent/child",
 				YANGFieldName:         "inline-enum",
+				ConfigFalse:           true,
 			}},
 	}, {
 		name:                                   "simple openconfig test with choice and cases",
@@ -1337,6 +1354,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple-target/native",
 				YANGFieldName:         "a",
+				ConfigFalse:           true,
 			},
 			"Native_B": {
 				GoTypeName:            "string",
@@ -1350,6 +1368,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple-target/native",
 				YANGFieldName:         "b",
+				ConfigFalse:           true,
 			},
 			"Target": {
 				GoTypeName:            "*oc.Target",
@@ -1387,6 +1406,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple-target/target/foo",
 				YANGFieldName:         "a",
+				ConfigFalse:           true,
 			}},
 	}, {
 		name:                                   "simple openconfig test with camelcase-name extension",
@@ -1867,6 +1887,7 @@ func getIR() *ygen.IR {
 							SchemaPath:        "/keyless-list-container/keyless-list",
 							LeafrefTargetPath: "",
 							Description:       "",
+							ConfigFalse:       true,
 						},
 						Type:                    ygen.ListNode,
 						LangType:                nil,
@@ -1965,6 +1986,7 @@ func getIR() *ygen.IR {
 							SchemaPath:        "/list-container-with-state/list-with-state/state/key",
 							LeafrefTargetPath: "",
 							Description:       "",
+							ConfigFalse:       true,
 						},
 						Flags: map[string]string{yangTypeNameFlagKey: "float64"},
 						Type:  ygen.LeafNode,
@@ -2125,6 +2147,7 @@ func getIR() *ygen.IR {
 							SchemaPath:        "/container/leaf",
 							LeafrefTargetPath: "",
 							Description:       "",
+							ConfigFalse:       true,
 						},
 						Flags: map[string]string{yangTypeNameFlagKey: "int32"},
 						Type:  ygen.LeafNode,
@@ -2390,6 +2413,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				GoPathPackageName:     "rootmodulepath",
 				DirectoryName:         "/root-module/list-container-with-state/list-with-state",
 				YANGFieldName:         "key",
+				ConfigFalse:           true,
 			},
 			"List_Key1_Path": {
 				GoTypeName:            "string",
@@ -2450,6 +2474,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				GoPathPackageName:     "rootmodulepath",
 				DirectoryName:         "/root-module/keyless-list-container/keyless-list",
 				YANGFieldName:         "",
+				ConfigFalse:           true,
 			},
 			"KeylessList_Leaf_Path": {
 				GoTypeName:            "int32",
@@ -2463,6 +2488,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				GoPathPackageName:     "rootmodulepath",
 				DirectoryName:         "/root-module/keyless-list-container/keyless-list",
 				YANGFieldName:         "leaf",
+				ConfigFalse:           true,
 			}},
 		wantSorted: []string{
 			"ContainerWithConfig_Leaflist_Path",
@@ -2565,13 +2591,14 @@ const (
 // 	Key2: oc.Binary
 // 	UnionKey: [oc.UnionString, oc.Binary]
 func (n *RootPath) List(Key1 string, Key2 oc.Binary, UnionKey oc.RootElementModule_List_UnionKey_Union) *ListPath {
-	return &ListPath{
+	ps := &ListPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": Key1, "key2": Key2, "union-key": UnionKey},
 			n,
 		),
 	}
+	return ps
 }
 
 // ListMap (list): 
@@ -2584,13 +2611,14 @@ func (n *RootPath) List(Key1 string, Key2 oc.Binary, UnionKey oc.RootElementModu
 // 	Key2: oc.Binary
 // 	UnionKey: [oc.UnionString, oc.Binary]
 func (n *RootPath) ListMap() *ListPathMap {
-	return &ListPathMap{
+	ps := &ListPathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `
 
@@ -2606,13 +2634,14 @@ func (n *RootPath) ListMap() *ListPathMap {
 // 	Key2 (wildcarded): oc.Binary
 // 	UnionKey (wildcarded): [oc.UnionString, oc.Binary]
 func (n *RootPath) ListAny() *ListPathAny {
-	return &ListPathAny{
+	ps := &ListPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": "*", "key2": "*", "union-key": "*"},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *ListPathAny) WithKey1(Key1 string) *ListPathAny {
@@ -2636,56 +2665,61 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 	wantNonListMethods = `
 // Container returns from RootPath the path struct for its child "container".
 func (n *RootPath) Container() *ContainerPath {
-	return &ContainerPath{
+	ps := &ContainerPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"container"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // ContainerWithConfig returns from RootPath the path struct for its child "container-with-config".
 func (n *RootPath) ContainerWithConfig() *ContainerWithConfigPath {
-	return &ContainerWithConfigPath{
+	ps := &ContainerWithConfigPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"container-with-config"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *RootPath) KeylessListAny() *KeylessListPathAny {
-	return &KeylessListPathAny{
+	ps := &KeylessListPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"keyless-list-container", "keyless-list"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Leaf returns from RootPath the path struct for its child "leaf".
 func (n *RootPath) Leaf() *LeafPath {
-	return &LeafPath{
+	ps := &LeafPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"leaf"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // LeafWithDefault returns from RootPath the path struct for its child "leaf-with-default".
 func (n *RootPath) LeafWithDefault() *LeafWithDefaultPath {
-	return &LeafWithDefaultPath{
+	ps := &LeafWithDefaultPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"leaf-with-default"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `
 
@@ -2694,56 +2728,61 @@ func (n *RootPath) LeafWithDefault() *LeafWithDefaultPath {
 	wantNonListMethodsSplitModule = `
 // Container returns from RootPath the path struct for its child "container".
 func (n *RootPath) Container() *rootmodulepath.ContainerPath {
-	return &rootmodulepath.ContainerPath{
+	ps := &rootmodulepath.ContainerPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"container"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // ContainerWithConfig returns from RootPath the path struct for its child "container-with-config".
 func (n *RootPath) ContainerWithConfig() *rootmodulepath.ContainerWithConfigPath {
-	return &rootmodulepath.ContainerWithConfigPath{
+	ps := &rootmodulepath.ContainerWithConfigPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"container-with-config"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *RootPath) KeylessListAny() *rootmodulepath.KeylessListPathAny {
-	return &rootmodulepath.KeylessListPathAny{
+	ps := &rootmodulepath.KeylessListPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"keyless-list-container", "keyless-list"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Leaf returns from RootPath the path struct for its child "leaf".
 func (n *RootPath) Leaf() *LeafPath {
-	return &LeafPath{
+	ps := &LeafPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"leaf"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // LeafWithDefault returns from RootPath the path struct for its child "leaf-with-default".
 func (n *RootPath) LeafWithDefault() *LeafWithDefaultPath {
-	return &LeafWithDefaultPath{
+	ps := &LeafWithDefaultPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"leaf-with-default"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `
 
@@ -2827,23 +2866,25 @@ type ContainerWithConfigAny struct {
 `,
 			ChildConstructors: `
 func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
-	return &ContainerWithConfig_Leaflist{
+	ps := &ContainerWithConfig_Leaflist{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "leaflist"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *ContainerWithConfigAny) Leaflist() *ContainerWithConfig_LeaflistAny {
-	return &ContainerWithConfig_LeaflistAny{
+	ps := &ContainerWithConfig_LeaflistAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "leaflist"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `,
 			Package:         "device",
@@ -2870,13 +2911,14 @@ type ContainerWithConfig struct {
 `,
 			ChildConstructors: `
 func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
-	return &ContainerWithConfig_Leaflist{
+	ps := &ContainerWithConfig_Leaflist{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "leaflist"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `,
 			Package:         "device",
@@ -2921,7 +2963,7 @@ type ContainerWithConfigAny struct {
 `,
 			ChildConstructors: `
 func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
-	return &ContainerWithConfig_Leaflist{
+	ps := &ContainerWithConfig_Leaflist{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "leaflist"},
 			map[string]interface{}{},
@@ -2929,10 +2971,11 @@ func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
 		),
 		parent: n,
 	}
+	return ps
 }
 
 func (n *ContainerWithConfigAny) Leaflist() *ContainerWithConfig_LeaflistAny {
-	return &ContainerWithConfig_LeaflistAny{
+	ps := &ContainerWithConfig_LeaflistAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "leaflist"},
 			map[string]interface{}{},
@@ -2940,6 +2983,7 @@ func (n *ContainerWithConfigAny) Leaflist() *ContainerWithConfig_LeaflistAny {
 		),
 		parent: n,
 	}
+	return ps
 }
 `,
 			Package:         "device",
@@ -2967,7 +3011,7 @@ type ContainerWithConfig struct {
 `,
 			ChildConstructors: `
 func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
-	return &ContainerWithConfig_Leaflist{
+	ps := &ContainerWithConfig_Leaflist{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"*", "leaflist"},
 			map[string]interface{}{},
@@ -2975,6 +3019,7 @@ func (n *ContainerWithConfig) Leaflist() *ContainerWithConfig_Leaflist {
 		),
 		parent: n,
 	}
+	return ps
 }
 `,
 			Package:         "device",
@@ -3024,33 +3069,36 @@ type LeafWithDefaultPathAny struct {
 			StructBase:     wantFakeRootStructsWC,
 			ChildConstructors: trimDocComments(wantNonListMethods+wantListMethods) + `
 func (n *RootPath) ListWithStateAny() *ListWithStatePathAny {
-	return &ListWithStatePathAny{
+	ps := &ListWithStatePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": "*"},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *RootPath) ListWithState(Key float64) *ListWithStatePath {
-	return &ListWithStatePath{
+	ps := &ListWithStatePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": Key},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *RootPath) ListWithStateMap() *ListWithStatePathMap {
-	return &ListWithStatePathMap{
+	ps := &ListWithStatePathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `,
 		}},
@@ -3082,23 +3130,25 @@ type LeafWithDefaultPath struct {
 			StructBase:     wantFakeRootStructsWC,
 			ChildConstructors: trimDocComments(wantNonListMethods+wantListMethodsNonWildcard) + `
 func (n *RootPath) ListWithState(Key float64) *ListWithStatePath {
-	return &ListWithStatePath{
+	ps := &ListWithStatePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": Key},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *RootPath) ListWithStateMap() *ListWithStatePathMap {
-	return &ListWithStatePathMap{
+	ps := &ListWithStatePathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `,
 		}},
@@ -3180,63 +3230,69 @@ type ListMapAny struct {
 `,
 			ChildConstructors: `
 func (n *List) Key1() *List_Key1 {
-	return &List_Key1{
+	ps := &List_Key1{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key1"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *ListAny) Key1() *List_Key1Any {
-	return &List_Key1Any{
+	ps := &List_Key1Any{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key1"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *List) Key2() *List_Key2 {
-	return &List_Key2{
+	ps := &List_Key2{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key2"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *ListAny) Key2() *List_Key2Any {
-	return &List_Key2Any{
+	ps := &List_Key2Any{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key2"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *List) UnionKey() *List_UnionKey {
-	return &List_UnionKey{
+	ps := &List_UnionKey{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"union-key"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *ListAny) UnionKey() *List_UnionKeyAny {
-	return &List_UnionKeyAny{
+	ps := &List_UnionKeyAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"union-key"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `,
 			Package:         "device",
@@ -3290,33 +3346,36 @@ type ListMap struct {
 `,
 			ChildConstructors: `
 func (n *List) Key1() *List_Key1 {
-	return &List_Key1{
+	ps := &List_Key1{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key1"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *List) Key2() *List_Key2 {
-	return &List_Key2{
+	ps := &List_Key2{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"key2"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *List) UnionKey() *List_UnionKey {
-	return &List_UnionKey{
+	ps := &List_UnionKey{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"union-key"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `,
 			Package:         "device",
@@ -3358,43 +3417,47 @@ type LeafWithDefaultPath struct {
 			StructBase:     wantFakeRootStructsNWC,
 			ChildConstructors: trimDocComments(wantNonListMethodsSplitModule) + `
 func (n *RootPath) List(Key1 string, Key2 oc.Binary, UnionKey oc.RootElementModule_List_UnionKey_Union) *rootmodulepath.ListPath {
-	return &rootmodulepath.ListPath{
+	ps := &rootmodulepath.ListPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": Key1, "key2": Key2, "union-key": UnionKey},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *RootPath) ListMap() *rootmodulepath.ListPathMap {
-	return &rootmodulepath.ListPathMap{
+	ps := &rootmodulepath.ListPathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *RootPath) ListWithState(Key float64) *rootmodulepath.ListWithStatePath {
-	return &rootmodulepath.ListWithStatePath{
+	ps := &rootmodulepath.ListWithStatePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": Key},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *RootPath) ListWithStateMap() *rootmodulepath.ListWithStatePathMap {
-	return &rootmodulepath.ListWithStatePathMap{
+	ps := &rootmodulepath.ListWithStatePathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `,
 		}},
@@ -3442,63 +3505,69 @@ type LeafWithDefaultPathAny struct {
 			StructBase:     wantFakeRootStructsWC,
 			ChildConstructors: trimDocComments(wantNonListMethodsSplitModule) + `
 func (n *RootPath) ListAny() *rootmodulepath.ListPathAny {
-	return &rootmodulepath.ListPathAny{
+	ps := &rootmodulepath.ListPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": "*", "key2": "*", "union-key": "*"},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *RootPath) List(Key1 string, Key2 oc.Binary, UnionKey oc.RootElementModule_List_UnionKey_Union) *rootmodulepath.ListPath {
-	return &rootmodulepath.ListPath{
+	ps := &rootmodulepath.ListPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": Key1, "key2": Key2, "union-key": UnionKey},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *RootPath) ListMap() *rootmodulepath.ListPathMap {
-	return &rootmodulepath.ListPathMap{
+	ps := &rootmodulepath.ListPathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *RootPath) ListWithStateAny() *rootmodulepath.ListWithStatePathAny {
-	return &rootmodulepath.ListWithStatePathAny{
+	ps := &rootmodulepath.ListWithStatePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": "*"},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *RootPath) ListWithState(Key float64) *rootmodulepath.ListWithStatePath {
-	return &rootmodulepath.ListWithStatePath{
+	ps := &rootmodulepath.ListWithStatePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": Key},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *RootPath) ListWithStateMap() *rootmodulepath.ListWithStatePathMap {
-	return &rootmodulepath.ListWithStatePathMap{
+	ps := &rootmodulepath.ListWithStatePathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `,
 			Package:         "device",
@@ -3531,7 +3600,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 	for _, tt := range tests {
 		if tt.want != nil {
 			t.Run(tt.name, func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, GeneratorGroup{}, "oc.", tt.inPathStructSuffix, true, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath, true, true, true)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, ExtraGenerators{}, "oc.", tt.inPathStructSuffix, true, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath, true, true, true)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}
@@ -3548,7 +3617,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 
 		if tt.wantNoWildcard != nil {
 			t.Run(tt.name+" no wildcard", func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, GeneratorGroup{}, "oc.", tt.inPathStructSuffix, false, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath, true, true, true)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, ExtraGenerators{}, "oc.", tt.inPathStructSuffix, false, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath, true, true, true)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}
@@ -3592,13 +3661,14 @@ func TestGenerateChildConstructor(t *testing.T) {
 		inGenerateWildcardPaths: true,
 		wantMethod: `
 func (n *RootPath) Container() *ContainerPath {
-	return &ContainerPath{
+	ps := &ContainerPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"container"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `,
 	}, {
@@ -3611,23 +3681,25 @@ func (n *RootPath) Container() *ContainerPath {
 		inGenerateWildcardPaths: true,
 		wantMethod: `
 func (n *ContainerPath) Leaf() *Container_LeafPath {
-	return &Container_LeafPath{
+	ps := &Container_LeafPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"leaf"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *ContainerPathAny) Leaf() *Container_LeafPathAny {
-	return &Container_LeafPathAny{
+	ps := &Container_LeafPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"leaf"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `,
 	}, {
@@ -3641,7 +3713,7 @@ func (n *ContainerPathAny) Leaf() *Container_LeafPathAny {
 		inGenerateWildcardPaths: true,
 		wantMethod: `
 func (n *ContainerPath) Leaf() *Container_LeafPath {
-	return &Container_LeafPath{
+	ps := &Container_LeafPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"leaf"},
 			map[string]interface{}{},
@@ -3649,10 +3721,11 @@ func (n *ContainerPath) Leaf() *Container_LeafPath {
 		),
 		parent: n,
 	}
+	return ps
 }
 
 func (n *ContainerPathAny) Leaf() *Container_LeafPathAny {
-	return &Container_LeafPathAny{
+	ps := &Container_LeafPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"leaf"},
 			map[string]interface{}{},
@@ -3660,6 +3733,7 @@ func (n *ContainerPathAny) Leaf() *Container_LeafPathAny {
 		),
 		parent: n,
 	}
+	return ps
 }
 `,
 	}, {
@@ -3672,13 +3746,14 @@ func (n *ContainerPathAny) Leaf() *Container_LeafPathAny {
 		inGenerateWildcardPaths: false,
 		wantMethod: `
 func (n *ContainerPath) Leaf() *Container_LeafPath {
-	return &Container_LeafPath{
+	ps := &Container_LeafPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"leaf"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `,
 	}, {
@@ -3691,13 +3766,14 @@ func (n *ContainerPath) Leaf() *Container_LeafPath {
 		inGenerateWildcardPaths: true,
 		wantMethod: `
 func (n *RootPath) Leaf() *LeafPath {
-	return &LeafPath{
+	ps := &LeafPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"leaf"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `,
 	}, {
@@ -3710,23 +3786,25 @@ func (n *RootPath) Leaf() *LeafPath {
 		inGenerateWildcardPaths: true,
 		wantMethod: `
 func (n *ContainerWithConfigPath) Leaflist() *ContainerWithConfig_LeaflistPath {
-	return &ContainerWithConfig_LeaflistPath{
+	ps := &ContainerWithConfig_LeaflistPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "leaflist"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *ContainerWithConfigPathAny) Leaflist() *ContainerWithConfig_LeaflistPathAny {
-	return &ContainerWithConfig_LeaflistPathAny{
+	ps := &ContainerWithConfig_LeaflistPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "leaflist"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `,
 	}, {
@@ -3745,13 +3823,14 @@ func (n *ContainerWithConfigPathAny) Leaflist() *ContainerWithConfig_LeaflistPat
 // 	Path from parent:     "keyless-list-container/keyless-list"
 // 	Path from root:       "/keyless-list-container/keyless-list"
 func (n *RootPath) KeylessListAny() *KeylessListPathAny {
-	return &KeylessListPathAny{
+	ps := &KeylessListPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"keyless-list-container", "keyless-list"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `,
 	}, {
@@ -3764,33 +3843,36 @@ func (n *RootPath) KeylessListAny() *KeylessListPathAny {
 		inGenerateWildcardPaths: true,
 		wantMethod: `
 func (n *RootPath) ListWithStateAny() *ListWithStatePathAny {
-	return &ListWithStatePathAny{
+	ps := &ListWithStatePathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": "*"},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *RootPath) ListWithState(Key float64) *ListWithStatePath {
-	return &ListWithStatePath{
+	ps := &ListWithStatePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state", "list-with-state"},
 			map[string]interface{}{"key": Key},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *RootPath) ListWithStateMap() *ListWithStatePathMap {
-	return &ListWithStatePathMap{
+	ps := &ListWithStatePathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container-with-state"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `,
 	}, {
@@ -3803,33 +3885,36 @@ func (n *RootPath) ListWithStateMap() *ListWithStatePathMap {
 		inGenerateWildcardPaths: true,
 		wantMethod: `
 func (n *RootPath) ListAny() *ListPathAny {
-	return &ListPathAny{
+	ps := &ListPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": "*", "key2": "*", "union-key": "*"},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *RootPath) List(Key1 string, Key2 oc.Binary, UnionKey oc.RootElementModule_List_UnionKey_Union) *ListPath {
-	return &ListPath{
+	ps := &ListPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container", "list"},
 			map[string]interface{}{"key1": Key1, "key2": Key2, "union-key": UnionKey},
 			n,
 		),
 	}
+	return ps
 }
 
 func (n *RootPath) ListMap() *ListPathMap {
-	return &ListPathMap{
+	ps := &ListPathMap{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"list-container"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 `,
 		wantListBuilderAPI: `
@@ -3860,7 +3945,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 		t.Run(tt.name, func(t *testing.T) {
 			var methodBuf strings.Builder
 			var builderBuf strings.Builder
-			if errs := generateChildConstructors(&methodBuf, &builderBuf, tt.inDirectory, tt.inFieldName, tt.inUniqueFieldName, tt.inDirectories, "oc.", tt.inPathStructSuffix, tt.inGenerateWildcardPaths, tt.inChildAccessor, tt.inUnifiedPaths, true, true, NodeDataMap{}, GeneratorGroup{}); errs != nil {
+			if errs := generateChildConstructors(&methodBuf, &builderBuf, tt.inDirectory, tt.inFieldName, tt.inUniqueFieldName, tt.inDirectories, "oc.", tt.inPathStructSuffix, tt.inGenerateWildcardPaths, tt.inChildAccessor, tt.inUnifiedPaths, true, true, NodeDataMap{}, ExtraGenerators{}); errs != nil {
 				t.Fatal(errs)
 			}
 

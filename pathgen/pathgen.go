@@ -99,13 +99,18 @@ func NewDefaultConfig(schemaStructPkgPath string) *GenConfig {
 }
 
 // Generator is func to returns extra generated code for a given node.
-type Generator func(string, *ygen.ParsedDirectory, *NodeData, bool, bool) (string, error)
+type Generator func(string, *ygen.ParsedDirectory, *NodeData, bool) (string, error)
 
-// GeneratorGroup is the set of all generators for a generation invocation.
-type GeneratorGroup struct {
+// ExtraGenerators is the set of all generators for a generation invocation.
+type ExtraGenerators struct {
+	// StructFields are extra PathStruct fields to be generated.
 	StructFields []Generator
-	StructInits  []Generator
-	Extras       []Generator
+	// StructInits are extra PathStruct initializers to be generated when
+	// the PathStruct is created.
+	StructInits []Generator
+	// Extras are other free-form extra generated code to accompany a
+	// particular PathStruct.
+	Extras []Generator
 }
 
 // GenConfig stores code generation configuration.
@@ -186,7 +191,7 @@ type GenConfig struct {
 	// UnifyPathStructs controls whether to generate both config and states in the same package.
 	UnifyPathStructs bool
 	// ExtraGenerators are custom funcs that are used to extend the path struct generation.
-	ExtraGenerators GeneratorGroup
+	ExtraGenerators ExtraGenerators
 	// IgnoreAtomicLists disables the following default behaviours:
 	//  - All compressed lists will have a new accessor <ListName>Map() that
 	//  retrieves the whole list.
@@ -444,7 +449,7 @@ type GoPathStructCodeSnippet struct {
 
 // String returns the contents of a GoPathStructCodeSnippet as a string by
 // simply writing out all of its generated code.
-func (g GoPathStructCodeSnippet) String() string {
+func (g *GoPathStructCodeSnippet) String() string {
 	var b strings.Builder
 	for _, method := range []string{g.StructBase, g.ChildConstructors} {
 		genutil.WriteIfNotEmpty(&b, method)
@@ -453,24 +458,15 @@ func (g GoPathStructCodeSnippet) String() string {
 	return b.String()
 }
 
-// genExtras calls the extra generators to populate ExtraGeneration.
-//
-//   - psName is the PathStruct name used to retrieve the correct entry from
-//     NodeDataMap. If it is not present then an error is returned.
-//   - nodeDataMap is the set of all nodes keyed by pathstruct name.
-//   - dir is the directory to which this snippet belongs.
-func genExtras(psName string, nodeDataMap NodeDataMap, dir *ygen.ParsedDirectory, compressPaths, wildcard bool, extraGens []Generator) (string, error) {
+func genExtras(psName string, nodeDataMap NodeDataMap, dir *ygen.ParsedDirectory, wildcard bool, extraGens []Generator, errs *errlist.List) string {
 	node, ok := nodeDataMap[psName]
 	if !ok {
-		return "", nil
-		// FIXME(wenbli): Make this cleaner
-		//return "", fmt.Errorf("pathgen/genExtras: PathStruct not found: %v", psName)
+		return ""
 	}
 
-	var errs errlist.List
 	var b strings.Builder
 	for _, gen := range extraGens {
-		extra, err := gen(psName, dir, node, compressPaths, wildcard)
+		extra, err := gen(psName, dir, node, wildcard)
 		if err != nil {
 			errs.Add(err)
 			continue
@@ -480,7 +476,23 @@ func genExtras(psName string, nodeDataMap NodeDataMap, dir *ygen.ParsedDirectory
 			continue
 		}
 	}
-	return b.String(), errs.Err()
+	return b.String()
+}
+
+// genExtras calls the extra generators to append to ExtraGeneration.
+//
+// If the PathStruct type is not present in nodeDataMap, then generation is
+// skipped and no error is returned.
+//
+//   - nodeDataMap is the set of all nodes keyed by pathstruct name.
+//   - dir is the directory to which this snippet belongs.
+func (g *GoPathStructCodeSnippet) genExtras(nodeDataMap NodeDataMap, dir *ygen.ParsedDirectory, extraGens []Generator) error {
+	var errs errlist.List
+	g.ExtraGeneration += genExtras(g.PathStructName, nodeDataMap, dir, false, extraGens, &errs)
+	// Extra generation for keyed list types.
+	g.ExtraGeneration += genExtras(g.PathStructName+WholeKeyedListSuffix, nodeDataMap, dir, false, extraGens, &errs)
+
+	return errs.Err()
 }
 
 // NodeDataMap is a map from the path struct type name of a schema node to its NodeData.
@@ -532,6 +544,9 @@ type NodeData struct {
 	// CompressInfo contains information about a compressed path element for a node
 	// which points to a path element that's compressed out.
 	CompressInfo *CompressionInfo
+	// ConfigFalse indicates whether the node is "config false" or "config
+	// true" in its YANG schema definition.
+	ConfigFalse bool
 }
 
 // CompressionInfo contains information about a compressed path element for a
@@ -790,6 +805,7 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 				YANGPath:              field.YANGDetails.Path,
 				GoPathPackageName:     goPackageName(field.YANGDetails.RootElementModule, splitByModule, false, packageName, trimPrefix, packageSuffix),
 				DirectoryName:         field.YANGDetails.Path,
+				ConfigFalse:           field.YANGDetails.ConfigFalse,
 			}
 
 			switch {
@@ -926,6 +942,26 @@ type goPathStructData struct {
 	ExtraWildcardFields string
 }
 
+// genExtraFields calls the extra generators to append extra fields.
+//
+// If the PathStruct type is not present in nodeDataMap, then generation is
+// skipped and no error is returned.
+//
+//   - nodeDataMap is the set of all nodes keyed by pathstruct name.
+//   - dir is the directory to which this snippet belongs.
+func (s *goPathStructData) genExtraFields(nodeDataMap NodeDataMap, dir *ygen.ParsedDirectory, extraFieldGens []Generator) error {
+	var errs errlist.List
+	s.ExtraFields += genExtras(s.TypeName, nodeDataMap, dir, false, extraFieldGens, &errs)
+	s.ExtraWildcardFields += genExtras(s.TypeName, nodeDataMap, dir, true, extraFieldGens, &errs)
+
+	return errs.Err()
+}
+
+func (s *goPathStructData) clearExtraFields() {
+	s.ExtraFields = ""
+	s.ExtraWildcardFields = ""
+}
+
 // getStructData returns the goPathStructData corresponding to a
 // ParsedDirectory, which is used to store the attributes of the template for
 // which code is being generated.
@@ -969,7 +1005,28 @@ type goPathFieldData struct {
 	// ExtraInits are extra field initializations in the generated struct
 	// by extra generators.
 	ExtraWildcardInits string
-	IsWildcard         bool
+	// IsWildcard indicates whether to generate this as a wildcard or not a wildcard.
+	IsWildcard bool
+}
+
+// genExtraInits calls the extra generators to append extra inits.
+//
+// If the PathStruct type is not present in nodeDataMap, then generation is
+// skipped and no error is returned.
+//
+//   - nodeDataMap is the set of all nodes keyed by pathstruct name.
+//   - dir is the directory to which this snippet belongs.
+func (s *goPathFieldData) genExtraInits(nodeDataMap NodeDataMap, dir *ygen.ParsedDirectory, extraInitGens []Generator) error {
+	var errs errlist.List
+	s.ExtraInits += genExtras(s.TypeName, nodeDataMap, dir, false, extraInitGens, &errs)
+	s.ExtraWildcardInits += genExtras(s.TypeName, nodeDataMap, dir, true, extraInitGens, &errs)
+
+	return errs.Err()
+}
+
+func (s *goPathFieldData) clearExtraInit() {
+	s.ExtraInits = ""
+	s.ExtraWildcardInits = ""
 }
 
 func isKeyedList(directory *ygen.ParsedDirectory) bool {
@@ -992,7 +1049,7 @@ func isCompressedAtomicList(directory *ygen.ParsedDirectory) bool {
 // the fields of the struct. directory is the parsed information of a schema
 // node, and directories is a map from path to a parsed schema node for all
 // directory nodes in the schema.
-func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[string]*ygen.ParsedDirectory, nodeDataMap NodeDataMap, extraGens GeneratorGroup, schemaStructPkgAccessor, pathStructSuffix string,
+func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[string]*ygen.ParsedDirectory, nodeDataMap NodeDataMap, extraGens ExtraGenerators, schemaStructPkgAccessor, pathStructSuffix string,
 	generateWildcardPaths, splitByModule bool, trimPrefix, pkgName, pkgSuffix string, unified bool, generateAtomic, generateAtomicLists, compressPaths bool) ([]GoPathStructCodeSnippet, util.Errors) {
 
 	var errs util.Errors
@@ -1010,35 +1067,26 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 			return nil, util.AppendErr(errs, err)
 		}
 	} else {
-		extras, err := genExtras(structData.TypeName, nodeDataMap, directory, compressPaths, false, extraGens.StructFields)
-		errs = util.AppendErr(errs, err)
-		structData.ExtraFields = extras
-
-		extras, err = genExtras(structData.TypeName, nodeDataMap, directory, compressPaths, true, extraGens.StructFields)
-		errs = util.AppendErr(errs, err)
-		structData.ExtraWildcardFields = extras
-
+		if err := structData.genExtraFields(nodeDataMap, directory, extraGens.StructFields); err != nil {
+			return nil, util.AppendErr(errs, err)
+		}
 		if err := goPathStructTemplate.Execute(&structBuf, structData); err != nil {
 			return nil, util.AppendErr(errs, err)
 		}
+
 		// Generate Map PathStructs for keyed list types.
 		if isKeyedList(directory) {
 			structData := structData
 			structData.TypeName += WholeKeyedListSuffix
+			structData.clearExtraFields()
 
-			extras, err := genExtras(structData.TypeName, nodeDataMap, directory, compressPaths, false, extraGens.StructFields)
-			errs = util.AppendErr(errs, err)
-			structData.ExtraFields = extras
-
-			extras, err = genExtras(structData.TypeName, nodeDataMap, directory, compressPaths, true, extraGens.StructFields)
-			errs = util.AppendErr(errs, err)
-			structData.ExtraWildcardFields = extras
-
+			if err := structData.genExtraFields(nodeDataMap, directory, extraGens.StructFields); err != nil {
+				return nil, util.AppendErr(errs, err)
+			}
 			if err := goPathStructTemplate.Execute(&structBuf, structData); err != nil {
 				return nil, util.AppendErr(errs, err)
 			}
 		}
-
 	}
 
 	nonLeafSnippet := GoPathStructCodeSnippet{
@@ -1046,15 +1094,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 		StructBase:     structBuf.String(),
 		Package:        goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix),
 	}
-	extras, err := genExtras(structData.TypeName, nodeDataMap, directory, compressPaths, false, extraGens.Extras)
-	errs = util.AppendErr(errs, err)
-	nonLeafSnippet.ExtraGeneration = extras
-	// Extra generation for keyed list types.
-	if isKeyedList(directory) {
-		extras, err := genExtras(structData.TypeName+WholeKeyedListSuffix, nodeDataMap, directory, compressPaths, false, extraGens.Extras)
-		errs = util.AppendErr(errs, err)
-		nonLeafSnippet.ExtraGeneration += extras
-	}
+	errs = util.AppendErr(errs, nonLeafSnippet.genExtras(nodeDataMap, directory, extraGens.Extras))
 
 	// Since it is not possible for gNMI to refer to individual nodes
 	// underneath an unkeyed list or a telemetry-atomic node (ordered lists
@@ -1124,25 +1164,15 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 					GenerateWildcardPaths:   generateWildcardPaths,
 					GenerateParentField:     unified,
 				}
-				extras, err := genExtras(leafTypeName, nodeDataMap, directory, compressPaths, false, extraGens.StructFields)
-				errs = util.AppendErr(errs, err)
-				structData.ExtraFields = extras
-				extras, err = genExtras(leafTypeName, nodeDataMap, directory, compressPaths, true, extraGens.StructFields)
-				errs = util.AppendErr(errs, err)
-				structData.ExtraWildcardFields = extras
-
-				if err := goPathStructTemplate.Execute(&buf, structData); err != nil {
-					errs = util.AppendErr(errs, err)
-				}
+				errs = util.AppendErr(errs, structData.genExtraFields(nodeDataMap, directory, extraGens.StructFields))
+				errs = util.AppendErr(errs, goPathStructTemplate.Execute(&buf, structData))
 			}
 			leafSnippet := GoPathStructCodeSnippet{
 				PathStructName: leafTypeName,
 				StructBase:     buf.String(),
 				Package:        goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix),
 			}
-			extras, err := genExtras(leafTypeName, nodeDataMap, directory, compressPaths, false, extraGens.Extras)
-			errs = util.AppendErr(errs, err)
-			leafSnippet.ExtraGeneration = extras
+			errs = util.AppendErr(errs, leafSnippet.genExtras(nodeDataMap, directory, extraGens.Extras))
 			snippets = append(snippets, leafSnippet)
 		}
 	}
@@ -1200,7 +1230,7 @@ func relPathListFn(path []string) string {
 // type name of of the child path struct, and a map of all directories of the
 // whole schema keyed by their schema paths.
 func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.Builder, directory *ygen.ParsedDirectory, directoryFieldName string, goFieldName string, directories map[string]*ygen.ParsedDirectory, schemaStructPkgAccessor,
-	pathStructSuffix string, generateWildcardPaths bool, childPkgAccessor string, unified bool, generateAtomicLists, compressPaths bool, nodeDataMap NodeDataMap, extraGens GeneratorGroup) []error {
+	pathStructSuffix string, generateWildcardPaths bool, childPkgAccessor string, unified bool, generateAtomicLists, compressPaths bool, nodeDataMap NodeDataMap, extraGens ExtraGenerators) []error {
 
 	field, ok := directory.Fields[directoryFieldName]
 	if !ok {
@@ -1212,8 +1242,9 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 	}
 
 	structData := getStructData(directory, pathStructSuffix, generateWildcardPaths)
-	// The longest path is the non-key path. This is the one we want to use
-	// since the key is "compressed out".
+	// When there are multiple paths (this happens in the compressed
+	// structs), the longest path is the non-key path. This is the one we
+	// want to use since the key is "compressed out".
 	relPath := longestPath(field.MappedPaths)
 	// Be nil-tolerant for these two attributes. In real deployments (i.e.
 	// not tests), these should be populated. Since these are just use for
@@ -1231,17 +1262,9 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 		schemaPath = strings.ReplaceAll(schemaPath, "/state/", "/*/")
 	}
 
-	extras, err := genExtras(structData.TypeName, nodeDataMap, directory, compressPaths, false, extraGens.StructFields)
-	if err != nil {
+	if err := structData.genExtraFields(nodeDataMap, directory, extraGens.StructFields); err != nil {
 		return []error{err}
 	}
-	structData.ExtraFields = extras
-
-	extras, err = genExtras(structData.TypeName, nodeDataMap, directory, compressPaths, true, extraGens.StructFields)
-	if err != nil {
-		return []error{err}
-	}
-	structData.ExtraWildcardFields = extras
 
 	fieldData := goPathFieldData{
 		MethodName:              goFieldName,
@@ -1263,22 +1286,9 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 	// This is expected to be nil for leaf fields.
 	fieldDirectory := directories[field.YANGDetails.Path]
 
-	// FIXME: This is a hack: should be using the node's "config" statement instead of the parent's.
-	dirInput := directory
-	if fieldDirectory != nil {
-		dirInput = fieldDirectory
-	}
-	extras, err = genExtras(fieldData.TypeName, nodeDataMap, dirInput, compressPaths, false, extraGens.StructInits)
-	if err != nil {
+	if err := fieldData.genExtraInits(nodeDataMap, directory, extraGens.StructInits); err != nil {
 		return []error{err}
 	}
-	fieldData.ExtraInits = extras
-
-	extras, err = genExtras(fieldData.TypeName, nodeDataMap, dirInput, compressPaths, true, extraGens.StructInits)
-	if err != nil {
-		return []error{err}
-	}
-	fieldData.ExtraWildcardInits = extras
 
 	switch {
 	case field.Type == ygen.ListNode && len(fieldDirectory.ListKeys) == 0: // unkeyed lists
@@ -1308,17 +1318,10 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 		fieldData.TypeName += WholeKeyedListSuffix
 		fieldData.MethodName += WholeKeyedListSuffix
 
-		extras, err = genExtras(fieldData.TypeName, nodeDataMap, dirInput, compressPaths, false, extraGens.StructInits)
-		if err != nil {
+		fieldData.clearExtraInit()
+		if err := fieldData.genExtraInits(nodeDataMap, directory, extraGens.StructInits); err != nil {
 			return []error{err}
 		}
-		fieldData.ExtraInits = extras
-
-		extras, err = genExtras(fieldData.TypeName, nodeDataMap, dirInput, compressPaths, true, extraGens.StructInits)
-		if err != nil {
-			return []error{err}
-		}
-		fieldData.ExtraWildcardInits = extras
 
 		fallthrough
 	default: // non-lists

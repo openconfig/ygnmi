@@ -3743,6 +3743,24 @@ func TestDelete(t *testing.T) {
 			},
 		},
 	}, {
+		desc: "whole multi-keyed list for uncompressed schema",
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
+			return ygnmi.Delete(context.Background(), c, uexampleocpath.Root().Model().B().MultiKeyMap())
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Delete: []*gpb.Path{
+				testutil.GNMIPath(t, "/model/b/multi-key"),
+			},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
 		desc: "server error",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
 			return ygnmi.Delete(context.Background(), c, exampleocpath.Root().Parent().Child().One().Config())

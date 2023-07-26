@@ -84,14 +84,14 @@ func generate(cmd *cobra.Command, args []string) error {
 	importPath := strings.Split(viper.GetString("base_package_path"), "/")
 	rootPackageName := fmt.Sprintf("%spath", importPath[len(importPath)-1])
 
-	extraGenerators := pathgen.GeneratorGroup{
+	extraGenerators := pathgen.ExtraGenerators{
 		StructFields: []pathgen.Generator{pathgen.GNMIFieldGenerator},
 		StructInits:  []pathgen.Generator{pathgen.GNMIInitGenerator},
 	}
 	compressBehaviour := genutil.Uncompressed
 	if viper.GetBool("compress_paths") {
 		compressBehaviour = genutil.PreferOperationalState
-		extraGenerators = pathgen.GeneratorGroup{
+		extraGenerators = pathgen.ExtraGenerators{
 			Extras: []pathgen.Generator{pathgen.GNMIGenerator},
 		}
 	}

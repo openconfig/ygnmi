@@ -37,7 +37,7 @@ func getSampleSingleKeyedMapUncompressed(t *testing.T) map[string]*uexampleoc.Op
 	return model.A.SingleKey
 }
 
-func TestUncompressed(t *testing.T) {
+func TestUncompressedTelemetry(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 
 	t.Run("lookup-config-leaf", func(t *testing.T) {
@@ -72,7 +72,7 @@ func TestUncompressed(t *testing.T) {
 
 		lookupCheckFn(
 			t, fakeGNMI, c,
-			ygnmi.SingletonQuery[string](uexampleocpath.Root().Model().A().SingleKey("foo").State().Key()),
+			uexampleocpath.Root().Model().A().SingleKey("foo").State().Key(),
 			"",
 			testutil.GNMIPath(t, `/model/a/single-key[key=foo]/state/key`),
 			(&ygnmi.Value[string]{
@@ -170,7 +170,7 @@ func TestUncompressed(t *testing.T) {
 
 		lookupCheckFn(
 			t, fakeGNMI, c,
-			ygnmi.SingletonQuery[map[string]*uexampleoc.OpenconfigWithlistval_Model_A_SingleKey](uexampleocpath.Root().Model().A().SingleKeyMap()),
+			uexampleocpath.Root().Model().A().SingleKeyMap(),
 			"",
 			testutil.GNMIPath(t, "/model/a/single-key"),
 			(&ygnmi.Value[map[string]*uexampleoc.OpenconfigWithlistval_Model_A_SingleKey]{
@@ -198,7 +198,7 @@ func TestUncompressed(t *testing.T) {
 
 		collectCheckFn(
 			t, fakeGNMI, c,
-			ygnmi.SingletonQuery[string](uexampleocpath.Root().Model().A().SingleKey("foo").Config().Key()),
+			uexampleocpath.Root().Model().A().SingleKey("foo").Config().Key(),
 			"EOF",
 			testutil.GNMIPath(t, `/model/a/single-key[key=foo]/config/key`),
 			[]*ygnmi.Value[string]{
