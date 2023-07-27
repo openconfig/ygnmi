@@ -326,6 +326,9 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func
 		gs := q.goStruct()
 		for {
 			select {
+			case <-ctx.Done():
+				w.errCh <- ctx.Err()
+				return
 			case data := <-dataCh:
 				val, err := unmarshalAndExtract[T](data, q, gs, resolvedOpts)
 				if err != nil {
@@ -479,6 +482,9 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 		structs := map[string]ygot.ValidatedGoStruct{}
 		for {
 			select {
+			case <-ctx.Done():
+				w.errCh <- ctx.Err()
+				return
 			case data := <-dataCh:
 				datapointGroups, sortedPrefixes, err := bundleDatapoints(data, len(path.Elem))
 				if err != nil {
