@@ -57,6 +57,7 @@ func New() *cobra.Command {
 	generator.Flags().Int("structs_split_files_count", 1, "The number of files to split the generated schema structs into.")
 	generator.Flags().Int("pathstructs_split_files_count", 1, "The number of files to split the generated path structs into.")
 	generator.Flags().Bool("ignore_deviate_notsupported", false, "If set to true, 'deviate not-supported' YANG statements are ignored, thus target nodes are retained in the generated code.")
+	generator.Flags().Bool("ignore_unsupported", false, "If set to true, YANG statements unsupported by ygot are ignored.")
 	// TODO(wenovus): Delete these hidden flags
 	generator.Flags().Bool("generate_atomic", true, "If set to true, then any descendants of a non-compressed-out list or container that is marked \"telemetry-atomic\" are not generated.")
 	generator.Flags().Bool("generate_atomic_lists", true, "If set to true, then 1) all compressed lists will have a new accessor <ListName>Map() that retrieves the whole list; 2) any child underneath atomic lists are no longer reachable; 3) ordered map structures satisfying the interface ygot.GoOrderedMap will be generated for `ordered-by user` lists instead of Go built-in maps.")
@@ -113,11 +114,14 @@ func generate(cmd *cobra.Command, args []string) error {
 		AppendEnumSuffixForSimpleUnionEnums:  true,
 		FakeRootName:                         "root",
 		PathStructSuffix:                     "Path",
-		ExcludeModules:                       viper.GetStringSlice("exclude_modules"),
-		YANGParseOptions: yang.Options{
-			IgnoreSubmoduleCircularDependencies: false,
-			DeviateOptions: yang.DeviateOptions{
-				IgnoreDeviateNotSupported: viper.GetBool("ignore_deviate_notsupported"),
+		ParseOptions: ygen.ParseOpts{
+			IgnoreUnsupportedStatements: viper.GetBool("ignore_unsupported"),
+			ExcludeModules:              viper.GetStringSlice("exclude_modules"),
+			YANGParseOptions: yang.Options{
+				IgnoreSubmoduleCircularDependencies: false,
+				DeviateOptions: yang.DeviateOptions{
+					IgnoreDeviateNotSupported: viper.GetBool("ignore_deviate_notsupported"),
+				},
 			},
 		},
 		GeneratingBinary:        version,
@@ -175,7 +179,8 @@ func generateStructs(modules []string, schemaPath, version string) error {
 		version,
 		ygen.IROptions{
 			ParseOptions: ygen.ParseOpts{
-				ExcludeModules: viper.GetStringSlice("exclude_modules"),
+				IgnoreUnsupportedStatements: viper.GetBool("ignore_unsupported"),
+				ExcludeModules:              viper.GetStringSlice("exclude_modules"),
 				YANGParseOptions: yang.Options{
 					IgnoreSubmoduleCircularDependencies: false,
 					DeviateOptions: yang.DeviateOptions{
