@@ -52,6 +52,10 @@ type gnmiStruct struct {
 const (
 	// TODO(DanG100): pass options into custom generators and remove this.
 	fakeRootName = "Root"
+
+	wildcardQueryTypeName  = "WildcardQuery"
+	singletonQueryTypeName = "SingletonQuery"
+	configQueryTypeName    = "ConfigQuery"
 )
 
 var packagesSeen = map[string]bool{}
@@ -77,8 +81,8 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		IsState:                 true,
 		IsCompressedSchema:      true,
 		MethodName:              "State",
-		SingletonTypeName:       "SingletonQuery",
-		WildcardTypeName:        "WildcardQuery",
+		SingletonTypeName:       singletonQueryTypeName,
+		WildcardTypeName:        wildcardQueryTypeName,
 		IsScalar:                node.IsScalarField,
 		GenerateWildcard:        node.YANGPath != "/", // Do not generate wildcard for the fake root.
 		WildcardSuffix:          WildcardSuffix,
@@ -144,7 +148,7 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 	}
 
 	tmplStruct.MethodName = "Config"
-	tmplStruct.SingletonTypeName = "ConfigQuery"
+	tmplStruct.SingletonTypeName = configQueryTypeName
 	tmplStruct.IsState = false
 	if err := generate(tmplStruct, true); err != nil {
 		return "", err
@@ -161,11 +165,11 @@ func GNMIFieldGenerator(pathStructName string, _ *ygen.ParsedDirectory, node *No
 	var queryTypeName string
 	switch {
 	case wildcard:
-		queryTypeName = "WildcardQuery"
+		queryTypeName = wildcardQueryTypeName
 	case node.ConfigFalse:
-		queryTypeName = "SingletonQuery"
+		queryTypeName = singletonQueryTypeName
 	default:
-		queryTypeName = "ConfigQuery"
+		queryTypeName = configQueryTypeName
 	}
 
 	return fmt.Sprintf("\n\tygnmi.%s[%s]", queryTypeName, node.GoTypeName), nil
@@ -186,8 +190,8 @@ func GNMIInitGenerator(pathStructName string, _ *ygen.ParsedDirectory, node *Nod
 		SchemaStructPkgAccessor: "oc.",
 		IsState:                 true,
 		IsCompressedSchema:      false,
-		SingletonTypeName:       "ConfigQuery",
-		WildcardTypeName:        "WildcardQuery",
+		SingletonTypeName:       configQueryTypeName,
+		WildcardTypeName:        wildcardQueryTypeName,
 		IsScalar:                node.IsScalarField,
 		GenerateWildcard:        node.YANGPath != "/", // Do not generate wildcard for the fake root.
 		WildcardSuffix:          WildcardSuffix,
@@ -199,12 +203,12 @@ func GNMIInitGenerator(pathStructName string, _ *ygen.ParsedDirectory, node *Nod
 	var queryTypeName string
 	switch {
 	case wildcard:
-		queryTypeName = "WildcardQuery"
+		queryTypeName = wildcardQueryTypeName
 	case node.ConfigFalse:
-		tmplStruct.SingletonTypeName = "SingletonQuery"
-		queryTypeName = "SingletonQuery"
+		tmplStruct.SingletonTypeName = singletonQueryTypeName
+		queryTypeName = singletonQueryTypeName
 	default:
-		queryTypeName = "ConfigQuery"
+		queryTypeName = configQueryTypeName
 	}
 
 	var tmpl *template.Template
