@@ -303,6 +303,22 @@ func (w *Watcher[T]) Await() (*Value[T], error) {
 	return w.lastVal, err
 }
 
+// AwaitWithContext waits for the watch to finish in the same way as Await, but will
+// return immediately if the context supplied is completed.
+func (w *Watcher[T]) AwaitWithContext() (*Value[T], error) {
+	select {
+	case err, ok := <-w.errCh:
+		if !ok {
+			return nil, fmt.Errorf("Await already called and Watcher is closed")
+		}
+		close(w.errCh)
+		return w.lastVal, err
+	case <-ctx.Done():
+		close(w.errCh)
+		return nil, nil
+	}
+}
+
 // Watch starts an asynchronous STREAM subscription, evaluating each observed value with the specified predicate.
 // The predicate must return ygnmi.Continue to continue the Watch. To stop the Watch, return nil for a success
 // or a non-nil error on failure. Watch can also be stopped by setting a deadline on or canceling the context.
@@ -326,6 +342,8 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func
 		gs := q.goStruct()
 		for {
 			select {
+			case <-ctx.Done():
+				return
 			case data := <-dataCh:
 				val, err := unmarshalAndExtract[T](data, q, gs, resolvedOpts)
 				if err != nil {
@@ -479,6 +497,8 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 		structs := map[string]ygot.ValidatedGoStruct{}
 		for {
 			select {
+			case <-ctx.Done():
+				return
 			case data := <-dataCh:
 				datapointGroups, sortedPrefixes, err := bundleDatapoints(data, len(path.Elem))
 				if err != nil {
