@@ -231,7 +231,7 @@ func TestUncompressedTelemetry(t *testing.T) {
 
 		lookupCheckFn(
 			t, fakeGNMI, c,
-			uexampleocpath.Root().Model().A().SingleKey("foo").State().Counter(),
+			ygnmi.SingletonQuery[float32](uexampleocpath.Root().Model().A().SingleKey("foo").State().Counter()),
 			"",
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counter"),
 			(&ygnmi.Value[float32]{
@@ -252,7 +252,7 @@ func TestUncompressedTelemetry(t *testing.T) {
 
 		lookupCheckFn(
 			t, fakeGNMI, c,
-			uexampleocpath.Root().Model().A().SingleKey("foo").State().Counters(),
+			ygnmi.SingletonQuery[[]float32](uexampleocpath.Root().Model().A().SingleKey("foo").State().Counters()),
 			"",
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counters"),
 			(&ygnmi.Value[[]float32]{
@@ -502,7 +502,7 @@ func TestUncompressedCustomRootBatch(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			b := ygnmi.NewBatch(uexampleocpath.Root().Parent())
+			b := ygnmi.NewBatch(ygnmi.SingletonQuery[*uexampleoc.OpenconfigSimple_Parent](uexampleocpath.Root().Parent()))
 			err := b.AddPaths(tt.paths...)
 			if diff := errdiff.Substring(err, tt.wantAddErr); diff != "" {
 				t.Fatalf("AddPaths returned unexpected diff: %s", diff)
@@ -549,11 +549,11 @@ func TestUncompressedSetBatch(t *testing.T) {
 				t.Fatalf("Failed to create CLI ygnmi query: %v", err)
 			}
 			ygnmi.BatchUpdate(sb, cliPath, "hello, mercury")
-			ygnmi.BatchUpdate(sb, uexampleocpath.Root().Parent().Child().Config().One(), "foo")
+			ygnmi.BatchUpdate(sb, ygnmi.ConfigQuery[string](uexampleocpath.Root().Parent().Child().Config().One()), "foo")
 			ygnmi.BatchReplace(sb, cliPath, "hello, venus")
-			ygnmi.BatchReplace(sb, uexampleocpath.Root().Parent().Child().Config().One(), "bar")
+			ygnmi.BatchReplace(sb, ygnmi.ConfigQuery[string](uexampleocpath.Root().Parent().Child().Config().One()), "bar")
 			ygnmi.BatchDelete(sb, cliPath)
-			ygnmi.BatchDelete(sb, uexampleocpath.Root().Parent().Child().Config().One())
+			ygnmi.BatchDelete(sb, ygnmi.ConfigQuery[string](uexampleocpath.Root().Parent().Child().Config().One()))
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
