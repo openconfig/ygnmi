@@ -327,7 +327,7 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func
 		for {
 			select {
 			case <-ctx.Done():
-				w.errCh <- nil
+				w.errCh <- ctx.Err()
 				return
 			case data := <-dataCh:
 				val, err := unmarshalAndExtract[T](data, q, gs, resolvedOpts)
@@ -483,7 +483,7 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 		for {
 			select {
 			case <-ctx.Done():
-				w.errCh <- nil
+				w.errCh <- ctx.Err()
 				return
 			case data := <-dataCh:
 				datapointGroups, sortedPrefixes, err := bundleDatapoints(data, len(path.Elem))
