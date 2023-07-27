@@ -305,7 +305,7 @@ func (w *Watcher[T]) Await() (*Value[T], error) {
 
 // AwaitWithContext waits for the watch to finish in the same way as Await, but will
 // return immediately if the context supplied is completed.
-func (w *Watcher[T]) AwaitWithContext() (*Value[T], error) {
+func (w *Watcher[T]) AwaitWithContext(ctx context.Context) (*Value[T], error) {
 	select {
 	case err, ok := <-w.errCh:
 		if !ok {
