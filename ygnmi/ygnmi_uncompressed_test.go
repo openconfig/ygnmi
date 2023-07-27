@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build go1.21
-
 package ygnmi_test
 
 import (
@@ -80,7 +78,7 @@ func TestUncompressedTelemetry(t *testing.T) {
 
 		lookupCheckFn(
 			t, fakeGNMI, c,
-			uexampleocpath.Root().Model().A().SingleKey("foo").State().Key(),
+			ygnmi.SingletonQuery[string](uexampleocpath.Root().Model().A().SingleKey("foo").State().Key()),
 			"",
 			testutil.GNMIPath(t, `/model/a/single-key[key=foo]/state/key`),
 			(&ygnmi.Value[string]{
@@ -129,7 +127,7 @@ func TestUncompressedTelemetry(t *testing.T) {
 
 		lookupCheckFn(
 			t, fakeGNMI, c,
-			uexampleocpath.Root().Model().A(),
+			ygnmi.SingletonQuery[*uexampleoc.OpenconfigWithlistval_Model_A](uexampleocpath.Root().Model().A()),
 			"",
 			testutil.GNMIPath(t, "/model/a"),
 			(&ygnmi.Value[*uexampleoc.OpenconfigWithlistval_Model_A]{
@@ -178,7 +176,7 @@ func TestUncompressedTelemetry(t *testing.T) {
 
 		lookupCheckFn(
 			t, fakeGNMI, c,
-			uexampleocpath.Root().Model().A().SingleKeyMap(),
+			ygnmi.SingletonQuery[map[string]*uexampleoc.OpenconfigWithlistval_Model_A_SingleKey](uexampleocpath.Root().Model().A().SingleKeyMap()),
 			"",
 			testutil.GNMIPath(t, "/model/a/single-key"),
 			(&ygnmi.Value[map[string]*uexampleoc.OpenconfigWithlistval_Model_A_SingleKey]{
@@ -206,7 +204,7 @@ func TestUncompressedTelemetry(t *testing.T) {
 
 		collectCheckFn(
 			t, fakeGNMI, c,
-			uexampleocpath.Root().Model().A().SingleKey("foo").Config().Key(),
+			ygnmi.SingletonQuery[string](uexampleocpath.Root().Model().A().SingleKey("foo").Config().Key()),
 			"EOF",
 			testutil.GNMIPath(t, `/model/a/single-key[key=foo]/config/key`),
 			[]*ygnmi.Value[string]{
@@ -294,7 +292,7 @@ func TestUncompressedConfig(t *testing.T) {
 				}
 				ol.GetOrCreateConfig().SetKey("baz")
 				ol.GetOrCreateConfig().SetValue(44)
-				return ygnmi.Replace(context.Background(), c, uexampleocpath.Root().Model().A().SingleKey("foo").OrderedLists().OrderedListMap(), om)
+				return ygnmi.Replace(context.Background(), c, ygnmi.ConfigQuery[*uexampleoc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_OrderedMap](uexampleocpath.Root().Model().A().SingleKey("foo").OrderedLists().OrderedListMap()), om)
 			},
 			&gpb.SetRequest{
 				Prefix: &gpb.Path{
@@ -340,7 +338,7 @@ func TestUncompressedConfig(t *testing.T) {
 	t.Run("whole multi-keyed list for uncompressed schema", func(t *testing.T) {
 		configCheckFn(t, setClient, c,
 			func(c *ygnmi.Client) (*ygnmi.Result, error) {
-				return ygnmi.Delete(context.Background(), c, uexampleocpath.Root().Model().B().MultiKeyMap())
+				return ygnmi.Delete(context.Background(), c, ygnmi.ConfigQuery[map[uexampleoc.OpenconfigWithlistval_Model_B_MultiKey_Key]*uexampleoc.OpenconfigWithlistval_Model_B_MultiKey](uexampleocpath.Root().Model().B().MultiKeyMap()))
 			},
 			&gpb.SetRequest{
 				Prefix: &gpb.Path{
