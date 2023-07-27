@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"math"
 	"regexp"
-	"runtime/debug"
 	"sort"
 	"strings"
 	"text/template"
@@ -1497,10 +1496,6 @@ func getFieldTypeName(directory *ygen.ParsedDirectory, directoryFieldName string
 
 	switch field.Type {
 	case ygen.ContainerNode, ygen.ListNode:
-		if field.YANGDetails.Path == "/openconfig-simple-target/native/state/notif" {
-			fmt.Println(field.Name)
-			debug.PrintStack()
-		}
 		fieldDirectory, ok := directories[field.YANGDetails.Path]
 		if !ok {
 			return "", fmt.Errorf("getFieldTypeName: unexpected - field with path %q not found in parsed yang structs map: %v", field.YANGDetails.Path, directories)
