@@ -67,6 +67,8 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 		true,
 		true,
 		true,
+		true,
+		false,
 		ygnmi.NewNodePath(
 			[]string{"leaf"},
 			nil,
@@ -104,6 +106,8 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 		true,
 		true,
 		true,
+		true,
+		false,
 		ygnmi.NewNodePath(
 			[]string{"leaf"},
 			nil,
@@ -167,6 +171,8 @@ func (n *Container_LeafList) State() ygnmi.SingletonQuery[[]uint32] {
 		true,
 		true,
 		false,
+		true,
+		false,
 		ygnmi.NewNodePath(
 			[]string{"state", "leaflist"},
 			nil,
@@ -198,6 +204,8 @@ func (n *Container_LeafListAny) State() ygnmi.WildcardQuery[[]uint32] {
 	return ygnmi.NewWildcardQuery[[]uint32](
 		"Container",
 		true,
+		true,
+		false,
 		true,
 		false,
 		ygnmi.NewNodePath(
@@ -232,6 +240,8 @@ func (n *Container_LeafList) Config() ygnmi.ConfigQuery[[]uint32] {
 		false,
 		true,
 		false,
+		true,
+		false,
 		ygnmi.NewNodePath(
 			[]string{"config", "leaflist"},
 			nil,
@@ -262,6 +272,8 @@ func (n *Container_LeafList) Config() ygnmi.ConfigQuery[[]uint32] {
 func (n *Container_LeafListAny) Config() ygnmi.WildcardQuery[[]uint32] {
 	return ygnmi.NewWildcardQuery[[]uint32](
 		"Container",
+		false,
+		true,
 		false,
 		true,
 		false,
@@ -313,6 +325,8 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[E_Child_Three] {
 		true,
 		true,
 		false,
+		true,
+		false,
 		ygnmi.NewNodePath(
 			[]string{"leaf"},
 			nil,
@@ -346,6 +360,8 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
 		true,
 		true,
 		false,
+		true,
+		false,
 		ygnmi.NewNodePath(
 			[]string{"leaf"},
 			nil,
@@ -372,7 +388,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
 		dir:            dirs["/root"],
 		pathStructName: "Root",
 		node: &NodeData{
-			GoTypeName:            "*Root",
+			GoTypeName:            "*oc.Root",
 			LocalGoTypeName:       "Root",
 			GoFieldName:           "",
 			YANGFieldName:         "",
@@ -384,8 +400,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
 		},
 		want: `
 // Batch contains a collection of paths.
-// Calling State() or Config() on the batch returns a query
-// that can use to Lookup, Watch, etc on multiple paths at once.
+// Use batch to call Lookup, Watch, etc. on multiple paths at once.
 type Batch struct {
     paths []ygnmi.PathStruct
 }
@@ -398,13 +413,15 @@ func (b *Batch) AddPaths(paths ...ygnmi.PathStruct) *Batch {
 
 // State returns a Query that can be used in gNMI operations.
 // The returned query is immutable, adding paths does not modify existing queries.
-func (b *Batch) State() ygnmi.SingletonQuery[*Root] {
+func (b *Batch) State() ygnmi.SingletonQuery[*oc.Root] {
 	queryPaths := make([]ygnmi.PathStruct, len(b.paths))
 	copy(queryPaths, b.paths)
-	return ygnmi.NewSingletonQuery[*Root](
+	return ygnmi.NewSingletonQuery[*oc.Root](
 		"Root",
 		true,
 		false,
+		false,
+		true,
 		false,
 		ygnmi.NewDeviceRootBase(),
 		nil,
@@ -431,6 +448,8 @@ func (b *Batch) Config() ygnmi.SingletonQuery[*oc.Root] {
 		false,
 		false,
 		false,
+		true,
+		false,
 		ygnmi.NewDeviceRootBase(),
 		nil,
 		nil,
@@ -447,11 +466,13 @@ func (b *Batch) Config() ygnmi.SingletonQuery[*oc.Root] {
 }
 
 // State returns a Query that can be used in gNMI operations.
-func (n *Root) State() ygnmi.SingletonQuery[*Root] {
-	return ygnmi.NewSingletonQuery[*Root](
+func (n *Root) State() ygnmi.SingletonQuery[*oc.Root] {
+	return ygnmi.NewSingletonQuery[*oc.Root](
 		"Root",
 		true,
 		false,
+		false,
+		true,
 		false,
 		n,
 		nil,
@@ -469,11 +490,13 @@ func (n *Root) State() ygnmi.SingletonQuery[*Root] {
 }
 
 // Config returns a Query that can be used in gNMI operations.
-func (n *Root) Config() ygnmi.ConfigQuery[*Root] {
-	return ygnmi.NewConfigQuery[*Root](
+func (n *Root) Config() ygnmi.ConfigQuery[*oc.Root] {
+	return ygnmi.NewConfigQuery[*oc.Root](
 		"Root",
 		false,
 		false,
+		false,
+		true,
 		false,
 		n,
 		nil,
@@ -493,7 +516,7 @@ func (n *Root) Config() ygnmi.ConfigQuery[*Root] {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			got, err := GNMIGenerator(tt.pathStructName, tt.dir, tt.node)
+			got, err := GNMIGenerator(tt.pathStructName, tt.dir, tt.node, false)
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
 				t.Fatalf("GNMIGenerator(%q, %v, %v) returned unexpected error diff: %s", tt.pathStructName, tt.dir, tt.node, diff)
 			}

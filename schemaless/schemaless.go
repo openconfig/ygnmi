@@ -43,6 +43,8 @@ func NewConfig[T any](path, origin string) (ygnmi.ConfigQuery[T], error) {
 			false,
 			true,
 			scalar,
+			false,
+			false,
 			ps,
 			createFn,
 			func() ygot.ValidatedGoStruct {
@@ -67,6 +69,8 @@ func NewWildcard[T any](path, origin string) (ygnmi.WildcardQuery[T], error) {
 			false,
 			true,
 			scalar,
+			false,
+			false,
 			ps,
 			createFn,
 			func() ygot.ValidatedGoStruct {

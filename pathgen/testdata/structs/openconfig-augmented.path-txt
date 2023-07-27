@@ -34,13 +34,14 @@ func Root() *Device {
 // 	Path from parent:     "native"
 // 	Path from root:       "/native"
 func (n *Device) Native() *Native {
-	return &Native{
+	ps := &Native{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"native"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Target (container): 
@@ -49,13 +50,14 @@ func (n *Device) Native() *Native {
 // 	Path from parent:     "target"
 // 	Path from root:       "/target"
 func (n *Device) Target() *Target {
-	return &Target{
+	ps := &Target{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"target"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Native_A represents the /openconfig-simple-target/native/state/a YANG schema element.
@@ -94,13 +96,14 @@ type NativeAny struct {
 // 	Path from parent:     "state/a"
 // 	Path from root:       "/native/state/a"
 func (n *Native) A() *Native_A {
-	return &Native_A{
+	ps := &Native_A{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "a"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // A (leaf): 
@@ -109,13 +112,14 @@ func (n *Native) A() *Native_A {
 // 	Path from parent:     "state/a"
 // 	Path from root:       "/native/state/a"
 func (n *NativeAny) A() *Native_AAny {
-	return &Native_AAny{
+	ps := &Native_AAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "a"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // B (leaf): 
@@ -124,13 +128,14 @@ func (n *NativeAny) A() *Native_AAny {
 // 	Path from parent:     "state/b"
 // 	Path from root:       "/native/state/b"
 func (n *Native) B() *Native_B {
-	return &Native_B{
+	ps := &Native_B{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "b"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // B (leaf): 
@@ -139,13 +144,14 @@ func (n *Native) B() *Native_B {
 // 	Path from parent:     "state/b"
 // 	Path from root:       "/native/state/b"
 func (n *NativeAny) B() *Native_BAny {
-	return &Native_BAny{
+	ps := &Native_BAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "b"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Target represents the /openconfig-simple-target/target YANG schema element.
@@ -164,13 +170,14 @@ type TargetAny struct {
 // 	Path from parent:     "foo"
 // 	Path from root:       "/target/foo"
 func (n *Target) Foo() *Target_Foo {
-	return &Target_Foo{
+	ps := &Target_Foo{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"foo"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Foo (container): 
@@ -179,13 +186,14 @@ func (n *Target) Foo() *Target_Foo {
 // 	Path from parent:     "foo"
 // 	Path from root:       "/target/foo"
 func (n *TargetAny) Foo() *Target_FooAny {
-	return &Target_FooAny{
+	ps := &Target_FooAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"foo"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Target_Foo_A represents the /openconfig-simple-target/target/foo/state/a YANG schema element.
@@ -214,13 +222,14 @@ type Target_FooAny struct {
 // 	Path from parent:     "state/a"
 // 	Path from root:       "/target/foo/state/a"
 func (n *Target_Foo) A() *Target_Foo_A {
-	return &Target_Foo_A{
+	ps := &Target_Foo_A{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "a"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // A (leaf): 
@@ -229,11 +238,12 @@ func (n *Target_Foo) A() *Target_Foo_A {
 // 	Path from parent:     "state/a"
 // 	Path from root:       "/target/foo/state/a"
 func (n *Target_FooAny) A() *Target_Foo_AAny {
-	return &Target_Foo_AAny{
+	ps := &Target_Foo_AAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "a"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }

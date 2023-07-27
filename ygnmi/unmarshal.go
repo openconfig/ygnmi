@@ -162,11 +162,16 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 
 	path := unmarshalledData[0].Path
 	if !q.isLeaf() {
+		// Apply a mask to the returned path according to which
+		// elements were specified in the query.
 		path = proto.Clone(unmarshalledData[0].Path).(*gpb.Path)
 		path.Elem = path.Elem[:len(queryPath.Elem)]
 		path.Origin = queryPath.Origin
 		ret.Timestamp = LatestTimestamp(unmarshalledData)
 		ret.RecvTimestamp = LatestRecvTimestamp(unmarshalledData)
+		if q.isListContainer() {
+			path.Elem[len(path.Elem)-1].Key = nil
+		}
 	} else {
 		ret.Timestamp = unmarshalledData[0].Timestamp
 		ret.RecvTimestamp = unmarshalledData[0].RecvTimestamp
@@ -174,7 +179,8 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 	ret.Path = path
 
 	// For non-leaf config queries, prune all state-only leaves.
-	if !q.isLeaf() && !q.IsState() {
+	// Note that config/state separation only applies to compressed structs.
+	if q.isCompressedSchema() && !q.isLeaf() && !q.IsState() {
 		err := ygot.PruneConfigFalse(q.schema().SchemaTree[q.dirName()], goStruct)
 		if err != nil {
 			return ret, err

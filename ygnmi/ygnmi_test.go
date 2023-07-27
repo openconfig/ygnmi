@@ -108,6 +108,7 @@ func getSampleInnerSingleKeyedMapIncomplete(t *testing.T) map[string]*exampleoc.
 }
 
 func lookupCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVal *ygnmi.Value[T]) {
+	t.Helper()
 	got, err := ygnmi.Lookup(context.Background(), c, inQuery)
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
 		t.Fatalf("Lookup(ctx, c, %v) returned unexpected diff: %s", inQuery, diff)
@@ -125,6 +126,7 @@ func lookupCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Cl
 }
 
 func lookupWithGetCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequest *gpb.GetRequest, wantVal *ygnmi.Value[T]) {
+	t.Helper()
 	got, err := ygnmi.Lookup(context.Background(), c, inQuery, ygnmi.WithUseGet())
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
 		t.Fatalf("Lookup(ctx, c, %v) returned unexpected diff (-want, +got):\n%s", inQuery, diff)
@@ -141,6 +143,7 @@ func lookupWithGetCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *y
 }
 
 func getCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVal T) {
+	t.Helper()
 	got, err := ygnmi.Get(context.Background(), c, inQuery)
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
 		t.Fatalf("Get(ctx, c, %v) returned unexpected diff: %s", inQuery, diff)
@@ -156,6 +159,7 @@ func getCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Clien
 }
 
 func watchCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, duration time.Duration, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], inOpts []ygnmi.Option, valPred func(T) bool, wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantMode gpb.SubscriptionMode, wantVals []*ygnmi.Value[T], wantLastVal *ygnmi.Value[T]) {
+	t.Helper()
 	i := 0
 	ctx, cancel := context.WithTimeout(context.Background(), duration)
 	defer cancel()
@@ -194,7 +198,23 @@ func watchCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, duration tim
 	}
 }
 
+func collectCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVals []*ygnmi.Value[T]) {
+	t.Helper()
+	vals, err := ygnmi.Collect(context.Background(), c, inQuery).Await()
+	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
+		t.Errorf("Await() returned unexpected diff: %s", diff)
+	}
+	verifySubscriptionPathsSent(t, fakeGNMI, wantSubscriptionPath)
+	for _, val := range vals {
+		checkJustReceived(t, val.RecvTimestamp)
+	}
+	if diff := cmp.Diff(wantVals, vals, cmpopts.IgnoreFields(ygnmi.Value[T]{}, "RecvTimestamp"), cmp.AllowUnexported(ygnmi.Value[T]{}), protocmp.Transform()); diff != "" {
+		t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
+	}
+}
+
 func lookupAllCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.WildcardQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVals []*ygnmi.Value[T], nonLeaf bool) {
+	t.Helper()
 	got, err := ygnmi.LookupAll(context.Background(), c, inQuery)
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
 		t.Fatalf("LookupAll(ctx, c, %v) returned unexpected diff: %s", inQuery, diff)
@@ -216,6 +236,30 @@ func lookupAllCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi
 	}
 	if diff := cmp.Diff(wantVals, got, copts...); diff != "" {
 		t.Errorf("LookupAll() returned unexpected diff (-want,+got):\n%s", diff)
+	}
+}
+
+func configCheckFn(t *testing.T, setClient *testutil.SetClient, c *ygnmi.Client, op func(*ygnmi.Client) (*ygnmi.Result, error), wantRequest *gpb.SetRequest, stubResponse *gpb.SetResponse, wantErrSubstring string, stubErr error) {
+	t.Helper()
+	setClient.Reset()
+	setClient.AddResponse(stubResponse, stubErr)
+
+	got, err := op(c)
+	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
+		t.Fatalf("config operation returned unexpected diff: %s", diff)
+	}
+	if err != nil {
+		return
+	}
+	if diff := cmp.Diff(wantRequest, setClient.Requests[0], protocmp.Transform()); diff != "" {
+		t.Errorf("config operation sent unexpected request (-want,+got):\n%s", diff)
+	}
+	want := &ygnmi.Result{
+		RawResponse: stubResponse,
+		Timestamp:   time.Unix(0, stubResponse.GetTimestamp()),
+	}
+	if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
+		t.Errorf("config operation returned unexpected value (-want,+got):\n%s", diff)
 	}
 }
 
@@ -1871,18 +1915,7 @@ func TestCollect(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			ctx, cancel := context.WithTimeout(context.Background(), tt.dur)
-			defer cancel()
-			vals, err := ygnmi.Collect(ctx, client, lq, tt.opts...).Await()
-			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
-				t.Fatalf("Await() returned unexpected diff: %s", diff)
-			}
-			for _, val := range vals {
-				checkJustReceived(t, val.RecvTimestamp)
-			}
-			if diff := cmp.Diff(tt.wantVals, vals, cmpopts.IgnoreFields(ygnmi.Value[string]{}, "RecvTimestamp"), cmp.AllowUnexported(ygnmi.Value[string]{}), protocmp.Transform()); diff != "" {
-				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
-			}
+			collectCheckFn(t, fakeGNMI, client, lq, tt.wantErr, tt.wantSubscriptionPath, tt.wantVals)
 		})
 	}
 
@@ -1958,17 +1991,7 @@ func TestCollect(t *testing.T) {
 	for _, tt := range nonLeafTests {
 		t.Run("nonleaf "+tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			vals, err := ygnmi.Collect(context.Background(), client, nonLeafQuery).Await()
-			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
-				t.Errorf("Await() returned unexpected diff: %s", diff)
-			}
-			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
-			for _, val := range vals {
-				checkJustReceived(t, val.RecvTimestamp)
-			}
-			if diff := cmp.Diff(tt.wantVals, vals, cmpopts.IgnoreFields(ygnmi.Value[*exampleoc.Parent_Child]{}, "RecvTimestamp"), cmp.AllowUnexported(ygnmi.Value[*exampleoc.Parent_Child]{}), protocmp.Transform()); diff != "" {
-				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
-			}
+			collectCheckFn(t, fakeGNMI, client, nonLeafQuery, tt.wantErr, tt.wantSubscriptionPath, tt.wantVals)
 		})
 	}
 }
@@ -3590,26 +3613,7 @@ func TestReplace(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			setClient.Reset()
-			setClient.AddResponse(tt.stubResponse, tt.stubErr)
-
-			got, err := tt.op(client)
-			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
-				t.Fatalf("Replace() returned unexpected diff: %s", diff)
-			}
-			if err != nil {
-				return
-			}
-			if diff := cmp.Diff(tt.wantRequest, setClient.Requests[0], protocmp.Transform()); diff != "" {
-				t.Errorf("Replace() sent unexpected request (-want,+got):\n%s", diff)
-			}
-			want := &ygnmi.Result{
-				RawResponse: tt.stubResponse,
-				Timestamp:   time.Unix(0, tt.stubResponse.GetTimestamp()),
-			}
-			if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
-				t.Errorf("Replace() returned unexpected value (-want,+got):\n%s", diff)
-			}
+			configCheckFn(t, setClient, client, tt.op, tt.wantRequest, tt.stubResponse, tt.wantErr, tt.stubErr)
 		})
 	}
 }
@@ -3699,26 +3703,7 @@ func TestDelete(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			setClient.Reset()
-			setClient.AddResponse(tt.stubResponse, tt.stubErr)
-
-			got, err := tt.op(client)
-			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
-				t.Fatalf("Delete() returned unexpected diff: %s", diff)
-			}
-			if err != nil {
-				return
-			}
-			if diff := cmp.Diff(tt.wantRequest, setClient.Requests[0], protocmp.Transform()); diff != "" {
-				t.Errorf("Delete() sent unexpected request (-want,+got):\n%s", diff)
-			}
-			want := &ygnmi.Result{
-				RawResponse: tt.stubResponse,
-				Timestamp:   time.Unix(0, tt.stubResponse.GetTimestamp()),
-			}
-			if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
-				t.Errorf("Delete() returned unexpected value (-want,+got):\n%s", diff)
-			}
+			configCheckFn(t, setClient, client, tt.op, tt.wantRequest, tt.stubResponse, tt.wantErr, tt.stubErr)
 		})
 	}
 }

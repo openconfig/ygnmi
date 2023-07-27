@@ -42,13 +42,14 @@ type ChildPathAny struct {
 // 	Path from parent:     "test"
 // 	Path from root:       "/child/test"
 func (n *ChildPath) Test() *Child_TestPath {
-	return &Child_TestPath{
+	ps := &Child_TestPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"test"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Test (leaf): 
@@ -57,11 +58,12 @@ func (n *ChildPath) Test() *Child_TestPath {
 // 	Path from parent:     "test"
 // 	Path from root:       "/child/test"
 func (n *ChildPathAny) Test() *Child_TestPathAny {
-	return &Child_TestPathAny{
+	ps := &Child_TestPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"test"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }

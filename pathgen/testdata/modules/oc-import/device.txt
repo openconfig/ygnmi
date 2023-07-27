@@ -34,13 +34,14 @@ func Root() *DevicePath {
 // 	Path from parent:     "child"
 // 	Path from root:       "/child"
 func (n *DevicePath) Child() *openconfigimportpath.ChildPath {
-	return &openconfigimportpath.ChildPath{
+	ps := &openconfigimportpath.ChildPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"child"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Native (container): 
@@ -49,13 +50,14 @@ func (n *DevicePath) Child() *openconfigimportpath.ChildPath {
 // 	Path from parent:     "native"
 // 	Path from root:       "/native"
 func (n *DevicePath) Native() *openconfigsimpletargetpath.NativePath {
-	return &openconfigsimpletargetpath.NativePath{
+	ps := &openconfigsimpletargetpath.NativePath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"native"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // Target (container): 
@@ -64,11 +66,12 @@ func (n *DevicePath) Native() *openconfigsimpletargetpath.NativePath {
 // 	Path from parent:     "target"
 // 	Path from root:       "/target"
 func (n *DevicePath) Target() *openconfigsimpletargetpath.TargetPath {
-	return &openconfigsimpletargetpath.TargetPath{
+	ps := &openconfigsimpletargetpath.TargetPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"target"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }

@@ -17,6 +17,7 @@ package pathgen
 import (
 	"fmt"
 	"strings"
+	"text/template"
 
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/ygen"
@@ -44,16 +45,23 @@ type gnmiStruct struct {
 	InstantiatingModuleName string
 	SpecialConvertFunc      string
 	CompressInfo            *CompressionInfo
+	IsListContainer         bool
+	IsCompressedSchema      bool
 }
 
 const (
 	// TODO(DanG100): pass options into custom generators and remove this.
 	fakeRootName = "Root"
+
+	wildcardQueryTypeName  = "WildcardQuery"
+	singletonQueryTypeName = "SingletonQuery"
+	configQueryTypeName    = "ConfigQuery"
 )
 
 var packagesSeen = map[string]bool{}
 
-// GNMIGenerator is a plugin generator for generating ygnmi query objects.
+// GNMIGenerator is a plugin generator for generating ygnmi query objects for
+// compressed structs.
 //
 // - pathStructName is the name of the PathStruct of the node.
 // - node contains information of the node.
@@ -62,7 +70,7 @@ var packagesSeen = map[string]bool{}
 //
 // Note: GNMIGenerator requires that PreferOperationalState be true when generating PathStructs.
 // TODO(DanG100): pass schema from parent to child.
-func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeData) (string, error) {
+func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeData, _ bool) (string, error) {
 	tmplStruct := gnmiStruct{
 		PathStructName:          pathStructName,
 		GoTypeName:              node.GoTypeName,
@@ -71,17 +79,28 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 		GoFieldName:             node.GoFieldName,
 		SchemaStructPkgAccessor: "oc.",
 		IsState:                 true,
+		IsCompressedSchema:      true,
 		MethodName:              "State",
-		SingletonTypeName:       "SingletonQuery",
-		WildcardTypeName:        "WildcardQuery",
+		SingletonTypeName:       singletonQueryTypeName,
+		WildcardTypeName:        wildcardQueryTypeName,
 		IsScalar:                node.IsScalarField,
 		GenerateWildcard:        node.YANGPath != "/", // Do not generate wildcard for the fake root.
 		WildcardSuffix:          WildcardSuffix,
 		FakeRootName:            fakeRootName,
 		CompressInfo:            node.CompressInfo,
+		IsListContainer:         node.IsListContainer,
 	}
 	var b strings.Builder
 	if node.SubsumingGoStructName == fakeRootName {
+		if err := batchStructTemplate.Execute(&b, &tmplStruct); err != nil {
+			return "", err
+		}
+		if err := batchTemplate.Execute(&b, &tmplStruct); err != nil {
+			return "", err
+		}
+		tmplStruct := tmplStruct
+		tmplStruct.MethodName = "Config"
+		tmplStruct.IsState = false
 		if err := batchTemplate.Execute(&b, &tmplStruct); err != nil {
 			return "", err
 		}
@@ -129,13 +148,86 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 	}
 
 	tmplStruct.MethodName = "Config"
-	tmplStruct.SingletonTypeName = "ConfigQuery"
+	tmplStruct.SingletonTypeName = configQueryTypeName
 	tmplStruct.IsState = false
 	if err := generate(tmplStruct, true); err != nil {
 		return "", err
 	}
 
 	return b.String(), nil
+}
+
+// GNMIFieldGenerator generates an embedded query field for a PathStruct.
+//
+// This is meant to be used for uncompressed generation, where there is no need
+// to distinguish between config and state queries.
+func GNMIFieldGenerator(pathStructName string, _ *ygen.ParsedDirectory, node *NodeData, wildcard bool) (string, error) {
+	var queryTypeName string
+	switch {
+	case wildcard:
+		queryTypeName = wildcardQueryTypeName
+	case node.ConfigFalse:
+		queryTypeName = singletonQueryTypeName
+	default:
+		queryTypeName = configQueryTypeName
+	}
+
+	return fmt.Sprintf("\n\tygnmi.%s[%s]", queryTypeName, node.GoTypeName), nil
+}
+
+// GNMIInitGenerator generates the initialization for an embedded query field
+// for a PathStruct.
+//
+// This is meant to be used for uncompressed generation, where there is no need
+// to distinguish between config and state queries.
+func GNMIInitGenerator(pathStructName string, _ *ygen.ParsedDirectory, node *NodeData, wildcard bool) (string, error) {
+	tmplStruct := gnmiStruct{
+		PathStructName:          pathStructName,
+		GoTypeName:              node.GoTypeName,
+		GoStructTypeName:        node.SubsumingGoStructName,
+		PathBaseTypeName:        ygnmi.PathBaseTypeName,
+		GoFieldName:             node.GoFieldName,
+		SchemaStructPkgAccessor: "oc.",
+		IsState:                 true,
+		IsCompressedSchema:      false,
+		SingletonTypeName:       configQueryTypeName,
+		WildcardTypeName:        wildcardQueryTypeName,
+		IsScalar:                node.IsScalarField,
+		GenerateWildcard:        node.YANGPath != "/", // Do not generate wildcard for the fake root.
+		WildcardSuffix:          WildcardSuffix,
+		FakeRootName:            fakeRootName,
+		CompressInfo:            node.CompressInfo,
+		IsListContainer:         node.IsListContainer,
+	}
+
+	var queryTypeName string
+	switch {
+	case wildcard:
+		queryTypeName = wildcardQueryTypeName
+	case node.ConfigFalse:
+		tmplStruct.SingletonTypeName = singletonQueryTypeName
+		queryTypeName = singletonQueryTypeName
+	default:
+		queryTypeName = configQueryTypeName
+	}
+
+	var tmpl *template.Template
+	switch {
+	case wildcard && node.IsLeaf:
+		tmpl = goGNMILeafTemplate.Lookup("leaf-gnmi-wildcard-query")
+	case wildcard:
+		tmpl = goGNMINonLeafTemplate.Lookup("nonleaf-gnmi-wildcard-query")
+	case node.IsLeaf:
+		tmpl = goGNMILeafTemplate.Lookup("leaf-gnmi-singleton-query")
+	default:
+		tmpl = goGNMINonLeafTemplate.Lookup("nonleaf-gnmi-singleton-query")
+	}
+
+	var b strings.Builder
+	if err := tmpl.Execute(&b, &tmplStruct); err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("\n\tps.%s = %s", queryTypeName, b.String()), nil
 }
 
 // populateTmplForLeaf adds leaf specific fields to the gnmiStruct template.
@@ -167,30 +259,43 @@ func populateTmplForLeaf(dir *ygen.ParsedDirectory, fieldName string, shadow boo
 // For non-leaves, it checks if the directory or any of its descendants are config nodes.
 func generateConfigFunc(dir *ygen.ParsedDirectory, node *NodeData) bool {
 	if node.IsLeaf {
+		// Since we're generating with PreferOperationalState, we need
+		// to check shadow-fields to know whether this has a config
+		// sibling.
 		field, ok := dir.Fields[node.YANGFieldName]
 		return ok && len(field.ShadowMappedPaths) > 0
 	}
-	return !dir.ConfigFalse
+	return !node.ConfigFalse
+}
+
+// mustParseDownstreamTemplate parses a new template.Template with the given
+// tmpl as the associated template.
+func mustParseDownstreamTemplate(tmpl *template.Template, src string) *template.Template {
+	tmpl, err := template.Must(tmpl.Clone()).Parse(src)
+	if err != nil {
+		panic(err)
+	}
+	return tmpl
 }
 
 var (
-	goGNMILeafTemplate = mustTemplate("leaf-gnmi", `
-// {{ .MethodName }} returns a Query that can be used in gNMI operations.
-// 	Defining module:      "{{ .DefiningModuleName }}"
-// 	Instantiating module: "{{ .InstantiatingModuleName }}"
-// 	Path from parent:     "{{ .RelPath }}"
-// 	Path from root:       "{{ .AbsPath }}"
-func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
-	return ygnmi.New{{ .SingletonTypeName }}[{{ .GoTypeName }}](
+	goGNMILeafQueryTemplate = mustTemplate("leaf-gnmi-query", `{{ define "leaf-gnmi-singleton-query" -}}
+ygnmi.New{{ .SingletonTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
 		true,
 		{{ .IsScalar }},
+		{{ .IsCompressedSchema }},
+		false,
+		{{- if .IsCompressedSchema }}
 		ygnmi.New{{ .PathBaseTypeName }}(
 			[]string{ {{- .RelPathList -}} },
 			nil,
 			n.parent,
 		),
+		{{- else }}
+		ps,
+		{{- end }}
 		func(gs ygot.ValidatedGoStruct) ({{ .GoTypeName }}, bool) { 
 			ret := gs.(*{{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}).{{ .GoFieldName }}
 			{{- if .IsScalar }}
@@ -218,26 +323,24 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 		nil,
 		nil,
 	)
-}
-
-{{- if .GenerateWildcard }}
-
-// {{ .MethodName }} returns a Query that can be used in gNMI operations.
-// 	Defining module:      "{{ .DefiningModuleName }}"
-// 	Instantiating module: "{{ .InstantiatingModuleName }}"
-// 	Path from parent:     "{{ .RelPath }}"
-// 	Path from root:       "{{ .AbsPath }}"
-func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{{ .WildcardTypeName }}[{{ .GoTypeName }}] {
-	return ygnmi.New{{ .WildcardTypeName }}[{{ .GoTypeName }}](
+{{ end }}
+{{ define "leaf-gnmi-wildcard-query" -}}
+ygnmi.New{{ .WildcardTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
 		true,
 		{{ .IsScalar }},
+		{{ .IsCompressedSchema }},
+		false,
+		{{- if .IsCompressedSchema }}
 		ygnmi.New{{ .PathBaseTypeName }}(
 			[]string{ {{- .RelPathList -}} },
 			nil,
 			n.parent,
 		),
+		{{- else }}
+		ps,
+		{{- end }}
 		func(gs ygot.ValidatedGoStruct) ({{ .GoTypeName }}, bool) { 
 			ret := gs.(*{{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}).{{ .GoFieldName }}
 			{{- if .IsScalar }}
@@ -264,20 +367,45 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 		},
 		nil,
 	)
+{{ end }}`)
+
+	goGNMILeafTemplate = mustParseDownstreamTemplate(goGNMILeafQueryTemplate, `
+// {{ .MethodName }} returns a Query that can be used in gNMI operations.
+// 	Defining module:      "{{ .DefiningModuleName }}"
+// 	Instantiating module: "{{ .InstantiatingModuleName }}"
+// 	Path from parent:     "{{ .RelPath }}"
+// 	Path from root:       "{{ .AbsPath }}"
+func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
+	return {{ template "leaf-gnmi-singleton-query" . -}}
+}
+
+{{- if .GenerateWildcard }}
+
+// {{ .MethodName }} returns a Query that can be used in gNMI operations.
+// 	Defining module:      "{{ .DefiningModuleName }}"
+// 	Instantiating module: "{{ .InstantiatingModuleName }}"
+// 	Path from parent:     "{{ .RelPath }}"
+// 	Path from root:       "{{ .AbsPath }}"
+func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{{ .WildcardTypeName }}[{{ .GoTypeName }}] {
+	return {{ template "leaf-gnmi-wildcard-query" . -}}
 }
 {{- end }}
 `)
 
-	goGNMINonLeafTemplate = mustTemplate("non-leaf-gnmi", `
-// {{ .MethodName }} returns a Query that can be used in gNMI operations.
-func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
-	return ygnmi.New{{ .SingletonTypeName }}[{{ .GoTypeName }}](
+	goGNMINonLeafQueryTemplate = mustTemplate("nonleaf-gnmi-query", `{{ define "nonleaf-gnmi-singleton-query" -}}
+ygnmi.New{{ .SingletonTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
 		false,
 		false,
+		{{ .IsCompressedSchema }},
+		{{ .IsListContainer }},
+		{{- if .IsCompressedSchema }}
 		n,
-		{{- if .CompressInfo }}
+		{{- else }}
+		ps,
+		{{- end }}
+		{{- if .IsListContainer }}
 		func(gs ygot.ValidatedGoStruct) ({{ .GoTypeName }}, bool) { 
 			ret := gs.(*{{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}).{{ .GoFieldName }}
 			return ret, ret != nil
@@ -304,52 +432,66 @@ func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName 
 		nil,
 		{{- end }}
 	)
+{{ end }}
+{{ define "nonleaf-gnmi-wildcard-query" -}}
+ygnmi.New{{ .WildcardTypeName }}[{{ .GoTypeName }}](
+		"{{ .GoStructTypeName }}",
+		{{ .IsState }},
+		false,
+		false,
+		{{ .IsCompressedSchema }},
+		{{ .IsListContainer }},
+		{{- if .IsCompressedSchema }}
+		n,
+		{{- else }}
+		ps,
+		{{- end }}
+		{{- if .IsListContainer }}
+		func(gs ygot.ValidatedGoStruct) ({{ .GoTypeName }}, bool) { 
+			ret := gs.(*{{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}).{{ .GoFieldName }}
+			return ret, ret != nil
+		},
+		func() ygot.ValidatedGoStruct { return new({{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}) },
+		{{- else }}
+		nil,
+		nil,
+		{{- end }}
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
+				SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
+				Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
+			}
+		},
+		{{- if .CompressInfo }}
+		&ygnmi.CompressionInfo{
+			PreRelPath: []string{ {{- .CompressInfo.PreRelPathList -}} },
+			PostRelPath: []string{ {{- .CompressInfo.PostRelPathList -}} },
+		},
+		{{- else }}
+		nil,
+		{{- end }}
+	)
+{{ end }}`)
+
+	goGNMINonLeafTemplate = mustParseDownstreamTemplate(goGNMINonLeafQueryTemplate, `
+// {{ .MethodName }} returns a Query that can be used in gNMI operations.
+func (n *{{ .PathStructName }}) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
+	return {{ template "nonleaf-gnmi-singleton-query" . -}}
 }
 
 {{- if .GenerateWildcard }}
 
 // {{ .MethodName }} returns a Query that can be used in gNMI operations.
 func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{{ .WildcardTypeName }}[{{ .GoTypeName }}] {
-	return ygnmi.New{{ .WildcardTypeName }}[{{ .GoTypeName }}](
-		"{{ .GoStructTypeName }}",
-		{{ .IsState }},
-		false,
-		false,
-		n,
-		{{- if .CompressInfo }}
-		func(gs ygot.ValidatedGoStruct) ({{ .GoTypeName }}, bool) { 
-			ret := gs.(*{{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}).{{ .GoFieldName }}
-			return ret, ret != nil
-		},
-		func() ygot.ValidatedGoStruct { return new({{ .SchemaStructPkgAccessor }}{{ .GoStructTypeName }}) },
-		{{- else }}
-		nil,
-		nil,
-		{{- end }}
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
-				SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
-				Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
-			}
-		},
-		{{- if .CompressInfo }}
-		&ygnmi.CompressionInfo{
-			PreRelPath: []string{ {{- .CompressInfo.PreRelPathList -}} },
-			PostRelPath: []string{ {{- .CompressInfo.PostRelPathList -}} },
-		},
-		{{- else }}
-		nil,
-		{{- end }}
-	)
+	return {{ template "nonleaf-gnmi-wildcard-query" . -}}
 }
 {{- end }}
 `)
 
-	batchTemplate = mustTemplate("batch", `
+	batchStructTemplate = mustTemplate("batch-struct", `
 // Batch contains a collection of paths.
-// Calling State() or Config() on the batch returns a query
-// that can use to Lookup, Watch, etc on multiple paths at once.
+// Use batch to call Lookup, Watch, etc. on multiple paths at once.
 type Batch struct {
     paths []ygnmi.PathStruct
 }
@@ -359,41 +501,20 @@ func (b *Batch) AddPaths(paths ...ygnmi.PathStruct) *Batch {
     b.paths = append(b.paths, paths...)
     return b
 }
+`)
 
-// State returns a Query that can be used in gNMI operations.
+	batchTemplate = mustTemplate("batch", `
+// {{ .MethodName }} returns a Query that can be used in gNMI operations.
 // The returned query is immutable, adding paths does not modify existing queries.
-func (b *Batch) State() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
+func (b *Batch) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeName }}] {
 	queryPaths := make([]ygnmi.PathStruct, len(b.paths))
 	copy(queryPaths, b.paths)
 	return ygnmi.New{{ .SingletonTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
-		true,
+		{{ .IsState }},
 		false,
 		false,
-		ygnmi.NewDeviceRootBase(),
-		nil,
-		nil,
-		func() *ytypes.Schema {
-			return &ytypes.Schema{
-				Root:       &{{ .SchemaStructPkgAccessor }}{{ .FakeRootName }}{},
-				SchemaTree: {{ .SchemaStructPkgAccessor }}SchemaTree,
-				Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
-			}
-		},
-		queryPaths,
-		nil,
-	)
-}
-
-// Config returns a Query that can be used in gNMI operations.
-// The returned query is immutable, adding paths does not modify existing queries.
-func (b *Batch) Config() ygnmi.{{ .SingletonTypeName }}[*oc.Root] {
-	queryPaths := make([]ygnmi.PathStruct, len(b.paths))
-	copy(queryPaths, b.paths)
-	return ygnmi.New{{ .SingletonTypeName }}[*oc.Root](
-		"{{ .GoStructTypeName }}",
-		false,
-		false,
+		{{ .IsCompressedSchema }},
 		false,
 		ygnmi.NewDeviceRootBase(),
 		nil,

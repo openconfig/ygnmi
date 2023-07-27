@@ -32,13 +32,14 @@ type RemoteContainerPathAny struct {
 // 	Path from parent:     "state/a-leaf"
 // 	Path from root:       "/remote-container/state/a-leaf"
 func (n *RemoteContainerPath) ALeaf() *RemoteContainer_ALeafPath {
-	return &RemoteContainer_ALeafPath{
+	ps := &RemoteContainer_ALeafPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "a-leaf"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
 
 // ALeaf (leaf): 
@@ -47,11 +48,12 @@ func (n *RemoteContainerPath) ALeaf() *RemoteContainer_ALeafPath {
 // 	Path from parent:     "state/a-leaf"
 // 	Path from root:       "/remote-container/state/a-leaf"
 func (n *RemoteContainerPathAny) ALeaf() *RemoteContainer_ALeafPathAny {
-	return &RemoteContainer_ALeafPathAny{
+	ps := &RemoteContainer_ALeafPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "a-leaf"},
 			map[string]interface{}{},
 			n,
 		),
 	}
+	return ps
 }
