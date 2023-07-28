@@ -60,6 +60,7 @@ func TestGeneratePathCode(t *testing.T) {
 		inGenerateWildcardPaths bool
 		inSchemaStructPkgPath   string
 		inPathStructSuffix      string
+		inIgnoreUnsupported     bool
 		inIgnoreAtomicLists     bool
 		// checkYANGPath says whether to check for the YANG path in the NodeDataMap.
 		checkYANGPath bool
@@ -1320,6 +1321,7 @@ func TestGeneratePathCode(t *testing.T) {
 		inGenerateWildcardPaths:                true,
 		inSchemaStructPkgPath:                  "github.com/openconfig/ygot/ypathgen/testdata/exampleoc",
 		inPathStructSuffix:                     "",
+		inIgnoreUnsupported:                    true,
 		wantStructsCodeFile:                    filepath.Join(TestRoot, "testdata/structs/openconfig-augmented.path-txt"),
 		wantNodeDataMap: NodeDataMap{
 			"Device": {
@@ -1445,6 +1447,7 @@ func TestGeneratePathCode(t *testing.T) {
 				cg.GenerateWildcardPaths = tt.inGenerateWildcardPaths
 				cg.PackageName = "ocstructs"
 				cg.IgnoreAtomicLists = tt.inIgnoreAtomicLists
+				cg.ParseOptions.IgnoreUnsupportedStatements = tt.inIgnoreUnsupported
 
 				gotCode, gotNodeDataMap, err := cg.GeneratePathCode(tt.inFiles, tt.inIncludePaths)
 				if err != nil && !tt.wantErr {

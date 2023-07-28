@@ -19,5 +19,14 @@ module openconfig-simple-augment {
   augment "/t:native/state" {
     leaf b { type string; }
   }
+
+  notification notif {
+    description
+      "This is unsupported by ygot.";
+
+    leaf stream {
+      type string;
+    }
+  }
 }
 

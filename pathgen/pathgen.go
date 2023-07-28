@@ -127,6 +127,9 @@ type GenConfig struct {
 	PackageName string
 	// GoImports contains package import options.
 	GoImports GoImports
+	// ParseOptions specifies the options for how the YANG schema is
+	// produced.
+	ParseOptions ygen.ParseOpts
 	// FakeRootName specifies the name of the struct that should be generated
 	// representing the root.
 	FakeRootName string
@@ -165,15 +168,6 @@ type GenConfig struct {
 	// only applies when useDefiningModuleForTypedefEnumNames is also set
 	// to true.
 	AppendEnumSuffixForSimpleUnionEnums bool
-	// ExcludeModules specifies any modules that are included within the set of
-	// modules that should have code generated for them that should be ignored during
-	// code generation. This is due to the fact that some schemas (e.g., OpenConfig
-	// interfaces) currently result in overlapping entities (e.g., /interfaces).
-	ExcludeModules []string
-	// YANGParseOptions provides the options that should be handed to the
-	// github.com/openconfig/goyang/pkg/yang library. These specify how the
-	// input YANG files should be parsed.
-	YANGParseOptions yang.Options
 	// GeneratingBinary is the name of the binary calling the generator library, it is
 	// included in the header of output files for debugging purposes. If a
 	// string is not specified, the location of the library is utilised.
@@ -258,10 +252,7 @@ func (goLangMapper) PopulateFieldFlags(nd ygen.NodeDetails, field *yang.Entry) m
 // If errors are encountered during code generation, they are returned.
 func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[string]*GeneratedPathCode, NodeDataMap, util.Errors) {
 	opts := ygen.IROptions{
-		ParseOptions: ygen.ParseOpts{
-			YANGParseOptions: cg.YANGParseOptions,
-			ExcludeModules:   cg.ExcludeModules,
-		},
+		ParseOptions: cg.ParseOptions,
 		TransformationOptions: ygen.TransformationOpts{
 			CompressBehaviour:                    cg.CompressBehaviour,
 			GenerateFakeRoot:                     true,
