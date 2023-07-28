@@ -625,6 +625,48 @@ func TestLookup(t *testing.T) {
 		})
 	}
 
+	t.Run("success with ieeefloat32", func(t *testing.T) {
+		fakeGNMI.Stub().Notification(&gpb.Notification{
+			Timestamp: 100,
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counter"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_BytesVal{BytesVal: []byte{0xc0, 0x00, 0x00, 0x00}}},
+			}},
+		}).Sync()
+
+		lookupCheckFn(
+			t, fakeGNMI, c,
+			exampleocpath.Root().Model().SingleKey("foo").Counter().State(),
+			"",
+			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counter"),
+			(&ygnmi.Value[float32]{
+				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counter"),
+				Timestamp: time.Unix(0, 100),
+			}).SetVal(-2),
+		)
+	})
+
+	t.Run("success with leaf-list ieeefloat32", func(t *testing.T) {
+		fakeGNMI.Stub().Notification(&gpb.Notification{
+			Timestamp: 100,
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counters"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_LeaflistVal{LeaflistVal: &gpb.ScalarArray{Element: []*gpb.TypedValue{{Value: &gpb.TypedValue_BytesVal{BytesVal: []byte{0xc0, 0x00, 0x00, 0x00}}}}}}},
+			}},
+		}).Sync()
+
+		lookupCheckFn(
+			t, fakeGNMI, c,
+			exampleocpath.Root().Model().SingleKey("foo").Counters().State(),
+			"",
+			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counters"),
+			(&ygnmi.Value[[]float32]{
+				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counters"),
+				Timestamp: time.Unix(0, 100),
+			}).SetVal([]float32{-2}),
+		)
+	})
+
 	t.Run("success ordered map", func(t *testing.T) {
 		fakeGNMI.Stub().Notification(&gpb.Notification{
 			Timestamp: 100,

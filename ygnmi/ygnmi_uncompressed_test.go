@@ -19,11 +19,16 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/openconfig/gnmi/errdiff"
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
 	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygnmi/internal/uexampleoc"
 	"github.com/openconfig/ygnmi/internal/uexampleoc/uexampleocpath"
+	"github.com/openconfig/ygnmi/schemaless"
 	"github.com/openconfig/ygnmi/ygnmi"
+	"github.com/openconfig/ygot/ygot"
+	"google.golang.org/protobuf/testing/protocmp"
 )
 
 func getSampleSingleKeyedMapUncompressed(t *testing.T) map[string]*uexampleoc.OpenconfigWithlistval_Model_A_SingleKey {
@@ -214,6 +219,48 @@ func TestUncompressedTelemetry(t *testing.T) {
 			},
 		)
 	})
+
+	t.Run("success with ieeefloat32", func(t *testing.T) {
+		fakeGNMI.Stub().Notification(&gpb.Notification{
+			Timestamp: 100,
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counter"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_BytesVal{BytesVal: []byte{0xc0, 0x00, 0x00, 0x00}}},
+			}},
+		}).Sync()
+
+		lookupCheckFn(
+			t, fakeGNMI, c,
+			ygnmi.SingletonQuery[float32](uexampleocpath.Root().Model().A().SingleKey("foo").State().Counter()),
+			"",
+			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counter"),
+			(&ygnmi.Value[float32]{
+				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counter"),
+				Timestamp: time.Unix(0, 100),
+			}).SetVal(-2),
+		)
+	})
+
+	t.Run("success with leaf-list ieeefloat32", func(t *testing.T) {
+		fakeGNMI.Stub().Notification(&gpb.Notification{
+			Timestamp: 100,
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counters"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_LeaflistVal{LeaflistVal: &gpb.ScalarArray{Element: []*gpb.TypedValue{{Value: &gpb.TypedValue_BytesVal{BytesVal: []byte{0xc0, 0x00, 0x00, 0x00}}}}}}},
+			}},
+		}).Sync()
+
+		lookupCheckFn(
+			t, fakeGNMI, c,
+			ygnmi.SingletonQuery[[]float32](uexampleocpath.Root().Model().A().SingleKey("foo").State().Counters()),
+			"",
+			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counters"),
+			(&ygnmi.Value[[]float32]{
+				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counters"),
+				Timestamp: time.Unix(0, 100),
+			}).SetVal([]float32{-2}),
+		)
+	})
 }
 
 func TestUncompressedConfig(t *testing.T) {
@@ -310,4 +357,257 @@ func TestUncompressedConfig(t *testing.T) {
 			nil,
 		)
 	})
+}
+
+func TestUncompressedBatchGet(t *testing.T) {
+	fakeGNMI, c := newClient(t)
+	twoPath := testutil.GNMIPath(t, "/parent/child/state/two")
+	threePath := testutil.GNMIPath(t, "/parent/child/state/three")
+	aLeafSubPath := testutil.GNMIPath(t, "/remote-container/config/a-leaf")
+
+	tests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		paths                []ygnmi.PathStruct
+		wantSubscriptionPath []*gpb.Path
+		wantVal              *ygnmi.Value[*uexampleoc.Root]
+		wantErr              string
+	}{{
+		desc: "config and state leaves",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: aLeafSubPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}, {
+					Path: twoPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+				}, {
+					Path: threePath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "ONE"}},
+				}},
+			}).Sync()
+		},
+		paths: []ygnmi.PathStruct{
+			uexampleocpath.Root().RemoteContainer().Config().ALeaf(),
+			uexampleocpath.Root().Parent().Child().State().Two(),
+		},
+		wantSubscriptionPath: []*gpb.Path{
+			aLeafSubPath,
+			twoPath,
+		},
+		wantVal: (&ygnmi.Value[*uexampleoc.Root]{
+			Timestamp: time.Unix(0, 100),
+			Path:      testutil.GNMIPath(t, "/"),
+		}).SetVal(&uexampleoc.Root{
+			RemoteContainer: &uexampleoc.OpenconfigSimple_RemoteContainer{
+				Config: &uexampleoc.OpenconfigSimple_RemoteContainer_Config{ALeaf: ygot.String("foo")},
+			},
+			Parent: &uexampleoc.OpenconfigSimple_Parent{Child: &uexampleoc.OpenconfigSimple_Parent_Child{
+				State: &uexampleoc.OpenconfigSimple_Parent_Child_State{
+					Two:   ygot.String("bar"),
+					Three: uexampleoc.Simple_Parent_Child_Config_Three_ONE,
+				}},
+			},
+		}),
+	}}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			b := &uexampleocpath.Batch{}
+			b.AddPaths(tt.paths...)
+			query := b.Query()
+			got, err := ygnmi.Lookup(context.Background(), c, query)
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Lookup() returned unexpected diff: %s", diff)
+			}
+			if err != nil {
+				return
+			}
+			checkJustReceived(t, got.RecvTimestamp)
+			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath...)
+			tt.wantVal.RecvTimestamp = got.RecvTimestamp
+
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*uexampleoc.Root]{}), protocmp.Transform()); diff != "" {
+				t.Errorf("Lookup() returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", diff, got.ComplianceErrors)
+			}
+		})
+	}
+	t.Run("immutable query", func(t *testing.T) {
+		fakeGNMI.Stub().Sync()
+		b := &uexampleocpath.Batch{}
+		b.AddPaths(uexampleocpath.Root().Model())
+		q := b.Query()
+		if _, err := ygnmi.Lookup(context.Background(), c, q); err != nil {
+			t.Fatal(err)
+		}
+		verifySubscriptionPathsSent(t, fakeGNMI, testutil.GNMIPath(t, "/model"))
+		b.AddPaths(uexampleocpath.Root().A(), uexampleocpath.Root().A().B())
+		if _, err := ygnmi.Lookup(context.Background(), c, q); err != nil {
+			t.Fatal(err)
+		}
+		verifySubscriptionPathsSent(t, fakeGNMI, testutil.GNMIPath(t, "/model"))
+	})
+}
+
+func TestUncompressedCustomRootBatch(t *testing.T) {
+	fakeGNMI, c := newClient(t)
+	twoPath := testutil.GNMIPath(t, "/parent/child/state/two")
+
+	tests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		paths                []ygnmi.PathStruct
+		wantSubscriptionPath []*gpb.Path
+		wantVal              *ygnmi.Value[*uexampleoc.OpenconfigSimple_Parent]
+		wantAddErr           string
+		wantLookupErr        string
+	}{{
+		desc: "not prefix",
+		stub: func(s *testutil.Stubber) {},
+		paths: []ygnmi.PathStruct{
+			uexampleocpath.Root().Model(),
+		},
+		wantAddErr: "is not a prefix",
+	}, {
+		desc: "success",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: twoPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		paths: []ygnmi.PathStruct{
+			uexampleocpath.Root().Parent().Child().State().Two(),
+		},
+		wantSubscriptionPath: []*gpb.Path{
+			twoPath,
+		},
+		wantVal: (&ygnmi.Value[*uexampleoc.OpenconfigSimple_Parent]{
+			Timestamp: time.Unix(0, 100),
+			Path:      testutil.GNMIPath(t, "/parent"),
+		}).SetVal(&uexampleoc.OpenconfigSimple_Parent{
+			Child: &uexampleoc.OpenconfigSimple_Parent_Child{
+				State: &uexampleoc.OpenconfigSimple_Parent_Child_State{
+					Two: ygot.String("foo"),
+				},
+			},
+		}),
+	}}
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			b := ygnmi.NewBatch(ygnmi.SingletonQuery[*uexampleoc.OpenconfigSimple_Parent](uexampleocpath.Root().Parent()))
+			err := b.AddPaths(tt.paths...)
+			if diff := errdiff.Substring(err, tt.wantAddErr); diff != "" {
+				t.Fatalf("AddPaths returned unexpected diff: %s", diff)
+			}
+			if err != nil {
+				return
+			}
+			got, gotErr := ygnmi.Lookup(context.Background(), c, b.Query())
+			if diff := errdiff.Substring(gotErr, tt.wantLookupErr); diff != "" {
+				t.Fatalf("Watch() returned unexpected diff: %s", diff)
+			}
+			if gotErr != nil {
+				return
+			}
+			checkJustReceived(t, got.RecvTimestamp)
+			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath...)
+			tt.wantVal.RecvTimestamp = got.RecvTimestamp
+
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*uexampleoc.OpenconfigSimple_Parent]{}), protocmp.Transform()); diff != "" {
+				t.Errorf("Watch() returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", diff, got.ComplianceErrors)
+			}
+		})
+	}
+}
+
+func TestUncompressedSetBatch(t *testing.T) {
+	setClient := &testutil.SetClient{}
+	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
+	if err != nil {
+		t.Fatalf("Unexpected error creating client: %v", err)
+	}
+	tests := []struct {
+		desc         string
+		addPaths     func(*ygnmi.SetBatch)
+		wantErr      string
+		wantRequest  *gpb.SetRequest
+		stubResponse *gpb.SetResponse
+		stubErr      error
+	}{{
+		desc: "leaf update replace delete",
+		addPaths: func(sb *ygnmi.SetBatch) {
+			cliPath, err := schemaless.NewConfig[string]("", "cli")
+			if err != nil {
+				t.Fatalf("Failed to create CLI ygnmi query: %v", err)
+			}
+			ygnmi.BatchUpdate(sb, cliPath, "hello, mercury")
+			ygnmi.BatchUpdate(sb, ygnmi.ConfigQuery[string](uexampleocpath.Root().Parent().Child().Config().One()), "foo")
+			ygnmi.BatchReplace(sb, cliPath, "hello, venus")
+			ygnmi.BatchReplace(sb, ygnmi.ConfigQuery[string](uexampleocpath.Root().Parent().Child().Config().One()), "bar")
+			ygnmi.BatchDelete(sb, cliPath)
+			ygnmi.BatchDelete(sb, ygnmi.ConfigQuery[string](uexampleocpath.Root().Parent().Child().Config().One()))
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Update: []*gpb.Update{{
+				Path: &gpb.Path{Origin: "cli"},
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: "hello, mercury"}},
+			}, {
+				Path: testutil.GNMIPath(t, "parent/child/config/one"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("\"foo\"")}},
+			}},
+			Replace: []*gpb.Update{{
+				Path: &gpb.Path{Origin: "cli"},
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: "hello, venus"}},
+			}, {
+				Path: testutil.GNMIPath(t, "parent/child/config/one"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("\"bar\"")}},
+			}},
+			Delete: []*gpb.Path{
+				{Origin: "cli"},
+				testutil.GNMIPath(t, "parent/child/config/one"),
+			},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}}
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			setClient.Reset()
+			setClient.AddResponse(tt.stubResponse, tt.stubErr)
+			b := &ygnmi.SetBatch{}
+			tt.addPaths(b)
+
+			got, err := b.Set(context.Background(), client)
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("Set() returned unexpected diff: %s", diff)
+			}
+			if err != nil {
+				return
+			}
+			if diff := cmp.Diff(tt.wantRequest, setClient.Requests[0], protocmp.Transform()); diff != "" {
+				t.Errorf("Set() sent unexpected request (-want,+got):\n%s", diff)
+			}
+			want := &ygnmi.Result{
+				RawResponse: tt.stubResponse,
+				Timestamp:   time.Unix(0, tt.stubResponse.GetTimestamp()),
+			}
+			if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
+				t.Errorf("Set() returned unexpected value (-want,+got):\n%s", diff)
+			}
+		})
+	}
 }

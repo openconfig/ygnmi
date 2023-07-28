@@ -71,58 +71,13 @@ var packagesSeen = map[string]bool{}
 // Note: GNMIGenerator requires that PreferOperationalState be true when generating PathStructs.
 // TODO(DanG100): pass schema from parent to child.
 func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeData, _ bool) (string, error) {
-	tmplStruct := gnmiStruct{
-		PathStructName:          pathStructName,
-		GoTypeName:              node.GoTypeName,
-		GoStructTypeName:        node.SubsumingGoStructName,
-		PathBaseTypeName:        ygnmi.PathBaseTypeName,
-		GoFieldName:             node.GoFieldName,
-		SchemaStructPkgAccessor: "oc.",
-		IsState:                 true,
-		IsCompressedSchema:      true,
-		MethodName:              "State",
-		SingletonTypeName:       singletonQueryTypeName,
-		WildcardTypeName:        wildcardQueryTypeName,
-		IsScalar:                node.IsScalarField,
-		GenerateWildcard:        node.YANGPath != "/", // Do not generate wildcard for the fake root.
-		WildcardSuffix:          WildcardSuffix,
-		FakeRootName:            fakeRootName,
-		CompressInfo:            node.CompressInfo,
-		IsListContainer:         node.IsListContainer,
-	}
+	tmplStruct := defaultTmplStruct(pathStructName, node)
 	var b strings.Builder
-	if node.SubsumingGoStructName == fakeRootName {
-		if err := batchStructTemplate.Execute(&b, &tmplStruct); err != nil {
-			return "", err
-		}
-		if err := batchTemplate.Execute(&b, &tmplStruct); err != nil {
-			return "", err
-		}
-		tmplStruct := tmplStruct
-		tmplStruct.MethodName = "Config"
-		tmplStruct.IsState = false
-		if err := batchTemplate.Execute(&b, &tmplStruct); err != nil {
-			return "", err
-		}
+	if err := generateOneOff(&b, node, tmplStruct, true); err != nil {
+		return "", err
 	}
-	if !packagesSeen[node.GoPathPackageName] {
-		packagesSeen[node.GoPathPackageName] = true
-		if err := oncePerPackageTmpl.Execute(&b, struct{}{}); err != nil {
-			return "", err
-		}
-	}
-
-	if node.YANGTypeName == "ieeefloat32" {
-		switch node.LocalGoTypeName {
-		case "Binary":
-			tmplStruct.GoTypeName = "float32"
-			tmplStruct.SpecialConvertFunc = "ygot.BinaryToFloat32"
-		case "[]Binary":
-			tmplStruct.GoTypeName = "[]float32"
-			tmplStruct.SpecialConvertFunc = "binarySliceToFloatSlice"
-		default:
-			return "", fmt.Errorf("ieeefloat32 is expected to be a binary, got %q", node.LocalGoTypeName)
-		}
+	if err := modifyQueryType(node, &tmplStruct); err != nil {
+		return "", err
 	}
 
 	tmpl := goGNMINonLeafTemplate
@@ -157,11 +112,101 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 	return b.String(), nil
 }
 
+// GNMIGeneratorUncompressed is a plugin generator for generating ygnmi query objects for
+// uncompressed structs.
+func GNMIGeneratorUncompressed(pathStructName string, dir *ygen.ParsedDirectory, node *NodeData, _ bool) (string, error) {
+	var b strings.Builder
+	if err := generateOneOff(&b, node, defaultTmplStruct(pathStructName, node), false); err != nil {
+		return "", err
+	}
+	return b.String(), nil
+}
+
+func defaultTmplStruct(pathStructName string, node *NodeData) gnmiStruct {
+	return gnmiStruct{
+		PathStructName:          pathStructName,
+		GoTypeName:              node.GoTypeName,
+		GoStructTypeName:        node.SubsumingGoStructName,
+		PathBaseTypeName:        ygnmi.PathBaseTypeName,
+		GoFieldName:             node.GoFieldName,
+		SchemaStructPkgAccessor: "oc.",
+		IsState:                 true,
+		IsCompressedSchema:      true,
+		MethodName:              "State",
+		SingletonTypeName:       singletonQueryTypeName,
+		WildcardTypeName:        wildcardQueryTypeName,
+		IsScalar:                node.IsScalarField,
+		GenerateWildcard:        node.YANGPath != "/", // Do not generate wildcard for the fake root.
+		WildcardSuffix:          WildcardSuffix,
+		FakeRootName:            fakeRootName,
+		CompressInfo:            node.CompressInfo,
+		IsListContainer:         node.IsListContainer,
+	}
+}
+
+// generateOneOff generates one-off free-form generated code.
+func generateOneOff(b *strings.Builder, node *NodeData, tmplStruct gnmiStruct, compressPaths bool) error {
+	if node.SubsumingGoStructName == fakeRootName {
+		tmplStruct.MethodName = "Query"
+		if compressPaths {
+			tmplStruct.MethodName = "State"
+		}
+		tmplStruct.IsState = true
+		if err := batchStructTemplate.Execute(b, &tmplStruct); err != nil {
+			return err
+		}
+		if err := batchTemplate.Execute(b, &tmplStruct); err != nil {
+			return err
+		}
+		if compressPaths {
+			tmplStruct.MethodName = "Config"
+			tmplStruct.IsState = false
+			if err := batchTemplate.Execute(b, &tmplStruct); err != nil {
+				return err
+			}
+		}
+	}
+	if !packagesSeen[node.GoPathPackageName] {
+		packagesSeen[node.GoPathPackageName] = true
+		if err := oncePerPackageTmpl.Execute(b, struct{}{}); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// modifyQueryType modifies the default type of the query with custom types.
+func modifyQueryType(node *NodeData, s *gnmiStruct) error {
+	// use float32 instead of the binary type for ieeefloat32 since it is
+	// more user friendly.
+	if node.YANGTypeName == "ieeefloat32" {
+		switch node.LocalGoTypeName {
+		case "Binary":
+			s.GoTypeName = "float32"
+			s.SpecialConvertFunc = "ygot.BinaryToFloat32"
+		case "[]Binary":
+			s.GoTypeName = "[]float32"
+			s.SpecialConvertFunc = "binarySliceToFloatSlice"
+		default:
+			return fmt.Errorf("ieeefloat32 is expected to be a binary, got %q", node.LocalGoTypeName)
+		}
+	}
+	return nil
+}
+
 // GNMIFieldGenerator generates an embedded query field for a PathStruct.
 //
 // This is meant to be used for uncompressed generation, where there is no need
 // to distinguish between config and state queries.
 func GNMIFieldGenerator(pathStructName string, _ *ygen.ParsedDirectory, node *NodeData, wildcard bool) (string, error) {
+	tmplStruct := gnmiStruct{
+		GoTypeName: node.GoTypeName,
+	}
+	if err := modifyQueryType(node, &tmplStruct); err != nil {
+		return "", err
+	}
+
 	var queryTypeName string
 	switch {
 	case wildcard:
@@ -172,7 +217,7 @@ func GNMIFieldGenerator(pathStructName string, _ *ygen.ParsedDirectory, node *No
 		queryTypeName = configQueryTypeName
 	}
 
-	return fmt.Sprintf("\n\tygnmi.%s[%s]", queryTypeName, node.GoTypeName), nil
+	return fmt.Sprintf("\n\tygnmi.%s[%s]", queryTypeName, tmplStruct.GoTypeName), nil
 }
 
 // GNMIInitGenerator generates the initialization for an embedded query field
@@ -181,23 +226,10 @@ func GNMIFieldGenerator(pathStructName string, _ *ygen.ParsedDirectory, node *No
 // This is meant to be used for uncompressed generation, where there is no need
 // to distinguish between config and state queries.
 func GNMIInitGenerator(pathStructName string, _ *ygen.ParsedDirectory, node *NodeData, wildcard bool) (string, error) {
-	tmplStruct := gnmiStruct{
-		PathStructName:          pathStructName,
-		GoTypeName:              node.GoTypeName,
-		GoStructTypeName:        node.SubsumingGoStructName,
-		PathBaseTypeName:        ygnmi.PathBaseTypeName,
-		GoFieldName:             node.GoFieldName,
-		SchemaStructPkgAccessor: "oc.",
-		IsState:                 true,
-		IsCompressedSchema:      false,
-		SingletonTypeName:       configQueryTypeName,
-		WildcardTypeName:        wildcardQueryTypeName,
-		IsScalar:                node.IsScalarField,
-		GenerateWildcard:        node.YANGPath != "/", // Do not generate wildcard for the fake root.
-		WildcardSuffix:          WildcardSuffix,
-		FakeRootName:            fakeRootName,
-		CompressInfo:            node.CompressInfo,
-		IsListContainer:         node.IsListContainer,
+	tmplStruct := defaultTmplStruct(pathStructName, node)
+	tmplStruct.IsCompressedSchema = false
+	if err := modifyQueryType(node, &tmplStruct); err != nil {
+		return "", err
 	}
 
 	var queryTypeName string
@@ -208,6 +240,7 @@ func GNMIInitGenerator(pathStructName string, _ *ygen.ParsedDirectory, node *Nod
 		tmplStruct.SingletonTypeName = singletonQueryTypeName
 		queryTypeName = singletonQueryTypeName
 	default:
+		tmplStruct.SingletonTypeName = configQueryTypeName
 		queryTypeName = configQueryTypeName
 	}
 
