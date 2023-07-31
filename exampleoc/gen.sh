@@ -17,14 +17,14 @@ set -e
 
 cd "$(dirname "$0")"
 
-go run ../../app/ygnmi generator \
+go run ../app/ygnmi generator \
   --trim_module_prefix=openconfig \
-  --base_package_path=github.com/openconfig/ygnmi/internal/exampleoc \
+  --base_package_path=github.com/openconfig/ygnmi/exampleoc \
   --split_package_paths=/model/a=a,/model/b \
   --split_top_level_packages=false \
-  ../../pathgen/testdata/yang/openconfig-simple.yang \
-  ../../pathgen/testdata/yang/openconfig-withlistval.yang \
-  ../../pathgen/testdata/yang/openconfig-nested.yang
+  ../pathgen/testdata/yang/openconfig-simple.yang \
+  ../pathgen/testdata/yang/openconfig-withlistval.yang \
+  ../pathgen/testdata/yang/openconfig-nested.yang
 
 go install golang.org/x/tools/cmd/goimports@latest
 go install github.com/google/addlicense@latest
