@@ -877,6 +877,8 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 			case isLeaf:
 				nodeData.YANGFieldName = fieldName
 				nodeData.DirectoryName = dir.Path
+				// A leaf resides in its parent's package since parents may need to instantiate leaves
+				// with a reference to its unexported "parent" field (see .GenerateParentField).
 				nodeData.GoPathPackageName = goPackageName(dir.RootElementModule, dir.SchemaPath, splitByModule, dir.IsFakeRoot, packageName, trimPrefix, packageSuffix, splitPackagePaths)
 				fallthrough
 			default:
