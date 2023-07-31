@@ -51,6 +51,7 @@ func New() *cobra.Command {
 	generator.Flags().String("goyang_path", "github.com/openconfig/goyang/pkg/yang", "The import path to use for goyang.")
 	generator.Flags().String("base_package_path", "", "This needs to be set to the package path (module name + directories relative to go.mod file) of the output_dir.")
 	generator.Flags().String("trim_module_prefix", "", "A prefix (if any) to trim from generated package names and enums")
+	generator.Flags().Bool("split_top_level_packages", true, "If set to true, top-level paths are split into separate packages.")
 	generator.Flags().StringSlice("paths", nil, "Comma-separated list of paths to be recursively searched for included modules or submodules within the defined YANG modules.")
 	generator.Flags().StringSlice("exclude_modules", nil, "Comma-separated YANG modules to exclude from code generation.")
 	generator.Flags().String("output_dir", "", "The directory that the generated Go code should be written to. This directory is the base of the generated module packages. default (working dir)")
@@ -58,6 +59,7 @@ func New() *cobra.Command {
 	generator.Flags().Int("pathstructs_split_files_count", 1, "The number of files to split the generated path structs into.")
 	generator.Flags().Bool("ignore_deviate_notsupported", false, "If set to true, 'deviate not-supported' YANG statements are ignored, thus target nodes are retained in the generated code.")
 	generator.Flags().Bool("ignore_unsupported", false, "If set to true, YANG statements unsupported by ygot are ignored.")
+	generator.Flags().StringSlice("split_package_paths", nil, "Comma-separated YANG schema paths excluding choice/case statements followed by an optional (=packagename) for splitting specified subtrees into its own package. if (=packagename) is not specified, then the schema path will be used to name the package.")
 	// TODO(wenovus): Delete these hidden flags
 	generator.Flags().Bool("generate_atomic", true, "If set to true, then any descendants of a non-compressed-out list or container that is marked \"telemetry-atomic\" are not generated.")
 	generator.Flags().Bool("generate_atomic_lists", true, "If set to true, then 1) all compressed lists will have a new accessor <ListName>Map() that retrieves the whole list; 2) any child underneath atomic lists are no longer reachable; 3) ordered map structures satisfying the interface ygot.GoOrderedMap will be generated for `ordered-by user` lists instead of Go built-in maps.")
@@ -98,6 +100,21 @@ func generate(cmd *cobra.Command, args []string) error {
 		}
 	}
 
+	splitPackagePaths := map[string]string{}
+	for _, splitPath := range viper.GetStringSlice("split_package_paths") {
+		substrs := strings.Split(splitPath, "=")
+		packageName := ""
+		switch len(substrs) {
+		case 2:
+			packageName = substrs[1]
+			fallthrough
+		case 1:
+			splitPackagePaths[substrs[0]] = packageName
+		default:
+			return fmt.Errorf("split_package_paths has invalid argument (must follow pattern \"/yang/schema/path(=packagename)\"): %q", splitPath)
+		}
+	}
+
 	pcg := pathgen.GenConfig{
 		PackageName: rootPackageName,
 		GoImports: pathgen.GoImports{
@@ -127,13 +144,14 @@ func generate(cmd *cobra.Command, args []string) error {
 		GeneratingBinary:        version,
 		GenerateWildcardPaths:   true,
 		TrimPackageModulePrefix: viper.GetString("trim_module_prefix"),
-		SplitByModule:           true,
+		SplitByModule:           viper.GetBool("split_top_level_packages"),
 		BasePackagePath:         viper.GetString("base_package_path"),
 		PackageSuffix:           "",
 		UnifyPathStructs:        true,
 		ExtraGenerators:         extraGenerators,
 		IgnoreAtomic:            !viper.GetBool("generate_atomic"),
 		IgnoreAtomicLists:       !viper.GetBool("generate_atomic_lists"),
+		SplitPackagePaths:       splitPackagePaths,
 	}
 
 	pathCode, _, errs := pcg.GeneratePathCode(args, viper.GetStringSlice("paths"))

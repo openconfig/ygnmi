@@ -1,1 +1,0 @@
-This package MAY change without warning, and if possible SHOULD NOT be imported into your application.

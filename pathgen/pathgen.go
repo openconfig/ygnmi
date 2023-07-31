@@ -197,6 +197,10 @@ type GenConfig struct {
 	// IgnoreAtomic avoids generating any descendants where a
 	// non-compressed-out list or container is marked "telemetry-atomic".
 	IgnoreAtomic bool
+	// SplitPackagePaths specifies the prefix paths at or below which symbols will
+	// reside in the provided package. The mapped string is the custom name for
+	// the package (optional).
+	SplitPackagePaths map[string]string
 }
 
 // GoImports contains package import options.
@@ -280,7 +284,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 	}
 
 	// Get NodeDataMap for the schema.
-	nodeDataMap, es := getNodeDataMap(ir, cg.FakeRootName, schemaStructPkgAccessor, cg.PathStructSuffix, cg.PackageName, cg.PackageSuffix, cg.SplitByModule, cg.TrimPackageModulePrefix, !cg.IgnoreAtomicLists, cg.CompressBehaviour.CompressEnabled())
+	nodeDataMap, es := getNodeDataMap(ir, cg.FakeRootName, schemaStructPkgAccessor, cg.PathStructSuffix, cg.PackageName, cg.PackageSuffix, cg.SplitByModule, cg.TrimPackageModulePrefix, !cg.IgnoreAtomicLists, cg.CompressBehaviour.CompressEnabled(), cg.SplitPackagePaths)
 	if es != nil {
 		errs = util.AppendErrs(errs, es)
 	}
@@ -290,7 +294,7 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 	for _, directoryPath := range ir.OrderedDirectoryPathsByName() {
 		directory := ir.Directories[directoryPath]
 
-		structSnippet, es := generateDirectorySnippet(directory, ir.Directories, nodeDataMap, cg.ExtraGenerators, schemaStructPkgAccessor, cg.PathStructSuffix, cg.GenerateWildcardPaths, cg.SplitByModule, cg.TrimPackageModulePrefix, cg.PackageName, cg.PackageSuffix, cg.UnifyPathStructs, !cg.IgnoreAtomic, !cg.IgnoreAtomicLists, cg.CompressBehaviour.CompressEnabled())
+		structSnippet, es := generateDirectorySnippet(directory, ir.Directories, nodeDataMap, cg.ExtraGenerators, schemaStructPkgAccessor, cg.PathStructSuffix, cg.GenerateWildcardPaths, cg.SplitByModule, cg.TrimPackageModulePrefix, cg.PackageName, cg.PackageSuffix, cg.SplitPackagePaths, cg.UnifyPathStructs, !cg.IgnoreAtomic, !cg.IgnoreAtomicLists, cg.CompressBehaviour.CompressEnabled())
 		if es != nil {
 			errs = util.AppendErrs(errs, es)
 		}
@@ -322,9 +326,11 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 	return packages, nodeDataMap, errs
 }
 
-// packageNameReplacePattern matches all characters allowed in yang modules, but not go packages.
-var packageNameReplacePattern = regexp.MustCompile("[._-]")
+// packageNameReplacePattern matches all characters allowed in yang modules, but
+// not go packages, in addition to slash that is used to delimit path elements.
+var packageNameReplacePattern = regexp.MustCompile("[._/-]")
 
+// FIXME(wenbli): Update comments.
 // goPackageName returns the go package to use when generating code given the
 // input root module, which is the module in which the YANG tree the node is
 // attached to was instantiated (rather than the module that has the same
@@ -334,11 +340,34 @@ var packageNameReplacePattern = regexp.MustCompile("[._-]")
 // a transformed version of the module that the directory belongs to is returned.
 // If trimOCPkg is true, "openconfig-" is remove from the package name.
 // fakeRootPkgName is the name of the package that contains just the fake root path struct.
-func goPackageName(rootModuleName string, splitByModule, isFakeRoot bool, pkgName, trimPrefix, pkgSuffix string) string {
-	if !splitByModule || isFakeRoot {
+func goPackageName(rootModuleName string, schemaPath string, splitByModule, isFakeRoot bool, pkgName, trimPrefix, pkgSuffix string, splitPackagePaths map[string]string) string {
+	if isFakeRoot {
 		return pkgName
 	}
-	name := rootModuleName
+
+	var name string
+	var longestPrefix string
+	for prefix, customPkgName := range splitPackagePaths {
+		if len(prefix) <= len(longestPrefix) {
+			continue
+		}
+		if strings.HasPrefix(schemaPath, prefix) {
+			if customPkgName != "" {
+				name = customPkgName
+			} else {
+				name = prefix
+			}
+			longestPrefix = prefix
+		}
+	}
+
+	if name == "" {
+		if !splitByModule {
+			return pkgName
+		}
+		name = rootModuleName
+	}
+
 	if trimPrefix != "" {
 		name = strings.TrimPrefix(name, trimPrefix)
 	}
@@ -713,7 +742,7 @@ func mustTemplate(name, src string) *template.Template {
 //
 // TODO(wenbli): Change this function to be callable while traversing the IR
 // rather than traversing the IR itself again.
-func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStructSuffix, packageName, packageSuffix string, splitByModule bool, trimPrefix string, generateAtomicLists, compressPaths bool) (NodeDataMap, util.Errors) {
+func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStructSuffix, packageName, packageSuffix string, splitByModule bool, trimPrefix string, generateAtomicLists, compressPaths bool, splitPackagePaths map[string]string) (NodeDataMap, util.Errors) {
 	nodeDataMap := NodeDataMap{}
 	var errs util.Errors
 	for _, dir := range ir.Directories {
@@ -730,13 +759,14 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 				HasDefault:            false,
 				YANGTypeName:          "",
 				YANGPath:              "/",
-				GoPathPackageName:     goPackageName(dir.RootElementModule, splitByModule, true, packageName, trimPrefix, packageSuffix),
+				GoPathPackageName:     goPackageName(dir.RootElementModule, dir.SchemaPath, splitByModule, true, packageName, trimPrefix, packageSuffix, splitPackagePaths),
 				DirectoryName:         dir.Path,
 			}
 		}
 
 		goFieldNameMap := ygen.GoFieldNameMap(dir)
-		for fieldName, field := range dir.Fields {
+		for _, fieldName := range dir.OrderedFieldNames() {
+			field := dir.Fields[fieldName]
 			pathStructName, err := getFieldTypeName(dir, fieldName, goFieldNameMap[fieldName], ir.Directories, pathStructSuffix)
 			if err != nil {
 				errs = util.AppendErr(errs, err)
@@ -794,7 +824,7 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 				HasDefault:            isLeaf && (len(field.YANGDetails.Defaults) > 0 || mType.DefaultValue != nil),
 				YANGTypeName:          yangTypeName,
 				YANGPath:              field.YANGDetails.Path,
-				GoPathPackageName:     goPackageName(field.YANGDetails.RootElementModule, splitByModule, false, packageName, trimPrefix, packageSuffix),
+				GoPathPackageName:     goPackageName(field.YANGDetails.RootElementModule, field.YANGDetails.SchemaPath, splitByModule, false, packageName, trimPrefix, packageSuffix, splitPackagePaths),
 				DirectoryName:         field.YANGDetails.Path,
 				ConfigFalse:           field.YANGDetails.ConfigFalse,
 			}
@@ -847,6 +877,7 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 			case isLeaf:
 				nodeData.YANGFieldName = fieldName
 				nodeData.DirectoryName = dir.Path
+				nodeData.GoPathPackageName = goPackageName(dir.RootElementModule, dir.SchemaPath, splitByModule, dir.IsFakeRoot, packageName, trimPrefix, packageSuffix, splitPackagePaths)
 				fallthrough
 			default:
 				nodeDataMap[pathStructName] = &nodeData
@@ -1041,7 +1072,7 @@ func isCompressedAtomicList(directory *ygen.ParsedDirectory) bool {
 // node, and directories is a map from path to a parsed schema node for all
 // directory nodes in the schema.
 func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[string]*ygen.ParsedDirectory, nodeDataMap NodeDataMap, extraGens ExtraGenerators, schemaStructPkgAccessor, pathStructSuffix string,
-	generateWildcardPaths, splitByModule bool, trimPrefix, pkgName, pkgSuffix string, unified bool, generateAtomic, generateAtomicLists, compressPaths bool) ([]GoPathStructCodeSnippet, util.Errors) {
+	generateWildcardPaths, splitByModule bool, trimPrefix, packageName, packageSuffix string, splitPackagePaths map[string]string, unified bool, generateAtomic, generateAtomicLists, compressPaths bool) ([]GoPathStructCodeSnippet, util.Errors) {
 
 	var errs util.Errors
 	// structBuf is used to store the code associated with the struct defined for
@@ -1080,10 +1111,11 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 		}
 	}
 
+	parentPackage := goPackageName(directory.RootElementModule, directory.SchemaPath, splitByModule, directory.IsFakeRoot, packageName, trimPrefix, packageSuffix, splitPackagePaths)
 	nonLeafSnippet := GoPathStructCodeSnippet{
 		PathStructName: structData.TypeName,
 		StructBase:     structBuf.String(),
-		Package:        goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix),
+		Package:        parentPackage,
 	}
 	errs = util.AppendErr(errs, nonLeafSnippet.genExtras(nodeDataMap, directory, extraGens.Extras))
 
@@ -1118,10 +1150,9 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 
 		// Only the fake root could be importing a child path struct from another package.
 		// If it is, add that package as a dependency and set the accessor.
-		if directory.IsFakeRoot && (field.Type == ygen.ContainerNode || field.Type == ygen.ListNode) {
-			parentPackge := goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix)
-			childPackage := goPackageName(field.YANGDetails.RootElementModule, splitByModule, false, pkgName, trimPrefix, pkgSuffix)
-			if parentPackge != childPackage {
+		if field.Type == ygen.ContainerNode || field.Type == ygen.ListNode {
+			childPackage := goPackageName(field.YANGDetails.RootElementModule, field.YANGDetails.SchemaPath, splitByModule, false, packageName, trimPrefix, packageSuffix, splitPackagePaths)
+			if parentPackage != childPackage {
 				deps[childPackage] = true
 				childPkgAccessor = childPackage + "."
 				// The fake root could be generating a list builder API for one of its children which is in another package.
@@ -1161,7 +1192,7 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 			leafSnippet := GoPathStructCodeSnippet{
 				PathStructName: leafTypeName,
 				StructBase:     buf.String(),
-				Package:        goPackageName(directory.RootElementModule, splitByModule, directory.IsFakeRoot, pkgName, trimPrefix, pkgSuffix),
+				Package:        goPackageName(directory.RootElementModule, directory.SchemaPath, splitByModule, directory.IsFakeRoot, packageName, trimPrefix, packageSuffix, splitPackagePaths),
 			}
 			errs = util.AppendErr(errs, leafSnippet.genExtras(nodeDataMap, directory, extraGens.Extras))
 			snippets = append(snippets, leafSnippet)
