@@ -20,6 +20,7 @@ cd "$(dirname "$0")"
 go run ../../app/ygnmi generator \
   --trim_module_prefix=openconfig \
   --base_package_path=github.com/openconfig/ygnmi/internal/uexampleoc \
+  --split_package_paths=/model/a=a,/model/b \
   --compress_paths=false \
   ../../pathgen/testdata/yang/openconfig-simple.yang \
   ../../pathgen/testdata/yang/openconfig-withlistval.yang \

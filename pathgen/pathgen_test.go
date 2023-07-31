@@ -1973,9 +1973,11 @@ func getIR() *ygen.IR {
 				DefiningModule:    "root-module",
 			},
 			"/root-module/list-container-with-state/list-with-state": {
-				Name: "ListWithState",
-				Type: ygen.List,
-				Path: "/root-module/list-container-with-state/list-with-state",
+				Name:              "ListWithState",
+				Type:              ygen.List,
+				Path:              "/root-module/list-container-with-state/list-with-state",
+				SchemaPath:        "/list-container-with-state/list-with-state",
+				RootElementModule: "root-module",
 				Fields: map[string]*ygen.NodeDetails{
 					"key": {
 						Name: "Key",
@@ -2335,7 +2337,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				IsScalarField:         false,
 				HasDefault:            false,
 				YANGTypeName:          "ieeefloat32",
-				GoPathPackageName:     "rootmodulepath",
+				GoPathPackageName:     "device",
 				DirectoryName:         "/root",
 				YANGFieldName:         "leaf",
 			},
@@ -2348,7 +2350,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				IsScalarField:         true,
 				HasDefault:            true,
 				YANGTypeName:          "string",
-				GoPathPackageName:     "rootmodulepath",
+				GoPathPackageName:     "device",
 				DirectoryName:         "/root",
 				YANGFieldName:         "leaf-with-default",
 			},
@@ -2516,7 +2518,7 @@ func TestGetNodeDataMap(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, gotErrs := getNodeDataMap(tt.inIR, tt.inFakeRootName, tt.inSchemaStructPkgAccessor, tt.inPathStructSuffix, tt.inPackageName, tt.inPackageSuffix, tt.inSplitByModule, "", true, true)
+			got, gotErrs := getNodeDataMap(tt.inIR, tt.inFakeRootName, tt.inSchemaStructPkgAccessor, tt.inPathStructSuffix, tt.inPackageName, tt.inPackageSuffix, tt.inSplitByModule, "", true, true, nil)
 			// TODO(wenbli): Enhance gNMI's errdiff with checking a slice of substrings and use here.
 			var gotErrStrs []string
 			for _, err := range gotErrs {
@@ -3603,7 +3605,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 	for _, tt := range tests {
 		if tt.want != nil {
 			t.Run(tt.name, func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, ExtraGenerators{}, "oc.", tt.inPathStructSuffix, true, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath, true, true, true)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, ExtraGenerators{}, "oc.", tt.inPathStructSuffix, true, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, nil, tt.inUnifiedPath, true, true, true)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}
@@ -3620,7 +3622,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 
 		if tt.wantNoWildcard != nil {
 			t.Run(tt.name+" no wildcard", func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, ExtraGenerators{}, "oc.", tt.inPathStructSuffix, false, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, tt.inUnifiedPath, true, true, true)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, ExtraGenerators{}, "oc.", tt.inPathStructSuffix, false, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, nil, tt.inUnifiedPath, true, true, true)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}
