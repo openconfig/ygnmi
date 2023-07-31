@@ -41,9 +41,9 @@ func StartGNMI(port int) (*FakeGNMI, error) {
 	config := &fpb.Config{
 		Port:        int32(port),
 		Generator:   &fpb.Config_Fixed{Fixed: gen},
-		DisableSync: true, // Require every sync to be stubbed explicitly.
-		EnableDelay: true, // Respect timestamps if present.
-		DisableEof:  true,
+		DisableSync: true,  // Require every sync to be stubbed explicitly.
+		EnableDelay: true,  // Respect timestamps if present.
+		DisableEof:  false, // Close subscribe RPCs when the data runs out.
 	}
 	agent, err := gnmi.New(config, nil)
 	if err != nil {
