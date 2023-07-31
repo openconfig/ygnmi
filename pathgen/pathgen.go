@@ -330,16 +330,16 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 // not go packages, in addition to slash that is used to delimit path elements.
 var packageNameReplacePattern = regexp.MustCompile("[._/-]")
 
-// FIXME(wenbli): Update comments.
-// goPackageName returns the go package to use when generating code given the
-// input root module, which is the module in which the YANG tree the node is
-// attached to was instantiated (rather than the module that has the same
-// namespace as the node).
+// goPackageName returns the go package to use when generating code.
 //
-// If splitByModule is false, the pkgName is always returned. Otherwise,
-// a transformed version of the module that the directory belongs to is returned.
-// If trimOCPkg is true, "openconfig-" is remove from the package name.
-// fakeRootPkgName is the name of the package that contains just the fake root path struct.
+// - rootModuleName is the module in which the YANG tree the node is attached
+// to was instantiated (rather than the module that has the same namespace as
+// the node).
+// - schemaPath is the path to the node without the module name and without
+// choice/case statements.
+// - isFakeRoot indicates whether the node belongs under the fake root.
+// - Other parameters are directly passed from the generator's flags. See them
+// for more information.
 func goPackageName(rootModuleName string, schemaPath string, splitByModule, isFakeRoot bool, pkgName, trimPrefix, pkgSuffix string, splitPackagePaths map[string]string) string {
 	if isFakeRoot {
 		return pkgName
