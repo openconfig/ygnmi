@@ -1505,6 +1505,44 @@ func TestWatch(t *testing.T) {
 		}).SetVal(&exampleoc.Parent_Child{
 			Three: exampleoc.Child_Three_ONE,
 		}),
+	}, {
+		desc: "delete at container level",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: strPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+				}, {
+					Path: enumPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "ONE"}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+				Delete:    []*gpb.Path{testutil.GNMIPath(t, "parent/child")},
+			})
+		},
+		wantVals: []*ygnmi.Value[*exampleoc.Parent_Child]{
+			(&ygnmi.Value[*exampleoc.Parent_Child]{
+				Timestamp: startTime,
+				Path:      rootPath,
+			}).SetVal(&exampleoc.Parent_Child{
+				Three: exampleoc.Child_Three_ONE,
+				One:   ygot.String("bar"),
+			}),
+			(&ygnmi.Value[*exampleoc.Parent_Child]{
+				Timestamp: startTime.Add(time.Millisecond),
+				Path:      rootPath,
+			}),
+		},
+		wantSubscriptionPath: rootPath,
+		wantErr:              "EOF",
+		wantLastVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+			Timestamp: startTime.Add(time.Millisecond),
+			Path:      rootPath,
+		}).SetVal(&exampleoc.Parent_Child{
+			Three: exampleoc.Child_Three_ONE,
+		}),
 	}}
 
 	for _, tt := range nonLeafTests {
@@ -2894,6 +2932,82 @@ func TestWatchAll(t *testing.T) {
 		},
 		wantLastVal: (&ygnmi.Value[*exampleoc.Model_SingleKey]{
 			Timestamp: startTime.Add(time.Millisecond),
+			Path:      nonLeafKey11Path,
+		}).SetVal(&exampleoc.Model_SingleKey{
+			Value: ygot.Int64(101),
+			Key:   ygot.String("test"),
+		}),
+	}, {
+		desc: "predicate becomes true after some deletions",
+		dur:  time.Second,
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: key10Path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 100}},
+				}, {
+					Path: testutil.GNMIPath(t, "model/a/single-key[key=11]/state/key"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "test"}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+				Delete:    []*gpb.Path{testutil.GNMIPath(t, "model/a/single-key[key=11]/state/key")},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(2 * time.Millisecond).UnixNano(),
+				Delete:    []*gpb.Path{testutil.GNMIPath(t, "model/a/single-key[key=10]")},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(3 * time.Millisecond).UnixNano(),
+				Update: []*gpb.Update{{
+					Path: key10Path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 100}},
+				}, {
+					Path: testutil.GNMIPath(t, "model/a/single-key[key=11]/state/key"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "test"}},
+				}, {
+					Path: key11Path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 101}},
+				}},
+			})
+		},
+		wantSubscriptionPath: nonLeafPath,
+		wantVals: []*ygnmi.Value[*exampleoc.Model_SingleKey]{
+			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+				Timestamp: startTime,
+				Path:      nonLeafKey10Path,
+			}).SetVal(&exampleoc.Model_SingleKey{
+				Value: ygot.Int64(100),
+			}),
+			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+				Timestamp: startTime,
+				Path:      nonLeafKey11Path,
+			}).SetVal(&exampleoc.Model_SingleKey{
+				Key: ygot.String("test"),
+			}),
+			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+				Timestamp: startTime.Add(time.Millisecond),
+				Path:      nonLeafKey11Path,
+			}),
+			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+				Timestamp: startTime.Add(2 * time.Millisecond),
+				Path:      nonLeafKey10Path,
+			}),
+			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+				Timestamp: startTime.Add(3 * time.Millisecond),
+				Path:      nonLeafKey10Path,
+			}).SetVal(&exampleoc.Model_SingleKey{
+				Value: ygot.Int64(100),
+			}),
+			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+				Timestamp: startTime.Add(3 * time.Millisecond),
+				Path:      nonLeafKey11Path,
+			}).SetVal(&exampleoc.Model_SingleKey{
+				Value: ygot.Int64(101),
+				Key:   ygot.String("test"),
+			}),
+		},
+		wantLastVal: (&ygnmi.Value[*exampleoc.Model_SingleKey]{
+			Timestamp: startTime.Add(3 * time.Millisecond),
 			Path:      nonLeafKey11Path,
 		}).SetVal(&exampleoc.Model_SingleKey{
 			Value: ygot.Int64(101),
