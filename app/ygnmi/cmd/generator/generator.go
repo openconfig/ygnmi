@@ -45,6 +45,7 @@ func New() *cobra.Command {
 
 	generator.Flags().Bool("compress_paths", true, "If set to true, the generated path API and ygot GoStructs are compressed for brevity according to OpenConfig YANG module conventions. Non-OpenConfig YANG files are recommended to set this flag to false.")
 	generator.Flags().String("schema_struct_path", "", "The Go import path for the schema structs package. This is not needed for most use cases.")
+	generator.Flags().String("root_package_name", "", "The package name for the path structs package. This is not needed for most use cases.")
 	generator.Flags().String("ygot_path", "github.com/openconfig/ygot/ygot", "The import path to use for ygot.")
 	generator.Flags().String("ygnmi_path", "github.com/openconfig/ygnmi/ygnmi", "The import path to use for ygnmi.")
 	generator.Flags().String("ytypes_path", "github.com/openconfig/ygot/ytypes", "The import path to use for ytypes.")
@@ -65,6 +66,7 @@ func New() *cobra.Command {
 	generator.Flags().Bool("generate_atomic_lists", true, "If set to true, then 1) all compressed lists will have a new accessor <ListName>Map() that retrieves the whole list; 2) any child underneath atomic lists are no longer reachable; 3) ordered map structures satisfying the interface ygot.GoOrderedMap will be generated for `ordered-by user` lists instead of Go built-in maps.")
 
 	generator.Flags().MarkHidden("schema_struct_path")
+	generator.Flags().MarkHidden("root_package_name")
 	generator.Flags().MarkHidden("generate_atomic")
 	generator.Flags().MarkHidden("generate_atomic_lists")
 
@@ -85,7 +87,10 @@ func generate(cmd *cobra.Command, args []string) error {
 	version := "ygnmi version: " + cmd.Root().Version
 
 	importPath := strings.Split(viper.GetString("base_package_path"), "/")
-	rootPackageName := fmt.Sprintf("%spath", importPath[len(importPath)-1])
+	rootPackageName := viper.GetString("root_package_name")
+	if rootPackageName == "" {
+		rootPackageName = fmt.Sprintf("%spath", importPath[len(importPath)-1])
+	}
 
 	extraGenerators := pathgen.ExtraGenerators{
 		StructFields: []pathgen.Generator{pathgen.GNMIFieldGenerator},
