@@ -324,7 +324,7 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func
 		return w
 	}
 
-	dataCh, errCh := receiveStream[T](sub, q)
+	dataCh, errCh := receiveStream[T](ctx, sub, q)
 	go func() {
 		// Create an intially empty GoStruct, into which all received datapoints will be unmarshalled.
 		gs := q.goStruct()
@@ -480,7 +480,7 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 		return w
 	}
 
-	dataCh, errCh := receiveStream[T](sub, q)
+	dataCh, errCh := receiveStream[T](ctx, sub, q)
 	go func() {
 		// Create a map intially empty GoStruct, into which all received datapoints will be unmarshalled based on their path prefixes.
 		structs := map[string]ygot.ValidatedGoStruct{}
