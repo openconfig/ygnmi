@@ -270,6 +270,10 @@ func receiveStream[T any](ctx context.Context, sub gpb.GNMI_SubscribeClient, que
 		for {
 			recvData, sync, err = receive(sub, recvData, true)
 			if err != nil {
+				// In the case that the context is cancelled, the reader of errCh
+				// may have gone away. In order to avoid this goroutine blocking
+				// indefinitely on the channel write, allow ctx being cancelled or
+				// done to ensure that it returns.
 				select {
 				case errCh <- fmt.Errorf("error receiving gNMI response: %w", err):
 				case <-ctx.Done():
