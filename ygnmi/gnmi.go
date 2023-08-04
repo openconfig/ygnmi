@@ -257,7 +257,10 @@ func receiveAll(sub gpb.GNMI_SubscribeClient, deletesExpected bool) (data []*Dat
 // If the query is a non-leaf, all the datapoints from a SubscriptionResponse are bundled.
 func receiveStream[T any](sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-chan []*DataPoint, <-chan error) {
 	dataCh := make(chan []*DataPoint)
-	errCh := make(chan error)
+	// If the receiver of errCh stops reading the channel before we receive an error, then the write
+	// to the channel will block. Add a buffer of 1 error such that we tolerate this case and still
+	// exit the goroutine cleanly.
+	errCh := make(chan error, 1)
 
 	go func() {
 		defer close(dataCh)
