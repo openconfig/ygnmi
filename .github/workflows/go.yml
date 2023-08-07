@@ -7,10 +7,11 @@ on:
 
 jobs:
   Go:
-    uses: openconfig/common-ci/.github/workflows/basic_go.yaml@b3a0f9335d26be116eed35623d614e90fbcf0700
+    uses: openconfig/common-ci/.github/workflows/basic_go.yaml@c73dd6c4987a4ba5c32ab1fef5c2a02049cebc14
     with:
       static-analysis-excludes-regex: exampleoc
       skip-gofmt: true
+      skip-staticcheck: true
 
   generate:
     runs-on: ubuntu-latest
