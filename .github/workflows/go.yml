@@ -6,8 +6,7 @@ on:
   pull_request:
 
 jobs:
-  go:
-    uses: openconfig/common-ci/.github/workflows/basic_go.yaml@0ef57c0b791d1097550176ae6bdf6829bf805643
+  uses: openconfig/common-ci/.github/workflows/basic_go.yaml@0ef57c0b791d1097550176ae6bdf6829bf805643
 
   generate:
     runs-on: ubuntu-latest
