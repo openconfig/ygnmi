@@ -29,4 +29,5 @@ go run ../../app/ygnmi generator \
 go install golang.org/x/tools/cmd/goimports@latest
 go install github.com/google/addlicense@latest
 goimports -w .
+gofmt -w -s .
 addlicense -c "Google LLC" -y "2022" -l apache .

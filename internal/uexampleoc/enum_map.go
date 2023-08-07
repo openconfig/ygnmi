@@ -51,10 +51,10 @@ var ΛEnum = map[string]map[int64]ygot.EnumDefinition{
 // of the map ensures that there are no clashes with valid YANG identifiers.
 func initΛEnumTypes() {
 	ΛEnumTypes = map[string][]reflect.Type{
-		"/parent/child/config/three": []reflect.Type{
+		"/parent/child/config/three": {
 			reflect.TypeOf((E_Simple_Parent_Child_Config_Three)(0)),
 		},
-		"/parent/child/state/three": []reflect.Type{
+		"/parent/child/state/three": {
 			reflect.TypeOf((E_Simple_Parent_Child_Config_Three)(0)),
 		},
 	}
