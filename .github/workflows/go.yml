@@ -7,7 +7,7 @@ on:
 
 jobs:
   go:
-    uses: openconfig/common-ci/.github/workflows/basic_go.yml@basic_go_workflow
+    uses: openconfig/common-ci/.github/workflows/basic_go.yml@6157015
 
   generate:
     runs-on: ubuntu-latest
