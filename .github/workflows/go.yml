@@ -7,7 +7,7 @@ on:
 
 jobs:
   Go:
-    uses: openconfig/common-ci/.github/workflows/basic_go.yaml@06efad828196a069822048a39a125410086c6d13
+    uses: openconfig/common-ci/.github/workflows/basic_go.yaml@7b40a8a3f5db3c6307a34790b99c447bb0798b2f
     with:
       static-analysis-excludes-regex: exampleoc
 
