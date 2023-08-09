@@ -7,14 +7,11 @@ on:
 
 jobs:
   go:
-    uses: openconfig/common-ci/.github/workflows/go.yml@a0a686b0792f164c0cf587825fd742223abe9dc1
+    uses: openconfig/common-ci/.github/workflows/basic_go.yml@a541e6321f4ed70740579fec91da6a96732e365d
     with:
       static-analysis-excludes-regex: exampleoc
       skip-gofmt: true
       skip-staticcheck: true
-
-  linter:
-    uses: openconfig/common-ci/.github/workflows/linter.yml@a0a686b0792f164c0cf587825fd742223abe9dc1
 
   generate:
     runs-on: ubuntu-latest
