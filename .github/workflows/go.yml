@@ -6,8 +6,8 @@ on:
   pull_request:
 
 jobs:
-  common:
-    uses: openconfig/common-ci/.github/workflows/basic_go.yml@22257b2f9de1718ef7ce69e9e58d58f5f1a81e4e
+  go:
+    uses: openconfig/common-ci/.github/workflows/basic_go.yml@e83596f1c217a055744a49a584223cecee7c0891
     with:
       static-analysis-excludes-regex: exampleoc
       skip-gofmt: true
