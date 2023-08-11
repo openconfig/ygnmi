@@ -632,7 +632,7 @@ func BatchUpdate[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 	})
 }
 
-// BatchReplace stores an update operation in the SetBatch.
+// BatchReplace stores a replace operation in the SetBatch.
 func BatchReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 	var setVal interface{} = val
 	if q.isLeaf() && q.isScalar() {
@@ -646,7 +646,7 @@ func BatchReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 	})
 }
 
-// BatchUnionReplace stores a union_update operation in the SetBatch.
+// BatchUnionReplace stores a union_replace operation in the SetBatch.
 //
 // https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-union_replace.md
 func BatchUnionReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
@@ -662,9 +662,11 @@ func BatchUnionReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 	})
 }
 
-// BatchUnionReplaceCLI stores a CLI union_update operation in the SetBatch.
+// BatchUnionReplaceCLI stores a CLI union_replace operation in the SetBatch.
 //
-//   - nos is the name of the Network operating system (https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-union_replace.md#24-native-cli-configuration-cli)
+//   - nos is the name of the Network operating system.
+//     "_cli" is appended to it to form the origin, see
+//     https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-union_replace.md#24-native-cli-configuration-cli
 //   - ascii is the full CLI text.
 //
 // https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-union_replace.md
@@ -679,7 +681,7 @@ func BatchUnionReplaceCLI(sb *SetBatch, nos, ascii string) {
 	})
 }
 
-// BatchDelete stores an update operation in the SetBatch.
+// BatchDelete stores a delete operation in the SetBatch.
 func BatchDelete[T any](sb *SetBatch, q ConfigQuery[T]) {
 	sb.ops = append(sb.ops, &batchOp{
 		path:   q.PathStruct(),
