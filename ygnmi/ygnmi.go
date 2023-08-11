@@ -662,7 +662,7 @@ func BatchUnionReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 	})
 }
 
-// BatchUnionReplace stores a CLI union_update operation in the SetBatch.
+// BatchUnionReplaceCLI stores a CLI union_update operation in the SetBatch.
 //
 //   - nos is the name of the Network operating system (https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-union_replace.md#24-native-cli-configuration-cli)
 //   - ascii is the full CLI text.
