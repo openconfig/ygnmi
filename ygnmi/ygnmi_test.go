@@ -4269,7 +4269,7 @@ func TestSetBatch(t *testing.T) {
 		stubResponse *gpb.SetResponse
 		stubErr      error
 	}{{
-		desc: "leaf update replace delete",
+		desc: "leaf update replace delete unionreplace",
 		addPaths: func(sb *ygnmi.SetBatch) {
 			cliPath, err := schemaless.NewConfig[string]("", "cli")
 			if err != nil {
@@ -4281,6 +4281,8 @@ func TestSetBatch(t *testing.T) {
 			ygnmi.BatchReplace(sb, exampleocpath.Root().Parent().Child().One().Config(), "bar")
 			ygnmi.BatchDelete(sb, cliPath)
 			ygnmi.BatchDelete(sb, exampleocpath.Root().Parent().Child().One().Config())
+			ygnmi.BatchUnionReplace(sb, exampleocpath.Root().Parent().Child().One().Config(), "baz")
+			ygnmi.BatchUnionReplaceCLI(sb, "openos", "open sesame")
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -4304,6 +4306,13 @@ func TestSetBatch(t *testing.T) {
 				{Origin: "cli"},
 				testutil.GNMIPath(t, "parent/child/config/one"),
 			},
+			UnionReplace: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "parent/child/config/one"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("\"baz\"")}},
+			}, {
+				Path: &gpb.Path{Origin: "openos_cli"},
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: "open sesame"}},
+			}},
 		},
 		stubResponse: &gpb.SetResponse{
 			Prefix: &gpb.Path{

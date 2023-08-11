@@ -646,6 +646,39 @@ func BatchReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 	})
 }
 
+// BatchUnionReplace stores a union_update operation in the SetBatch.
+//
+// https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-union_replace.md
+func BatchUnionReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
+	var setVal interface{} = val
+	if q.isLeaf() && q.isScalar() {
+		setVal = &val
+	}
+	sb.ops = append(sb.ops, &batchOp{
+		path:   q.PathStruct(),
+		val:    setVal,
+		mode:   unionreplacePath,
+		config: !q.IsState(),
+	})
+}
+
+// BatchUnionReplace stores a CLI union_update operation in the SetBatch.
+//
+//   - nos is the name of the Network operating system (https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-union_replace.md#24-native-cli-configuration-cli)
+//   - ascii is the full CLI text.
+//
+// https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-union_replace.md
+func BatchUnionReplaceCLI(sb *SetBatch, nos, ascii string) {
+	ps := NewDeviceRootBase()
+	ps.PutCustomData(OriginOverride, nos+"_cli")
+	sb.ops = append(sb.ops, &batchOp{
+		path:   ps,
+		val:    ascii,
+		mode:   unionreplacePath,
+		config: true,
+	})
+}
+
 // BatchDelete stores an update operation in the SetBatch.
 func BatchDelete[T any](sb *SetBatch, q ConfigQuery[T]) {
 	sb.ops = append(sb.ops, &batchOp{

@@ -417,6 +417,7 @@ const (
 	deletePath setOperation = iota
 	replacePath
 	updatePath
+	unionreplacePath
 )
 
 // populateSetRequest fills a SetResponse for a val and operation type.
@@ -429,11 +430,13 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op
 	switch op {
 	case deletePath:
 		req.Delete = append(req.Delete, path)
-	case replacePath, updatePath:
+	case replacePath, updatePath, unionreplacePath:
 		var typedVal *gpb.TypedValue
 		var err error
 		if s, ok := val.(*string); ok && path.Origin == "cli" {
 			typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: *s}}
+		} else if s, ok := val.(string); ok && strings.HasSuffix(path.Origin, "_cli") {
+			typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: s}}
 		} else if opt.preferProto {
 			typedVal, err = ygot.EncodeTypedValue(val, gpb.Encoding_JSON_IETF, &ygot.RFC7951JSONConfig{AppendModuleName: true, PreferShadowPath: preferShadowPath})
 		} else {
@@ -470,10 +473,13 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op
 			Val:  typedVal,
 		}
 
-		if op == replacePath {
+		switch op {
+		case replacePath:
 			req.Replace = append(req.Replace, update)
-		} else {
+		case updatePath:
 			req.Update = append(req.Update, update)
+		case unionreplacePath:
+			req.UnionReplace = append(req.UnionReplace, update)
 		}
 	default:
 		return fmt.Errorf("unknown set operation: %v", op)
