@@ -146,7 +146,7 @@ func defaultTmplStruct(pathStructName string, node *NodeData) gnmiStruct {
 
 // generateOneOff generates one-off free-form generated code.
 func generateOneOff(b *strings.Builder, node *NodeData, tmplStruct gnmiStruct, compressPaths bool) error {
-	if node.SubsumingGoStructName == fakeRootName {
+	if strings.TrimLeft(node.LocalGoTypeName, "*") == fakeRootName {
 		tmplStruct.MethodName = "Query"
 		if compressPaths {
 			tmplStruct.MethodName = "State"
