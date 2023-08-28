@@ -293,6 +293,7 @@ func Get[T any](ctx context.Context, c *Client, q SingletonQuery[T], opts ...Opt
 type Watcher[T any] struct {
 	errCh   chan error
 	lastVal *Value[T]
+	cancel  context.CancelFunc
 }
 
 // Await waits for the watch to finish and returns the last received value
@@ -303,6 +304,7 @@ func (w *Watcher[T]) Await() (*Value[T], error) {
 	if !ok {
 		return nil, fmt.Errorf("Await already called and Watcher is closed")
 	}
+	w.cancel()
 	close(w.errCh)
 	return w.lastVal, err
 }
@@ -313,25 +315,27 @@ func (w *Watcher[T]) Await() (*Value[T], error) {
 // Calling Await on the returned Watcher waits for the subscription to complete.
 // It returns the last observed value and a boolean that indicates whether that value satisfies the predicate.
 func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func(*Value[T]) error, opts ...Option) *Watcher[T] {
+	wCtx, cancel := context.WithCancel(ctx)
 	w := &Watcher[T]{
-		errCh: make(chan error, 1),
+		errCh:  make(chan error, 1),
+		cancel: cancel,
 	}
 
 	resolvedOpts := resolveOpts(opts)
-	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM, resolvedOpts)
+	sub, err := subscribe[T](wCtx, c, q, gpb.SubscriptionList_STREAM, resolvedOpts)
 	if err != nil {
 		w.errCh <- err
 		return w
 	}
 
-	dataCh, errCh := receiveStream[T](ctx, sub, q)
+	dataCh, errCh := receiveStream[T](wCtx, sub, q)
 	go func() {
 		// Create an intially empty GoStruct, into which all received datapoints will be unmarshalled.
 		gs := q.goStruct()
 		for {
 			select {
-			case <-ctx.Done():
-				w.errCh <- ctx.Err()
+			case <-wCtx.Done():
+				w.errCh <- wCtx.Err()
 				return
 			case data := <-dataCh:
 				val, err := unmarshalAndExtract[T](data, q, gs, resolvedOpts)
@@ -465,8 +469,10 @@ func GetAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], opts ...O
 // Calling Await on the returned Watcher waits for the subscription to complete.
 // It returns the last observed value and a boolean that indicates whether that value satisfies the predicate.
 func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred func(*Value[T]) error, opts ...Option) *Watcher[T] {
+	wCtx, cancel := context.WithCancel(ctx)
 	w := &Watcher[T]{
-		errCh: make(chan error, 1),
+		errCh:  make(chan error, 1),
+		cancel: cancel,
 	}
 	path, err := resolvePath(q.PathStruct())
 	if err != nil {
@@ -474,19 +480,19 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 		return w
 	}
 	resolvedOpts := resolveOpts(opts)
-	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM, resolvedOpts)
+	sub, err := subscribe[T](wCtx, c, q, gpb.SubscriptionList_STREAM, resolvedOpts)
 	if err != nil {
 		w.errCh <- err
 		return w
 	}
 
-	dataCh, errCh := receiveStream[T](ctx, sub, q)
+	dataCh, errCh := receiveStream[T](wCtx, sub, q)
 	go func() {
 		// Create a map intially empty GoStruct, into which all received datapoints will be unmarshalled based on their path prefixes.
 		structs := map[string]ygot.ValidatedGoStruct{}
 		for {
 			select {
-			case <-ctx.Done():
+			case <-wCtx.Done():
 				w.errCh <- ctx.Err()
 				return
 			case data := <-dataCh:
