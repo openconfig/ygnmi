@@ -30,6 +30,41 @@ import (
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
 )
 
+func TestDataPointString(t *testing.T) {
+	tests := []struct {
+		desc string
+		in   *DataPoint
+	}{{
+		desc: "basic",
+		in: &DataPoint{
+			Path:      testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf"),
+			Value:     &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+			Timestamp: time.Unix(1, 1),
+		},
+	}, {
+		desc: "nil",
+		in:   nil,
+	}, {
+		desc: "JSON IETF",
+		in: &DataPoint{
+			Path:      testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf"),
+			Value:     &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("43")}},
+			Timestamp: time.Unix(1, 1),
+		},
+	}, {
+		desc: "SyncResponse",
+		in: &DataPoint{
+			Sync: true,
+		},
+	}}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			t.Log(tt.in.String())
+		})
+	}
+}
+
 func TestUnmarshal(t *testing.T) {
 	schemaStruct := testutil.GetSchemaStruct()
 	superContainerSchema := schemaStruct().RootSchema().Dir["super-container"]

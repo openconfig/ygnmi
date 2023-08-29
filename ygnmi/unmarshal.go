@@ -51,6 +51,9 @@ func (d *DataPoint) String() string {
 	if d == nil {
 		return ""
 	}
+	if d.Sync {
+		return "gNMI SyncResponse"
+	}
 	path, err := ygot.PathToString(d.Path)
 	if err != nil {
 		path = prototext.Format(d.Path)
@@ -59,7 +62,7 @@ func (d *DataPoint) String() string {
 	if jsonietf := d.Value.GetJsonIetfVal(); len(jsonietf) > 0 {
 		valStr = string(jsonietf)
 	}
-	return fmt.Sprintf("%s (timestamp: %v, recvTimestamp: %v, isSync: %v):\n%s", path, d.Timestamp, d.RecvTimestamp, d.Sync, valStr)
+	return fmt.Sprintf("%s (timestamp: %v, recvTimestamp: %v, isSync: %v): %s", path, d.Timestamp, d.RecvTimestamp, d.Sync, valStr)
 }
 
 // TelemetryError stores the path, value, and error string from unsuccessfully
