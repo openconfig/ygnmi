@@ -17,6 +17,7 @@ package ygnmi_test
 import (
 	"context"
 	"fmt"
+	"net"
 	"strings"
 	"testing"
 	"time"
@@ -32,7 +33,9 @@ import (
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygot"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/local"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
@@ -4441,5 +4444,55 @@ func verifySubscriptionModesSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, want
 	}
 	if diff := cmp.Diff(wantModes, gotModes, protocmp.Transform()); diff != "" {
 		t.Errorf("Subscription modes (-want, +got):\n%s", diff)
+	}
+}
+
+type gnmiS struct {
+	gpb.UnimplementedGNMIServer
+	errCh chan error
+}
+
+func (g *gnmiS) Subscribe(srv gpb.GNMI_SubscribeServer) error {
+	if _, err := srv.Recv(); err != nil {
+		return err
+	}
+	if err := srv.Send(&gpb.SubscribeResponse{Response: &gpb.SubscribeResponse_SyncResponse{}}); err != nil {
+		return err
+	}
+	// This send must fail because the client will have cancelled the subscription context.
+	time.Sleep(time.Second)
+	err := srv.Send(&gpb.SubscribeResponse{Response: &gpb.SubscribeResponse_SyncResponse{}})
+	g.errCh <- err
+	return nil
+}
+
+func TestWatchCancel(t *testing.T) {
+	srv := &gnmiS{
+		errCh: make(chan error, 1),
+	}
+	s := grpc.NewServer(grpc.Creds(local.NewCredentials()))
+	gpb.RegisterGNMIServer(s, srv)
+	l, err := net.Listen("tcp", ":0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	go func() {
+		//nolint:errcheck // Don't care about this error.
+		s.Serve(l)
+	}()
+	conn, err := grpc.Dial(l.Addr().String(), grpc.WithTransportCredentials(local.NewCredentials()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, _ := ygnmi.NewClient(gpb.NewGNMIClient(conn))
+
+	w := ygnmi.Watch(context.Background(), c, exampleocpath.Root().RemoteContainer().ALeaf().State(), func(v *ygnmi.Value[string]) error {
+		return nil
+	})
+	if _, err := w.Await(); err != nil {
+		t.Fatal(err)
+	}
+	if err := <-srv.errCh; err == nil {
+		t.Fatalf("Watch() unexpected error: got %v, want context.Cancel", err)
 	}
 }
