@@ -17,6 +17,7 @@ package ygnmi
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -92,6 +93,13 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 		log.V(c.requestLogLevel).Info(prototext.Format(sr))
 	}
 	if err := sub.Send(sr); err != nil {
+		// If the server closes the RPC with an error, the real error may only be visible on Recv.
+		// https://pkg.go.dev/google.golang.org/grpc?utm_source=godoc#ClientStream
+		if errors.Is(err, io.EOF) {
+			if _, recvErr := sub.Recv(); recvErr != nil {
+				err = recvErr
+			}
+		}
 		return nil, fmt.Errorf("gNMI failed to Send(%+v): %w", sr, err)
 	}
 
