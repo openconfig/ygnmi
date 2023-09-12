@@ -161,7 +161,8 @@ func getCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Clien
 	}
 }
 
-func watchCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, duration time.Duration, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], inOpts []ygnmi.Option, valPred func(T) bool, wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantMode gpb.SubscriptionMode, wantVals []*ygnmi.Value[T], wantLastVal *ygnmi.Value[T]) {
+func watchCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, duration time.Duration, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T],
+	inOpts []ygnmi.Option, valPred func(T) bool, wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantMode gpb.SubscriptionMode, wantInterval uint64, wantVals []*ygnmi.Value[T], wantLastVal *ygnmi.Value[T]) {
 	t.Helper()
 	i := 0
 	ctx, cancel := context.WithTimeout(context.Background(), duration)
@@ -192,6 +193,7 @@ func watchCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, duration tim
 	}
 	verifySubscriptionPathsSent(t, fakeGNMI, wantSubscriptionPath)
 	verifySubscriptionModesSent(t, fakeGNMI, wantMode)
+	verifySubscriptionSampleIntervalsSent(t, fakeGNMI, wantInterval)
 	if val != nil {
 		checkJustReceived(t, val.RecvTimestamp)
 		wantLastVal.RecvTimestamp = val.RecvTimestamp
@@ -1176,6 +1178,7 @@ func TestWatch(t *testing.T) {
 		wantVals             []*ygnmi.Value[string]
 		wantErr              string
 		wantMode             gpb.SubscriptionMode
+		wantInterval         uint64
 		opts                 []ygnmi.Option
 	}{{
 		desc: "single notif and pred true",
@@ -1213,6 +1216,30 @@ func TestWatch(t *testing.T) {
 		dur:      time.Second,
 		opts:     []ygnmi.Option{ygnmi.WithSubscriptionMode(gpb.SubscriptionMode_ON_CHANGE)},
 		wantMode: gpb.SubscriptionMode_ON_CHANGE,
+		wantVals: []*ygnmi.Value[string]{
+			(&ygnmi.Value[string]{
+				Timestamp: startTime,
+				Path:      path,
+			}).SetVal("foo")},
+		wantSubscriptionPath: path,
+		wantLastVal: (&ygnmi.Value[string]{
+			Timestamp: startTime,
+			Path:      path,
+		}).SetVal("foo"),
+	}, {
+		desc: "single notif and pred true with custom interval",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		dur:          time.Second,
+		opts:         []ygnmi.Option{ygnmi.WithSampleInterval(time.Millisecond)},
+		wantInterval: 1000000,
 		wantVals: []*ygnmi.Value[string]{
 			(&ygnmi.Value[string]{
 				Timestamp: startTime,
@@ -1329,6 +1356,7 @@ func TestWatch(t *testing.T) {
 				tt.wantErr,
 				tt.wantSubscriptionPath,
 				tt.wantMode,
+				tt.wantInterval,
 				tt.wantVals,
 				tt.wantLastVal,
 			)
@@ -1560,6 +1588,7 @@ func TestWatch(t *testing.T) {
 				tt.wantErr,
 				tt.wantSubscriptionPath,
 				gpb.SubscriptionMode_TARGET_DEFINED,
+				0,
 				tt.wantVals,
 				tt.wantLastVal,
 			)
@@ -1634,6 +1663,7 @@ func TestWatch(t *testing.T) {
 			"",
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 			gpb.SubscriptionMode_TARGET_DEFINED,
+			0,
 			[]*ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
 				(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
 					Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
@@ -1717,6 +1747,7 @@ func TestWatch(t *testing.T) {
 			"",
 			testutil.GNMIPath(t, "/model/a"),
 			gpb.SubscriptionMode_TARGET_DEFINED,
+			0,
 			[]*ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
 				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
 					Path:      testutil.GNMIPath(t, "/model/a"),
@@ -4444,6 +4475,25 @@ func verifySubscriptionModesSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, want
 	}
 	if diff := cmp.Diff(wantModes, gotModes, protocmp.Transform()); diff != "" {
 		t.Errorf("Subscription modes (-want, +got):\n%s", diff)
+	}
+}
+
+// verifySubscriptionSampleIntervalsSent verifies the modes of the sent subscription requests is the same as wantModes.
+func verifySubscriptionSampleIntervalsSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, wantIntervals ...uint64) {
+	t.Helper()
+	requests := fakeGNMI.Requests()
+	if len(requests) != 1 {
+		t.Errorf("Number of subscription requests sent is not 1: %v", requests)
+		return
+	}
+
+	var gotIntervals []uint64
+	req := requests[0].GetSubscribe()
+	for _, sub := range req.GetSubscription() {
+		gotIntervals = append(gotIntervals, sub.SampleInterval)
+	}
+	if diff := cmp.Diff(wantIntervals, gotIntervals); diff != "" {
+		t.Errorf("Subscription sample intervals (-want, +got):\n%s", diff)
 	}
 }
 

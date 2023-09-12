@@ -50,7 +50,8 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 				Elem:   path.GetElem(),
 				Origin: path.GetOrigin(),
 			},
-			Mode: o.mode,
+			Mode:           o.mode,
+			SampleInterval: o.sampleInterval,
 		})
 	}
 
