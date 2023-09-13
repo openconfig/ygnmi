@@ -183,11 +183,12 @@ func NewClient(c gpb.GNMIClient, opts ...ClientOption) (*Client, error) {
 type Option func(*opt)
 
 type opt struct {
-	useGet      bool
-	mode        gpb.SubscriptionMode
-	encoding    gpb.Encoding
-	preferProto bool
-	setFallback bool
+	useGet         bool
+	mode           gpb.SubscriptionMode
+	encoding       gpb.Encoding
+	preferProto    bool
+	setFallback    bool
+	sampleInterval uint64
 }
 
 // resolveOpts applies all the options and returns a struct containing the result.
@@ -211,9 +212,20 @@ func WithUseGet() Option {
 
 // WithSubscriptionMode creates an option to use input instead of the default (TARGET_DEFINED).
 // This option is only relevant for Watch, WatchAll, Collect, CollectAll, Await which are STREAM subscriptions.
+// The mode applies to all paths in the Subcription.
 func WithSubscriptionMode(mode gpb.SubscriptionMode) Option {
 	return func(o *opt) {
 		o.mode = mode
+	}
+}
+
+// WithSampleInterval creates an option to set the sample interval in the Subcribe request.
+// NOTE: The subscription mode must be set to SAMPLE for this to have an effect.
+// This option is only relevant for Watch, WatchAll, Collect, CollectAll, Await which are STREAM subscriptions.
+// The mode applies to all paths in the Subcription.
+func WithSampleInterval(d time.Duration) Option {
+	return func(o *opt) {
+		o.sampleInterval = uint64(d.Nanoseconds())
 	}
 }
 
