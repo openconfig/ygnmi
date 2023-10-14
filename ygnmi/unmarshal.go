@@ -196,6 +196,10 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 	}
 	ret.Path = path
 
+	for _, data := range unmarshalledData {
+		ret.ChangedPaths = append(ret.ChangedPaths, data.Path)
+	}
+
 	// For non-leaf config queries, prune all state-only leaves.
 	// Note that config/state separation only applies to compressed structs.
 	if q.isCompressedSchema() && !q.isLeaf() && !q.IsState() {

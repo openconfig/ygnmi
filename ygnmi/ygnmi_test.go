@@ -4356,16 +4356,38 @@ func TestCustomRootBatch(t *testing.T) {
 			[]uint64{0, 0},
 			[]*ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
 				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
-					Path:      testutil.GNMIPath(t, "/model/a"),
+					Path: testutil.GNMIPath(t, "/model/a"),
+					ChangedPaths: []*gpb.Path{
+						testutil.GNMIPath(t, `/model/a/single-key[key=foo]/state/key`),
+						testutil.GNMIPath(t, `/model/a/single-key[key=foo]/state/value`),
+						testutil.GNMIPath(t, `/model/a/single-key[key=bar]/state/key`),
+						testutil.GNMIPath(t, `/model/a/single-key[key=bar]/state/value`),
+					},
 					Timestamp: startTime,
 				}).SetVal(getSampleSingleKeyedMapIncomplete(t)),
 				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
-					Path:      testutil.GNMIPath(t, "/model/a"),
+					Path: testutil.GNMIPath(t, "/model/a"),
+					ChangedPaths: []*gpb.Path{
+						testutil.GNMIPath(t, `/model/a/single-key[key=foo]/state/key`),
+						testutil.GNMIPath(t, `/model/a/single-key[key=foo]/state/value`),
+						testutil.GNMIPath(t, `/model/a/single-key[key=bar]/state/key`),
+						testutil.GNMIPath(t, `/model/a/single-key[key=bar]/state/value`),
+						testutil.GNMIPath(t, `/model/a/single-key[key=baz]/state/key`),
+						testutil.GNMIPath(t, `/model/a/single-key[key=baz]/state/value`),
+					},
 					Timestamp: startTime.Add(time.Millisecond),
 				}).SetVal(getSampleSingleKeyedMap(t)),
 			},
 			(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
-				Path:      testutil.GNMIPath(t, "/model/a"),
+				Path: testutil.GNMIPath(t, "/model/a"),
+				ChangedPaths: []*gpb.Path{
+					testutil.GNMIPath(t, `/model/a/single-key[key=foo]/state/key`),
+					testutil.GNMIPath(t, `/model/a/single-key[key=foo]/state/value`),
+					testutil.GNMIPath(t, `/model/a/single-key[key=bar]/state/key`),
+					testutil.GNMIPath(t, `/model/a/single-key[key=bar]/state/value`),
+					testutil.GNMIPath(t, `/model/a/single-key[key=baz]/state/key`),
+					testutil.GNMIPath(t, `/model/a/single-key[key=baz]/state/value`),
+				},
 				Timestamp: startTime.Add(time.Millisecond),
 			}).SetVal(getSampleSingleKeyedMap(t)),
 		)

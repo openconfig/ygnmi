@@ -101,6 +101,8 @@ type Value[T any] struct {
 	RecvTimestamp time.Time
 	// ComplianceErrors contains the compliance errors encountered from an Unmarshal operation.
 	ComplianceErrors *ComplianceErrors
+	// FIXME
+	ChangedPaths []*gpb.Path
 }
 
 // SetVal sets the value and marks it present and returns the receiver.
