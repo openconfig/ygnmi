@@ -162,7 +162,7 @@ func getCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Clien
 }
 
 func watchCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, duration time.Duration, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T],
-	inOpts []ygnmi.Option, valPred func(T) bool, wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantMode gpb.SubscriptionMode, wantInterval uint64, wantVals []*ygnmi.Value[T], wantLastVal *ygnmi.Value[T]) {
+	inOpts []ygnmi.Option, valPred func(T) bool, wantErrSubstring string, wantSubscriptionPaths []*gpb.Path, wantModes []gpb.SubscriptionMode, wantIntervals []uint64, wantVals []*ygnmi.Value[T], wantLastVal *ygnmi.Value[T]) {
 	t.Helper()
 	i := 0
 	ctx, cancel := context.WithTimeout(context.Background(), duration)
@@ -191,9 +191,9 @@ func watchCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, duration tim
 	if err != nil {
 		return
 	}
-	verifySubscriptionPathsSent(t, fakeGNMI, wantSubscriptionPath)
-	verifySubscriptionModesSent(t, fakeGNMI, wantMode)
-	verifySubscriptionSampleIntervalsSent(t, fakeGNMI, wantInterval)
+	verifySubscriptionPathsSent(t, fakeGNMI, wantSubscriptionPaths...)
+	verifySubscriptionModesSent(t, fakeGNMI, wantModes...)
+	verifySubscriptionSampleIntervalsSent(t, fakeGNMI, wantIntervals...)
 	if val != nil {
 		checkJustReceived(t, val.RecvTimestamp)
 		wantLastVal.RecvTimestamp = val.RecvTimestamp
@@ -1354,9 +1354,9 @@ func TestWatch(t *testing.T) {
 				tt.opts,
 				func(val string) bool { return val == "foo" },
 				tt.wantErr,
-				tt.wantSubscriptionPath,
-				tt.wantMode,
-				tt.wantInterval,
+				[]*gpb.Path{tt.wantSubscriptionPath},
+				[]gpb.SubscriptionMode{tt.wantMode},
+				[]uint64{tt.wantInterval},
 				tt.wantVals,
 				tt.wantLastVal,
 			)
@@ -1586,9 +1586,9 @@ func TestWatch(t *testing.T) {
 					return val.One != nil && *val.One == "foo" && val.Three == exampleoc.Child_Three_ONE
 				},
 				tt.wantErr,
-				tt.wantSubscriptionPath,
-				gpb.SubscriptionMode_TARGET_DEFINED,
-				0,
+				[]*gpb.Path{tt.wantSubscriptionPath},
+				[]gpb.SubscriptionMode{gpb.SubscriptionMode_TARGET_DEFINED},
+				[]uint64{0},
 				tt.wantVals,
 				tt.wantLastVal,
 			)
@@ -1661,9 +1661,9 @@ func TestWatch(t *testing.T) {
 				return cmp.Equal(val, want, cmp.AllowUnexported(exampleoc.Model_SingleKey_OrderedList_OrderedMap{}))
 			},
 			"",
-			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
-			gpb.SubscriptionMode_TARGET_DEFINED,
-			0,
+			[]*gpb.Path{testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists")},
+			[]gpb.SubscriptionMode{gpb.SubscriptionMode_TARGET_DEFINED},
+			[]uint64{0},
 			[]*ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
 				(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
 					Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
@@ -1745,9 +1745,9 @@ func TestWatch(t *testing.T) {
 				return cmp.Equal(val, want)
 			},
 			"",
-			testutil.GNMIPath(t, "/model/a"),
-			gpb.SubscriptionMode_TARGET_DEFINED,
-			0,
+			[]*gpb.Path{testutil.GNMIPath(t, "/model/a")},
+			[]gpb.SubscriptionMode{gpb.SubscriptionMode_TARGET_DEFINED},
+			[]uint64{0},
 			[]*ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
 				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
 					Path:      testutil.GNMIPath(t, "/model/a"),
@@ -4287,6 +4287,89 @@ func TestCustomRootBatch(t *testing.T) {
 		})
 	}
 
+	fakeGNMI, client := newClient(t)
+	startTime := time.Now()
+	t.Run("success whole single-keyed map", func(t *testing.T) {
+		fakeGNMI.Stub().Notification(&gpb.Notification{
+			Timestamp: startTime.UnixNano(),
+			Prefix:    testutil.GNMIPath(t, "/model/a"),
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+			}},
+		}).Sync().Notification(&gpb.Notification{
+			Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+			Prefix:    testutil.GNMIPath(t, "/model/a"),
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=baz]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=baz]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 44}},
+			}},
+		})
+
+		modelPath := exampleocpath.Root().Model()
+		b := ygnmi.NewBatch(modelPath.SingleKeyMap().State())
+		b.AddPaths(
+			modelPath.SingleKeyAny().Key().State().PathStruct(),
+			modelPath.SingleKeyAny().Value().State().PathStruct(),
+		)
+
+		want := getSampleSingleKeyedMap(t)
+		watchCheckFn(t, fakeGNMI, 2*time.Second, client,
+			b.Query(),
+			nil,
+			func(val map[string]*exampleoc.Model_SingleKey) bool {
+				return cmp.Equal(val, want)
+			},
+			"",
+			[]*gpb.Path{
+				testutil.GNMIPath(t, "/model/a/single-key[key=*]/state/key"),
+				testutil.GNMIPath(t, "/model/a/single-key[key=*]/state/value"),
+			},
+			[]gpb.SubscriptionMode{
+				gpb.SubscriptionMode_TARGET_DEFINED,
+				gpb.SubscriptionMode_TARGET_DEFINED,
+			},
+			[]uint64{0, 0},
+			[]*ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+					Path:      testutil.GNMIPath(t, "/model/a"),
+					Timestamp: startTime,
+				}).SetVal(getSampleSingleKeyedMapIncomplete(t)),
+				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+					Path:      testutil.GNMIPath(t, "/model/a"),
+					Timestamp: startTime.Add(time.Millisecond),
+				}).SetVal(getSampleSingleKeyedMap(t)),
+			},
+			(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+				Path:      testutil.GNMIPath(t, "/model/a"),
+				Timestamp: startTime.Add(time.Millisecond),
+			}).SetVal(getSampleSingleKeyedMap(t)),
+		)
+	})
 }
 
 func TestSetBatch(t *testing.T) {
