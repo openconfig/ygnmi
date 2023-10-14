@@ -4332,10 +4332,12 @@ func TestCustomRootBatch(t *testing.T) {
 
 		modelPath := exampleocpath.Root().Model()
 		b := ygnmi.NewBatch(modelPath.SingleKeyMap().State())
-		b.AddPaths(
+		if err := b.AddPaths(
 			modelPath.SingleKeyAny().Key().State().PathStruct(),
 			modelPath.SingleKeyAny().Value().State().PathStruct(),
-		)
+		); err != nil {
+			t.Fatal(err)
+		}
 
 		want := getSampleSingleKeyedMap(t)
 		watchCheckFn(t, fakeGNMI, 2*time.Second, client,
