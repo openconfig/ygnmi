@@ -78,6 +78,7 @@ func NewWildcard[T any](path, origin string) (ygnmi.WildcardQuery[T], error) {
 			},
 			func() *ytypes.Schema { return nil },
 			nil,
+			nil,
 		),
 		nil
 }

@@ -765,3 +765,58 @@ func (b *Batch[T]) Query() SingletonQuery[T] {
 		b.root.compressInfo(),
 	)
 }
+
+// WildcardBatch contains a collection of paths.
+// Calling Query() on the batch returns a query
+// that can be used in LookupAll, WatchAll, etc on select paths within the root path.
+type WildcardBatch[T any] struct {
+	root  WildcardQuery[T]
+	paths []PathStruct
+}
+
+// NewWildcardBatch creates a batch object. All paths in the batch must be children of the root query.
+func NewWildcardBatch[T any](root WildcardQuery[T]) *WildcardBatch[T] {
+	return &WildcardBatch[T]{
+		root: root,
+	}
+}
+
+// AddPaths adds the paths to the batch. Paths must be children of the root.
+func (b *WildcardBatch[T]) AddPaths(paths ...PathStruct) error {
+	root, err := resolvePath(b.root.PathStruct())
+	if err != nil {
+		return err
+	}
+	for _, path := range paths {
+		p, err := resolvePath(path)
+		if err != nil {
+			return err
+		}
+		if !util.PathMatchesQuery(p, root) {
+			return fmt.Errorf("root path %v is not a prefix of %v", root, p)
+		}
+	}
+	b.paths = append(b.paths, paths...)
+	return nil
+}
+
+// Query returns a Query that can be used in gNMI operations.
+// The returned query is immutable, adding paths does not modify existing queries.
+func (b *WildcardBatch[T]) Query() WildcardQuery[T] {
+	queryPaths := make([]PathStruct, len(b.paths))
+	copy(queryPaths, b.paths)
+	return NewWildcardQuery[T](
+		b.root.dirName(),
+		b.root.IsState(),
+		b.root.isLeaf(),
+		b.root.isScalar(),
+		b.root.isCompressedSchema(),
+		b.root.isListContainer(),
+		b.root.PathStruct(),
+		b.root.extract,
+		b.root.goStruct,
+		b.root.schema,
+		queryPaths,
+		b.root.compressInfo(),
+	)
+}

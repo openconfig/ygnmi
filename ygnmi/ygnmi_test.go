@@ -4374,6 +4374,86 @@ func TestCustomRootBatch(t *testing.T) {
 	})
 }
 
+func TestCustomRootWildcardBatch(t *testing.T) {
+	fakeGNMI, c := newClient(t)
+	valuePathWild := testutil.GNMIPath(t, "/model/a/single-key[key=*]/state/value")
+	valuePath := testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/value")
+	keyPathWild := testutil.GNMIPath(t, "/model/a/single-key[key=*]/state/key")
+	keyPath := testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/key")
+
+	tests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		paths                []ygnmi.PathStruct
+		wantSubscriptionPath []*gpb.Path
+		wantVal              []*ygnmi.Value[*exampleoc.Model_SingleKey]
+		wantAddErr           string
+		wantLookupErr        string
+	}{{
+		desc: "not prefix",
+		stub: func(s *testutil.Stubber) {},
+		paths: []ygnmi.PathStruct{
+			exampleocpath.Root().Model(),
+		},
+		wantAddErr: "is not a prefix",
+	}, {
+		desc: "success",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: valuePath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
+				}, {
+					Path: keyPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		paths: []ygnmi.PathStruct{
+			exampleocpath.Root().Model().SingleKeyAny().Value().State().PathStruct(),
+			exampleocpath.Root().Model().SingleKeyAny().Key().State().PathStruct(),
+		},
+		wantSubscriptionPath: []*gpb.Path{
+			keyPathWild,
+			valuePathWild,
+		},
+		wantVal: []*ygnmi.Value[*exampleoc.Model_SingleKey]{(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+			Timestamp: time.Unix(0, 100),
+			Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]"),
+		}).SetVal(&exampleoc.Model_SingleKey{
+			Key:   ygot.String("foo"),
+			Value: ygot.Int64(42),
+		})},
+	}}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			b := ygnmi.NewWildcardBatch(exampleocpath.Root().Model().SingleKeyAny().State())
+			err := b.AddPaths(tt.paths...)
+			if diff := errdiff.Substring(err, tt.wantAddErr); diff != "" {
+				t.Fatalf("AddPaths returned unexpected diff: %s", diff)
+			}
+			if err != nil {
+				return
+			}
+			got, gotErr := ygnmi.LookupAll(context.Background(), c, b.Query())
+			if diff := errdiff.Substring(gotErr, tt.wantLookupErr); diff != "" {
+				t.Fatalf("Watch() returned unexpected diff: %s", diff)
+			}
+			if gotErr != nil {
+				return
+			}
+			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath...)
+
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Model_SingleKey]{}), protocmp.Transform(), cmpopts.IgnoreFields(ygnmi.Value[*exampleoc.Model_SingleKey]{}, "RecvTimestamp")); diff != "" {
+				t.Errorf("Watch() returned unexpected diff (-want,+got):\n%s", diff)
+			}
+		})
+	}
+}
+
 func TestSetBatch(t *testing.T) {
 	setClient := &testutil.SetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))

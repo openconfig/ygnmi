@@ -130,6 +130,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 `,
@@ -222,6 +223,7 @@ func (n *LeafAny) State() ygnmi.WildcardQuery[int32] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 		nil,
 	)
 }
@@ -319,6 +321,7 @@ func (n *Container_LeafListAny) State() ygnmi.WildcardQuery[[]uint32] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -387,6 +390,7 @@ func (n *Container_LeafListAny) Config() ygnmi.WildcardQuery[[]uint32] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 		nil,
 	)
 }
@@ -472,6 +476,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 		nil,
 	)
 }
