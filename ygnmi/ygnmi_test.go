@@ -4221,7 +4221,7 @@ func TestCustomRootBatch(t *testing.T) {
 	tests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
-		paths                []ygnmi.PathStruct
+		paths                []ygnmi.UntypedQuery
 		wantSubscriptionPath []*gpb.Path
 		wantVal              *ygnmi.Value[*exampleoc.Parent]
 		wantAddErr           string
@@ -4229,8 +4229,8 @@ func TestCustomRootBatch(t *testing.T) {
 	}{{
 		desc: "not prefix",
 		stub: func(s *testutil.Stubber) {},
-		paths: []ygnmi.PathStruct{
-			exampleocpath.Root().Model(),
+		paths: []ygnmi.UntypedQuery{
+			exampleocpath.Root().Model().Config(),
 		},
 		wantAddErr: "is not a prefix",
 	}, {
@@ -4244,8 +4244,8 @@ func TestCustomRootBatch(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		paths: []ygnmi.PathStruct{
-			exampleocpath.Root().Parent().Child().Two(),
+		paths: []ygnmi.UntypedQuery{
+			exampleocpath.Root().Parent().Child().Two().State(),
 		},
 		wantSubscriptionPath: []*gpb.Path{
 			twoPath,
@@ -4333,8 +4333,8 @@ func TestCustomRootBatch(t *testing.T) {
 		modelPath := exampleocpath.Root().Model()
 		b := ygnmi.NewBatch(modelPath.SingleKeyMap().State())
 		if err := b.AddPaths(
-			modelPath.SingleKeyAny().Key().State().PathStruct(),
-			modelPath.SingleKeyAny().Value().State().PathStruct(),
+			modelPath.SingleKeyAny().Key().State(),
+			modelPath.SingleKeyAny().Value().State(),
 		); err != nil {
 			t.Fatal(err)
 		}
@@ -4384,7 +4384,7 @@ func TestCustomRootWildcardBatch(t *testing.T) {
 	tests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
-		paths                []ygnmi.PathStruct
+		paths                []ygnmi.UntypedQuery
 		wantSubscriptionPath []*gpb.Path
 		wantVal              []*ygnmi.Value[*exampleoc.Model_SingleKey]
 		wantAddErr           string
@@ -4392,8 +4392,8 @@ func TestCustomRootWildcardBatch(t *testing.T) {
 	}{{
 		desc: "not prefix",
 		stub: func(s *testutil.Stubber) {},
-		paths: []ygnmi.PathStruct{
-			exampleocpath.Root().Model(),
+		paths: []ygnmi.UntypedQuery{
+			exampleocpath.Root().Model().Config(),
 		},
 		wantAddErr: "is not a prefix",
 	}, {
@@ -4410,9 +4410,9 @@ func TestCustomRootWildcardBatch(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		paths: []ygnmi.PathStruct{
-			exampleocpath.Root().Model().SingleKeyAny().Value().State().PathStruct(),
-			exampleocpath.Root().Model().SingleKeyAny().Key().State().PathStruct(),
+		paths: []ygnmi.UntypedQuery{
+			exampleocpath.Root().Model().SingleKeyAny().Value().State(),
+			exampleocpath.Root().Model().SingleKeyAny().Key().State(),
 		},
 		wantSubscriptionPath: []*gpb.Path{
 			keyPathWild,

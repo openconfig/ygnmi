@@ -32,9 +32,12 @@ import (
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
 )
 
-// AnyQuery is a generic gNMI query for wildcard or non-wildcard state or config paths.
+// UntypedQuery is a generic gNMI query for wildcard or non-wildcard state or config paths.
 // Supported operations: Batch.
-type AnyQuery[T any] interface {
+//
+// Since it is untyped, it is only suitable for representing the metadata of
+// the query instead of initiating gNMI operations.
+type UntypedQuery interface {
 	// PathStruct returns to path struct used for unmarshalling and schema validation.
 	// This path must correspond to T (the parameterized type of the interface).
 	PathStruct() PathStruct
@@ -46,9 +49,6 @@ type AnyQuery[T any] interface {
 	// goStruct returns the struct that query should be unmarshalled into.
 	// For leaves, this is the parent.
 	goStruct() ygot.ValidatedGoStruct
-	// extract is used for leaves to return the field from the parent GoStruct.
-	// For non-leaves, this casts the GoStruct to the concrete type.
-	extract(ygot.ValidatedGoStruct) (T, bool)
 	// IsState returns if the path for this query is a state node.
 	IsState() bool
 	// isLeaf returns if the path for this query is a leaf.
@@ -64,6 +64,14 @@ type AnyQuery[T any] interface {
 	// compressInfo returns information about where the path points to an
 	// element that is compressed out (if applicable).
 	compressInfo() *CompressionInfo
+}
+
+// AnyQuery is a generic gNMI query for wildcard or non-wildcard state or config paths.
+type AnyQuery[T any] interface {
+	UntypedQuery
+	// extract is used for leaves to return the field from the parent GoStruct.
+	// For non-leaves, this casts the GoStruct to the concrete type.
+	extract(ygot.ValidatedGoStruct) (T, bool)
 }
 
 // SingletonQuery is a non-wildcard gNMI query.
@@ -727,13 +735,16 @@ func NewBatch[T any](root SingletonQuery[T]) *Batch[T] {
 }
 
 // AddPaths adds the paths to the batch. Paths must be children of the root.
-func (b *Batch[T]) AddPaths(paths ...PathStruct) error {
+func (b *Batch[T]) AddPaths(paths ...UntypedQuery) error {
 	root, err := resolvePath(b.root.PathStruct())
 	if err != nil {
 		return err
 	}
+	var pathstructs []PathStruct
 	for _, path := range paths {
-		p, err := resolvePath(path)
+		ps := path.PathStruct()
+		pathstructs = append(pathstructs, ps)
+		p, err := resolvePath(ps)
 		if err != nil {
 			return err
 		}
@@ -741,7 +752,7 @@ func (b *Batch[T]) AddPaths(paths ...PathStruct) error {
 			return fmt.Errorf("root path %v is not a prefix of %v", root, p)
 		}
 	}
-	b.paths = append(b.paths, paths...)
+	b.paths = append(b.paths, pathstructs...)
 	return nil
 }
 
@@ -782,13 +793,16 @@ func NewWildcardBatch[T any](root WildcardQuery[T]) *WildcardBatch[T] {
 }
 
 // AddPaths adds the paths to the batch. Paths must be children of the root.
-func (b *WildcardBatch[T]) AddPaths(paths ...PathStruct) error {
+func (b *WildcardBatch[T]) AddPaths(paths ...UntypedQuery) error {
 	root, err := resolvePath(b.root.PathStruct())
 	if err != nil {
 		return err
 	}
+	var pathstructs []PathStruct
 	for _, path := range paths {
-		p, err := resolvePath(path)
+		ps := path.PathStruct()
+		pathstructs = append(pathstructs, ps)
+		p, err := resolvePath(ps)
 		if err != nil {
 			return err
 		}
@@ -796,7 +810,7 @@ func (b *WildcardBatch[T]) AddPaths(paths ...PathStruct) error {
 			return fmt.Errorf("root path %v is not a prefix of %v", root, p)
 		}
 	}
-	b.paths = append(b.paths, paths...)
+	b.paths = append(b.paths, pathstructs...)
 	return nil
 }
 
