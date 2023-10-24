@@ -459,7 +459,7 @@ func TestUncompressedCustomRootBatch(t *testing.T) {
 	tests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
-		paths                []ygnmi.PathStruct
+		paths                []ygnmi.UntypedQuery
 		wantSubscriptionPath []*gpb.Path
 		wantVal              *ygnmi.Value[*uexampleoc.OpenconfigSimple_Parent]
 		wantAddErr           string
@@ -467,7 +467,7 @@ func TestUncompressedCustomRootBatch(t *testing.T) {
 	}{{
 		desc: "not prefix",
 		stub: func(s *testutil.Stubber) {},
-		paths: []ygnmi.PathStruct{
+		paths: []ygnmi.UntypedQuery{
 			uexampleocpath.Root().Model(),
 		},
 		wantAddErr: "is not a prefix",
@@ -482,7 +482,7 @@ func TestUncompressedCustomRootBatch(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		paths: []ygnmi.PathStruct{
+		paths: []ygnmi.UntypedQuery{
 			uexampleocpath.Root().Parent().Child().State().Two(),
 		},
 		wantSubscriptionPath: []*gpb.Path{
