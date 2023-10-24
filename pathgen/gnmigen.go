@@ -399,6 +399,7 @@ ygnmi.New{{ .WildcardTypeName }}[{{ .GoTypeName }}](
 			}
 		},
 		nil,
+		nil,
 	)
 {{ end }}`)
 
@@ -496,6 +497,7 @@ ygnmi.New{{ .WildcardTypeName }}[{{ .GoTypeName }}](
 				Unmarshal:  {{ .SchemaStructPkgAccessor }}Unmarshal,
 			}
 		},
+		nil,
 		{{- if .CompressInfo }}
 		&ygnmi.CompressionInfo{
 			PreRelPath: []string{ {{- .CompressInfo.PreRelPathList -}} },
