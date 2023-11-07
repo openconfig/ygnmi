@@ -17,6 +17,7 @@ package ygnmi_test
 import (
 	"context"
 	"fmt"
+	"net"
 	"strings"
 	"testing"
 	"time"
@@ -32,7 +33,9 @@ import (
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygot"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/local"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
@@ -158,7 +161,8 @@ func getCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Clien
 	}
 }
 
-func watchCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, duration time.Duration, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], inOpts []ygnmi.Option, valPred func(T) bool, wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantMode gpb.SubscriptionMode, wantVals []*ygnmi.Value[T], wantLastVal *ygnmi.Value[T]) {
+func watchCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, duration time.Duration, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T],
+	inOpts []ygnmi.Option, valPred func(T) bool, wantErrSubstring string, wantSubscriptionPaths []*gpb.Path, wantModes []gpb.SubscriptionMode, wantIntervals []uint64, wantVals []*ygnmi.Value[T], wantLastVal *ygnmi.Value[T]) {
 	t.Helper()
 	i := 0
 	ctx, cancel := context.WithTimeout(context.Background(), duration)
@@ -187,8 +191,9 @@ func watchCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, duration tim
 	if err != nil {
 		return
 	}
-	verifySubscriptionPathsSent(t, fakeGNMI, wantSubscriptionPath)
-	verifySubscriptionModesSent(t, fakeGNMI, wantMode)
+	verifySubscriptionPathsSent(t, fakeGNMI, wantSubscriptionPaths...)
+	verifySubscriptionModesSent(t, fakeGNMI, wantModes...)
+	verifySubscriptionSampleIntervalsSent(t, fakeGNMI, wantIntervals...)
 	if val != nil {
 		checkJustReceived(t, val.RecvTimestamp)
 		wantLastVal.RecvTimestamp = val.RecvTimestamp
@@ -1173,6 +1178,7 @@ func TestWatch(t *testing.T) {
 		wantVals             []*ygnmi.Value[string]
 		wantErr              string
 		wantMode             gpb.SubscriptionMode
+		wantInterval         uint64
 		opts                 []ygnmi.Option
 	}{{
 		desc: "single notif and pred true",
@@ -1210,6 +1216,30 @@ func TestWatch(t *testing.T) {
 		dur:      time.Second,
 		opts:     []ygnmi.Option{ygnmi.WithSubscriptionMode(gpb.SubscriptionMode_ON_CHANGE)},
 		wantMode: gpb.SubscriptionMode_ON_CHANGE,
+		wantVals: []*ygnmi.Value[string]{
+			(&ygnmi.Value[string]{
+				Timestamp: startTime,
+				Path:      path,
+			}).SetVal("foo")},
+		wantSubscriptionPath: path,
+		wantLastVal: (&ygnmi.Value[string]{
+			Timestamp: startTime,
+			Path:      path,
+		}).SetVal("foo"),
+	}, {
+		desc: "single notif and pred true with custom interval",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		dur:          time.Second,
+		opts:         []ygnmi.Option{ygnmi.WithSampleInterval(time.Millisecond)},
+		wantInterval: 1000000,
 		wantVals: []*ygnmi.Value[string]{
 			(&ygnmi.Value[string]{
 				Timestamp: startTime,
@@ -1324,8 +1354,9 @@ func TestWatch(t *testing.T) {
 				tt.opts,
 				func(val string) bool { return val == "foo" },
 				tt.wantErr,
-				tt.wantSubscriptionPath,
-				tt.wantMode,
+				[]*gpb.Path{tt.wantSubscriptionPath},
+				[]gpb.SubscriptionMode{tt.wantMode},
+				[]uint64{tt.wantInterval},
 				tt.wantVals,
 				tt.wantLastVal,
 			)
@@ -1505,6 +1536,44 @@ func TestWatch(t *testing.T) {
 		}).SetVal(&exampleoc.Parent_Child{
 			Three: exampleoc.Child_Three_ONE,
 		}),
+	}, {
+		desc: "delete at container level",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: strPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+				}, {
+					Path: enumPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "ONE"}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+				Delete:    []*gpb.Path{testutil.GNMIPath(t, "parent/child")},
+			})
+		},
+		wantVals: []*ygnmi.Value[*exampleoc.Parent_Child]{
+			(&ygnmi.Value[*exampleoc.Parent_Child]{
+				Timestamp: startTime,
+				Path:      rootPath,
+			}).SetVal(&exampleoc.Parent_Child{
+				Three: exampleoc.Child_Three_ONE,
+				One:   ygot.String("bar"),
+			}),
+			(&ygnmi.Value[*exampleoc.Parent_Child]{
+				Timestamp: startTime.Add(time.Millisecond),
+				Path:      rootPath,
+			}),
+		},
+		wantSubscriptionPath: rootPath,
+		wantErr:              "EOF",
+		wantLastVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+			Timestamp: startTime.Add(time.Millisecond),
+			Path:      rootPath,
+		}).SetVal(&exampleoc.Parent_Child{
+			Three: exampleoc.Child_Three_ONE,
+		}),
 	}}
 
 	for _, tt := range nonLeafTests {
@@ -1517,8 +1586,9 @@ func TestWatch(t *testing.T) {
 					return val.One != nil && *val.One == "foo" && val.Three == exampleoc.Child_Three_ONE
 				},
 				tt.wantErr,
-				tt.wantSubscriptionPath,
-				gpb.SubscriptionMode_TARGET_DEFINED,
+				[]*gpb.Path{tt.wantSubscriptionPath},
+				[]gpb.SubscriptionMode{gpb.SubscriptionMode_TARGET_DEFINED},
+				[]uint64{0},
 				tt.wantVals,
 				tt.wantLastVal,
 			)
@@ -1591,8 +1661,9 @@ func TestWatch(t *testing.T) {
 				return cmp.Equal(val, want, cmp.AllowUnexported(exampleoc.Model_SingleKey_OrderedList_OrderedMap{}))
 			},
 			"",
-			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
-			gpb.SubscriptionMode_TARGET_DEFINED,
+			[]*gpb.Path{testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists")},
+			[]gpb.SubscriptionMode{gpb.SubscriptionMode_TARGET_DEFINED},
+			[]uint64{0},
 			[]*ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
 				(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
 					Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
@@ -1674,8 +1745,9 @@ func TestWatch(t *testing.T) {
 				return cmp.Equal(val, want)
 			},
 			"",
-			testutil.GNMIPath(t, "/model/a"),
-			gpb.SubscriptionMode_TARGET_DEFINED,
+			[]*gpb.Path{testutil.GNMIPath(t, "/model/a")},
+			[]gpb.SubscriptionMode{gpb.SubscriptionMode_TARGET_DEFINED},
+			[]uint64{0},
 			[]*ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
 				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
 					Path:      testutil.GNMIPath(t, "/model/a"),
@@ -2899,6 +2971,82 @@ func TestWatchAll(t *testing.T) {
 			Value: ygot.Int64(101),
 			Key:   ygot.String("test"),
 		}),
+	}, {
+		desc: "predicate becomes true after some deletions",
+		dur:  time.Second,
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: key10Path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 100}},
+				}, {
+					Path: testutil.GNMIPath(t, "model/a/single-key[key=11]/state/key"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "test"}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+				Delete:    []*gpb.Path{testutil.GNMIPath(t, "model/a/single-key[key=11]/state/key")},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(2 * time.Millisecond).UnixNano(),
+				Delete:    []*gpb.Path{testutil.GNMIPath(t, "model/a/single-key[key=10]")},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: startTime.Add(3 * time.Millisecond).UnixNano(),
+				Update: []*gpb.Update{{
+					Path: key10Path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 100}},
+				}, {
+					Path: testutil.GNMIPath(t, "model/a/single-key[key=11]/state/key"),
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "test"}},
+				}, {
+					Path: key11Path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 101}},
+				}},
+			})
+		},
+		wantSubscriptionPath: nonLeafPath,
+		wantVals: []*ygnmi.Value[*exampleoc.Model_SingleKey]{
+			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+				Timestamp: startTime,
+				Path:      nonLeafKey10Path,
+			}).SetVal(&exampleoc.Model_SingleKey{
+				Value: ygot.Int64(100),
+			}),
+			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+				Timestamp: startTime,
+				Path:      nonLeafKey11Path,
+			}).SetVal(&exampleoc.Model_SingleKey{
+				Key: ygot.String("test"),
+			}),
+			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+				Timestamp: startTime.Add(time.Millisecond),
+				Path:      nonLeafKey11Path,
+			}),
+			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+				Timestamp: startTime.Add(2 * time.Millisecond),
+				Path:      nonLeafKey10Path,
+			}),
+			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+				Timestamp: startTime.Add(3 * time.Millisecond),
+				Path:      nonLeafKey10Path,
+			}).SetVal(&exampleoc.Model_SingleKey{
+				Value: ygot.Int64(100),
+			}),
+			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+				Timestamp: startTime.Add(3 * time.Millisecond),
+				Path:      nonLeafKey11Path,
+			}).SetVal(&exampleoc.Model_SingleKey{
+				Value: ygot.Int64(101),
+				Key:   ygot.String("test"),
+			}),
+		},
+		wantLastVal: (&ygnmi.Value[*exampleoc.Model_SingleKey]{
+			Timestamp: startTime.Add(3 * time.Millisecond),
+			Path:      nonLeafKey11Path,
+		}).SetVal(&exampleoc.Model_SingleKey{
+			Value: ygot.Int64(101),
+			Key:   ygot.String("test"),
+		}),
 	}}
 	for _, tt := range nonLeafTests {
 		t.Run("nonLeaf "+tt.desc, func(t *testing.T) {
@@ -4073,7 +4221,7 @@ func TestCustomRootBatch(t *testing.T) {
 	tests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
-		paths                []ygnmi.PathStruct
+		paths                []ygnmi.UntypedQuery
 		wantSubscriptionPath []*gpb.Path
 		wantVal              *ygnmi.Value[*exampleoc.Parent]
 		wantAddErr           string
@@ -4081,8 +4229,8 @@ func TestCustomRootBatch(t *testing.T) {
 	}{{
 		desc: "not prefix",
 		stub: func(s *testutil.Stubber) {},
-		paths: []ygnmi.PathStruct{
-			exampleocpath.Root().Model(),
+		paths: []ygnmi.UntypedQuery{
+			exampleocpath.Root().Model().Config(),
 		},
 		wantAddErr: "is not a prefix",
 	}, {
@@ -4096,8 +4244,8 @@ func TestCustomRootBatch(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		paths: []ygnmi.PathStruct{
-			exampleocpath.Root().Parent().Child().Two(),
+		paths: []ygnmi.UntypedQuery{
+			exampleocpath.Root().Parent().Child().Two().State(),
 		},
 		wantSubscriptionPath: []*gpb.Path{
 			twoPath,
@@ -4139,6 +4287,171 @@ func TestCustomRootBatch(t *testing.T) {
 		})
 	}
 
+	fakeGNMI, client := newClient(t)
+	startTime := time.Now()
+	t.Run("success whole single-keyed map", func(t *testing.T) {
+		fakeGNMI.Stub().Notification(&gpb.Notification{
+			Timestamp: startTime.UnixNano(),
+			Prefix:    testutil.GNMIPath(t, "/model/a"),
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+			}},
+		}).Sync().Notification(&gpb.Notification{
+			Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+			Prefix:    testutil.GNMIPath(t, "/model/a"),
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=foo]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=bar]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=baz]/state/key`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "baz"}},
+			}, {
+				Path: testutil.GNMIPath(t, `single-key[key=baz]/state/value`),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 44}},
+			}},
+		})
+
+		modelPath := exampleocpath.Root().Model()
+		b := ygnmi.NewBatch(modelPath.SingleKeyMap().State())
+		if err := b.AddPaths(
+			modelPath.SingleKeyAny().Key().State(),
+			modelPath.SingleKeyAny().Value().State(),
+		); err != nil {
+			t.Fatal(err)
+		}
+
+		want := getSampleSingleKeyedMap(t)
+		watchCheckFn(t, fakeGNMI, 2*time.Second, client,
+			b.Query(),
+			nil,
+			func(val map[string]*exampleoc.Model_SingleKey) bool {
+				return cmp.Equal(val, want)
+			},
+			"",
+			[]*gpb.Path{
+				testutil.GNMIPath(t, "/model/a/single-key[key=*]/state/key"),
+				testutil.GNMIPath(t, "/model/a/single-key[key=*]/state/value"),
+			},
+			[]gpb.SubscriptionMode{
+				gpb.SubscriptionMode_TARGET_DEFINED,
+				gpb.SubscriptionMode_TARGET_DEFINED,
+			},
+			[]uint64{0, 0},
+			[]*ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+					Path:      testutil.GNMIPath(t, "/model/a"),
+					Timestamp: startTime,
+				}).SetVal(getSampleSingleKeyedMapIncomplete(t)),
+				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+					Path:      testutil.GNMIPath(t, "/model/a"),
+					Timestamp: startTime.Add(time.Millisecond),
+				}).SetVal(getSampleSingleKeyedMap(t)),
+			},
+			(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+				Path:      testutil.GNMIPath(t, "/model/a"),
+				Timestamp: startTime.Add(time.Millisecond),
+			}).SetVal(getSampleSingleKeyedMap(t)),
+		)
+	})
+}
+
+func TestCustomRootWildcardBatch(t *testing.T) {
+	fakeGNMI, c := newClient(t)
+	valuePathWild := testutil.GNMIPath(t, "/model/a/single-key[key=*]/state/value")
+	valuePath := testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/value")
+	keyPathWild := testutil.GNMIPath(t, "/model/a/single-key[key=*]/state/key")
+	keyPath := testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/key")
+
+	tests := []struct {
+		desc                 string
+		stub                 func(s *testutil.Stubber)
+		paths                []ygnmi.UntypedQuery
+		wantSubscriptionPath []*gpb.Path
+		wantVal              []*ygnmi.Value[*exampleoc.Model_SingleKey]
+		wantAddErr           string
+		wantLookupErr        string
+	}{{
+		desc: "not prefix",
+		stub: func(s *testutil.Stubber) {},
+		paths: []ygnmi.UntypedQuery{
+			exampleocpath.Root().Model().Config(),
+		},
+		wantAddErr: "is not a prefix",
+	}, {
+		desc: "success",
+		stub: func(s *testutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: valuePath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 42}},
+				}, {
+					Path: keyPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		paths: []ygnmi.UntypedQuery{
+			exampleocpath.Root().Model().SingleKeyAny().Value().State(),
+			exampleocpath.Root().Model().SingleKeyAny().Key().State(),
+		},
+		wantSubscriptionPath: []*gpb.Path{
+			keyPathWild,
+			valuePathWild,
+		},
+		wantVal: []*ygnmi.Value[*exampleoc.Model_SingleKey]{(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+			Timestamp: time.Unix(0, 100),
+			Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]"),
+		}).SetVal(&exampleoc.Model_SingleKey{
+			Key:   ygot.String("foo"),
+			Value: ygot.Int64(42),
+		})},
+	}}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			b := ygnmi.NewWildcardBatch(exampleocpath.Root().Model().SingleKeyAny().State())
+			err := b.AddPaths(tt.paths...)
+			if diff := errdiff.Substring(err, tt.wantAddErr); diff != "" {
+				t.Fatalf("AddPaths returned unexpected diff: %s", diff)
+			}
+			if err != nil {
+				return
+			}
+			got, gotErr := ygnmi.LookupAll(context.Background(), c, b.Query())
+			if diff := errdiff.Substring(gotErr, tt.wantLookupErr); diff != "" {
+				t.Fatalf("Watch() returned unexpected diff: %s", diff)
+			}
+			if gotErr != nil {
+				return
+			}
+			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath...)
+
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Model_SingleKey]{}), protocmp.Transform(), cmpopts.IgnoreFields(ygnmi.Value[*exampleoc.Model_SingleKey]{}, "RecvTimestamp")); diff != "" {
+				t.Errorf("Watch() returned unexpected diff (-want,+got):\n%s", diff)
+			}
+		})
+	}
 }
 
 func TestSetBatch(t *testing.T) {
@@ -4155,7 +4468,7 @@ func TestSetBatch(t *testing.T) {
 		stubResponse *gpb.SetResponse
 		stubErr      error
 	}{{
-		desc: "leaf update replace delete",
+		desc: "leaf update replace delete unionreplace",
 		addPaths: func(sb *ygnmi.SetBatch) {
 			cliPath, err := schemaless.NewConfig[string]("", "cli")
 			if err != nil {
@@ -4167,6 +4480,8 @@ func TestSetBatch(t *testing.T) {
 			ygnmi.BatchReplace(sb, exampleocpath.Root().Parent().Child().One().Config(), "bar")
 			ygnmi.BatchDelete(sb, cliPath)
 			ygnmi.BatchDelete(sb, exampleocpath.Root().Parent().Child().One().Config())
+			ygnmi.BatchUnionReplace(sb, exampleocpath.Root().Parent().Child().One().Config(), "baz")
+			ygnmi.BatchUnionReplaceCLI(sb, "openos", "open sesame")
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -4190,6 +4505,13 @@ func TestSetBatch(t *testing.T) {
 				{Origin: "cli"},
 				testutil.GNMIPath(t, "parent/child/config/one"),
 			},
+			UnionReplace: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "parent/child/config/one"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("\"baz\"")}},
+			}, {
+				Path: &gpb.Path{Origin: "openos_cli"},
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: "open sesame"}},
+			}},
 		},
 		stubResponse: &gpb.SetResponse{
 			Prefix: &gpb.Path{
@@ -4318,5 +4640,74 @@ func verifySubscriptionModesSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, want
 	}
 	if diff := cmp.Diff(wantModes, gotModes, protocmp.Transform()); diff != "" {
 		t.Errorf("Subscription modes (-want, +got):\n%s", diff)
+	}
+}
+
+// verifySubscriptionSampleIntervalsSent verifies the modes of the sent subscription requests is the same as wantModes.
+func verifySubscriptionSampleIntervalsSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, wantIntervals ...uint64) {
+	t.Helper()
+	requests := fakeGNMI.Requests()
+	if len(requests) != 1 {
+		t.Errorf("Number of subscription requests sent is not 1: %v", requests)
+		return
+	}
+
+	var gotIntervals []uint64
+	req := requests[0].GetSubscribe()
+	for _, sub := range req.GetSubscription() {
+		gotIntervals = append(gotIntervals, sub.SampleInterval)
+	}
+	if diff := cmp.Diff(wantIntervals, gotIntervals); diff != "" {
+		t.Errorf("Subscription sample intervals (-want, +got):\n%s", diff)
+	}
+}
+
+type gnmiS struct {
+	gpb.UnimplementedGNMIServer
+	errCh chan error
+}
+
+func (g *gnmiS) Subscribe(srv gpb.GNMI_SubscribeServer) error {
+	if _, err := srv.Recv(); err != nil {
+		return err
+	}
+	if err := srv.Send(&gpb.SubscribeResponse{Response: &gpb.SubscribeResponse_SyncResponse{}}); err != nil {
+		return err
+	}
+	// This send must fail because the client will have cancelled the subscription context.
+	time.Sleep(time.Second)
+	err := srv.Send(&gpb.SubscribeResponse{Response: &gpb.SubscribeResponse_SyncResponse{}})
+	g.errCh <- err
+	return nil
+}
+
+func TestWatchCancel(t *testing.T) {
+	srv := &gnmiS{
+		errCh: make(chan error, 1),
+	}
+	s := grpc.NewServer(grpc.Creds(local.NewCredentials()))
+	gpb.RegisterGNMIServer(s, srv)
+	l, err := net.Listen("tcp", ":0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	go func() {
+		//nolint:errcheck // Don't care about this error.
+		s.Serve(l)
+	}()
+	conn, err := grpc.Dial(l.Addr().String(), grpc.WithTransportCredentials(local.NewCredentials()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, _ := ygnmi.NewClient(gpb.NewGNMIClient(conn))
+
+	w := ygnmi.Watch(context.Background(), c, exampleocpath.Root().RemoteContainer().ALeaf().State(), func(v *ygnmi.Value[string]) error {
+		return nil
+	})
+	if _, err := w.Await(); err != nil {
+		t.Fatal(err)
+	}
+	if err := <-srv.errCh; err == nil {
+		t.Fatalf("Watch() unexpected error: got %v, want context.Cancel", err)
 	}
 }

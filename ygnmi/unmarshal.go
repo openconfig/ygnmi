@@ -47,6 +47,24 @@ type DataPoint struct {
 	Sync bool
 }
 
+func (d *DataPoint) String() string {
+	if d == nil {
+		return ""
+	}
+	if d.Sync {
+		return "gNMI SyncResponse"
+	}
+	path, err := ygot.PathToString(d.Path)
+	if err != nil {
+		path = prototext.Format(d.Path)
+	}
+	valStr := fmt.Sprint(d.Value)
+	if jsonietf := d.Value.GetJsonIetfVal(); len(jsonietf) > 0 {
+		valStr = string(jsonietf)
+	}
+	return fmt.Sprintf("%s (timestamp: %v, recvTimestamp: %v, isSync: %v): %s", path, d.Timestamp, d.RecvTimestamp, d.Sync, valStr)
+}
+
 // TelemetryError stores the path, value, and error string from unsuccessfully
 // unmarshalling a datapoint into a YANG schema.
 type TelemetryError struct {

@@ -58,25 +58,30 @@ Calling the generation with `--base_import_path=<somepath>/exampleoc` flag will 
 
 The ygnmi client library uses the generated code to perform schema compliant subscriptions and set gNMI RPCs. 
 
-### gNMI path to ygnmi path
+### Translating between ygnmi and gNMI Paths
 
-ygnmi paths mimic with gNMI paths with a few transformations applied.
+ygnmi paths mimic gNMI paths with a few transformations applied:
 
 1. Names are CamelCased: `network-instance` -> `NetworkInstance`
 2. YANG module names are omitted, and added to a root struct: `/openconfig-network-instance/network-interfaces/` -> `ocpath.Root().NetworkInstance()`
 3. Lists are compressed: `network-instances/network-instance[name=DEFAULT]` -> `NetworkInstance("DEFAULT")`
 4. List keys can be specified several ways:
     1. Fully by specifying all keys: `protocols/protocol[identifier=BGP][name=test]` -> `Protocol(oc.PolicyTypes_INSTALL_PROTOCOL_TYPE_BGP, "test")`
-    2. Specifying no keys: `protocols/protocol[identifier=*][name=*]` -> `ProtocolAny()`
+    2. Specifying no keys: `protocols/protocol[identifier=*][name=*]` -> `ProtocolAny()` or `ProtocolMap()`
     3. Specifying some keys: `protocols/protocol[identifier=BGP][name=*]` -> `ProtocolAny().WithIdentifier(oc.PolicyTypes_INSTALL_PROTOCOL_TYPE_BGP)`
 5. State or Config are specified at the end: `interface[name=eth0]/state/name` -> `Interface("eth0").Name().State()`
 
-Examples:
+#### Example ygnmi Queries and their Corresponding gNMI Paths
 
-|gNMI Path|ygnmi Call|
+|ygnmi Query|gNMI Paths|
 |---------|----------|
-|`/network-instances/network-instance[name=DEFAULT]/protocols/protocol[identifier=BGP][name=test]/bgp/neighbors/neighbor[neighbor-address=localhost]/state/description`|`ocpath.Root().NetworkInstance("DEFAULT").Protocol(oc.PolicyTypes_INSTALL_PROTOCOL_TYPE_BGP, "test").Bgp().Neighbor("localhost").Description().State()`
-| `/interfaces/interface[name=*]/config/name` | `ocpath.Root().InterfaceAny().Name().Config()`
+| `ocpath.Root().Interface("eth0").Name().Config()` | `/interfaces/interface[name=eth0]/config/name`
+| `ocpath.Root().Interface("eth0").Name().State()` | `/interfaces/interface[name=eth0]/state/name`
+| `ocpath.Root().InterfaceAny().Name().Config()` | `/interfaces/interface[name=*]/config/name`
+| `ocpath.Root().Interface("eth0").Config()` | `/interfaces/interface[name=eth0]`, with any descendant `.../state` paths filtered out
+| `ocpath.Root().Interface("eth0").State()` | `/interfaces/interface[name=eth0]`, with any descendant `.../config` paths filtered out
+| `ocpath.Root().InterfaceMap().State()` | `/interfaces/interface[name=*]`, with any descendant `.../config` paths filtered out
+| `ocpath.Root().NetworkInstance("DEFAULT").Protocol(oc.PolicyTypes_INSTALL_PROTOCOL_TYPE_BGP, "test").Bgp().Neighbor("localhost").Description().State()` | `/network-instances/network-instance[name=DEFAULT]/protocols/protocol[identifier=BGP][name=test]/bgp/neighbors/neighbor[neighbor-address=localhost]/state/description`
 
 Note: It is highly recommended to use this library with an IDE or autocomplete configured.
 

@@ -130,6 +130,101 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 			}
 		},
 		nil,
+		nil,
+	)
+}
+`,
+	}, {
+		desc:           "scalar leaf without config directly below root",
+		dir:            dirs["/root"],
+		pathStructName: "Leaf",
+		node: &NodeData{
+			GoTypeName:            "int32",
+			LocalGoTypeName:       "int32",
+			GoFieldName:           "Leaf",
+			YANGFieldName:         "leaf",
+			SubsumingGoStructName: "Root",
+			IsLeaf:                true,
+			IsScalarField:         true,
+			HasDefault:            true,
+			YANGPath:              "/leaf",
+		},
+		want: `
+// State returns a Query that can be used in gNMI operations.
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "leaf"
+// 	Path from root:       "/leaf"
+func (n *Leaf) State() ygnmi.SingletonQuery[int32] {
+	return ygnmi.NewSingletonQuery[int32](
+		"Root",
+		true,
+		true,
+		true,
+		true,
+		false,
+		ygnmi.NewNodePath(
+			[]string{"leaf"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) (int32, bool) { 
+			ret := gs.(*oc.Root).Leaf
+			if ret == nil {
+				var zero int32
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Root) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+// 	Defining module:      "root-module"
+// 	Instantiating module: "root-module"
+// 	Path from parent:     "leaf"
+// 	Path from root:       "/leaf"
+func (n *LeafAny) State() ygnmi.WildcardQuery[int32] {
+	return ygnmi.NewWildcardQuery[int32](
+		"Root",
+		true,
+		true,
+		true,
+		true,
+		false,
+		ygnmi.NewNodePath(
+			[]string{"leaf"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) (int32, bool) { 
+			ret := gs.(*oc.Root).Leaf
+			if ret == nil {
+				var zero int32
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Root) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
 	)
 }
 `,
@@ -226,6 +321,7 @@ func (n *Container_LeafListAny) State() ygnmi.WildcardQuery[[]uint32] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 
@@ -294,6 +390,7 @@ func (n *Container_LeafListAny) Config() ygnmi.WildcardQuery[[]uint32] {
 				Unmarshal:  oc.Unmarshal,
 			}
 		},
+		nil,
 		nil,
 	)
 }
@@ -380,6 +477,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
 			}
 		},
 		nil,
+		nil,
 	)
 }
 `,
@@ -389,7 +487,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
 		pathStructName: "Root",
 		node: &NodeData{
 			GoTypeName:            "*oc.Root",
-			LocalGoTypeName:       "Root",
+			LocalGoTypeName:       "*Root",
 			GoFieldName:           "",
 			YANGFieldName:         "",
 			SubsumingGoStructName: "Root",

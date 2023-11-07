@@ -6,42 +6,12 @@ on:
   pull_request:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        go: ['1.18', '1.x']
-        
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: ${{ matrix.go }}
-      id: go
-
-    - name: Build
-      run: make build
-
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: '1.x'
-
-    - name: Test
-      run: make test
-
-    - name: Send coverage
-      uses: shogo82148/actions-goveralls@v1
-      with:
-        path-to-profile: profile.cov
+  go:
+    uses: openconfig/common-ci/.github/workflows/basic_go.yml@c2294c3c86c90e75e58c24a40d6f7f3364bbae9d
+    with:
+      static-analysis-excludes-regex: exampleoc
+      skip-gofmt: true
+      skip-staticcheck: true
 
   generate:
     runs-on: ubuntu-latest
@@ -51,7 +21,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
-        go-version: '1.x'
+        go-version: 'stable'
 
     - name: Generate and Check Diff
       # Ignore whitespace because goimports seems to modifying the generated commands inconsistently.

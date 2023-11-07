@@ -17,6 +17,7 @@ package ygnmi
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -49,7 +50,8 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 				Elem:   path.GetElem(),
 				Origin: path.GetOrigin(),
 			},
-			Mode: o.mode,
+			Mode:           o.mode,
+			SampleInterval: o.sampleInterval,
 		})
 	}
 
@@ -92,6 +94,13 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 		log.V(c.requestLogLevel).Info(prototext.Format(sr))
 	}
 	if err := sub.Send(sr); err != nil {
+		// If the server closes the RPC with an error, the real error may only be visible on Recv.
+		// https://pkg.go.dev/google.golang.org/grpc?utm_source=godoc#ClientStream
+		if errors.Is(err, io.EOF) {
+			if _, recvErr := sub.Recv(); recvErr != nil {
+				err = recvErr
+			}
+		}
 		return nil, fmt.Errorf("gNMI failed to Send(%+v): %w", sr, err)
 	}
 
@@ -255,7 +264,7 @@ func receiveAll(sub gpb.GNMI_SubscribeClient, deletesExpected bool) (data []*Dat
 // Note: this does not imply that mode is gpb.SubscriptionList_STREAM (though it usually is).
 // If the query is a leaf, each datapoint will be sent the chan individually.
 // If the query is a non-leaf, all the datapoints from a SubscriptionResponse are bundled.
-func receiveStream[T any](sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-chan []*DataPoint, <-chan error) {
+func receiveStream[T any](ctx context.Context, sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-chan []*DataPoint, <-chan error) {
 	dataCh := make(chan []*DataPoint)
 	errCh := make(chan error)
 
@@ -270,7 +279,14 @@ func receiveStream[T any](sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-ch
 		for {
 			recvData, sync, err = receive(sub, recvData, true)
 			if err != nil {
-				errCh <- fmt.Errorf("error receiving gNMI response: %w", err)
+				// In the case that the context is cancelled, the reader of errCh
+				// may have gone away. In order to avoid this goroutine blocking
+				// indefinitely on the channel write, allow ctx being cancelled or
+				// done to ensure that it returns.
+				select {
+				case errCh <- fmt.Errorf("error receiving gNMI response: %w", err):
+				case <-ctx.Done():
+				}
 				return
 			}
 			firstSync := !hasSynced && (sync || query.isLeaf())
@@ -410,6 +426,7 @@ const (
 	deletePath setOperation = iota
 	replacePath
 	updatePath
+	unionreplacePath
 )
 
 // populateSetRequest fills a SetResponse for a val and operation type.
@@ -422,11 +439,13 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op
 	switch op {
 	case deletePath:
 		req.Delete = append(req.Delete, path)
-	case replacePath, updatePath:
+	case replacePath, updatePath, unionreplacePath:
 		var typedVal *gpb.TypedValue
 		var err error
 		if s, ok := val.(*string); ok && path.Origin == "cli" {
 			typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: *s}}
+		} else if s, ok := val.(string); ok && strings.HasSuffix(path.Origin, "_cli") {
+			typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: s}}
 		} else if opt.preferProto {
 			typedVal, err = ygot.EncodeTypedValue(val, gpb.Encoding_JSON_IETF, &ygot.RFC7951JSONConfig{AppendModuleName: true, PreferShadowPath: preferShadowPath})
 		} else {
@@ -463,10 +482,13 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op
 			Val:  typedVal,
 		}
 
-		if op == replacePath {
+		switch op {
+		case replacePath:
 			req.Replace = append(req.Replace, update)
-		} else {
+		case updatePath:
 			req.Update = append(req.Update, update)
+		case unionreplacePath:
+			req.UnionReplace = append(req.UnionReplace, update)
 		}
 	default:
 		return fmt.Errorf("unknown set operation: %v", op)

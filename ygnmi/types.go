@@ -75,14 +75,14 @@ func NewConfigQuery[T any](goStructName string, state, leaf, scalar, compressedS
 			schemaFn,
 			extractFn,
 			goStructFn,
-			nil,
+			subPaths,
 			compressInfo,
 		},
 	}
 }
 
 // NewWildcardQuery creates a new NewLeafWildcardQuery object.
-func NewWildcardQuery[T any](goStructName string, state, leaf, scalar, compressedSchema, listContainer bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema, compressInfo *CompressionInfo) *WildcardQueryStruct[T] {
+func NewWildcardQuery[T any](goStructName string, state, leaf, scalar, compressedSchema, listContainer bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema, subPaths []PathStruct, compressInfo *CompressionInfo) *WildcardQueryStruct[T] {
 	return &WildcardQueryStruct[T]{
 		baseQuery: baseQuery[T]{
 			goStructName,
@@ -95,7 +95,7 @@ func NewWildcardQuery[T any](goStructName string, state, leaf, scalar, compresse
 			schemaFn,
 			extractFn,
 			goStructFn,
-			nil,
+			subPaths,
 			compressInfo,
 		},
 	}

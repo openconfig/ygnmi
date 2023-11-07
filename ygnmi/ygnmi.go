@@ -32,9 +32,12 @@ import (
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
 )
 
-// AnyQuery is a generic gNMI query for wildcard or non-wildcard state or config paths.
+// UntypedQuery is a generic gNMI query for wildcard or non-wildcard state or config paths.
 // Supported operations: Batch.
-type AnyQuery[T any] interface {
+//
+// Since it is untyped, it is only suitable for representing the metadata of
+// the query instead of initiating gNMI operations.
+type UntypedQuery interface {
 	// PathStruct returns to path struct used for unmarshalling and schema validation.
 	// This path must correspond to T (the parameterized type of the interface).
 	PathStruct() PathStruct
@@ -46,9 +49,6 @@ type AnyQuery[T any] interface {
 	// goStruct returns the struct that query should be unmarshalled into.
 	// For leaves, this is the parent.
 	goStruct() ygot.ValidatedGoStruct
-	// extract is used for leaves to return the field from the parent GoStruct.
-	// For non-leaves, this casts the GoStruct to the concrete type.
-	extract(ygot.ValidatedGoStruct) (T, bool)
 	// IsState returns if the path for this query is a state node.
 	IsState() bool
 	// isLeaf returns if the path for this query is a leaf.
@@ -64,6 +64,14 @@ type AnyQuery[T any] interface {
 	// compressInfo returns information about where the path points to an
 	// element that is compressed out (if applicable).
 	compressInfo() *CompressionInfo
+}
+
+// AnyQuery is a generic gNMI query for wildcard or non-wildcard state or config paths.
+type AnyQuery[T any] interface {
+	UntypedQuery
+	// extract is used for leaves to return the field from the parent GoStruct.
+	// For non-leaves, this casts the GoStruct to the concrete type.
+	extract(ygot.ValidatedGoStruct) (T, bool)
 }
 
 // SingletonQuery is a non-wildcard gNMI query.
@@ -183,11 +191,12 @@ func NewClient(c gpb.GNMIClient, opts ...ClientOption) (*Client, error) {
 type Option func(*opt)
 
 type opt struct {
-	useGet      bool
-	mode        gpb.SubscriptionMode
-	encoding    gpb.Encoding
-	preferProto bool
-	setFallback bool
+	useGet         bool
+	mode           gpb.SubscriptionMode
+	encoding       gpb.Encoding
+	preferProto    bool
+	setFallback    bool
+	sampleInterval uint64
 }
 
 // resolveOpts applies all the options and returns a struct containing the result.
@@ -211,9 +220,20 @@ func WithUseGet() Option {
 
 // WithSubscriptionMode creates an option to use input instead of the default (TARGET_DEFINED).
 // This option is only relevant for Watch, WatchAll, Collect, CollectAll, Await which are STREAM subscriptions.
+// The mode applies to all paths in the Subcription.
 func WithSubscriptionMode(mode gpb.SubscriptionMode) Option {
 	return func(o *opt) {
 		o.mode = mode
+	}
+}
+
+// WithSampleInterval creates an option to set the sample interval in the Subcribe request.
+// NOTE: The subscription mode must be set to SAMPLE for this to have an effect.
+// This option is only relevant for Watch, WatchAll, Collect, CollectAll, Await which are STREAM subscriptions.
+// The mode applies to all paths in the Subcription.
+func WithSampleInterval(d time.Duration) Option {
+	return func(o *opt) {
+		o.sampleInterval = uint64(d.Nanoseconds())
 	}
 }
 
@@ -313,6 +333,8 @@ func (w *Watcher[T]) Await() (*Value[T], error) {
 // Calling Await on the returned Watcher waits for the subscription to complete.
 // It returns the last observed value and a boolean that indicates whether that value satisfies the predicate.
 func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func(*Value[T]) error, opts ...Option) *Watcher[T] {
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithCancel(ctx)
 	w := &Watcher[T]{
 		errCh: make(chan error, 1),
 	}
@@ -320,12 +342,14 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func
 	resolvedOpts := resolveOpts(opts)
 	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM, resolvedOpts)
 	if err != nil {
+		cancel()
 		w.errCh <- err
 		return w
 	}
 
-	dataCh, errCh := receiveStream[T](sub, q)
+	dataCh, errCh := receiveStream[T](ctx, sub, q)
 	go func() {
+		defer cancel()
 		// Create an intially empty GoStruct, into which all received datapoints will be unmarshalled.
 		gs := q.goStruct()
 		for {
@@ -465,23 +489,28 @@ func GetAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], opts ...O
 // Calling Await on the returned Watcher waits for the subscription to complete.
 // It returns the last observed value and a boolean that indicates whether that value satisfies the predicate.
 func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred func(*Value[T]) error, opts ...Option) *Watcher[T] {
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithCancel(ctx)
 	w := &Watcher[T]{
 		errCh: make(chan error, 1),
 	}
 	path, err := resolvePath(q.PathStruct())
 	if err != nil {
+		cancel()
 		w.errCh <- err
 		return w
 	}
 	resolvedOpts := resolveOpts(opts)
 	sub, err := subscribe[T](ctx, c, q, gpb.SubscriptionList_STREAM, resolvedOpts)
 	if err != nil {
+		cancel()
 		w.errCh <- err
 		return w
 	}
 
-	dataCh, errCh := receiveStream[T](sub, q)
+	dataCh, errCh := receiveStream[T](ctx, sub, q)
 	go func() {
+		defer cancel()
 		// Create a map intially empty GoStruct, into which all received datapoints will be unmarshalled based on their path prefixes.
 		structs := map[string]ygot.ValidatedGoStruct{}
 		for {
@@ -632,7 +661,7 @@ func BatchUpdate[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 	})
 }
 
-// BatchReplace stores an update operation in the SetBatch.
+// BatchReplace stores a replace operation in the SetBatch.
 func BatchReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 	var setVal interface{} = val
 	if q.isLeaf() && q.isScalar() {
@@ -646,7 +675,42 @@ func BatchReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 	})
 }
 
-// BatchDelete stores an update operation in the SetBatch.
+// BatchUnionReplace stores a union_replace operation in the SetBatch.
+//
+// https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-union_replace.md
+func BatchUnionReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
+	var setVal interface{} = val
+	if q.isLeaf() && q.isScalar() {
+		setVal = &val
+	}
+	sb.ops = append(sb.ops, &batchOp{
+		path:   q.PathStruct(),
+		val:    setVal,
+		mode:   unionreplacePath,
+		config: !q.IsState(),
+	})
+}
+
+// BatchUnionReplaceCLI stores a CLI union_replace operation in the SetBatch.
+//
+//   - nos is the name of the Network operating system.
+//     "_cli" is appended to it to form the origin, see
+//     https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-union_replace.md#24-native-cli-configuration-cli
+//   - ascii is the full CLI text.
+//
+// https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-union_replace.md
+func BatchUnionReplaceCLI(sb *SetBatch, nos, ascii string) {
+	ps := NewDeviceRootBase()
+	ps.PutCustomData(OriginOverride, nos+"_cli")
+	sb.ops = append(sb.ops, &batchOp{
+		path:   ps,
+		val:    ascii,
+		mode:   unionreplacePath,
+		config: true,
+	})
+}
+
+// BatchDelete stores a delete operation in the SetBatch.
 func BatchDelete[T any](sb *SetBatch, q ConfigQuery[T]) {
 	sb.ops = append(sb.ops, &batchOp{
 		path:   q.PathStruct(),
@@ -671,13 +735,16 @@ func NewBatch[T any](root SingletonQuery[T]) *Batch[T] {
 }
 
 // AddPaths adds the paths to the batch. Paths must be children of the root.
-func (b *Batch[T]) AddPaths(paths ...PathStruct) error {
+func (b *Batch[T]) AddPaths(paths ...UntypedQuery) error {
 	root, err := resolvePath(b.root.PathStruct())
 	if err != nil {
 		return err
 	}
+	var pathstructs []PathStruct
 	for _, path := range paths {
-		p, err := resolvePath(path)
+		ps := path.PathStruct()
+		pathstructs = append(pathstructs, ps)
+		p, err := resolvePath(ps)
 		if err != nil {
 			return err
 		}
@@ -685,7 +752,7 @@ func (b *Batch[T]) AddPaths(paths ...PathStruct) error {
 			return fmt.Errorf("root path %v is not a prefix of %v", root, p)
 		}
 	}
-	b.paths = append(b.paths, paths...)
+	b.paths = append(b.paths, pathstructs...)
 	return nil
 }
 
@@ -697,13 +764,71 @@ func (b *Batch[T]) Query() SingletonQuery[T] {
 	return NewSingletonQuery[T](
 		b.root.dirName(),
 		b.root.IsState(),
-		false,
-		false,
+		b.root.isLeaf(),
+		b.root.isScalar(),
 		b.root.isCompressedSchema(),
-		false,
+		b.root.isListContainer(),
 		b.root.PathStruct(),
-		nil,
-		nil,
+		b.root.extract,
+		b.root.goStruct,
+		b.root.schema,
+		queryPaths,
+		b.root.compressInfo(),
+	)
+}
+
+// WildcardBatch contains a collection of paths.
+// Calling Query() on the batch returns a query
+// that can be used in LookupAll, WatchAll, etc on select paths within the root path.
+type WildcardBatch[T any] struct {
+	root  WildcardQuery[T]
+	paths []PathStruct
+}
+
+// NewWildcardBatch creates a batch object. All paths in the batch must be children of the root query.
+func NewWildcardBatch[T any](root WildcardQuery[T]) *WildcardBatch[T] {
+	return &WildcardBatch[T]{
+		root: root,
+	}
+}
+
+// AddPaths adds the paths to the batch. Paths must be children of the root.
+func (b *WildcardBatch[T]) AddPaths(paths ...UntypedQuery) error {
+	root, err := resolvePath(b.root.PathStruct())
+	if err != nil {
+		return err
+	}
+	var pathstructs []PathStruct
+	for _, path := range paths {
+		ps := path.PathStruct()
+		pathstructs = append(pathstructs, ps)
+		p, err := resolvePath(ps)
+		if err != nil {
+			return err
+		}
+		if !util.PathMatchesQuery(p, root) {
+			return fmt.Errorf("root path %v is not a prefix of %v", root, p)
+		}
+	}
+	b.paths = append(b.paths, pathstructs...)
+	return nil
+}
+
+// Query returns a Query that can be used in gNMI operations.
+// The returned query is immutable, adding paths does not modify existing queries.
+func (b *WildcardBatch[T]) Query() WildcardQuery[T] {
+	queryPaths := make([]PathStruct, len(b.paths))
+	copy(queryPaths, b.paths)
+	return NewWildcardQuery[T](
+		b.root.dirName(),
+		b.root.IsState(),
+		b.root.isLeaf(),
+		b.root.isScalar(),
+		b.root.isCompressedSchema(),
+		b.root.isListContainer(),
+		b.root.PathStruct(),
+		b.root.extract,
+		b.root.goStruct,
 		b.root.schema,
 		queryPaths,
 		b.root.compressInfo(),
