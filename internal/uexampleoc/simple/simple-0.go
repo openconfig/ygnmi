@@ -73,7 +73,7 @@ func (n *OpenconfigSimple_ParentPath) Child() *OpenconfigSimple_Parent_ChildPath
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -111,7 +111,7 @@ func (n *OpenconfigSimple_ParentPathAny) Child() *OpenconfigSimple_Parent_ChildP
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -169,7 +169,7 @@ func (n *OpenconfigSimple_Parent_ChildPath) Config() *OpenconfigSimple_Parent_Ch
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -207,7 +207,7 @@ func (n *OpenconfigSimple_Parent_ChildPathAny) Config() *OpenconfigSimple_Parent
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -245,7 +245,7 @@ func (n *OpenconfigSimple_Parent_ChildPath) State() *OpenconfigSimple_Parent_Chi
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -283,7 +283,7 @@ func (n *OpenconfigSimple_Parent_ChildPathAny) State() *OpenconfigSimple_Parent_
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -407,7 +407,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPath) Five() *OpenconfigSimple_Pare
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_Config) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -449,7 +449,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPathAny) Five() *OpenconfigSimple_P
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_Config) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -491,7 +491,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPath) Four() *OpenconfigSimple_Pare
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_Config) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -533,7 +533,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPathAny) Four() *OpenconfigSimple_P
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_Config) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -579,7 +579,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPath) One() *OpenconfigSimple_Paren
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_Config) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -625,7 +625,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPathAny) One() *OpenconfigSimple_Pa
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_Config) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -667,7 +667,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPath) Six() *OpenconfigSimple_Paren
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_Config) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -709,7 +709,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPathAny) Six() *OpenconfigSimple_Pa
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_Config) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -751,7 +751,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPath) Three() *OpenconfigSimple_Par
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_Config) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -793,7 +793,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPathAny) Three() *OpenconfigSimple_
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_Config) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -931,7 +931,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePath) Five() *OpenconfigSimple_Paren
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -973,7 +973,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePathAny) Five() *OpenconfigSimple_Pa
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1015,7 +1015,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePath) Four() *OpenconfigSimple_Paren
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1057,7 +1057,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePathAny) Four() *OpenconfigSimple_Pa
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1103,7 +1103,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePath) One() *OpenconfigSimple_Parent
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1149,7 +1149,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePathAny) One() *OpenconfigSimple_Par
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1191,7 +1191,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePath) Six() *OpenconfigSimple_Parent
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1233,7 +1233,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePathAny) Six() *OpenconfigSimple_Par
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1275,7 +1275,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePath) Three() *OpenconfigSimple_Pare
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1317,7 +1317,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePathAny) Three() *OpenconfigSimple_P
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1363,7 +1363,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePath) Two() *OpenconfigSimple_Parent
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1409,7 +1409,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePathAny) Two() *OpenconfigSimple_Par
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_Parent_Child_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1459,7 +1459,7 @@ func (n *OpenconfigSimple_RemoteContainerPath) Config() *OpenconfigSimple_Remote
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1497,7 +1497,7 @@ func (n *OpenconfigSimple_RemoteContainerPathAny) Config() *OpenconfigSimple_Rem
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1535,7 +1535,7 @@ func (n *OpenconfigSimple_RemoteContainerPath) State() *OpenconfigSimple_RemoteC
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1573,7 +1573,7 @@ func (n *OpenconfigSimple_RemoteContainerPathAny) State() *OpenconfigSimple_Remo
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1645,7 +1645,7 @@ func (n *OpenconfigSimple_RemoteContainer_ConfigPath) ALeaf() *OpenconfigSimple_
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_RemoteContainer_Config) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1691,7 +1691,7 @@ func (n *OpenconfigSimple_RemoteContainer_ConfigPathAny) ALeaf() *OpenconfigSimp
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_RemoteContainer_Config) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1763,7 +1763,7 @@ func (n *OpenconfigSimple_RemoteContainer_StatePath) ALeaf() *OpenconfigSimple_R
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_RemoteContainer_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1809,7 +1809,7 @@ func (n *OpenconfigSimple_RemoteContainer_StatePathAny) ALeaf() *OpenconfigSimpl
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigSimple_RemoteContainer_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}

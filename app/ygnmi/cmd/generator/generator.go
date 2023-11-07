@@ -61,6 +61,7 @@ func New() *cobra.Command {
 	generator.Flags().Bool("ignore_deviate_notsupported", false, "If set to true, 'deviate not-supported' YANG statements are ignored, thus target nodes are retained in the generated code.")
 	generator.Flags().Bool("ignore_unsupported", false, "If set to true, YANG statements unsupported by ygot are ignored.")
 	generator.Flags().StringSlice("split_package_paths", nil, "Comma-separated YANG schema paths excluding choice/case statements followed by an optional (=packagename) for splitting specified subtrees into its own package. if (=packagename) is not specified, then the schema path will be used to name the package.")
+	generator.Flags().Bool("fakeroot_name_is_device", false, "Make the name of the ygot-generated fake root entity \"device\" (ygot's default) instead of \"root\".")
 
 	// TODO(wenovus): Delete these hidden flags before or on v1 release.
 	generator.Flags().Bool("typedef_enum_with_defmod", true, "If set to true, all typedefs of type enumeration or identity will be prefixed with the name of its module of definition instead of its residing module.")
@@ -74,6 +75,13 @@ func New() *cobra.Command {
 	generator.Flags().MarkHidden("generate_atomic_lists")
 
 	return generator
+}
+
+func getFakeRootName() string {
+	if viper.GetBool("fakeroot_name_is_device") {
+		return "device"
+	}
+	return "root"
 }
 
 // generate runs the ygnmi PathStruct and optionally the ygot GoStruct generation.
@@ -137,7 +145,7 @@ func generate(cmd *cobra.Command, args []string) error {
 		EnumOrgPrefixesToTrim:                []string{viper.GetString("trim_module_prefix")},
 		UseDefiningModuleForTypedefEnumNames: viper.GetBool("typedef_enum_with_defmod"),
 		AppendEnumSuffixForSimpleUnionEnums:  true,
-		FakeRootName:                         "root",
+		FakeRootName:                         getFakeRootName(),
 		PathStructSuffix:                     "Path",
 		ParseOptions: ygen.ParseOpts{
 			IgnoreUnsupportedStatements: viper.GetBool("ignore_unsupported"),
@@ -218,7 +226,7 @@ func generateStructs(modules []string, schemaPath, version string) error {
 				CompressBehaviour:                    cmp,
 				SkipEnumDeduplication:                false,
 				GenerateFakeRoot:                     true,
-				FakeRootName:                         "root",
+				FakeRootName:                         getFakeRootName(),
 				ShortenEnumLeafNames:                 true,
 				EnumOrgPrefixesToTrim:                []string{viper.GetString("trim_module_prefix")},
 				UseDefiningModuleForTypedefEnumNames: viper.GetBool("typedef_enum_with_defmod"),

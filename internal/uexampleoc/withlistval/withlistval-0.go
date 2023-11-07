@@ -73,7 +73,7 @@ func (n *OpenconfigWithlistval_ModelPath) A() *a.OpenconfigWithlistval_Model_APa
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -111,7 +111,7 @@ func (n *OpenconfigWithlistval_ModelPathAny) A() *a.OpenconfigWithlistval_Model_
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -149,7 +149,7 @@ func (n *OpenconfigWithlistval_ModelPath) B() *modelb.OpenconfigWithlistval_Mode
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -187,7 +187,7 @@ func (n *OpenconfigWithlistval_ModelPathAny) B() *modelb.OpenconfigWithlistval_M
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -225,7 +225,7 @@ func (n *OpenconfigWithlistval_ModelPath) C() *OpenconfigWithlistval_Model_CPath
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -263,7 +263,7 @@ func (n *OpenconfigWithlistval_ModelPathAny) C() *OpenconfigWithlistval_Model_CP
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -321,7 +321,7 @@ func (n *OpenconfigWithlistval_Model_CPath) NoKeyAny() *OpenconfigWithlistval_Mo
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -359,7 +359,7 @@ func (n *OpenconfigWithlistval_Model_CPathAny) NoKeyAny() *OpenconfigWithlistval
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -421,7 +421,7 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_FooPath) State() *OpenconfigWithlis
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -459,7 +459,7 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_FooPathAny) State() *OpenconfigWith
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -545,7 +545,7 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath) Key() *OpenconfigWit
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -591,7 +591,7 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny) Key() *Openconfig
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -637,7 +637,7 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath) Value() *OpenconfigW
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -683,7 +683,7 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny) Value() *Openconf
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}

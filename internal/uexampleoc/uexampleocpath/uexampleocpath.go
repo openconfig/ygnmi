@@ -36,14 +36,14 @@ import (
 	"github.com/openconfig/ygot/ytypes"
 )
 
-// RootPath represents the /root YANG schema element.
-type RootPath struct {
+// DevicePath represents the /device YANG schema element.
+type DevicePath struct {
 	*ygnmi.DeviceRootBase
 }
 
 // Root returns a root path object from which YANG paths can be constructed.
-func Root() *RootPath {
-	return &RootPath{ygnmi.NewDeviceRootBase()}
+func Root() *DevicePath {
+	return &DevicePath{ygnmi.NewDeviceRootBase()}
 }
 
 // A (container):
@@ -52,7 +52,7 @@ func Root() *RootPath {
 //	Instantiating module: "openconfig-nested"
 //	Path from parent:     "a"
 //	Path from root:       "/a"
-func (n *RootPath) A() *nested.OpenconfigNested_APath {
+func (n *DevicePath) A() *nested.OpenconfigNested_APath {
 	ps := &nested.OpenconfigNested_APath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"a"},
@@ -72,7 +72,7 @@ func (n *RootPath) A() *nested.OpenconfigNested_APath {
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -90,7 +90,7 @@ func (n *RootPath) A() *nested.OpenconfigNested_APath {
 //	Instantiating module: "openconfig-nested"
 //	Path from parent:     "container"
 //	Path from root:       "/container"
-func (n *RootPath) Container() *nested.OpenconfigNested_ContainerPath {
+func (n *DevicePath) Container() *nested.OpenconfigNested_ContainerPath {
 	ps := &nested.OpenconfigNested_ContainerPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"container"},
@@ -110,7 +110,7 @@ func (n *RootPath) Container() *nested.OpenconfigNested_ContainerPath {
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -128,7 +128,7 @@ func (n *RootPath) Container() *nested.OpenconfigNested_ContainerPath {
 //	Instantiating module: "openconfig-withlistval"
 //	Path from parent:     "model"
 //	Path from root:       "/model"
-func (n *RootPath) Model() *withlistval.OpenconfigWithlistval_ModelPath {
+func (n *DevicePath) Model() *withlistval.OpenconfigWithlistval_ModelPath {
 	ps := &withlistval.OpenconfigWithlistval_ModelPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"model"},
@@ -148,7 +148,7 @@ func (n *RootPath) Model() *withlistval.OpenconfigWithlistval_ModelPath {
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -167,7 +167,7 @@ func (n *RootPath) Model() *withlistval.OpenconfigWithlistval_ModelPath {
 //	Instantiating module: "openconfig-simple"
 //	Path from parent:     "parent"
 //	Path from root:       "/parent"
-func (n *RootPath) Parent() *simple.OpenconfigSimple_ParentPath {
+func (n *DevicePath) Parent() *simple.OpenconfigSimple_ParentPath {
 	ps := &simple.OpenconfigSimple_ParentPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"parent"},
@@ -187,7 +187,7 @@ func (n *RootPath) Parent() *simple.OpenconfigSimple_ParentPath {
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -205,7 +205,7 @@ func (n *RootPath) Parent() *simple.OpenconfigSimple_ParentPath {
 //	Instantiating module: "openconfig-simple"
 //	Path from parent:     "remote-container"
 //	Path from root:       "/remote-container"
-func (n *RootPath) RemoteContainer() *simple.OpenconfigSimple_RemoteContainerPath {
+func (n *DevicePath) RemoteContainer() *simple.OpenconfigSimple_RemoteContainerPath {
 	ps := &simple.OpenconfigSimple_RemoteContainerPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"remote-container"},
@@ -225,7 +225,7 @@ func (n *RootPath) RemoteContainer() *simple.OpenconfigSimple_RemoteContainerPat
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -251,11 +251,11 @@ func (b *Batch) AddPaths(paths ...ygnmi.PathStruct) *Batch {
 
 // Query returns a Query that can be used in gNMI operations.
 // The returned query is immutable, adding paths does not modify existing queries.
-func (b *Batch) Query() ygnmi.SingletonQuery[*oc.Root] {
+func (b *Batch) Query() ygnmi.SingletonQuery[*oc.Device] {
 	queryPaths := make([]ygnmi.PathStruct, len(b.paths))
 	copy(queryPaths, b.paths)
-	return ygnmi.NewSingletonQuery[*oc.Root](
-		"Root",
+	return ygnmi.NewSingletonQuery[*oc.Device](
+		"Device",
 		true,
 		false,
 		false,
@@ -266,7 +266,7 @@ func (b *Batch) Query() ygnmi.SingletonQuery[*oc.Root] {
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
