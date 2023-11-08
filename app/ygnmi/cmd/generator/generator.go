@@ -62,7 +62,7 @@ func New() *cobra.Command {
 	generator.Flags().Bool("ignore_unsupported", false, "If set to true, YANG statements unsupported by ygot are ignored.")
 	generator.Flags().StringSlice("split_package_paths", nil, "Comma-separated YANG schema paths excluding choice/case statements followed by an optional (=packagename) for splitting specified subtrees into its own package. if (=packagename) is not specified, then the schema path will be used to name the package.")
 
-	// TODO(wenovus): Delete these hidden flags
+	// TODO(wenovus): Delete these hidden flags before or on v1 release.
 	generator.Flags().Bool("typedef_enum_with_defmod", true, "If set to true, all typedefs of type enumeration or identity will be prefixed with the name of its module of definition instead of its residing module.")
 	generator.Flags().Bool("generate_atomic", true, "If set to true, then any descendants of a non-compressed-out list or container that is marked \"telemetry-atomic\" are not generated.")
 	generator.Flags().Bool("generate_atomic_lists", true, "If set to true, then 1) all compressed lists will have a new accessor <ListName>Map() that retrieves the whole list; 2) any child underneath atomic lists are no longer reachable; 3) ordered map structures satisfying the interface ygot.GoOrderedMap will be generated for `ordered-by user` lists instead of Go built-in maps.")
