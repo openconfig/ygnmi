@@ -62,6 +62,9 @@ func New() *cobra.Command {
 	generator.Flags().Bool("ignore_unsupported", false, "If set to true, YANG statements unsupported by ygot are ignored.")
 	generator.Flags().StringSlice("split_package_paths", nil, "Comma-separated YANG schema paths excluding choice/case statements followed by an optional (=packagename) for splitting specified subtrees into its own package. if (=packagename) is not specified, then the schema path will be used to name the package.")
 	generator.Flags().Bool("fakeroot_name_is_device", false, "Make the name of the ygot-generated fake root entity \"device\" (ygot's default) instead of \"root\".")
+	generator.Flags().Bool("shorten_enum_leaf_names", true, "If also set to true when compress_paths=true, all leaves of type enumeration will by default not be prefixed with the name of its residing module.")
+	generator.Flags().Bool("annotations", false, "If set to true, metadata annotations are added within the ygot-generated structs.")
+	generator.Flags().Bool("generate_rename", false, "If set to true, rename methods are generated for lists within the ygot-generated structs.")
 
 	// TODO(wenovus): Delete these hidden flags before or on v1 release.
 	generator.Flags().Bool("typedef_enum_with_defmod", true, "If set to true, all typedefs of type enumeration or identity will be prefixed with the name of its module of definition instead of its residing module.")
@@ -141,7 +144,7 @@ func generate(cmd *cobra.Command, args []string) error {
 		},
 		CompressBehaviour:                    compressBehaviour,
 		SkipEnumDeduplication:                false,
-		ShortenEnumLeafNames:                 true,
+		ShortenEnumLeafNames:                 viper.GetBool("shorten_enum_leaf_names"),
 		EnumOrgPrefixesToTrim:                []string{viper.GetString("trim_module_prefix")},
 		UseDefiningModuleForTypedefEnumNames: viper.GetBool("typedef_enum_with_defmod"),
 		AppendEnumSuffixForSimpleUnionEnums:  true,
@@ -227,7 +230,7 @@ func generateStructs(modules []string, schemaPath, version string) error {
 				SkipEnumDeduplication:                false,
 				GenerateFakeRoot:                     true,
 				FakeRootName:                         getFakeRootName(),
-				ShortenEnumLeafNames:                 true,
+				ShortenEnumLeafNames:                 viper.GetBool("shorten_enum_leaf_names"),
 				EnumOrgPrefixesToTrim:                []string{viper.GetString("trim_module_prefix")},
 				UseDefiningModuleForTypedefEnumNames: viper.GetBool("typedef_enum_with_defmod"),
 				EnumerationsUseUnderscores:           true,
@@ -241,8 +244,8 @@ func generateStructs(modules []string, schemaPath, version string) error {
 			YgotImportPath:                      viper.GetString("ygot_path"),
 			YtypesImportPath:                    viper.GetString("ytypes_path"),
 			GoyangImportPath:                    viper.GetString("goyang_path"),
-			GenerateRenameMethod:                false,
-			AddAnnotationFields:                 false,
+			GenerateRenameMethod:                viper.GetBool("generate_rename"),
+			AddAnnotationFields:                 viper.GetBool("annotations"),
 			AnnotationPrefix:                    "Λ",
 			AddYangPresence:                     false,
 			GenerateGetters:                     true,
