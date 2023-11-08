@@ -404,7 +404,7 @@ func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, op setO
 		// as far as the JSON is concerned.
 		modifyTypedValueFn = func(tv *gpb.TypedValue) error { return wrapJSONIETF(tv, q.compressInfo().PostRelPath) }
 	}
-	if err := populateSetRequest(req, path, setVal, op, !q.IsState(), modifyTypedValueFn, opts...); err != nil {
+	if err := populateSetRequest(req, path, setVal, op, q.IsShadowPath(), modifyTypedValueFn, opts...); err != nil {
 		return nil, nil, err
 	}
 

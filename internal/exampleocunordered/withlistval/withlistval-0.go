@@ -254,6 +254,7 @@ func (n *ModelPath) State() ygnmi.SingletonQuery[*oc.Model] {
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -278,6 +279,7 @@ func (n *ModelPathAny) State() ygnmi.WildcardQuery[*oc.Model] {
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -300,6 +302,7 @@ func (n *ModelPath) Config() ygnmi.ConfigQuery[*oc.Model] {
 	return ygnmi.NewConfigQuery[*oc.Model](
 		"Model",
 		false,
+		true,
 		false,
 		false,
 		true,
@@ -324,6 +327,7 @@ func (n *ModelPathAny) Config() ygnmi.WildcardQuery[*oc.Model] {
 	return ygnmi.NewWildcardQuery[*oc.Model](
 		"Model",
 		false,
+		true,
 		false,
 		false,
 		true,
@@ -365,6 +369,7 @@ func (n *Model_MultiKey_Key1Path) State() ygnmi.SingletonQuery[uint32] {
 	return ygnmi.NewSingletonQuery[uint32](
 		"Model_MultiKey",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -405,6 +410,7 @@ func (n *Model_MultiKey_Key1PathAny) State() ygnmi.WildcardQuery[uint32] {
 	return ygnmi.NewWildcardQuery[uint32](
 		"Model_MultiKey",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -448,6 +454,7 @@ func (n *Model_MultiKey_Key1Path) Config() ygnmi.ConfigQuery[uint32] {
 		true,
 		true,
 		true,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"config", "key1"},
@@ -485,6 +492,7 @@ func (n *Model_MultiKey_Key1PathAny) Config() ygnmi.WildcardQuery[uint32] {
 	return ygnmi.NewWildcardQuery[uint32](
 		"Model_MultiKey",
 		false,
+		true,
 		true,
 		true,
 		true,
@@ -537,6 +545,7 @@ func (n *Model_MultiKey_Key2Path) State() ygnmi.SingletonQuery[uint64] {
 	return ygnmi.NewSingletonQuery[uint64](
 		"Model_MultiKey",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -577,6 +586,7 @@ func (n *Model_MultiKey_Key2PathAny) State() ygnmi.WildcardQuery[uint64] {
 	return ygnmi.NewWildcardQuery[uint64](
 		"Model_MultiKey",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -620,6 +630,7 @@ func (n *Model_MultiKey_Key2Path) Config() ygnmi.ConfigQuery[uint64] {
 		true,
 		true,
 		true,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"config", "key2"},
@@ -657,6 +668,7 @@ func (n *Model_MultiKey_Key2PathAny) Config() ygnmi.WildcardQuery[uint64] {
 	return ygnmi.NewWildcardQuery[uint64](
 		"Model_MultiKey",
 		false,
+		true,
 		true,
 		true,
 		true,
@@ -786,6 +798,7 @@ func (n *Model_MultiKeyPath) State() ygnmi.SingletonQuery[*oc.Model_MultiKey] {
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -810,6 +823,7 @@ func (n *Model_MultiKeyPathAny) State() ygnmi.WildcardQuery[*oc.Model_MultiKey] 
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -832,6 +846,7 @@ func (n *Model_MultiKeyPath) Config() ygnmi.ConfigQuery[*oc.Model_MultiKey] {
 	return ygnmi.NewConfigQuery[*oc.Model_MultiKey](
 		"Model_MultiKey",
 		false,
+		true,
 		false,
 		false,
 		true,
@@ -856,6 +871,7 @@ func (n *Model_MultiKeyPathAny) Config() ygnmi.WildcardQuery[*oc.Model_MultiKey]
 	return ygnmi.NewWildcardQuery[*oc.Model_MultiKey](
 		"Model_MultiKey",
 		false,
+		true,
 		false,
 		false,
 		true,
@@ -892,6 +908,7 @@ func (n *Model_NoKeyPath) State() ygnmi.SingletonQuery[*oc.Model_NoKey] {
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -914,6 +931,7 @@ func (n *Model_NoKeyPathAny) State() ygnmi.WildcardQuery[*oc.Model_NoKey] {
 	return ygnmi.NewWildcardQuery[*oc.Model_NoKey](
 		"Model_NoKey",
 		true,
+		false,
 		false,
 		false,
 		true,
@@ -955,6 +973,7 @@ func (n *Model_NoKey_Foo_KeyPath) State() ygnmi.SingletonQuery[string] {
 	return ygnmi.NewSingletonQuery[string](
 		"Model_NoKey_Foo",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -995,6 +1014,7 @@ func (n *Model_NoKey_Foo_KeyPathAny) State() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"Model_NoKey_Foo",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -1047,6 +1067,7 @@ func (n *Model_NoKey_Foo_ValuePath) State() ygnmi.SingletonQuery[int64] {
 	return ygnmi.NewSingletonQuery[int64](
 		"Model_NoKey_Foo",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -1087,6 +1108,7 @@ func (n *Model_NoKey_Foo_ValuePathAny) State() ygnmi.WildcardQuery[int64] {
 	return ygnmi.NewWildcardQuery[int64](
 		"Model_NoKey_Foo",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -1206,6 +1228,7 @@ func (n *Model_NoKey_FooPath) State() ygnmi.SingletonQuery[*oc.Model_NoKey_Foo] 
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -1228,6 +1251,7 @@ func (n *Model_NoKey_FooPathAny) State() ygnmi.WildcardQuery[*oc.Model_NoKey_Foo
 	return ygnmi.NewWildcardQuery[*oc.Model_NoKey_Foo](
 		"Model_NoKey_Foo",
 		true,
+		false,
 		false,
 		false,
 		true,
@@ -1269,6 +1293,7 @@ func (n *Model_SingleKey_CounterPath) State() ygnmi.SingletonQuery[float32] {
 	return ygnmi.NewSingletonQuery[float32](
 		"Model_SingleKey",
 		true,
+		false,
 		true,
 		false,
 		true,
@@ -1305,6 +1330,7 @@ func (n *Model_SingleKey_CounterPathAny) State() ygnmi.WildcardQuery[float32] {
 	return ygnmi.NewWildcardQuery[float32](
 		"Model_SingleKey",
 		true,
+		false,
 		true,
 		false,
 		true,
@@ -1353,6 +1379,7 @@ func (n *Model_SingleKey_CountersPath) State() ygnmi.SingletonQuery[[]float32] {
 	return ygnmi.NewSingletonQuery[[]float32](
 		"Model_SingleKey",
 		true,
+		false,
 		true,
 		false,
 		true,
@@ -1389,6 +1416,7 @@ func (n *Model_SingleKey_CountersPathAny) State() ygnmi.WildcardQuery[[]float32]
 	return ygnmi.NewWildcardQuery[[]float32](
 		"Model_SingleKey",
 		true,
+		false,
 		true,
 		false,
 		true,
@@ -1437,6 +1465,7 @@ func (n *Model_SingleKey_KeyPath) State() ygnmi.SingletonQuery[string] {
 	return ygnmi.NewSingletonQuery[string](
 		"Model_SingleKey",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -1477,6 +1506,7 @@ func (n *Model_SingleKey_KeyPathAny) State() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"Model_SingleKey",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -1520,6 +1550,7 @@ func (n *Model_SingleKey_KeyPath) Config() ygnmi.ConfigQuery[string] {
 		true,
 		true,
 		true,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"config", "key"},
@@ -1557,6 +1588,7 @@ func (n *Model_SingleKey_KeyPathAny) Config() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"Model_SingleKey",
 		false,
+		true,
 		true,
 		true,
 		true,
@@ -1609,6 +1641,7 @@ func (n *Model_SingleKey_ValuePath) State() ygnmi.SingletonQuery[int64] {
 	return ygnmi.NewSingletonQuery[int64](
 		"Model_SingleKey",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -1649,6 +1682,7 @@ func (n *Model_SingleKey_ValuePathAny) State() ygnmi.WildcardQuery[int64] {
 	return ygnmi.NewWildcardQuery[int64](
 		"Model_SingleKey",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -1692,6 +1726,7 @@ func (n *Model_SingleKey_ValuePath) Config() ygnmi.ConfigQuery[int64] {
 		true,
 		true,
 		true,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"config", "value"},
@@ -1729,6 +1764,7 @@ func (n *Model_SingleKey_ValuePathAny) Config() ygnmi.WildcardQuery[int64] {
 	return ygnmi.NewWildcardQuery[int64](
 		"Model_SingleKey",
 		false,
+		true,
 		true,
 		true,
 		true,
@@ -2074,6 +2110,7 @@ func (n *Model_SingleKeyPath) State() ygnmi.SingletonQuery[*oc.Model_SingleKey] 
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -2098,6 +2135,7 @@ func (n *Model_SingleKeyPathAny) State() ygnmi.WildcardQuery[*oc.Model_SingleKey
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -2120,6 +2158,7 @@ func (n *Model_SingleKeyPath) Config() ygnmi.ConfigQuery[*oc.Model_SingleKey] {
 	return ygnmi.NewConfigQuery[*oc.Model_SingleKey](
 		"Model_SingleKey",
 		false,
+		true,
 		false,
 		false,
 		true,
@@ -2144,6 +2183,7 @@ func (n *Model_SingleKeyPathAny) Config() ygnmi.WildcardQuery[*oc.Model_SingleKe
 	return ygnmi.NewWildcardQuery[*oc.Model_SingleKey](
 		"Model_SingleKey",
 		false,
+		true,
 		false,
 		false,
 		true,
@@ -2185,6 +2225,7 @@ func (n *Model_SingleKey_OrderedList_KeyPath) State() ygnmi.SingletonQuery[strin
 	return ygnmi.NewSingletonQuery[string](
 		"Model_SingleKey_OrderedList",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -2225,6 +2266,7 @@ func (n *Model_SingleKey_OrderedList_KeyPathAny) State() ygnmi.WildcardQuery[str
 	return ygnmi.NewWildcardQuery[string](
 		"Model_SingleKey_OrderedList",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -2268,6 +2310,7 @@ func (n *Model_SingleKey_OrderedList_KeyPath) Config() ygnmi.ConfigQuery[string]
 		true,
 		true,
 		true,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"config", "key"},
@@ -2305,6 +2348,7 @@ func (n *Model_SingleKey_OrderedList_KeyPathAny) Config() ygnmi.WildcardQuery[st
 	return ygnmi.NewWildcardQuery[string](
 		"Model_SingleKey_OrderedList",
 		false,
+		true,
 		true,
 		true,
 		true,
@@ -2357,6 +2401,7 @@ func (n *Model_SingleKey_OrderedList_ValuePath) State() ygnmi.SingletonQuery[int
 	return ygnmi.NewSingletonQuery[int64](
 		"Model_SingleKey_OrderedList",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -2397,6 +2442,7 @@ func (n *Model_SingleKey_OrderedList_ValuePathAny) State() ygnmi.WildcardQuery[i
 	return ygnmi.NewWildcardQuery[int64](
 		"Model_SingleKey_OrderedList",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -2440,6 +2486,7 @@ func (n *Model_SingleKey_OrderedList_ValuePath) Config() ygnmi.ConfigQuery[int64
 		true,
 		true,
 		true,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"config", "value"},
@@ -2477,6 +2524,7 @@ func (n *Model_SingleKey_OrderedList_ValuePathAny) Config() ygnmi.WildcardQuery[
 	return ygnmi.NewWildcardQuery[int64](
 		"Model_SingleKey_OrderedList",
 		false,
+		true,
 		true,
 		true,
 		true,
@@ -2606,6 +2654,7 @@ func (n *Model_SingleKey_OrderedListPath) State() ygnmi.SingletonQuery[*oc.Model
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -2630,6 +2679,7 @@ func (n *Model_SingleKey_OrderedListPathAny) State() ygnmi.WildcardQuery[*oc.Mod
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -2652,6 +2702,7 @@ func (n *Model_SingleKey_OrderedListPath) Config() ygnmi.ConfigQuery[*oc.Model_S
 	return ygnmi.NewConfigQuery[*oc.Model_SingleKey_OrderedList](
 		"Model_SingleKey_OrderedList",
 		false,
+		true,
 		false,
 		false,
 		true,
@@ -2676,6 +2727,7 @@ func (n *Model_SingleKey_OrderedListPathAny) Config() ygnmi.WildcardQuery[*oc.Mo
 	return ygnmi.NewWildcardQuery[*oc.Model_SingleKey_OrderedList](
 		"Model_SingleKey_OrderedList",
 		false,
+		true,
 		false,
 		false,
 		true,
@@ -2717,6 +2769,7 @@ func (n *Model_SingleKey_SingleKey_KeyPath) State() ygnmi.SingletonQuery[string]
 	return ygnmi.NewSingletonQuery[string](
 		"Model_SingleKey_SingleKey",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -2757,6 +2810,7 @@ func (n *Model_SingleKey_SingleKey_KeyPathAny) State() ygnmi.WildcardQuery[strin
 	return ygnmi.NewWildcardQuery[string](
 		"Model_SingleKey_SingleKey",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -2800,6 +2854,7 @@ func (n *Model_SingleKey_SingleKey_KeyPath) Config() ygnmi.ConfigQuery[string] {
 		true,
 		true,
 		true,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"config", "key"},
@@ -2837,6 +2892,7 @@ func (n *Model_SingleKey_SingleKey_KeyPathAny) Config() ygnmi.WildcardQuery[stri
 	return ygnmi.NewWildcardQuery[string](
 		"Model_SingleKey_SingleKey",
 		false,
+		true,
 		true,
 		true,
 		true,
@@ -2889,6 +2945,7 @@ func (n *Model_SingleKey_SingleKey_ValuePath) State() ygnmi.SingletonQuery[int64
 	return ygnmi.NewSingletonQuery[int64](
 		"Model_SingleKey_SingleKey",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -2929,6 +2986,7 @@ func (n *Model_SingleKey_SingleKey_ValuePathAny) State() ygnmi.WildcardQuery[int
 	return ygnmi.NewWildcardQuery[int64](
 		"Model_SingleKey_SingleKey",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -2972,6 +3030,7 @@ func (n *Model_SingleKey_SingleKey_ValuePath) Config() ygnmi.ConfigQuery[int64] 
 		true,
 		true,
 		true,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"config", "value"},
@@ -3009,6 +3068,7 @@ func (n *Model_SingleKey_SingleKey_ValuePathAny) Config() ygnmi.WildcardQuery[in
 	return ygnmi.NewWildcardQuery[int64](
 		"Model_SingleKey_SingleKey",
 		false,
+		true,
 		true,
 		true,
 		true,
@@ -3138,6 +3198,7 @@ func (n *Model_SingleKey_SingleKeyPath) State() ygnmi.SingletonQuery[*oc.Model_S
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -3162,6 +3223,7 @@ func (n *Model_SingleKey_SingleKeyPathAny) State() ygnmi.WildcardQuery[*oc.Model
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -3184,6 +3246,7 @@ func (n *Model_SingleKey_SingleKeyPath) Config() ygnmi.ConfigQuery[*oc.Model_Sin
 	return ygnmi.NewConfigQuery[*oc.Model_SingleKey_SingleKey](
 		"Model_SingleKey_SingleKey",
 		false,
+		true,
 		false,
 		false,
 		true,
@@ -3208,6 +3271,7 @@ func (n *Model_SingleKey_SingleKeyPathAny) Config() ygnmi.WildcardQuery[*oc.Mode
 	return ygnmi.NewWildcardQuery[*oc.Model_SingleKey_SingleKey](
 		"Model_SingleKey_SingleKey",
 		false,
+		true,
 		false,
 		false,
 		true,

@@ -67,6 +67,7 @@ func (n *DevicePath) A() *nested.OpenconfigNested_APath {
 		false,
 		false,
 		false,
+		false,
 		ps,
 		nil,
 		nil,
@@ -105,6 +106,7 @@ func (n *DevicePath) Container() *nested.OpenconfigNested_ContainerPath {
 		false,
 		false,
 		false,
+		false,
 		ps,
 		nil,
 		nil,
@@ -139,6 +141,7 @@ func (n *DevicePath) Model() *withlistval.OpenconfigWithlistval_ModelPath {
 	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigWithlistval_Model](
 		"OpenconfigWithlistval_Model",
 		true,
+		false,
 		false,
 		false,
 		false,
@@ -182,6 +185,7 @@ func (n *DevicePath) Parent() *simple.OpenconfigSimple_ParentPath {
 		false,
 		false,
 		false,
+		false,
 		ps,
 		nil,
 		nil,
@@ -216,6 +220,7 @@ func (n *DevicePath) RemoteContainer() *simple.OpenconfigSimple_RemoteContainerP
 	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigSimple_RemoteContainer](
 		"OpenconfigSimple_RemoteContainer",
 		true,
+		false,
 		false,
 		false,
 		false,
@@ -257,6 +262,7 @@ func (b *Batch) Query() ygnmi.SingletonQuery[*oc.Device] {
 	return ygnmi.NewSingletonQuery[*oc.Device](
 		"Device",
 		true,
+		false,
 		false,
 		false,
 		true,

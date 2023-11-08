@@ -20,6 +20,7 @@ import (
 	"text/template"
 
 	"github.com/openconfig/ygnmi/ygnmi"
+	"github.com/openconfig/ygot/genutil"
 	"github.com/openconfig/ygot/ygen"
 )
 
@@ -33,6 +34,7 @@ type gnmiStruct struct {
 	SchemaStructPkgAccessor string
 	RelPathList             string
 	IsState                 bool
+	IsShadowPath            bool
 	MethodName              string
 	IsScalar                bool
 	GenerateWildcard        bool
@@ -67,10 +69,10 @@ var packagesSeen = map[string]bool{}
 //
 // Note: GNMIGenerator requires that PreferOperationalState be true when generating PathStructs.
 // TODO(DanG100): pass schema from parent to child.
-func GNMIGenerator(pathStructName, fakeRootName string, dir *ygen.ParsedDirectory, node *NodeData, _ bool) (string, error) {
-	tmplStruct := defaultTmplStruct(pathStructName, fakeRootName, node)
+func GNMIGenerator(pathStructName, fakeRootName string, compressBehaviour genutil.CompressBehaviour, dir *ygen.ParsedDirectory, node *NodeData, _ bool) (string, error) {
+	tmplStruct := defaultStateTmplStruct(pathStructName, fakeRootName, compressBehaviour, node)
 	var b strings.Builder
-	if err := generateOneOff(&b, fakeRootName, node, tmplStruct, true); err != nil {
+	if err := generateOneOff(&b, fakeRootName, compressBehaviour, node, tmplStruct, true); err != nil {
 		return "", err
 	}
 	if err := modifyQueryType(node, &tmplStruct); err != nil {
@@ -82,9 +84,9 @@ func GNMIGenerator(pathStructName, fakeRootName string, dir *ygen.ParsedDirector
 		tmpl = goGNMILeafTemplate
 	}
 
-	generate := func(tmplStruct gnmiStruct, shadow bool) error {
+	generate := func(tmplStruct gnmiStruct, config bool) error {
 		if node.IsLeaf {
-			if err := populateTmplForLeaf(dir, node.YANGFieldName, shadow, &tmplStruct); err != nil {
+			if err := populateTmplForLeaf(dir, node.YANGFieldName, compressBehaviour, config, &tmplStruct); err != nil {
 				return err
 			}
 		}
@@ -102,6 +104,7 @@ func GNMIGenerator(pathStructName, fakeRootName string, dir *ygen.ParsedDirector
 	tmplStruct.MethodName = "Config"
 	tmplStruct.SingletonTypeName = configQueryTypeName
 	tmplStruct.IsState = false
+	tmplStruct.IsShadowPath = compressBehaviour == genutil.PreferOperationalState
 	if err := generate(tmplStruct, true); err != nil {
 		return "", err
 	}
@@ -111,15 +114,15 @@ func GNMIGenerator(pathStructName, fakeRootName string, dir *ygen.ParsedDirector
 
 // GNMIGeneratorUncompressed is a plugin generator for generating ygnmi query objects for
 // uncompressed structs.
-func GNMIGeneratorUncompressed(pathStructName, fakeRootName string, dir *ygen.ParsedDirectory, node *NodeData, _ bool) (string, error) {
+func GNMIGeneratorUncompressed(pathStructName, fakeRootName string, compressBehaviour genutil.CompressBehaviour, dir *ygen.ParsedDirectory, node *NodeData, _ bool) (string, error) {
 	var b strings.Builder
-	if err := generateOneOff(&b, fakeRootName, node, defaultTmplStruct(pathStructName, fakeRootName, node), false); err != nil {
+	if err := generateOneOff(&b, fakeRootName, compressBehaviour, node, defaultStateTmplStruct(pathStructName, fakeRootName, compressBehaviour, node), false); err != nil {
 		return "", err
 	}
 	return b.String(), nil
 }
 
-func defaultTmplStruct(pathStructName, fakeRootName string, node *NodeData) gnmiStruct {
+func defaultStateTmplStruct(pathStructName, fakeRootName string, compressBehaviour genutil.CompressBehaviour, node *NodeData) gnmiStruct {
 	return gnmiStruct{
 		PathStructName:          pathStructName,
 		GoTypeName:              node.GoTypeName,
@@ -128,6 +131,7 @@ func defaultTmplStruct(pathStructName, fakeRootName string, node *NodeData) gnmi
 		GoFieldName:             node.GoFieldName,
 		SchemaStructPkgAccessor: "oc.",
 		IsState:                 true,
+		IsShadowPath:            compressBehaviour == genutil.PreferIntendedConfig,
 		IsCompressedSchema:      true,
 		MethodName:              "State",
 		SingletonTypeName:       singletonQueryTypeName,
@@ -142,13 +146,14 @@ func defaultTmplStruct(pathStructName, fakeRootName string, node *NodeData) gnmi
 }
 
 // generateOneOff generates one-off free-form generated code.
-func generateOneOff(b *strings.Builder, fakeRootName string, node *NodeData, tmplStruct gnmiStruct, compressPaths bool) error {
+func generateOneOff(b *strings.Builder, fakeRootName string, compressBehaviour genutil.CompressBehaviour, node *NodeData, tmplStruct gnmiStruct, compressPaths bool) error {
 	if strings.TrimLeft(node.LocalGoTypeName, "*") == fakeRootName {
 		tmplStruct.MethodName = "Query"
 		if compressPaths {
 			tmplStruct.MethodName = "State"
 		}
 		tmplStruct.IsState = true
+		tmplStruct.IsShadowPath = compressBehaviour == genutil.PreferIntendedConfig
 		if err := batchStructTemplate.Execute(b, &tmplStruct); err != nil {
 			return err
 		}
@@ -158,6 +163,7 @@ func generateOneOff(b *strings.Builder, fakeRootName string, node *NodeData, tmp
 		if compressPaths {
 			tmplStruct.MethodName = "Config"
 			tmplStruct.IsState = false
+			tmplStruct.IsShadowPath = compressBehaviour == genutil.PreferOperationalState
 			if err := batchTemplate.Execute(b, &tmplStruct); err != nil {
 				return err
 			}
@@ -196,7 +202,7 @@ func modifyQueryType(node *NodeData, s *gnmiStruct) error {
 //
 // This is meant to be used for uncompressed generation, where there is no need
 // to distinguish between config and state queries.
-func GNMIFieldGenerator(pathStructName, _ string, _ *ygen.ParsedDirectory, node *NodeData, wildcard bool) (string, error) {
+func GNMIFieldGenerator(pathStructName, _ string, compressBehaviour genutil.CompressBehaviour, _ *ygen.ParsedDirectory, node *NodeData, wildcard bool) (string, error) {
 	tmplStruct := gnmiStruct{
 		GoTypeName: node.GoTypeName,
 	}
@@ -222,8 +228,8 @@ func GNMIFieldGenerator(pathStructName, _ string, _ *ygen.ParsedDirectory, node 
 //
 // This is meant to be used for uncompressed generation, where there is no need
 // to distinguish between config and state queries.
-func GNMIInitGenerator(pathStructName, fakeRootName string, _ *ygen.ParsedDirectory, node *NodeData, wildcard bool) (string, error) {
-	tmplStruct := defaultTmplStruct(pathStructName, fakeRootName, node)
+func GNMIInitGenerator(pathStructName, fakeRootName string, compressBehaviour genutil.CompressBehaviour, _ *ygen.ParsedDirectory, node *NodeData, wildcard bool) (string, error) {
+	tmplStruct := defaultStateTmplStruct(pathStructName, fakeRootName, compressBehaviour, node)
 	tmplStruct.IsCompressedSchema = false
 	if err := modifyQueryType(node, &tmplStruct); err != nil {
 		return "", err
@@ -260,22 +266,31 @@ func GNMIInitGenerator(pathStructName, fakeRootName string, _ *ygen.ParsedDirect
 	return fmt.Sprintf("\n\tps.%s = %s", queryTypeName, b.String()), nil
 }
 
+func getMappedStateAndConfigInfo(field *ygen.NodeDetails, compressBehaviour genutil.CompressBehaviour) (bool, [][]string, [][]string, [][]string, [][]string) {
+	if compressBehaviour == genutil.PreferIntendedConfig && len(field.ShadowMappedPaths) > 0 {
+		return true, field.ShadowMappedPaths, field.ShadowMappedPathModules, field.MappedPaths, field.MappedPathModules
+	} else {
+		return false, field.MappedPaths, field.MappedPathModules, field.ShadowMappedPaths, field.ShadowMappedPathModules
+	}
+}
+
 // populateTmplForLeaf adds leaf specific fields to the gnmiStruct template.
-func populateTmplForLeaf(dir *ygen.ParsedDirectory, fieldName string, shadow bool, tmplStruct *gnmiStruct) error {
+func populateTmplForLeaf(dir *ygen.ParsedDirectory, fieldName string, compressBehaviour genutil.CompressBehaviour, config bool, tmplStruct *gnmiStruct) error {
 	field, ok := dir.Fields[fieldName]
 	if !ok {
 		return fmt.Errorf("field %q does not exist in directory %s", fieldName, dir.Path)
 	}
 	// The longest path is the non-key path. This is the one we want to use
 	// since the key is "compressed out".
-	relPath := longestPath(field.MappedPaths)
-	if shadow {
-		relPath = longestPath(field.ShadowMappedPaths)
+	preferConfig, mappedStatePaths, _, mappedConfigPaths, _ := getMappedStateAndConfigInfo(field, compressBehaviour)
+	relPath := longestPath(mappedStatePaths)
+	if config {
+		relPath = longestPath(mappedConfigPaths)
 	}
 
 	tmplStruct.RelPathList = `"` + strings.Join(relPath, `", "`) + `"`
 	tmplStruct.AbsPath = field.YANGDetails.SchemaPath
-	if shadow {
+	if config != preferConfig {
 		tmplStruct.AbsPath = field.YANGDetails.ShadowSchemaPath
 	}
 	tmplStruct.RelPath = strings.Join(relPath, `/`)
@@ -285,13 +300,12 @@ func populateTmplForLeaf(dir *ygen.ParsedDirectory, fieldName string, shadow boo
 }
 
 // generateConfigFunc determines if a node should have a .Config() method.
-// For leaves, it checks if the directory has a shadow-path field.
+// For leaves, it checks if the directory has a config-path field.
 // For non-leaves, it checks if the directory or any of its descendants are config nodes.
 func generateConfigFunc(dir *ygen.ParsedDirectory, node *NodeData) bool {
 	if node.IsLeaf {
-		// Since we're generating with PreferOperationalState, we need
-		// to check shadow-fields to know whether this has a config
-		// sibling.
+		// Regardless of the compression mode, existence of shadow
+		// paths means that there is a config sibling for this leaf.
 		field, ok := dir.Fields[node.YANGFieldName]
 		return ok && len(field.ShadowMappedPaths) > 0
 	}
@@ -313,6 +327,7 @@ var (
 ygnmi.New{{ .SingletonTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
+		{{ .IsShadowPath }},
 		true,
 		{{ .IsScalar }},
 		{{ .IsCompressedSchema }},
@@ -358,6 +373,7 @@ ygnmi.New{{ .SingletonTypeName }}[{{ .GoTypeName }}](
 ygnmi.New{{ .WildcardTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
+		{{ .IsShadowPath }},
 		true,
 		{{ .IsScalar }},
 		{{ .IsCompressedSchema }},
@@ -427,6 +443,7 @@ func (n *{{ .PathStructName }}{{ .WildcardSuffix }}) {{ .MethodName }}() ygnmi.{
 ygnmi.New{{ .SingletonTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
+		{{ .IsShadowPath }},
 		false,
 		false,
 		{{ .IsCompressedSchema }},
@@ -468,6 +485,7 @@ ygnmi.New{{ .SingletonTypeName }}[{{ .GoTypeName }}](
 ygnmi.New{{ .WildcardTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
+		{{ .IsShadowPath }},
 		false,
 		false,
 		{{ .IsCompressedSchema }},
@@ -544,6 +562,7 @@ func (b *Batch) {{ .MethodName }}() ygnmi.{{ .SingletonTypeName }}[{{ .GoTypeNam
 	return ygnmi.New{{ .SingletonTypeName }}[{{ .GoTypeName }}](
 		"{{ .GoStructTypeName }}",
 		{{ .IsState }},
+		{{ .IsShadowPath }},
 		false,
 		false,
 		{{ .IsCompressedSchema }},

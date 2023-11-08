@@ -21,7 +21,6 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/openconfig/gnmi/errdiff"
-	gpb "github.com/openconfig/gnmi/proto/gnmi"
 	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygnmi/internal/uexampleoc"
 	"github.com/openconfig/ygnmi/internal/uexampleoc/uexampleocpath"
@@ -29,6 +28,8 @@ import (
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/ygot"
 	"google.golang.org/protobuf/testing/protocmp"
+
+	gpb "github.com/openconfig/gnmi/proto/gnmi"
 )
 
 func getSampleSingleKeyedMapUncompressed(t *testing.T) map[string]*uexampleoc.OpenconfigWithlistval_Model_A_SingleKey {

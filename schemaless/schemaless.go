@@ -41,6 +41,7 @@ func NewConfig[T any](path, origin string) (ygnmi.ConfigQuery[T], error) {
 
 	return ygnmi.NewConfigQuery("",
 			false,
+			false,
 			true,
 			scalar,
 			false,
@@ -66,6 +67,7 @@ func NewWildcard[T any](path, origin string) (ygnmi.WildcardQuery[T], error) {
 	}
 
 	return ygnmi.NewWildcardQuery("",
+			false,
 			false,
 			true,
 			scalar,
