@@ -2133,6 +2133,25 @@ func (t *OpenconfigWithlistval_Model_A) NewSingleKey(Key string) (*OpenconfigWit
 	return t.SingleKey[key], nil
 }
 
+// RenameSingleKey renames an entry in the list SingleKey within
+// the OpenconfigWithlistval_Model_A struct. The entry with key oldK is renamed to newK updating
+// the key within the value.
+func (t *OpenconfigWithlistval_Model_A) RenameSingleKey(oldK, newK string) error {
+	if _, ok := t.SingleKey[newK]; ok {
+		return fmt.Errorf("key %v already exists in SingleKey", newK)
+	}
+
+	e, ok := t.SingleKey[oldK]
+	if !ok {
+		return fmt.Errorf("key %v not found in SingleKey", oldK)
+	}
+	e.Key = &newK
+
+	t.SingleKey[newK] = e
+	delete(t.SingleKey, oldK)
+	return nil
+}
+
 // GetOrCreateSingleKey retrieves the value with the specified keys from
 // the receiver OpenconfigWithlistval_Model_A. If the entry does not exist, then it is created.
 // It returns the existing or new list member.
@@ -2531,6 +2550,25 @@ func (t *OpenconfigWithlistval_Model_A_SingleKey_InnerA) NewSingleKey(Key string
 	}
 
 	return t.SingleKey[key], nil
+}
+
+// RenameSingleKey renames an entry in the list SingleKey within
+// the OpenconfigWithlistval_Model_A_SingleKey_InnerA struct. The entry with key oldK is renamed to newK updating
+// the key within the value.
+func (t *OpenconfigWithlistval_Model_A_SingleKey_InnerA) RenameSingleKey(oldK, newK string) error {
+	if _, ok := t.SingleKey[newK]; ok {
+		return fmt.Errorf("key %v already exists in SingleKey", newK)
+	}
+
+	e, ok := t.SingleKey[oldK]
+	if !ok {
+		return fmt.Errorf("key %v not found in SingleKey", oldK)
+	}
+	e.Key = &newK
+
+	t.SingleKey[newK] = e
+	delete(t.SingleKey, oldK)
+	return nil
 }
 
 // GetOrCreateSingleKey retrieves the value with the specified keys from
@@ -3651,6 +3689,26 @@ func (t *OpenconfigWithlistval_Model_B) NewMultiKey(Key1 uint32, Key2 uint64) (*
 	}
 
 	return t.MultiKey[key], nil
+}
+
+// RenameMultiKey renames an entry in the list MultiKey within
+// the OpenconfigWithlistval_Model_B struct. The entry with key oldK is renamed to newK updating
+// the key within the value.
+func (t *OpenconfigWithlistval_Model_B) RenameMultiKey(oldK, newK OpenconfigWithlistval_Model_B_MultiKey_Key) error {
+	if _, ok := t.MultiKey[newK]; ok {
+		return fmt.Errorf("key %v already exists in MultiKey", newK)
+	}
+
+	e, ok := t.MultiKey[oldK]
+	if !ok {
+		return fmt.Errorf("key %v not found in MultiKey", oldK)
+	}
+	e.Key1 = &newK.Key1
+	e.Key2 = &newK.Key2
+
+	t.MultiKey[newK] = e
+	delete(t.MultiKey, oldK)
+	return nil
 }
 
 // GetOrCreateMultiKey retrieves the value with the specified keys from

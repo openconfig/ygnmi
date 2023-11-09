@@ -21,6 +21,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/openconfig/goyang/pkg/yang"
@@ -61,10 +62,9 @@ func New() *cobra.Command {
 	generator.Flags().Bool("ignore_deviate_notsupported", false, "If set to true, 'deviate not-supported' YANG statements are ignored, thus target nodes are retained in the generated code.")
 	generator.Flags().Bool("ignore_unsupported", false, "If set to true, YANG statements unsupported by ygot are ignored.")
 	generator.Flags().StringSlice("split_package_paths", nil, "Comma-separated YANG schema paths excluding choice/case statements followed by an optional (=packagename) for splitting specified subtrees into its own package. if (=packagename) is not specified, then the schema path will be used to name the package.")
-	generator.Flags().Bool("fakeroot_name_is_device", false, "Make the name of the ygot-generated fake root entity \"device\" (ygot's default) instead of \"root\".")
+	generator.Flags().String("fakeroot_name", "root", "Change the name of the ygot-generated fake root entity (ygot's default is \"device\").")
 	generator.Flags().Bool("shorten_enum_leaf_names", true, "If also set to true when compress_paths=true, all leaves of type enumeration will by default not be prefixed with the name of its residing module.")
 	generator.Flags().Bool("annotations", false, "If set to true, metadata annotations are added within the ygot-generated structs.")
-	generator.Flags().Bool("generate_rename", false, "If set to true, rename methods are generated for lists within the ygot-generated structs.")
 	generator.Flags().Bool("prefer_operational_state", true, "If set to true, state (config false) fields in the YANG schema are preferred over intended config leaves in the generated Go code with compressed schema paths. This flag is only valid for compress_paths=true.")
 
 	// TODO(wenovus): Delete these hidden flags before or on v1 release.
@@ -81,12 +81,9 @@ func New() *cobra.Command {
 	return generator
 }
 
-func getFakeRootName() string {
-	if viper.GetBool("fakeroot_name_is_device") {
-		return "device"
-	}
-	return "root"
-}
+var (
+	fakeRootRegex = regexp.MustCompile(`[a-zA-Z]\w*`)
+)
 
 // generate runs the ygnmi PathStruct and optionally the ygot GoStruct generation.
 func generate(cmd *cobra.Command, args []string) error {
@@ -141,6 +138,11 @@ func generate(cmd *cobra.Command, args []string) error {
 		}
 	}
 
+	fakeRootName := viper.GetString("fakeroot_name")
+	if !fakeRootRegex.MatchString(fakeRootName) {
+		return fmt.Errorf("fakeroot_name %q doesn't match pattern %v", fakeRootName, fakeRootRegex.String())
+	}
+
 	pcg := pathgen.GenConfig{
 		PackageName: rootPackageName,
 		GoImports: pathgen.GoImports{
@@ -155,7 +157,7 @@ func generate(cmd *cobra.Command, args []string) error {
 		EnumOrgPrefixesToTrim:                []string{viper.GetString("trim_module_prefix")},
 		UseDefiningModuleForTypedefEnumNames: viper.GetBool("typedef_enum_with_defmod"),
 		AppendEnumSuffixForSimpleUnionEnums:  true,
-		FakeRootName:                         getFakeRootName(),
+		FakeRootName:                         fakeRootName,
 		PathStructSuffix:                     "Path",
 		ParseOptions: ygen.ParseOpts{
 			IgnoreUnsupportedStatements: viper.GetBool("ignore_unsupported"),
@@ -209,10 +211,10 @@ func generate(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	return generateStructs(args, schemaStructPath, version, compressBehaviour)
+	return generateStructs(args, schemaStructPath, version, fakeRootName, compressBehaviour)
 }
 
-func generateStructs(modules []string, schemaPath, version string, compressBehaviour genutil.CompressBehaviour) error {
+func generateStructs(modules []string, schemaPath, version, fakeRootName string, compressBehaviour genutil.CompressBehaviour) error {
 	// Perform the code generation.
 	cg := gogen.New(
 		version,
@@ -231,7 +233,7 @@ func generateStructs(modules []string, schemaPath, version string, compressBehav
 				CompressBehaviour:                    compressBehaviour,
 				SkipEnumDeduplication:                false,
 				GenerateFakeRoot:                     true,
-				FakeRootName:                         getFakeRootName(),
+				FakeRootName:                         fakeRootName,
 				ShortenEnumLeafNames:                 viper.GetBool("shorten_enum_leaf_names"),
 				EnumOrgPrefixesToTrim:                []string{viper.GetString("trim_module_prefix")},
 				UseDefiningModuleForTypedefEnumNames: viper.GetBool("typedef_enum_with_defmod"),
@@ -246,7 +248,7 @@ func generateStructs(modules []string, schemaPath, version string, compressBehav
 			YgotImportPath:                      viper.GetString("ygot_path"),
 			YtypesImportPath:                    viper.GetString("ytypes_path"),
 			GoyangImportPath:                    viper.GetString("goyang_path"),
-			GenerateRenameMethod:                viper.GetBool("generate_rename"),
+			GenerateRenameMethod:                true,
 			AddAnnotationFields:                 viper.GetBool("annotations"),
 			AnnotationPrefix:                    "Λ",
 			AddYangPresence:                     false,
