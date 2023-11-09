@@ -42,11 +42,12 @@ type CompressionInfo struct {
 type ExtractFn[T any] func(ygot.ValidatedGoStruct) (T, bool)
 
 // NewSingletonQuery creates a new SingletonQueryStruct object.
-func NewSingletonQuery[T any](goStructName string, state, leaf, scalar, compressedSchema, listContainer bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema, subPaths []PathStruct, compressInfo *CompressionInfo) *SingletonQueryStruct[T] {
+func NewSingletonQuery[T any](goStructName string, state, shadowpath, leaf, scalar, compressedSchema, listContainer bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema, subPaths []PathStruct, compressInfo *CompressionInfo) *SingletonQueryStruct[T] {
 	return &SingletonQueryStruct[T]{
 		baseQuery: baseQuery[T]{
 			goStructName,
 			state,
+			shadowpath,
 			ps,
 			leaf,
 			scalar,
@@ -62,11 +63,12 @@ func NewSingletonQuery[T any](goStructName string, state, leaf, scalar, compress
 }
 
 // NewConfigQuery creates a new NewLeafConfigQuery object.
-func NewConfigQuery[T any](goStructName string, state, leaf, scalar, compressedSchema, listContainer bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema, subPaths []PathStruct, compressInfo *CompressionInfo) *ConfigQueryStruct[T] {
+func NewConfigQuery[T any](goStructName string, state, shadowpath, leaf, scalar, compressedSchema, listContainer bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema, subPaths []PathStruct, compressInfo *CompressionInfo) *ConfigQueryStruct[T] {
 	return &ConfigQueryStruct[T]{
 		baseQuery: baseQuery[T]{
 			goStructName,
 			state,
+			shadowpath,
 			ps,
 			leaf,
 			scalar,
@@ -82,11 +84,12 @@ func NewConfigQuery[T any](goStructName string, state, leaf, scalar, compressedS
 }
 
 // NewWildcardQuery creates a new NewLeafWildcardQuery object.
-func NewWildcardQuery[T any](goStructName string, state, leaf, scalar, compressedSchema, listContainer bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema, subPaths []PathStruct, compressInfo *CompressionInfo) *WildcardQueryStruct[T] {
+func NewWildcardQuery[T any](goStructName string, state, shadowpath, leaf, scalar, compressedSchema, listContainer bool, ps PathStruct, extractFn ExtractFn[T], goStructFn func() ygot.ValidatedGoStruct, schemaFn func() *ytypes.Schema, subPaths []PathStruct, compressInfo *CompressionInfo) *WildcardQueryStruct[T] {
 	return &WildcardQueryStruct[T]{
 		baseQuery: baseQuery[T]{
 			goStructName,
 			state,
+			shadowpath,
 			ps,
 			leaf,
 			scalar,
@@ -139,8 +142,10 @@ type baseQuery[T any] struct {
 	// - For GoStructs this is the struct itself.
 	// - For others this is the parent dir.
 	goStructName string
-	// state controls if state or config values should be unmarshalled.
+	// state indicates whether the path is a config or a state path.
 	state bool
+	// shadowpath controls unmarshal behaviour.
+	shadowpath bool
 	// ps contains the path specification of the query.
 	ps PathStruct
 	// leaf indicates whether the query is on a leaf node.
@@ -181,6 +186,11 @@ func (q *baseQuery[T]) dirName() string {
 // IsState returns if the Query is for a state or config path.
 func (q *baseQuery[T]) IsState() bool {
 	return q.state
+}
+
+// IsState returns if the Query is for a shadow path node.
+func (q *baseQuery[T]) isShadowPath() bool {
+	return q.shadowpath
 }
 
 // PathStruct returns the path struct containing the path for the Query.

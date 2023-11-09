@@ -68,6 +68,7 @@ func (n *OpenconfigWithlistval_ModelPath) A() *a.OpenconfigWithlistval_Model_APa
 		false,
 		false,
 		false,
+		false,
 		ps,
 		nil,
 		nil,
@@ -102,6 +103,7 @@ func (n *OpenconfigWithlistval_ModelPathAny) A() *a.OpenconfigWithlistval_Model_
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_A](
 		"OpenconfigWithlistval_Model_A",
 		true,
+		false,
 		false,
 		false,
 		false,
@@ -144,6 +146,7 @@ func (n *OpenconfigWithlistval_ModelPath) B() *modelb.OpenconfigWithlistval_Mode
 		false,
 		false,
 		false,
+		false,
 		ps,
 		nil,
 		nil,
@@ -178,6 +181,7 @@ func (n *OpenconfigWithlistval_ModelPathAny) B() *modelb.OpenconfigWithlistval_M
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_B](
 		"OpenconfigWithlistval_Model_B",
 		true,
+		false,
 		false,
 		false,
 		false,
@@ -220,6 +224,7 @@ func (n *OpenconfigWithlistval_ModelPath) C() *OpenconfigWithlistval_Model_CPath
 		false,
 		false,
 		false,
+		false,
 		ps,
 		nil,
 		nil,
@@ -254,6 +259,7 @@ func (n *OpenconfigWithlistval_ModelPathAny) C() *OpenconfigWithlistval_Model_CP
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_C](
 		"OpenconfigWithlistval_Model_C",
 		true,
+		false,
 		false,
 		false,
 		false,
@@ -316,6 +322,7 @@ func (n *OpenconfigWithlistval_Model_CPath) NoKeyAny() *OpenconfigWithlistval_Mo
 		false,
 		false,
 		false,
+		false,
 		ps,
 		nil,
 		nil,
@@ -350,6 +357,7 @@ func (n *OpenconfigWithlistval_Model_CPathAny) NoKeyAny() *OpenconfigWithlistval
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey](
 		"OpenconfigWithlistval_Model_C_NoKey",
 		true,
+		false,
 		false,
 		false,
 		false,
@@ -416,6 +424,7 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_FooPath) State() *OpenconfigWithlis
 		false,
 		false,
 		false,
+		false,
 		ps,
 		nil,
 		nil,
@@ -450,6 +459,7 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_FooPathAny) State() *OpenconfigWith
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_C_NoKey_Foo_State](
 		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
 		true,
+		false,
 		false,
 		false,
 		false,
@@ -529,6 +539,7 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath) Key() *OpenconfigWit
 	ps.SingletonQuery = ygnmi.NewSingletonQuery[string](
 		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -575,6 +586,7 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny) Key() *Openconfig
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[string](
 		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -621,6 +633,7 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePath) Value() *OpenconfigW
 	ps.SingletonQuery = ygnmi.NewSingletonQuery[int64](
 		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -667,6 +680,7 @@ func (n *OpenconfigWithlistval_Model_C_NoKey_Foo_StatePathAny) Value() *Openconf
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[int64](
 		"OpenconfigWithlistval_Model_C_NoKey_Foo_State",
 		true,
+		false,
 		true,
 		true,
 		false,

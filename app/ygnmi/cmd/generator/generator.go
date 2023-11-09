@@ -65,6 +65,7 @@ func New() *cobra.Command {
 	generator.Flags().String("fakeroot_name", "root", "Change the name of the ygot-generated fake root entity (ygot's default is \"device\").")
 	generator.Flags().Bool("shorten_enum_leaf_names", true, "If also set to true when compress_paths=true, all leaves of type enumeration will by default not be prefixed with the name of its residing module.")
 	generator.Flags().Bool("annotations", false, "If set to true, metadata annotations are added within the ygot-generated structs.")
+	generator.Flags().Bool("prefer_operational_state", true, "If set to true, state (config false) fields in the YANG schema are preferred over intended config leaves in the generated Go code with compressed schema paths. This flag is only valid for compress_paths=true.")
 
 	// TODO(wenovus): Delete these hidden flags before or on v1 release.
 	generator.Flags().Bool("typedef_enum_with_defmod", true, "If set to true, all typedefs of type enumeration or identity will be prefixed with the name of its module of definition instead of its residing module.")
@@ -110,7 +111,13 @@ func generate(cmd *cobra.Command, args []string) error {
 	}
 	compressBehaviour := genutil.Uncompressed
 	if viper.GetBool("compress_paths") {
-		compressBehaviour = genutil.PreferOperationalState
+		if viper.GetBool("prefer_operational_state") {
+			compressBehaviour = genutil.PreferOperationalState
+		} else {
+			compressBehaviour = genutil.PreferIntendedConfig
+		}
+	}
+	if compressBehaviour.CompressEnabled() {
 		extraGenerators = pathgen.ExtraGenerators{
 			Extras: []pathgen.Generator{pathgen.GNMIGenerator},
 		}
@@ -204,15 +211,10 @@ func generate(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	return generateStructs(args, schemaStructPath, version, fakeRootName)
+	return generateStructs(args, schemaStructPath, version, fakeRootName, compressBehaviour)
 }
 
-func generateStructs(modules []string, schemaPath, version, fakeRootName string) error {
-	cmp := genutil.Uncompressed
-	if viper.GetBool("compress_paths") {
-		cmp = genutil.PreferOperationalState
-	}
-
+func generateStructs(modules []string, schemaPath, version, fakeRootName string, compressBehaviour genutil.CompressBehaviour) error {
 	// Perform the code generation.
 	cg := gogen.New(
 		version,
@@ -228,7 +230,7 @@ func generateStructs(modules []string, schemaPath, version, fakeRootName string)
 				},
 			},
 			TransformationOptions: ygen.TransformationOpts{
-				CompressBehaviour:                    cmp,
+				CompressBehaviour:                    compressBehaviour,
 				SkipEnumDeduplication:                false,
 				GenerateFakeRoot:                     true,
 				FakeRootName:                         fakeRootName,

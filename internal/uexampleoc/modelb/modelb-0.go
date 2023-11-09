@@ -66,6 +66,7 @@ func (n *OpenconfigWithlistval_Model_BPath) MultiKeyAny() *OpenconfigWithlistval
 		false,
 		false,
 		false,
+		false,
 		ps,
 		nil,
 		nil,
@@ -100,6 +101,7 @@ func (n *OpenconfigWithlistval_Model_BPathAny) MultiKeyAny() *OpenconfigWithlist
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey](
 		"OpenconfigWithlistval_Model_B_MultiKey",
 		true,
+		false,
 		false,
 		false,
 		false,
@@ -159,6 +161,7 @@ func (n *OpenconfigWithlistval_Model_BPath) MultiKey(Key1 uint32, Key2 uint64) *
 		false,
 		false,
 		false,
+		false,
 		ps,
 		nil,
 		nil,
@@ -200,6 +203,7 @@ func (n *OpenconfigWithlistval_Model_BPathAny) MultiKey(Key1 uint32, Key2 uint64
 		false,
 		false,
 		false,
+		false,
 		ps,
 		nil,
 		nil,
@@ -234,6 +238,7 @@ func (n *OpenconfigWithlistval_Model_BPath) MultiKeyMap() *OpenconfigWithlistval
 	ps.ConfigQuery = ygnmi.NewConfigQuery[map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey](
 		"OpenconfigWithlistval_Model_B",
 		true,
+		false,
 		false,
 		false,
 		false,
@@ -275,6 +280,7 @@ func (n *OpenconfigWithlistval_Model_BPathAny) MultiKeyMap() *OpenconfigWithlist
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[map[oc.OpenconfigWithlistval_Model_B_MultiKey_Key]*oc.OpenconfigWithlistval_Model_B_MultiKey](
 		"OpenconfigWithlistval_Model_B",
 		true,
+		false,
 		false,
 		false,
 		false,
@@ -380,6 +386,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPath) Config() *OpenconfigWithlis
 		false,
 		false,
 		false,
+		false,
 		ps,
 		nil,
 		nil,
@@ -414,6 +421,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPathAny) Config() *OpenconfigWith
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_Config](
 		"OpenconfigWithlistval_Model_B_MultiKey_Config",
 		true,
+		false,
 		false,
 		false,
 		false,
@@ -453,6 +461,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPath) Key1() *OpenconfigWithlistv
 	ps.ConfigQuery = ygnmi.NewConfigQuery[uint32](
 		"OpenconfigWithlistval_Model_B_MultiKey",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -499,6 +508,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPathAny) Key1() *OpenconfigWithli
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[uint32](
 		"OpenconfigWithlistval_Model_B_MultiKey",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -545,6 +555,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPath) Key2() *OpenconfigWithlistv
 	ps.ConfigQuery = ygnmi.NewConfigQuery[uint64](
 		"OpenconfigWithlistval_Model_B_MultiKey",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -591,6 +602,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPathAny) Key2() *OpenconfigWithli
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[uint64](
 		"OpenconfigWithlistval_Model_B_MultiKey",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -640,6 +652,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPath) State() *OpenconfigWithlist
 		false,
 		false,
 		false,
+		false,
 		ps,
 		nil,
 		nil,
@@ -674,6 +687,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKeyPathAny) State() *OpenconfigWithl
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigWithlistval_Model_B_MultiKey_State](
 		"OpenconfigWithlistval_Model_B_MultiKey_State",
 		true,
+		false,
 		false,
 		false,
 		false,
@@ -753,6 +767,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPath) Key1() *OpenconfigWi
 	ps.ConfigQuery = ygnmi.NewConfigQuery[uint32](
 		"OpenconfigWithlistval_Model_B_MultiKey_Config",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -799,6 +814,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPathAny) Key1() *Openconfi
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[uint32](
 		"OpenconfigWithlistval_Model_B_MultiKey_Config",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -845,6 +861,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPath) Key2() *OpenconfigWi
 	ps.ConfigQuery = ygnmi.NewConfigQuery[uint64](
 		"OpenconfigWithlistval_Model_B_MultiKey_Config",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -891,6 +908,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_ConfigPathAny) Key2() *Openconfi
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[uint64](
 		"OpenconfigWithlistval_Model_B_MultiKey_Config",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -977,6 +995,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePath) Key1() *OpenconfigWit
 	ps.SingletonQuery = ygnmi.NewSingletonQuery[uint32](
 		"OpenconfigWithlistval_Model_B_MultiKey_State",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -1023,6 +1042,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePathAny) Key1() *Openconfig
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[uint32](
 		"OpenconfigWithlistval_Model_B_MultiKey_State",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -1069,6 +1089,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePath) Key2() *OpenconfigWit
 	ps.SingletonQuery = ygnmi.NewSingletonQuery[uint64](
 		"OpenconfigWithlistval_Model_B_MultiKey_State",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -1115,6 +1136,7 @@ func (n *OpenconfigWithlistval_Model_B_MultiKey_StatePathAny) Key2() *Openconfig
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[uint64](
 		"OpenconfigWithlistval_Model_B_MultiKey_State",
 		true,
+		false,
 		true,
 		true,
 		false,

@@ -1,3 +1,5 @@
+// Code generated from ygnmi_test.go. DO NOT EDIT.
+
 // Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,8 +26,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/openconfig/gnmi/errdiff"
-	"github.com/openconfig/ygnmi/exampleoc"
-	"github.com/openconfig/ygnmi/exampleoc/exampleocpath"
+	"github.com/openconfig/ygnmi/internal/exampleocconfig"
+	"github.com/openconfig/ygnmi/internal/exampleocconfig/exampleocconfigpath"
 	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygnmi/schemaless"
 	"github.com/openconfig/ygnmi/ygnmi"
@@ -40,8 +42,8 @@ import (
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
 )
 
-func getSampleOrderedMap(t *testing.T) *exampleoc.Model_SingleKey_OrderedList_OrderedMap {
-	om := &exampleoc.Model_SingleKey_OrderedList_OrderedMap{}
+func getSamplePreferConfigOrderedMap(t *testing.T) *exampleocconfig.Model_SingleKey_OrderedList_OrderedMap {
+	om := &exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}
 	ol, err := om.AppendNew("foo")
 	if err != nil {
 		t.Fatal(err)
@@ -60,8 +62,8 @@ func getSampleOrderedMap(t *testing.T) *exampleoc.Model_SingleKey_OrderedList_Or
 	return om
 }
 
-func getSampleOrderedMapIncomplete(t *testing.T) *exampleoc.Model_SingleKey_OrderedList_OrderedMap {
-	om := &exampleoc.Model_SingleKey_OrderedList_OrderedMap{}
+func getSamplePreferConfigOrderedMapIncomplete(t *testing.T) *exampleocconfig.Model_SingleKey_OrderedList_OrderedMap {
+	om := &exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}
 	ol, err := om.AppendNew("foo")
 	if err != nil {
 		t.Fatal(err)
@@ -75,40 +77,40 @@ func getSampleOrderedMapIncomplete(t *testing.T) *exampleoc.Model_SingleKey_Orde
 	return om
 }
 
-func getSampleSingleKeyedMap(t *testing.T) map[string]*exampleoc.Model_SingleKey {
-	model := &exampleoc.Model{}
+func getSamplePreferConfigSingleKeyedMap(t *testing.T) map[string]*exampleocconfig.Model_SingleKey {
+	model := &exampleocconfig.Model{}
 	model.GetOrCreateSingleKey("foo").SetValue(42)
 	model.GetOrCreateSingleKey("bar").SetValue(43)
 	model.GetOrCreateSingleKey("baz").SetValue(44)
 	return model.SingleKey
 }
 
-func getSampleSingleKeyedMapIncomplete(t *testing.T) map[string]*exampleoc.Model_SingleKey {
-	model := &exampleoc.Model{}
+func getSamplePreferConfigSingleKeyedMapIncomplete(t *testing.T) map[string]*exampleocconfig.Model_SingleKey {
+	model := &exampleocconfig.Model{}
 	model.GetOrCreateSingleKey("foo").SetValue(42)
 	model.GetOrCreateSingleKey("bar").SetValue(43)
 	return model.SingleKey
 }
 
-func getSampleInnerSingleKeyedMap(t *testing.T) map[string]*exampleoc.Model_SingleKey_SingleKey {
-	sk := &exampleoc.Model_SingleKey{}
+func getSamplePreferConfigInnerSingleKeyedMap(t *testing.T) map[string]*exampleocconfig.Model_SingleKey_SingleKey {
+	sk := &exampleocconfig.Model_SingleKey{}
 	sk.GetOrCreateSingleKey("foo").SetValue(42)
 	sk.GetOrCreateSingleKey("bar").SetValue(43)
 	sk.GetOrCreateSingleKey("baz").SetValue(44)
 	return sk.SingleKey
 }
 
-func getSampleInnerSingleKeyedMapIncomplete(t *testing.T) map[string]*exampleoc.Model_SingleKey_SingleKey {
-	sk := &exampleoc.Model_SingleKey{}
+func getSamplePreferConfigInnerSingleKeyedMapIncomplete(t *testing.T) map[string]*exampleocconfig.Model_SingleKey_SingleKey {
+	sk := &exampleocconfig.Model_SingleKey{}
 	sk.GetOrCreateSingleKey("foo").SetValue(42)
 	sk.GetOrCreateSingleKey("bar").SetValue(43)
 	return sk.SingleKey
 }
 
-func TestLookup(t *testing.T) {
+func TestPreferConfigLookup(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 	leafPath := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
-	lq := exampleocpath.Root().RemoteContainer().ALeaf().State()
+	lq := exampleocconfigpath.Root().RemoteContainer().ALeaf().State()
 
 	leafTests := []struct {
 		desc                 string
@@ -297,15 +299,15 @@ func TestLookup(t *testing.T) {
 	enumPath := testutil.GNMIPath(t, "parent/child/state/three")
 	strCfgPath := testutil.GNMIPath(t, "parent/child/config/one")
 
-	configQuery := exampleocpath.Root().Parent().Child().Config()
-	stateQuery := exampleocpath.Root().Parent().Child().State()
+	configQuery := exampleocconfigpath.Root().Parent().Child().Config()
+	stateQuery := exampleocconfigpath.Root().Parent().Child().State()
 
 	nonLeafTests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
-		inQuery              ygnmi.SingletonQuery[*exampleoc.Parent_Child]
+		inQuery              ygnmi.SingletonQuery[*exampleocconfig.Parent_Child]
 		wantSubscriptionPath *gpb.Path
-		wantVal              *ygnmi.Value[*exampleoc.Parent_Child]
+		wantVal              *ygnmi.Value[*exampleocconfig.Parent_Child]
 		wantErr              string
 	}{{
 		desc: "success one update and state false",
@@ -320,10 +322,10 @@ func TestLookup(t *testing.T) {
 		},
 		inQuery:              configQuery,
 		wantSubscriptionPath: rootPath,
-		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Path:      rootPath,
 			Timestamp: time.Unix(0, 100),
-		}).SetVal(&exampleoc.Parent_Child{
+		}).SetVal(&exampleocconfig.Parent_Child{
 			One: ygot.String("foo"),
 		}),
 	}, {
@@ -339,10 +341,10 @@ func TestLookup(t *testing.T) {
 		},
 		inQuery:              stateQuery,
 		wantSubscriptionPath: rootPath,
-		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Path:      rootPath,
 			Timestamp: time.Unix(0, 100),
-		}).SetVal(&exampleoc.Parent_Child{
+		}).SetVal(&exampleocconfig.Parent_Child{
 			One: ygot.String("foo"),
 		}),
 	}, {
@@ -359,10 +361,10 @@ func TestLookup(t *testing.T) {
 		},
 		inQuery:              stateQuery,
 		wantSubscriptionPath: rootPath,
-		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Path:      rootPath,
 			Timestamp: time.Unix(0, 100),
-		}).SetVal(&exampleoc.Parent_Child{
+		}).SetVal(&exampleocconfig.Parent_Child{
 			One: ygot.String("foo"),
 		}),
 	}, {
@@ -378,7 +380,7 @@ func TestLookup(t *testing.T) {
 		},
 		inQuery:              configQuery,
 		wantSubscriptionPath: rootPath,
-		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Path:      rootPath,
 			Timestamp: time.Unix(0, 100),
 		}),
@@ -395,7 +397,7 @@ func TestLookup(t *testing.T) {
 		},
 		inQuery:              stateQuery,
 		wantSubscriptionPath: rootPath,
-		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Path:      rootPath,
 			Timestamp: time.Unix(0, 100),
 		}),
@@ -415,12 +417,12 @@ func TestLookup(t *testing.T) {
 		},
 		inQuery:              stateQuery,
 		wantSubscriptionPath: rootPath,
-		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Path:      rootPath,
 			Timestamp: time.Unix(0, 100),
-		}).SetVal(&exampleoc.Parent_Child{
+		}).SetVal(&exampleocconfig.Parent_Child{
 			One:   ygot.String("foo"),
-			Three: exampleoc.Child_Three_ONE,
+			Three: exampleocconfig.Child_Three_ONE,
 		}),
 	}, {
 		desc: "success multiple notifications",
@@ -441,12 +443,12 @@ func TestLookup(t *testing.T) {
 		},
 		inQuery:              stateQuery,
 		wantSubscriptionPath: rootPath,
-		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Path:      rootPath,
 			Timestamp: time.Unix(0, 102),
-		}).SetVal(&exampleoc.Parent_Child{
+		}).SetVal(&exampleocconfig.Parent_Child{
 			One:   ygot.String("foo"),
-			Three: exampleoc.Child_Three_ONE,
+			Three: exampleocconfig.Child_Three_ONE,
 		}),
 	}, {
 		desc: "success no values",
@@ -455,7 +457,7 @@ func TestLookup(t *testing.T) {
 		},
 		inQuery:              stateQuery,
 		wantSubscriptionPath: rootPath,
-		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Path: rootPath,
 		}),
 	}}
@@ -478,7 +480,7 @@ func TestLookup(t *testing.T) {
 
 		lookupCheckFn(
 			t, fakeGNMI, c,
-			exampleocpath.Root().Model().SingleKey("foo").Counter().State(),
+			exampleocconfigpath.Root().Model().SingleKey("foo").Counter().State(),
 			"",
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counter"),
 			(&ygnmi.Value[float32]{
@@ -499,7 +501,7 @@ func TestLookup(t *testing.T) {
 
 		lookupCheckFn(
 			t, fakeGNMI, c,
-			exampleocpath.Root().Model().SingleKey("foo").Counters().State(),
+			exampleocconfigpath.Root().Model().SingleKey("foo").Counters().State(),
 			"",
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counters"),
 			(&ygnmi.Value[[]float32]{
@@ -546,13 +548,13 @@ func TestLookup(t *testing.T) {
 
 		lookupCheckFn(
 			t, fakeGNMI, c,
-			ygnmi.SingletonQuery[*exampleoc.Model_SingleKey_OrderedList_OrderedMap](exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().Config()),
+			ygnmi.SingletonQuery[*exampleocconfig.Model_SingleKey_OrderedList_OrderedMap](exampleocconfigpath.Root().Model().SingleKey("foo").OrderedListMap().Config()),
 			"",
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
-			(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey_OrderedList_OrderedMap]{
 				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 				Timestamp: time.Unix(0, 100),
-			}).SetVal(getSampleOrderedMap(t)),
+			}).SetVal(getSamplePreferConfigOrderedMap(t)),
 		)
 	})
 
@@ -592,18 +594,18 @@ func TestLookup(t *testing.T) {
 
 		lookupCheckFn(
 			t, fakeGNMI, c,
-			ygnmi.SingletonQuery[map[string]*exampleoc.Model_SingleKey](exampleocpath.Root().Model().SingleKeyMap().Config()),
+			ygnmi.SingletonQuery[map[string]*exampleocconfig.Model_SingleKey](exampleocconfigpath.Root().Model().SingleKeyMap().Config()),
 			"",
 			testutil.GNMIPath(t, "/model/a"),
-			(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+			(&ygnmi.Value[map[string]*exampleocconfig.Model_SingleKey]{
 				Path:      testutil.GNMIPath(t, "/model/a"),
 				Timestamp: time.Unix(0, 100),
-			}).SetVal(getSampleSingleKeyedMap(t)),
+			}).SetVal(getSamplePreferConfigSingleKeyedMap(t)),
 		)
 	})
 }
 
-func TestLookupWithGet(t *testing.T) {
+func TestPreferConfigLookupWithGet(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 	leafPath := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
 
@@ -656,7 +658,7 @@ func TestLookupWithGet(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
 			lookupWithGetCheckFn(
 				t, fakeGNMI, c,
-				exampleocpath.Root().RemoteContainer().ALeaf().State(),
+				exampleocconfigpath.Root().RemoteContainer().ALeaf().State(),
 				"",
 				tt.wantRequest,
 				tt.wantVal,
@@ -668,7 +670,7 @@ func TestLookupWithGet(t *testing.T) {
 	nonLeafTests := []struct {
 		desc    string
 		stub    func(s *testutil.Stubber)
-		wantVal *ygnmi.Value[*exampleoc.Parent_Child]
+		wantVal *ygnmi.Value[*exampleocconfig.Parent_Child]
 		wantErr string
 	}{{
 		desc: "single leaf",
@@ -683,10 +685,10 @@ func TestLookupWithGet(t *testing.T) {
 				}},
 			}, nil)
 		},
-		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Path:      nonLeafPath,
 			Timestamp: time.Unix(0, 100),
-		}).SetVal(&exampleoc.Parent_Child{Three: exampleoc.Child_Three_ONE}),
+		}).SetVal(&exampleocconfig.Parent_Child{Three: exampleocconfig.Child_Three_ONE}),
 	}, {
 		desc: "with extra value",
 		stub: func(s *testutil.Stubber) {
@@ -700,10 +702,10 @@ func TestLookupWithGet(t *testing.T) {
 				}},
 			}, nil)
 		},
-		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Path:      nonLeafPath,
 			Timestamp: time.Unix(0, 100),
-		}).SetVal(&exampleoc.Parent_Child{Three: exampleoc.Child_Three_ONE}),
+		}).SetVal(&exampleocconfig.Parent_Child{Three: exampleocconfig.Child_Three_ONE}),
 	}, {
 		desc: "with invalid type", // TODO: When partial unmarshaling of JSON is supports, this test case should have a value.
 		stub: func(s *testutil.Stubber) {
@@ -717,7 +719,7 @@ func TestLookupWithGet(t *testing.T) {
 				}},
 			}, nil)
 		},
-		wantVal: &ygnmi.Value[*exampleoc.Parent_Child]{
+		wantVal: &ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Path: nonLeafPath,
 			ComplianceErrors: &ygnmi.ComplianceErrors{
 				TypeErrors: []*ygnmi.TelemetryError{{
@@ -730,11 +732,11 @@ func TestLookupWithGet(t *testing.T) {
 	for _, tt := range nonLeafTests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			got, err := ygnmi.Lookup[*exampleoc.Parent_Child](context.Background(), c, exampleocpath.Root().Parent().Child().Config(), ygnmi.WithUseGet())
+			got, err := ygnmi.Lookup[*exampleocconfig.Parent_Child](context.Background(), c, exampleocconfigpath.Root().Parent().Child().Config(), ygnmi.WithUseGet())
 			if err != nil {
 				t.Fatalf("Lookup() returned unexpected error: %v", err)
 			}
-			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Parent_Child]{}), cmpopts.IgnoreFields(ygnmi.TelemetryError{}, "Err"), cmpopts.IgnoreFields(ygnmi.Value[*exampleoc.Parent_Child]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleocconfig.Parent_Child]{}), cmpopts.IgnoreFields(ygnmi.TelemetryError{}, "Err"), cmpopts.IgnoreFields(ygnmi.Value[*exampleocconfig.Parent_Child]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
 				t.Errorf("Lookup() returned unexpected diff: %s", diff)
 			}
 		})
@@ -779,7 +781,7 @@ func TestLookupWithGet(t *testing.T) {
 
 		lookupWithGetCheckFn(
 			t, fakeGNMI, c,
-			ygnmi.SingletonQuery[*exampleoc.Model_SingleKey_OrderedList_OrderedMap](exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().Config()),
+			ygnmi.SingletonQuery[*exampleocconfig.Model_SingleKey_OrderedList_OrderedMap](exampleocconfigpath.Root().Model().SingleKey("foo").OrderedListMap().Config()),
 			"",
 			&gpb.GetRequest{
 				Encoding: gpb.Encoding_JSON_IETF,
@@ -787,10 +789,10 @@ func TestLookupWithGet(t *testing.T) {
 				Prefix:   &gpb.Path{},
 				Path:     []*gpb.Path{testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists")},
 			},
-			(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey_OrderedList_OrderedMap]{
 				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 				Timestamp: time.Unix(0, 100),
-			}).SetVal(getSampleOrderedMap(t)),
+			}).SetVal(getSamplePreferConfigOrderedMap(t)),
 		)
 	})
 
@@ -832,7 +834,7 @@ func TestLookupWithGet(t *testing.T) {
 
 		lookupWithGetCheckFn(
 			t, fakeGNMI, c,
-			ygnmi.SingletonQuery[map[string]*exampleoc.Model_SingleKey](exampleocpath.Root().Model().SingleKeyMap().Config()),
+			ygnmi.SingletonQuery[map[string]*exampleocconfig.Model_SingleKey](exampleocconfigpath.Root().Model().SingleKeyMap().Config()),
 			"",
 			&gpb.GetRequest{
 				Encoding: gpb.Encoding_JSON_IETF,
@@ -840,18 +842,18 @@ func TestLookupWithGet(t *testing.T) {
 				Prefix:   &gpb.Path{},
 				Path:     []*gpb.Path{testutil.GNMIPath(t, "/model/a")},
 			},
-			(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+			(&ygnmi.Value[map[string]*exampleocconfig.Model_SingleKey]{
 				Path:      testutil.GNMIPath(t, "/model/a"),
 				Timestamp: time.Unix(0, 100),
-			}).SetVal(getSampleSingleKeyedMap(t)),
+			}).SetVal(getSamplePreferConfigSingleKeyedMap(t)),
 		)
 	})
 }
 
-func TestGet(t *testing.T) {
+func TestPreferConfigGet(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 	leafPath := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
-	lq := exampleocpath.Root().RemoteContainer().ALeaf().State()
+	lq := exampleocconfigpath.Root().RemoteContainer().ALeaf().State()
 
 	tests := []struct {
 		desc                 string
@@ -919,7 +921,7 @@ func TestGet(t *testing.T) {
 		}
 		wantVal := "foo"
 
-		got, err := ygnmi.Get[string](context.Background(), c, exampleocpath.Root().RemoteContainer().ALeaf().Config(), ygnmi.WithUseGet())
+		got, err := ygnmi.Get[string](context.Background(), c, exampleocconfigpath.Root().RemoteContainer().ALeaf().Config(), ygnmi.WithUseGet())
 		if err != nil {
 			t.Fatalf("Get() returned unexpected error: %v", err)
 		}
@@ -967,18 +969,18 @@ func TestGet(t *testing.T) {
 		}).Sync()
 
 		getCheckFn(t, fakeGNMI, c,
-			exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().State(),
+			exampleocconfigpath.Root().Model().SingleKey("foo").OrderedListMap().State(),
 			"",
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
-			getSampleOrderedMap(t),
+			getSamplePreferConfigOrderedMap(t),
 		)
 	})
 }
 
-func TestWatch(t *testing.T) {
+func TestPreferConfigWatch(t *testing.T) {
 	fakeGNMI, client := newClient(t)
 	path := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
-	lq := exampleocpath.Root().RemoteContainer().ALeaf().State()
+	lq := exampleocconfigpath.Root().RemoteContainer().ALeaf().State()
 
 	startTime := time.Now()
 	tests := []struct {
@@ -1177,7 +1179,7 @@ func TestWatch(t *testing.T) {
 
 	t.Run("multiple awaits", func(t *testing.T) {
 		fakeGNMI.Stub().Sync()
-		w := ygnmi.Watch(context.Background(), client, exampleocpath.Root().RemoteContainer().ALeaf().State(), func(v *ygnmi.Value[string]) error { return nil })
+		w := ygnmi.Watch(context.Background(), client, exampleocconfigpath.Root().RemoteContainer().ALeaf().State(), func(v *ygnmi.Value[string]) error { return nil })
 		want := &ygnmi.Value[string]{
 			Path: path,
 		}
@@ -1198,15 +1200,15 @@ func TestWatch(t *testing.T) {
 	strPath := testutil.GNMIPath(t, "parent/child/state/one")
 	enumPath := testutil.GNMIPath(t, "parent/child/state/three")
 	startTime = time.Now()
-	nonLeafQuery := exampleocpath.Root().Parent().Child().State()
+	nonLeafQuery := exampleocconfigpath.Root().Parent().Child().State()
 
 	nonLeafTests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
 		opts                 []ygnmi.Option
 		wantSubscriptionPath *gpb.Path
-		wantLastVal          *ygnmi.Value[*exampleoc.Parent_Child]
-		wantVals             []*ygnmi.Value[*exampleoc.Parent_Child]
+		wantLastVal          *ygnmi.Value[*exampleocconfig.Parent_Child]
+		wantVals             []*ygnmi.Value[*exampleocconfig.Parent_Child]
 		wantErr              string
 	}{{
 		desc: "single notif and pred false",
@@ -1219,20 +1221,20 @@ func TestWatch(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		wantVals: []*ygnmi.Value[*exampleoc.Parent_Child]{
-			(&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantVals: []*ygnmi.Value[*exampleocconfig.Parent_Child]{
+			(&ygnmi.Value[*exampleocconfig.Parent_Child]{
 				Timestamp: startTime,
 				Path:      rootPath,
-			}).SetVal(&exampleoc.Parent_Child{
+			}).SetVal(&exampleocconfig.Parent_Child{
 				One: ygot.String("bar"),
 			}),
 		},
 		wantErr:              "EOF",
 		wantSubscriptionPath: rootPath,
-		wantLastVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantLastVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Timestamp: startTime,
 			Path:      rootPath,
-		}).SetVal(&exampleoc.Parent_Child{
+		}).SetVal(&exampleocconfig.Parent_Child{
 			One: ygot.String("bar"),
 		}),
 	}, {
@@ -1252,27 +1254,27 @@ func TestWatch(t *testing.T) {
 				}},
 			})
 		},
-		wantVals: []*ygnmi.Value[*exampleoc.Parent_Child]{
-			(&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantVals: []*ygnmi.Value[*exampleocconfig.Parent_Child]{
+			(&ygnmi.Value[*exampleocconfig.Parent_Child]{
 				Timestamp: startTime,
 				Path:      rootPath,
-			}).SetVal(&exampleoc.Parent_Child{
+			}).SetVal(&exampleocconfig.Parent_Child{
 				One: ygot.String("foo"),
 			}),
-			(&ygnmi.Value[*exampleoc.Parent_Child]{
+			(&ygnmi.Value[*exampleocconfig.Parent_Child]{
 				Timestamp: startTime.Add(time.Millisecond),
 				Path:      rootPath,
-			}).SetVal(&exampleoc.Parent_Child{
-				Three: exampleoc.Child_Three_ONE,
+			}).SetVal(&exampleocconfig.Parent_Child{
+				Three: exampleocconfig.Child_Three_ONE,
 				One:   ygot.String("foo"),
 			}),
 		},
 		wantSubscriptionPath: rootPath,
-		wantLastVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantLastVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Timestamp: startTime.Add(time.Millisecond),
 			Path:      rootPath,
-		}).SetVal(&exampleoc.Parent_Child{
-			Three: exampleoc.Child_Three_ONE,
+		}).SetVal(&exampleocconfig.Parent_Child{
+			Three: exampleocconfig.Child_Three_ONE,
 			One:   ygot.String("foo"),
 		}),
 	}, {
@@ -1292,20 +1294,20 @@ func TestWatch(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		wantVals: []*ygnmi.Value[*exampleoc.Parent_Child]{
-			(&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantVals: []*ygnmi.Value[*exampleocconfig.Parent_Child]{
+			(&ygnmi.Value[*exampleocconfig.Parent_Child]{
 				Timestamp: startTime.Add(time.Millisecond),
 				Path:      rootPath,
-			}).SetVal(&exampleoc.Parent_Child{
-				Three: exampleoc.Child_Three_ONE,
+			}).SetVal(&exampleocconfig.Parent_Child{
+				Three: exampleocconfig.Child_Three_ONE,
 				One:   ygot.String("foo"),
 			})},
 		wantSubscriptionPath: rootPath,
-		wantLastVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantLastVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Timestamp: startTime.Add(time.Millisecond),
 			Path:      rootPath,
-		}).SetVal(&exampleoc.Parent_Child{
-			Three: exampleoc.Child_Three_ONE,
+		}).SetVal(&exampleocconfig.Parent_Child{
+			Three: exampleocconfig.Child_Three_ONE,
 			One:   ygot.String("foo"),
 		}),
 	}, {
@@ -1325,28 +1327,28 @@ func TestWatch(t *testing.T) {
 				Delete:    []*gpb.Path{strPath},
 			})
 		},
-		wantVals: []*ygnmi.Value[*exampleoc.Parent_Child]{
-			(&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantVals: []*ygnmi.Value[*exampleocconfig.Parent_Child]{
+			(&ygnmi.Value[*exampleocconfig.Parent_Child]{
 				Timestamp: startTime,
 				Path:      rootPath,
-			}).SetVal(&exampleoc.Parent_Child{
-				Three: exampleoc.Child_Three_ONE,
+			}).SetVal(&exampleocconfig.Parent_Child{
+				Three: exampleocconfig.Child_Three_ONE,
 				One:   ygot.String("bar"),
 			}),
-			(&ygnmi.Value[*exampleoc.Parent_Child]{
+			(&ygnmi.Value[*exampleocconfig.Parent_Child]{
 				Timestamp: startTime.Add(time.Millisecond),
 				Path:      rootPath,
-			}).SetVal(&exampleoc.Parent_Child{
-				Three: exampleoc.Child_Three_ONE,
+			}).SetVal(&exampleocconfig.Parent_Child{
+				Three: exampleocconfig.Child_Three_ONE,
 			}),
 		},
 		wantSubscriptionPath: rootPath,
 		wantErr:              "EOF",
-		wantLastVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantLastVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Timestamp: startTime.Add(time.Millisecond),
 			Path:      rootPath,
-		}).SetVal(&exampleoc.Parent_Child{
-			Three: exampleoc.Child_Three_ONE,
+		}).SetVal(&exampleocconfig.Parent_Child{
+			Three: exampleocconfig.Child_Three_ONE,
 		}),
 	}, {
 		desc: "delete at container level",
@@ -1365,26 +1367,26 @@ func TestWatch(t *testing.T) {
 				Delete:    []*gpb.Path{testutil.GNMIPath(t, "parent/child")},
 			})
 		},
-		wantVals: []*ygnmi.Value[*exampleoc.Parent_Child]{
-			(&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantVals: []*ygnmi.Value[*exampleocconfig.Parent_Child]{
+			(&ygnmi.Value[*exampleocconfig.Parent_Child]{
 				Timestamp: startTime,
 				Path:      rootPath,
-			}).SetVal(&exampleoc.Parent_Child{
-				Three: exampleoc.Child_Three_ONE,
+			}).SetVal(&exampleocconfig.Parent_Child{
+				Three: exampleocconfig.Child_Three_ONE,
 				One:   ygot.String("bar"),
 			}),
-			(&ygnmi.Value[*exampleoc.Parent_Child]{
+			(&ygnmi.Value[*exampleocconfig.Parent_Child]{
 				Timestamp: startTime.Add(time.Millisecond),
 				Path:      rootPath,
 			}),
 		},
 		wantSubscriptionPath: rootPath,
 		wantErr:              "EOF",
-		wantLastVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantLastVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Timestamp: startTime.Add(time.Millisecond),
 			Path:      rootPath,
-		}).SetVal(&exampleoc.Parent_Child{
-			Three: exampleoc.Child_Three_ONE,
+		}).SetVal(&exampleocconfig.Parent_Child{
+			Three: exampleocconfig.Child_Three_ONE,
 		}),
 	}}
 
@@ -1394,8 +1396,8 @@ func TestWatch(t *testing.T) {
 			watchCheckFn(t, fakeGNMI, 2*time.Second, client,
 				nonLeafQuery,
 				tt.opts,
-				func(val *exampleoc.Parent_Child) bool {
-					return val.One != nil && *val.One == "foo" && val.Three == exampleoc.Child_Three_ONE
+				func(val *exampleocconfig.Parent_Child) bool {
+					return val.One != nil && *val.One == "foo" && val.Three == exampleocconfig.Child_Three_ONE
 				},
 				tt.wantErr,
 				[]*gpb.Path{tt.wantSubscriptionPath},
@@ -1465,31 +1467,31 @@ func TestWatch(t *testing.T) {
 			}},
 		})
 
-		want := getSampleOrderedMap(t)
+		want := getSamplePreferConfigOrderedMap(t)
 		watchCheckFn(t, fakeGNMI, 2*time.Second, client,
-			exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().State(),
+			exampleocconfigpath.Root().Model().SingleKey("foo").OrderedListMap().State(),
 			nil,
-			func(val *exampleoc.Model_SingleKey_OrderedList_OrderedMap) bool {
-				return cmp.Equal(val, want, cmp.AllowUnexported(exampleoc.Model_SingleKey_OrderedList_OrderedMap{}))
+			func(val *exampleocconfig.Model_SingleKey_OrderedList_OrderedMap) bool {
+				return cmp.Equal(val, want, cmp.AllowUnexported(exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}))
 			},
 			"",
 			[]*gpb.Path{testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists")},
 			[]gpb.SubscriptionMode{gpb.SubscriptionMode_TARGET_DEFINED},
 			[]uint64{0},
-			[]*ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
-				(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
+			[]*ygnmi.Value[*exampleocconfig.Model_SingleKey_OrderedList_OrderedMap]{
+				(&ygnmi.Value[*exampleocconfig.Model_SingleKey_OrderedList_OrderedMap]{
 					Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 					Timestamp: startTime,
-				}).SetVal(getSampleOrderedMapIncomplete(t)),
-				(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
+				}).SetVal(getSamplePreferConfigOrderedMapIncomplete(t)),
+				(&ygnmi.Value[*exampleocconfig.Model_SingleKey_OrderedList_OrderedMap]{
 					Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 					Timestamp: startTime.Add(time.Millisecond),
-				}).SetVal(getSampleOrderedMap(t)),
+				}).SetVal(getSamplePreferConfigOrderedMap(t)),
 			},
-			(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey_OrderedList_OrderedMap]{
 				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 				Timestamp: startTime.Add(time.Millisecond),
-			}).SetVal(getSampleOrderedMap(t)),
+			}).SetVal(getSamplePreferConfigOrderedMap(t)),
 		)
 	})
 
@@ -1549,39 +1551,39 @@ func TestWatch(t *testing.T) {
 			}},
 		})
 
-		want := getSampleSingleKeyedMap(t)
+		want := getSamplePreferConfigSingleKeyedMap(t)
 		watchCheckFn(t, fakeGNMI, 2*time.Second, client,
-			exampleocpath.Root().Model().SingleKeyMap().State(),
+			exampleocconfigpath.Root().Model().SingleKeyMap().State(),
 			nil,
-			func(val map[string]*exampleoc.Model_SingleKey) bool {
+			func(val map[string]*exampleocconfig.Model_SingleKey) bool {
 				return cmp.Equal(val, want)
 			},
 			"",
 			[]*gpb.Path{testutil.GNMIPath(t, "/model/a")},
 			[]gpb.SubscriptionMode{gpb.SubscriptionMode_TARGET_DEFINED},
 			[]uint64{0},
-			[]*ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
-				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+			[]*ygnmi.Value[map[string]*exampleocconfig.Model_SingleKey]{
+				(&ygnmi.Value[map[string]*exampleocconfig.Model_SingleKey]{
 					Path:      testutil.GNMIPath(t, "/model/a"),
 					Timestamp: startTime,
-				}).SetVal(getSampleSingleKeyedMapIncomplete(t)),
-				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+				}).SetVal(getSamplePreferConfigSingleKeyedMapIncomplete(t)),
+				(&ygnmi.Value[map[string]*exampleocconfig.Model_SingleKey]{
 					Path:      testutil.GNMIPath(t, "/model/a"),
 					Timestamp: startTime.Add(time.Millisecond),
-				}).SetVal(getSampleSingleKeyedMap(t)),
+				}).SetVal(getSamplePreferConfigSingleKeyedMap(t)),
 			},
-			(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+			(&ygnmi.Value[map[string]*exampleocconfig.Model_SingleKey]{
 				Path:      testutil.GNMIPath(t, "/model/a"),
 				Timestamp: startTime.Add(time.Millisecond),
-			}).SetVal(getSampleSingleKeyedMap(t)),
+			}).SetVal(getSamplePreferConfigSingleKeyedMap(t)),
 		)
 	})
 }
 
-func TestAwait(t *testing.T) {
+func TestPreferConfigAwait(t *testing.T) {
 	fakeGNMI, client := newClient(t)
 	path := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
-	lq := exampleocpath.Root().RemoteContainer().ALeaf().State()
+	lq := exampleocconfigpath.Root().RemoteContainer().ALeaf().State()
 
 	startTime := time.Now()
 	tests := []struct {
@@ -1671,13 +1673,13 @@ func TestAwait(t *testing.T) {
 	strPath := testutil.GNMIPath(t, "parent/child/state/one")
 	enumPath := testutil.GNMIPath(t, "parent/child/state/three")
 	startTime = time.Now()
-	nonLeafQuery := exampleocpath.Root().Parent().Child().State()
+	nonLeafQuery := exampleocconfigpath.Root().Parent().Child().State()
 
 	nonLeafTests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
 		wantSubscriptionPath *gpb.Path
-		wantLastVal          *ygnmi.Value[*exampleoc.Parent_Child]
+		wantLastVal          *ygnmi.Value[*exampleocconfig.Parent_Child]
 		wantErr              string
 	}{{
 		desc: "value never equal",
@@ -1692,10 +1694,10 @@ func TestAwait(t *testing.T) {
 		},
 		wantErr:              "EOF",
 		wantSubscriptionPath: rootPath,
-		wantLastVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantLastVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Timestamp: startTime,
 			Path:      rootPath,
-		}).SetVal(&exampleoc.Parent_Child{
+		}).SetVal(&exampleocconfig.Parent_Child{
 			One: ygot.String("bar"),
 		}),
 	}, {
@@ -1716,11 +1718,11 @@ func TestAwait(t *testing.T) {
 			})
 		},
 		wantSubscriptionPath: rootPath,
-		wantLastVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantLastVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Timestamp: startTime.Add(time.Millisecond),
 			Path:      rootPath,
-		}).SetVal(&exampleoc.Parent_Child{
-			Three: exampleoc.Child_Three_ONE,
+		}).SetVal(&exampleocconfig.Parent_Child{
+			Three: exampleocconfig.Child_Three_ONE,
 			One:   ygot.String("foo"),
 		}),
 	}}
@@ -1728,7 +1730,7 @@ func TestAwait(t *testing.T) {
 	for _, tt := range nonLeafTests {
 		t.Run("nonleaf "+tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			val, err := ygnmi.Await(context.Background(), client, nonLeafQuery, &exampleoc.Parent_Child{One: ygot.String("foo"), Three: exampleoc.Child_Three_ONE})
+			val, err := ygnmi.Await(context.Background(), client, nonLeafQuery, &exampleocconfig.Parent_Child{One: ygot.String("foo"), Three: exampleocconfig.Child_Three_ONE})
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
 				t.Fatalf("Await() returned unexpected diff: %s", diff)
 			}
@@ -1740,17 +1742,17 @@ func TestAwait(t *testing.T) {
 				checkJustReceived(t, val.RecvTimestamp)
 				tt.wantLastVal.RecvTimestamp = val.RecvTimestamp
 			}
-			if diff := cmp.Diff(tt.wantLastVal, val, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Parent_Child]{}), protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantLastVal, val, cmp.AllowUnexported(ygnmi.Value[*exampleocconfig.Parent_Child]{}), protocmp.Transform()); diff != "" {
 				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
 			}
 		})
 	}
 }
 
-func TestCollect(t *testing.T) {
+func TestPreferConfigCollect(t *testing.T) {
 	fakeGNMI, client := newClient(t)
 	path := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
-	lq := exampleocpath.Root().RemoteContainer().ALeaf().State()
+	lq := exampleocconfigpath.Root().RemoteContainer().ALeaf().State()
 
 	startTime := time.Now()
 	tests := []struct {
@@ -1849,13 +1851,13 @@ func TestCollect(t *testing.T) {
 	strPath := testutil.GNMIPath(t, "parent/child/state/one")
 	enumPath := testutil.GNMIPath(t, "parent/child/state/three")
 	startTime = time.Now()
-	nonLeafQuery := exampleocpath.Root().Parent().Child().State()
+	nonLeafQuery := exampleocconfigpath.Root().Parent().Child().State()
 
 	nonLeafTests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
 		wantSubscriptionPath *gpb.Path
-		wantVals             []*ygnmi.Value[*exampleoc.Parent_Child]
+		wantVals             []*ygnmi.Value[*exampleocconfig.Parent_Child]
 		wantErr              string
 	}{{
 		desc: "one val",
@@ -1870,11 +1872,11 @@ func TestCollect(t *testing.T) {
 		},
 		wantErr:              "EOF",
 		wantSubscriptionPath: rootPath,
-		wantVals: []*ygnmi.Value[*exampleoc.Parent_Child]{
-			(&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantVals: []*ygnmi.Value[*exampleocconfig.Parent_Child]{
+			(&ygnmi.Value[*exampleocconfig.Parent_Child]{
 				Timestamp: startTime,
 				Path:      rootPath,
-			}).SetVal(&exampleoc.Parent_Child{
+			}).SetVal(&exampleocconfig.Parent_Child{
 				One: ygot.String("bar"),
 			}),
 		},
@@ -1897,18 +1899,18 @@ func TestCollect(t *testing.T) {
 		},
 		wantErr:              "EOF",
 		wantSubscriptionPath: rootPath,
-		wantVals: []*ygnmi.Value[*exampleoc.Parent_Child]{
-			(&ygnmi.Value[*exampleoc.Parent_Child]{
+		wantVals: []*ygnmi.Value[*exampleocconfig.Parent_Child]{
+			(&ygnmi.Value[*exampleocconfig.Parent_Child]{
 				Timestamp: startTime,
 				Path:      rootPath,
-			}).SetVal(&exampleoc.Parent_Child{
+			}).SetVal(&exampleocconfig.Parent_Child{
 				One: ygot.String("foo"),
 			}),
-			(&ygnmi.Value[*exampleoc.Parent_Child]{
+			(&ygnmi.Value[*exampleocconfig.Parent_Child]{
 				Timestamp: startTime.Add(time.Millisecond),
 				Path:      rootPath,
-			}).SetVal(&exampleoc.Parent_Child{
-				Three: exampleoc.Child_Three_ONE,
+			}).SetVal(&exampleocconfig.Parent_Child{
+				Three: exampleocconfig.Child_Three_ONE,
 				One:   ygot.String("foo"),
 			}),
 		},
@@ -1922,10 +1924,10 @@ func TestCollect(t *testing.T) {
 	}
 }
 
-func TestLookupAll(t *testing.T) {
+func TestPreferConfigLookupAll(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 	leafPath := testutil.GNMIPath(t, "model/a/single-key[key=*]/state/value")
-	lq := exampleocpath.Root().Model().SingleKeyAny().Value().State()
+	lq := exampleocconfigpath.Root().Model().SingleKeyAny().Value().State()
 
 	leafTests := []struct {
 		desc                 string
@@ -2079,12 +2081,12 @@ func TestLookupAll(t *testing.T) {
 	}
 
 	nonLeafPath := testutil.GNMIPath(t, "model/a/single-key[key=*]")
-	nonLeafQ := exampleocpath.Root().Model().SingleKeyAny().State()
+	nonLeafQ := exampleocconfigpath.Root().Model().SingleKeyAny().State()
 	nonLeafTests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
 		wantSubscriptionPath *gpb.Path
-		wantVals             []*ygnmi.Value[*exampleoc.Model_SingleKey]
+		wantVals             []*ygnmi.Value[*exampleocconfig.Model_SingleKey]
 		wantErr              string
 	}{{
 		desc: "one value",
@@ -2097,11 +2099,11 @@ func TestLookupAll(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		wantVals: []*ygnmi.Value[*exampleoc.Model_SingleKey]{
-			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+		wantVals: []*ygnmi.Value[*exampleocconfig.Model_SingleKey]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 				Path:      testutil.GNMIPath(t, "model/a/single-key[key=10]"),
 				Timestamp: time.Unix(0, 100),
-			}).SetVal(&exampleoc.Model_SingleKey{
+			}).SetVal(&exampleocconfig.Model_SingleKey{
 				Value: ygot.Int64(10),
 			}),
 		},
@@ -2129,18 +2131,18 @@ func TestLookupAll(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		wantVals: []*ygnmi.Value[*exampleoc.Model_SingleKey]{
-			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+		wantVals: []*ygnmi.Value[*exampleocconfig.Model_SingleKey]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 				Path:      testutil.GNMIPath(t, "model/a/single-key[key=10]"),
 				Timestamp: time.Unix(0, 100),
-			}).SetVal(&exampleoc.Model_SingleKey{
+			}).SetVal(&exampleocconfig.Model_SingleKey{
 				Value: ygot.Int64(100),
 				Key:   ygot.String("10"),
 			}),
-			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 				Path:      testutil.GNMIPath(t, "model/a/single-key[key=11]"),
 				Timestamp: time.Unix(0, 101),
-			}).SetVal(&exampleoc.Model_SingleKey{
+			}).SetVal(&exampleocconfig.Model_SingleKey{
 				Value: ygot.Int64(101),
 				Key:   ygot.String("11"),
 			}),
@@ -2160,8 +2162,8 @@ func TestLookupAll(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		wantVals: []*ygnmi.Value[*exampleoc.Model_SingleKey]{
-			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+		wantVals: []*ygnmi.Value[*exampleocconfig.Model_SingleKey]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 				Path:      testutil.GNMIPath(t, "model/a/single-key[key=10]"),
 				Timestamp: time.Unix(0, 100),
 				ComplianceErrors: &ygnmi.ComplianceErrors{
@@ -2170,7 +2172,7 @@ func TestLookupAll(t *testing.T) {
 						Path:  testutil.GNMIPath(t, "model/a/single-key[key=10]/state/value-fake"),
 					}},
 				},
-			}).SetVal(&exampleoc.Model_SingleKey{
+			}).SetVal(&exampleocconfig.Model_SingleKey{
 				Key: ygot.String("10"),
 			}),
 		},
@@ -2254,12 +2256,12 @@ func TestLookupAll(t *testing.T) {
 
 		lookupAllCheckFn(
 			t, fakeGNMI, c,
-			exampleocpath.Root().Model().SingleKeyAny().OrderedListMap().State(),
+			exampleocconfigpath.Root().Model().SingleKeyAny().OrderedListMap().State(),
 			"",
 			testutil.GNMIPath(t, "/model/a/single-key[key=*]/ordered-lists"),
-			[]*ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
+			[]*ygnmi.Value[*exampleocconfig.Model_SingleKey_OrderedList_OrderedMap]{
 				// In alphabetical order.
-				(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
+				(&ygnmi.Value[*exampleocconfig.Model_SingleKey_OrderedList_OrderedMap]{
 					Path:      testutil.GNMIPath(t, "/model/a/single-key[key=bar]/ordered-lists"),
 					Timestamp: time.Unix(0, 101),
 					ComplianceErrors: &ygnmi.ComplianceErrors{
@@ -2268,11 +2270,11 @@ func TestLookupAll(t *testing.T) {
 							Path:  testutil.GNMIPath(t, "model/a/single-key[key=bar]/ordered-lists/ordered-list[key=bar]/state/dne-value"),
 						}},
 					},
-				}).SetVal(getSampleOrderedMapIncomplete(t)),
-				(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
+				}).SetVal(getSamplePreferConfigOrderedMapIncomplete(t)),
+				(&ygnmi.Value[*exampleocconfig.Model_SingleKey_OrderedList_OrderedMap]{
 					Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 					Timestamp: time.Unix(0, 100),
-				}).SetVal(getSampleOrderedMap(t)),
+				}).SetVal(getSamplePreferConfigOrderedMap(t)),
 			},
 			true,
 		)
@@ -2341,12 +2343,12 @@ func TestLookupAll(t *testing.T) {
 
 		lookupAllCheckFn(
 			t, fakeGNMI, c,
-			exampleocpath.Root().Model().SingleKeyAny().SingleKeyMap().State(),
+			exampleocconfigpath.Root().Model().SingleKeyAny().SingleKeyMap().State(),
 			"",
 			testutil.GNMIPath(t, "/model/a/single-key[key=*]/inner-a"),
-			[]*ygnmi.Value[map[string]*exampleoc.Model_SingleKey_SingleKey]{
+			[]*ygnmi.Value[map[string]*exampleocconfig.Model_SingleKey_SingleKey]{
 				// In alphabetical order.
-				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey_SingleKey]{
+				(&ygnmi.Value[map[string]*exampleocconfig.Model_SingleKey_SingleKey]{
 					Path:      testutil.GNMIPath(t, "/model/a/single-key[key=bar]/inner-a"),
 					Timestamp: time.Unix(0, 101),
 					ComplianceErrors: &ygnmi.ComplianceErrors{
@@ -2355,11 +2357,11 @@ func TestLookupAll(t *testing.T) {
 							Path:  testutil.GNMIPath(t, "model/a/single-key[key=bar]/inner-a/single-key[key=bar]/state/dne-value"),
 						}},
 					},
-				}).SetVal(getSampleInnerSingleKeyedMapIncomplete(t)),
-				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey_SingleKey]{
+				}).SetVal(getSamplePreferConfigInnerSingleKeyedMapIncomplete(t)),
+				(&ygnmi.Value[map[string]*exampleocconfig.Model_SingleKey_SingleKey]{
 					Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/inner-a"),
 					Timestamp: time.Unix(0, 100),
-				}).SetVal(getSampleInnerSingleKeyedMap(t)),
+				}).SetVal(getSamplePreferConfigInnerSingleKeyedMap(t)),
 			},
 			true,
 		)
@@ -2399,10 +2401,10 @@ func TestLookupAll(t *testing.T) {
 	})
 }
 
-func TestGetAll(t *testing.T) {
+func TestPreferConfigGetAll(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 	leafPath := testutil.GNMIPath(t, "model/a/single-key[key=*]/state/value")
-	lq := exampleocpath.Root().Model().SingleKeyAny().Value().State()
+	lq := exampleocconfigpath.Root().Model().SingleKeyAny().Value().State()
 
 	tests := []struct {
 		desc                 string
@@ -2466,7 +2468,7 @@ func TestGetAll(t *testing.T) {
 		}
 		wantVal := []int64{1}
 
-		got, err := ygnmi.GetAll(context.Background(), c, exampleocpath.Root().Model().SingleKeyAny().Value().State(), ygnmi.WithUseGet())
+		got, err := ygnmi.GetAll(context.Background(), c, exampleocconfigpath.Root().Model().SingleKeyAny().Value().State(), ygnmi.WithUseGet())
 		if err != nil {
 			t.Fatalf("Get() returned unexpected error: %v", err)
 		}
@@ -2479,14 +2481,14 @@ func TestGetAll(t *testing.T) {
 	})
 }
 
-func TestWatchAll(t *testing.T) {
+func TestPreferConfigWatchAll(t *testing.T) {
 	fakeGNMI, client := newClient(t)
 	leafQueryPath := testutil.GNMIPath(t, "model/a/single-key[key=*]/state/value")
 	key10Path := testutil.GNMIPath(t, "model/a/single-key[key=10]/state/value")
 	key11Path := testutil.GNMIPath(t, "model/a/single-key[key=11]/state/value")
 
 	startTime := time.Now()
-	lq := exampleocpath.Root().Model().SingleKeyAny().Value().State()
+	lq := exampleocconfigpath.Root().Model().SingleKeyAny().Value().State()
 	tests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
@@ -2696,14 +2698,14 @@ func TestWatchAll(t *testing.T) {
 	nonLeafKey10Path := testutil.GNMIPath(t, "model/a/single-key[key=10]")
 	nonLeafKey11Path := testutil.GNMIPath(t, "model/a/single-key[key=11]")
 
-	nonLeafQ := exampleocpath.Root().Model().SingleKeyAny().State()
+	nonLeafQ := exampleocconfigpath.Root().Model().SingleKeyAny().State()
 	nonLeafTests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
 		dur                  time.Duration
 		wantSubscriptionPath *gpb.Path
-		wantLastVal          *ygnmi.Value[*exampleoc.Model_SingleKey]
-		wantVals             []*ygnmi.Value[*exampleoc.Model_SingleKey]
+		wantLastVal          *ygnmi.Value[*exampleocconfig.Model_SingleKey]
+		wantVals             []*ygnmi.Value[*exampleocconfig.Model_SingleKey]
 		wantErr              string
 	}{{
 		desc: "predicate not true",
@@ -2718,18 +2720,18 @@ func TestWatchAll(t *testing.T) {
 			}).Sync()
 		},
 		wantSubscriptionPath: nonLeafPath,
-		wantVals: []*ygnmi.Value[*exampleoc.Model_SingleKey]{
-			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+		wantVals: []*ygnmi.Value[*exampleocconfig.Model_SingleKey]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 				Timestamp: startTime,
 				Path:      nonLeafKey10Path,
-			}).SetVal(&exampleoc.Model_SingleKey{
+			}).SetVal(&exampleocconfig.Model_SingleKey{
 				Value: ygot.Int64(100),
 			}),
 		},
-		wantLastVal: (&ygnmi.Value[*exampleoc.Model_SingleKey]{
+		wantLastVal: (&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 			Timestamp: startTime,
 			Path:      nonLeafKey10Path,
-		}).SetVal(&exampleoc.Model_SingleKey{
+		}).SetVal(&exampleocconfig.Model_SingleKey{
 			Value: ygot.Int64(100),
 		}),
 		wantErr: "EOF",
@@ -2755,31 +2757,31 @@ func TestWatchAll(t *testing.T) {
 			})
 		},
 		wantSubscriptionPath: nonLeafPath,
-		wantVals: []*ygnmi.Value[*exampleoc.Model_SingleKey]{
-			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+		wantVals: []*ygnmi.Value[*exampleocconfig.Model_SingleKey]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 				Timestamp: startTime,
 				Path:      nonLeafKey10Path,
-			}).SetVal(&exampleoc.Model_SingleKey{
+			}).SetVal(&exampleocconfig.Model_SingleKey{
 				Value: ygot.Int64(100),
 			}),
-			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 				Timestamp: startTime,
 				Path:      nonLeafKey11Path,
-			}).SetVal(&exampleoc.Model_SingleKey{
+			}).SetVal(&exampleocconfig.Model_SingleKey{
 				Key: ygot.String("test"),
 			}),
-			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 				Timestamp: startTime.Add(time.Millisecond),
 				Path:      nonLeafKey11Path,
-			}).SetVal(&exampleoc.Model_SingleKey{
+			}).SetVal(&exampleocconfig.Model_SingleKey{
 				Value: ygot.Int64(101),
 				Key:   ygot.String("test"),
 			}),
 		},
-		wantLastVal: (&ygnmi.Value[*exampleoc.Model_SingleKey]{
+		wantLastVal: (&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 			Timestamp: startTime.Add(time.Millisecond),
 			Path:      nonLeafKey11Path,
-		}).SetVal(&exampleoc.Model_SingleKey{
+		}).SetVal(&exampleocconfig.Model_SingleKey{
 			Value: ygot.Int64(101),
 			Key:   ygot.String("test"),
 		}),
@@ -2817,45 +2819,45 @@ func TestWatchAll(t *testing.T) {
 			})
 		},
 		wantSubscriptionPath: nonLeafPath,
-		wantVals: []*ygnmi.Value[*exampleoc.Model_SingleKey]{
-			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+		wantVals: []*ygnmi.Value[*exampleocconfig.Model_SingleKey]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 				Timestamp: startTime,
 				Path:      nonLeafKey10Path,
-			}).SetVal(&exampleoc.Model_SingleKey{
+			}).SetVal(&exampleocconfig.Model_SingleKey{
 				Value: ygot.Int64(100),
 			}),
-			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 				Timestamp: startTime,
 				Path:      nonLeafKey11Path,
-			}).SetVal(&exampleoc.Model_SingleKey{
+			}).SetVal(&exampleocconfig.Model_SingleKey{
 				Key: ygot.String("test"),
 			}),
-			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 				Timestamp: startTime.Add(time.Millisecond),
 				Path:      nonLeafKey11Path,
 			}),
-			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 				Timestamp: startTime.Add(2 * time.Millisecond),
 				Path:      nonLeafKey10Path,
 			}),
-			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 				Timestamp: startTime.Add(3 * time.Millisecond),
 				Path:      nonLeafKey10Path,
-			}).SetVal(&exampleoc.Model_SingleKey{
+			}).SetVal(&exampleocconfig.Model_SingleKey{
 				Value: ygot.Int64(100),
 			}),
-			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 				Timestamp: startTime.Add(3 * time.Millisecond),
 				Path:      nonLeafKey11Path,
-			}).SetVal(&exampleoc.Model_SingleKey{
+			}).SetVal(&exampleocconfig.Model_SingleKey{
 				Value: ygot.Int64(101),
 				Key:   ygot.String("test"),
 			}),
 		},
-		wantLastVal: (&ygnmi.Value[*exampleoc.Model_SingleKey]{
+		wantLastVal: (&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 			Timestamp: startTime.Add(3 * time.Millisecond),
 			Path:      nonLeafKey11Path,
-		}).SetVal(&exampleoc.Model_SingleKey{
+		}).SetVal(&exampleocconfig.Model_SingleKey{
 			Value: ygot.Int64(101),
 			Key:   ygot.String("test"),
 		}),
@@ -2868,11 +2870,11 @@ func TestWatchAll(t *testing.T) {
 			defer cancel()
 			var key10Cond, key11Cond bool
 
-			w := ygnmi.WatchAll(ctx, client, nonLeafQ, func(v *ygnmi.Value[*exampleoc.Model_SingleKey]) error {
+			w := ygnmi.WatchAll(ctx, client, nonLeafQ, func(v *ygnmi.Value[*exampleocconfig.Model_SingleKey]) error {
 				if i > len(tt.wantVals) {
 					t.Fatalf("Predicate(%d) expected no more values but got: %+v", i, v)
 				}
-				if diff := cmp.Diff(tt.wantVals[i], v, cmpopts.IgnoreFields(ygnmi.Value[*exampleoc.Model_SingleKey]{}, "RecvTimestamp"), cmp.AllowUnexported(ygnmi.Value[*exampleoc.Model_SingleKey]{}), protocmp.Transform()); diff != "" {
+				if diff := cmp.Diff(tt.wantVals[i], v, cmpopts.IgnoreFields(ygnmi.Value[*exampleocconfig.Model_SingleKey]{}, "RecvTimestamp"), cmp.AllowUnexported(ygnmi.Value[*exampleocconfig.Model_SingleKey]{}), protocmp.Transform()); diff != "" {
 					t.Errorf("Predicate(%d) got unexpected input (-want,+got):\n %s\nComplianceErrors:\n%v", i, diff, v.ComplianceErrors)
 				}
 				val, present := v.Val()
@@ -2895,21 +2897,21 @@ func TestWatchAll(t *testing.T) {
 				checkJustReceived(t, val.RecvTimestamp)
 				tt.wantLastVal.RecvTimestamp = val.RecvTimestamp
 			}
-			if diff := cmp.Diff(tt.wantLastVal, val, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Model_SingleKey]{}), protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantLastVal, val, cmp.AllowUnexported(ygnmi.Value[*exampleocconfig.Model_SingleKey]{}), protocmp.Transform()); diff != "" {
 				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
 			}
 		})
 	}
 }
 
-func TestCollectAll(t *testing.T) {
+func TestPreferConfigCollectAll(t *testing.T) {
 	fakeGNMI, client := newClient(t)
 	leafQueryPath := testutil.GNMIPath(t, "model/a/single-key[key=*]/state/value")
 	key10Path := testutil.GNMIPath(t, "model/a/single-key[key=10]/state/value")
 	key11Path := testutil.GNMIPath(t, "model/a/single-key[key=11]/state/value")
 
 	startTime := time.Now()
-	lq := exampleocpath.Root().Model().SingleKeyAny().Value().State()
+	lq := exampleocconfigpath.Root().Model().SingleKeyAny().Value().State()
 	tests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
@@ -2994,13 +2996,13 @@ func TestCollectAll(t *testing.T) {
 	nonLeafKey10Path := testutil.GNMIPath(t, "model/a/single-key[key=10]")
 	nonLeafKey11Path := testutil.GNMIPath(t, "model/a/single-key[key=11]")
 
-	nonLeafQ := exampleocpath.Root().Model().SingleKeyAny().State()
+	nonLeafQ := exampleocconfigpath.Root().Model().SingleKeyAny().State()
 	nonLeafTests := []struct {
 		desc                 string
 		stub                 func(s *testutil.Stubber)
 		dur                  time.Duration
 		wantSubscriptionPath *gpb.Path
-		wantVals             []*ygnmi.Value[*exampleoc.Model_SingleKey]
+		wantVals             []*ygnmi.Value[*exampleocconfig.Model_SingleKey]
 		wantErr              string
 	}{{
 		desc: "no values",
@@ -3031,17 +3033,17 @@ func TestCollectAll(t *testing.T) {
 		},
 		wantSubscriptionPath: nonLeafPath,
 		wantErr:              "EOF",
-		wantVals: []*ygnmi.Value[*exampleoc.Model_SingleKey]{
-			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+		wantVals: []*ygnmi.Value[*exampleocconfig.Model_SingleKey]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 				Timestamp: startTime,
 				Path:      nonLeafKey10Path,
-			}).SetVal(&exampleoc.Model_SingleKey{
+			}).SetVal(&exampleocconfig.Model_SingleKey{
 				Value: ygot.Int64(100),
 			}),
-			(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+			(&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 				Timestamp: startTime.Add(time.Millisecond),
 				Path:      nonLeafKey11Path,
-			}).SetVal(&exampleoc.Model_SingleKey{
+			}).SetVal(&exampleocconfig.Model_SingleKey{
 				Value: ygot.Int64(101),
 			}),
 		},
@@ -3059,14 +3061,14 @@ func TestCollectAll(t *testing.T) {
 			for _, val := range vals {
 				checkJustReceived(t, val.RecvTimestamp)
 			}
-			if diff := cmp.Diff(tt.wantVals, vals, cmpopts.IgnoreFields(ygnmi.Value[*exampleoc.Model_SingleKey]{}, "RecvTimestamp"), cmp.AllowUnexported(ygnmi.Value[*exampleoc.Model_SingleKey]{}), protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantVals, vals, cmpopts.IgnoreFields(ygnmi.Value[*exampleocconfig.Model_SingleKey]{}, "RecvTimestamp"), cmp.AllowUnexported(ygnmi.Value[*exampleocconfig.Model_SingleKey]{}), protocmp.Transform()); diff != "" {
 				t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
 			}
 		})
 	}
 }
 
-func TestUpdate(t *testing.T) {
+func TestPreferConfigUpdate(t *testing.T) {
 	setClient := &testutil.SetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
 	if err != nil {
@@ -3083,7 +3085,7 @@ func TestUpdate(t *testing.T) {
 	}{{
 		desc: "scalar leaf",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Parent().Child().One().Config(), "10")
+			return ygnmi.Update(context.Background(), c, exampleocconfigpath.Root().Parent().Child().One().Config(), "10")
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3102,7 +3104,7 @@ func TestUpdate(t *testing.T) {
 	}, {
 		desc: "non scalar leaf",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Parent().Child().Three().Config(), exampleoc.Child_Three_ONE)
+			return ygnmi.Update(context.Background(), c, exampleocconfigpath.Root().Parent().Child().Three().Config(), exampleocconfig.Child_Three_ONE)
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3121,7 +3123,7 @@ func TestUpdate(t *testing.T) {
 	}, {
 		desc: "non leaf",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Parent().Child().Config(), &exampleoc.Parent_Child{One: ygot.String("10")})
+			return ygnmi.Update(context.Background(), c, exampleocconfigpath.Root().Parent().Child().Config(), &exampleocconfig.Parent_Child{One: ygot.String("10")})
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3140,7 +3142,7 @@ func TestUpdate(t *testing.T) {
 	}, {
 		desc: "server error",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Parent().Child().One().Config(), "10")
+			return ygnmi.Update(context.Background(), c, exampleocconfigpath.Root().Parent().Child().One().Config(), "10")
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3156,7 +3158,7 @@ func TestUpdate(t *testing.T) {
 	}, {
 		desc: "YANG ordered list",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			om := &exampleoc.Model_SingleKey_OrderedList_OrderedMap{}
+			om := &exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}
 			ol, err := om.AppendNew("foo")
 			if err != nil {
 				t.Fatal(err)
@@ -3172,7 +3174,7 @@ func TestUpdate(t *testing.T) {
 				t.Fatal(err)
 			}
 			ol.SetValue(44)
-			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().Config(), om)
+			return ygnmi.Update(context.Background(), c, exampleocconfigpath.Root().Model().SingleKey("foo").OrderedListMap().Config(), om)
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3215,7 +3217,7 @@ func TestUpdate(t *testing.T) {
 	}, {
 		desc: "whole single-keyed list",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Model().SingleKeyMap().Config(), getSampleSingleKeyedMap(t))
+			return ygnmi.Update(context.Background(), c, exampleocconfigpath.Root().Model().SingleKeyMap().Config(), getSamplePreferConfigSingleKeyedMap(t))
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3258,7 +3260,7 @@ func TestUpdate(t *testing.T) {
 	}, {
 		desc: "leaf and prefer proto",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Parent().Child().One().Config(), "10", ygnmi.WithSetPreferProtoEncoding())
+			return ygnmi.Update(context.Background(), c, exampleocconfigpath.Root().Parent().Child().One().Config(), "10", ygnmi.WithSetPreferProtoEncoding())
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3272,7 +3274,7 @@ func TestUpdate(t *testing.T) {
 	}, {
 		desc: "non leaf and prefer proto",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Parent().Child().Config(), &exampleoc.Parent_Child{One: ygot.String("10")}, ygnmi.WithSetPreferProtoEncoding())
+			return ygnmi.Update(context.Background(), c, exampleocconfigpath.Root().Parent().Child().Config(), &exampleocconfig.Parent_Child{One: ygot.String("10")}, ygnmi.WithSetPreferProtoEncoding())
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3399,7 +3401,7 @@ func TestUpdate(t *testing.T) {
 	}
 }
 
-func TestReplace(t *testing.T) {
+func TestPreferConfigReplace(t *testing.T) {
 	setClient := &testutil.SetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
 	if err != nil {
@@ -3415,7 +3417,7 @@ func TestReplace(t *testing.T) {
 	}{{
 		desc: "scalar leaf",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Replace(context.Background(), c, exampleocpath.Root().Parent().Child().One().Config(), "10")
+			return ygnmi.Replace(context.Background(), c, exampleocconfigpath.Root().Parent().Child().One().Config(), "10")
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3434,7 +3436,7 @@ func TestReplace(t *testing.T) {
 	}, {
 		desc: "non scalar leaf",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Replace(context.Background(), c, exampleocpath.Root().Parent().Child().Three().Config(), exampleoc.Child_Three_ONE)
+			return ygnmi.Replace(context.Background(), c, exampleocconfigpath.Root().Parent().Child().Three().Config(), exampleocconfig.Child_Three_ONE)
 
 		},
 		wantRequest: &gpb.SetRequest{
@@ -3454,7 +3456,7 @@ func TestReplace(t *testing.T) {
 	}, {
 		desc: "non leaf",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Replace(context.Background(), c, exampleocpath.Root().Parent().Child().Config(), &exampleoc.Parent_Child{One: ygot.String("10")})
+			return ygnmi.Replace(context.Background(), c, exampleocconfigpath.Root().Parent().Child().Config(), &exampleocconfig.Parent_Child{One: ygot.String("10")})
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3473,7 +3475,7 @@ func TestReplace(t *testing.T) {
 	}, {
 		desc: "YANG ordered list",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			om := &exampleoc.Model_SingleKey_OrderedList_OrderedMap{}
+			om := &exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}
 			ol, err := om.AppendNew("foo")
 			if err != nil {
 				t.Fatal(err)
@@ -3489,7 +3491,7 @@ func TestReplace(t *testing.T) {
 				t.Fatal(err)
 			}
 			ol.SetValue(44)
-			return ygnmi.Replace(context.Background(), c, exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().Config(), om)
+			return ygnmi.Replace(context.Background(), c, exampleocconfigpath.Root().Model().SingleKey("foo").OrderedListMap().Config(), om)
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3532,7 +3534,7 @@ func TestReplace(t *testing.T) {
 	}, {
 		desc: "whole single-keyed list",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Replace(context.Background(), c, exampleocpath.Root().Model().SingleKeyMap().Config(), getSampleSingleKeyedMap(t))
+			return ygnmi.Replace(context.Background(), c, exampleocconfigpath.Root().Model().SingleKeyMap().Config(), getSamplePreferConfigSingleKeyedMap(t))
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3575,7 +3577,7 @@ func TestReplace(t *testing.T) {
 	}, {
 		desc: "server error",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Replace(context.Background(), c, exampleocpath.Root().Parent().Child().One().Config(), "10")
+			return ygnmi.Replace(context.Background(), c, exampleocconfigpath.Root().Parent().Child().One().Config(), "10")
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3596,7 +3598,7 @@ func TestReplace(t *testing.T) {
 	}
 }
 
-func TestDelete(t *testing.T) {
+func TestPreferConfigDelete(t *testing.T) {
 	setClient := &testutil.SetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
 	if err != nil {
@@ -3612,7 +3614,7 @@ func TestDelete(t *testing.T) {
 	}{{
 		desc: "success",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Delete(context.Background(), c, exampleocpath.Root().Parent().Child().One().Config())
+			return ygnmi.Delete(context.Background(), c, exampleocconfigpath.Root().Parent().Child().One().Config())
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3630,7 +3632,7 @@ func TestDelete(t *testing.T) {
 	}, {
 		desc: "YANG ordered list",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Delete(context.Background(), c, exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().Config())
+			return ygnmi.Delete(context.Background(), c, exampleocconfigpath.Root().Model().SingleKey("foo").OrderedListMap().Config())
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3648,7 +3650,7 @@ func TestDelete(t *testing.T) {
 	}, {
 		desc: "whole single-keyed list",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Delete(context.Background(), c, exampleocpath.Root().Model().SingleKeyMap().Config())
+			return ygnmi.Delete(context.Background(), c, exampleocconfigpath.Root().Model().SingleKeyMap().Config())
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3666,7 +3668,7 @@ func TestDelete(t *testing.T) {
 	}, {
 		desc: "server error",
 		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
-			return ygnmi.Delete(context.Background(), c, exampleocpath.Root().Parent().Child().One().Config())
+			return ygnmi.Delete(context.Background(), c, exampleocconfigpath.Root().Parent().Child().One().Config())
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -3686,7 +3688,7 @@ func TestDelete(t *testing.T) {
 	}
 }
 
-func TestBatchGet(t *testing.T) {
+func TestPreferConfigBatchGet(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 	aLeafStatePath := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
 	aLeafConfigPath := testutil.GNMIPath(t, "/remote-container/config/a-leaf")
@@ -3699,7 +3701,7 @@ func TestBatchGet(t *testing.T) {
 		config               bool
 		paths                []ygnmi.PathStruct
 		wantSubscriptionPath []*gpb.Path
-		wantVal              *ygnmi.Value[*exampleoc.Root]
+		wantVal              *ygnmi.Value[*exampleocconfig.Root]
 		wantErr              string
 	}{{
 		desc: "state leaves",
@@ -3719,19 +3721,19 @@ func TestBatchGet(t *testing.T) {
 			}).Sync()
 		},
 		paths: []ygnmi.PathStruct{
-			exampleocpath.Root().RemoteContainer().ALeaf(),
-			exampleocpath.Root().Parent().Child().Two(),
+			exampleocconfigpath.Root().RemoteContainer().ALeaf(),
+			exampleocconfigpath.Root().Parent().Child().Two(),
 		},
 		wantSubscriptionPath: []*gpb.Path{
 			aLeafSubPath,
 			twoPath,
 		},
-		wantVal: (&ygnmi.Value[*exampleoc.Root]{
+		wantVal: (&ygnmi.Value[*exampleocconfig.Root]{
 			Timestamp: time.Unix(0, 100),
 			Path:      testutil.GNMIPath(t, "/"),
-		}).SetVal(&exampleoc.Root{
-			RemoteContainer: &exampleoc.RemoteContainer{ALeaf: ygot.String("foo")},
-			Parent:          &exampleoc.Parent{Child: &exampleoc.Parent_Child{Two: ygot.String("bar")}},
+		}).SetVal(&exampleocconfig.Root{
+			RemoteContainer: &exampleocconfig.RemoteContainer{ALeaf: ygot.String("foo")},
+			Parent:          &exampleocconfig.Parent{Child: &exampleocconfig.Parent_Child{Two: ygot.String("bar")}},
 		}),
 	}, {
 		desc:   "config ignore state leaves",
@@ -3749,19 +3751,19 @@ func TestBatchGet(t *testing.T) {
 			}).Sync()
 		},
 		paths: []ygnmi.PathStruct{
-			exampleocpath.Root().RemoteContainer().ALeaf(),
-			exampleocpath.Root().Parent().Child().Two(),
+			exampleocconfigpath.Root().RemoteContainer().ALeaf(),
+			exampleocconfigpath.Root().Parent().Child().Two(),
 		},
 		wantSubscriptionPath: []*gpb.Path{
 			aLeafSubPath,
 			twoPath,
 		},
-		wantVal: (&ygnmi.Value[*exampleoc.Root]{
+		wantVal: (&ygnmi.Value[*exampleocconfig.Root]{
 			Timestamp: time.Unix(0, 100),
 			Path:      testutil.GNMIPath(t, "/"),
-		}).SetVal(&exampleoc.Root{
-			RemoteContainer: &exampleoc.RemoteContainer{},
-			Parent:          &exampleoc.Parent{Child: &exampleoc.Parent_Child{}},
+		}).SetVal(&exampleocconfig.Root{
+			RemoteContainer: &exampleocconfig.RemoteContainer{},
+			Parent:          &exampleocconfig.Parent{Child: &exampleocconfig.Parent_Child{}},
 		}),
 	}, {
 		desc: "non leaves",
@@ -3778,26 +3780,26 @@ func TestBatchGet(t *testing.T) {
 			}).Sync()
 		},
 		paths: []ygnmi.PathStruct{
-			exampleocpath.Root().RemoteContainer(),
-			exampleocpath.Root().Parent(),
+			exampleocconfigpath.Root().RemoteContainer(),
+			exampleocconfigpath.Root().Parent(),
 		},
 		wantSubscriptionPath: []*gpb.Path{
 			testutil.GNMIPath(t, "/remote-container"),
 			testutil.GNMIPath(t, "/parent"),
 		},
-		wantVal: (&ygnmi.Value[*exampleoc.Root]{
+		wantVal: (&ygnmi.Value[*exampleocconfig.Root]{
 			Timestamp: time.Unix(0, 100),
 			Path:      testutil.GNMIPath(t, "/"),
-		}).SetVal(&exampleoc.Root{
-			RemoteContainer: &exampleoc.RemoteContainer{ALeaf: ygot.String("foo")},
-			Parent:          &exampleoc.Parent{Child: &exampleoc.Parent_Child{Two: ygot.String("bar")}},
+		}).SetVal(&exampleocconfig.Root{
+			RemoteContainer: &exampleocconfig.RemoteContainer{ALeaf: ygot.String("foo")},
+			Parent:          &exampleocconfig.Parent{Child: &exampleocconfig.Parent_Child{Two: ygot.String("bar")}},
 		}),
 	}}
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			b := &exampleocpath.Batch{}
+			b := &exampleocconfigpath.Batch{}
 			b.AddPaths(tt.paths...)
 			query := b.State()
 			if tt.config {
@@ -3814,21 +3816,21 @@ func TestBatchGet(t *testing.T) {
 			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath...)
 			tt.wantVal.RecvTimestamp = got.RecvTimestamp
 
-			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Root]{}), protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleocconfig.Root]{}), protocmp.Transform()); diff != "" {
 				t.Errorf("Lookup() returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", diff, got.ComplianceErrors)
 			}
 		})
 	}
 	t.Run("immutable query", func(t *testing.T) {
 		fakeGNMI.Stub().Sync()
-		b := &exampleocpath.Batch{}
-		b.AddPaths(exampleocpath.Root().Model())
+		b := &exampleocconfigpath.Batch{}
+		b.AddPaths(exampleocconfigpath.Root().Model())
 		q := b.State()
 		if _, err := ygnmi.Lookup(context.Background(), c, q); err != nil {
 			t.Fatal(err)
 		}
 		verifySubscriptionPathsSent(t, fakeGNMI, testutil.GNMIPath(t, "/model"))
-		b.AddPaths(exampleocpath.Root().A(), exampleocpath.Root().A().B())
+		b.AddPaths(exampleocconfigpath.Root().A(), exampleocconfigpath.Root().A().B())
 		if _, err := ygnmi.Lookup(context.Background(), c, q); err != nil {
 			t.Fatal(err)
 		}
@@ -3836,7 +3838,7 @@ func TestBatchGet(t *testing.T) {
 	})
 }
 
-func TestBatchWatch(t *testing.T) {
+func TestPreferConfigBatchWatch(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 	aLeafStatePath := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
 	twoPath := testutil.GNMIPath(t, "/parent/child/state/two")
@@ -3848,7 +3850,7 @@ func TestBatchWatch(t *testing.T) {
 		config               bool
 		paths                []ygnmi.PathStruct
 		wantSubscriptionPath []*gpb.Path
-		wantVal              *ygnmi.Value[*exampleoc.Root]
+		wantVal              *ygnmi.Value[*exampleocconfig.Root]
 		wantErr              string
 	}{{
 		desc: "predicate true",
@@ -3865,19 +3867,19 @@ func TestBatchWatch(t *testing.T) {
 			}).Sync()
 		},
 		paths: []ygnmi.PathStruct{
-			exampleocpath.Root().RemoteContainer().ALeaf(),
-			exampleocpath.Root().Parent().Child().Two(),
+			exampleocconfigpath.Root().RemoteContainer().ALeaf(),
+			exampleocconfigpath.Root().Parent().Child().Two(),
 		},
 		wantSubscriptionPath: []*gpb.Path{
 			aLeafSubPath,
 			twoPath,
 		},
-		wantVal: (&ygnmi.Value[*exampleoc.Root]{
+		wantVal: (&ygnmi.Value[*exampleocconfig.Root]{
 			Timestamp: time.Unix(0, 100),
 			Path:      testutil.GNMIPath(t, "/"),
-		}).SetVal(&exampleoc.Root{
-			RemoteContainer: &exampleoc.RemoteContainer{ALeaf: ygot.String("foo")},
-			Parent:          &exampleoc.Parent{Child: &exampleoc.Parent_Child{Two: ygot.String("bar")}},
+		}).SetVal(&exampleocconfig.Root{
+			RemoteContainer: &exampleocconfig.RemoteContainer{ALeaf: ygot.String("foo")},
+			Parent:          &exampleocconfig.Parent{Child: &exampleocconfig.Parent_Child{Two: ygot.String("bar")}},
 		}),
 	}, {
 		desc: "predicate false true false",
@@ -3903,19 +3905,19 @@ func TestBatchWatch(t *testing.T) {
 			})
 		},
 		paths: []ygnmi.PathStruct{
-			exampleocpath.Root().RemoteContainer().ALeaf(),
-			exampleocpath.Root().Parent().Child().Two(),
+			exampleocconfigpath.Root().RemoteContainer().ALeaf(),
+			exampleocconfigpath.Root().Parent().Child().Two(),
 		},
 		wantSubscriptionPath: []*gpb.Path{
 			aLeafSubPath,
 			twoPath,
 		},
-		wantVal: (&ygnmi.Value[*exampleoc.Root]{
+		wantVal: (&ygnmi.Value[*exampleocconfig.Root]{
 			Timestamp: time.Unix(0, 101),
 			Path:      testutil.GNMIPath(t, "/"),
-		}).SetVal(&exampleoc.Root{
-			RemoteContainer: &exampleoc.RemoteContainer{ALeaf: ygot.String("foo")},
-			Parent:          &exampleoc.Parent{Child: &exampleoc.Parent_Child{Two: ygot.String("bar")}},
+		}).SetVal(&exampleocconfig.Root{
+			RemoteContainer: &exampleocconfig.RemoteContainer{ALeaf: ygot.String("foo")},
+			Parent:          &exampleocconfig.Parent{Child: &exampleocconfig.Parent_Child{Two: ygot.String("bar")}},
 		}),
 	}, {
 		desc:   "predicate false",
@@ -3930,8 +3932,8 @@ func TestBatchWatch(t *testing.T) {
 			}).Sync()
 		},
 		paths: []ygnmi.PathStruct{
-			exampleocpath.Root().RemoteContainer().ALeaf(),
-			exampleocpath.Root().Parent().Child().Two(),
+			exampleocconfigpath.Root().RemoteContainer().ALeaf(),
+			exampleocconfigpath.Root().Parent().Child().Two(),
 		},
 		wantSubscriptionPath: []*gpb.Path{
 			aLeafSubPath,
@@ -3953,33 +3955,33 @@ func TestBatchWatch(t *testing.T) {
 			}).Sync()
 		},
 		paths: []ygnmi.PathStruct{
-			exampleocpath.Root().RemoteContainer(),
-			exampleocpath.Root().Parent(),
+			exampleocconfigpath.Root().RemoteContainer(),
+			exampleocconfigpath.Root().Parent(),
 		},
 		wantSubscriptionPath: []*gpb.Path{
 			testutil.GNMIPath(t, "/remote-container"),
 			testutil.GNMIPath(t, "/parent"),
 		},
-		wantVal: (&ygnmi.Value[*exampleoc.Root]{
+		wantVal: (&ygnmi.Value[*exampleocconfig.Root]{
 			Timestamp: time.Unix(0, 100),
 			Path:      testutil.GNMIPath(t, "/"),
-		}).SetVal(&exampleoc.Root{
-			RemoteContainer: &exampleoc.RemoteContainer{ALeaf: ygot.String("foo")},
-			Parent:          &exampleoc.Parent{Child: &exampleoc.Parent_Child{Two: ygot.String("bar")}},
+		}).SetVal(&exampleocconfig.Root{
+			RemoteContainer: &exampleocconfig.RemoteContainer{ALeaf: ygot.String("foo")},
+			Parent:          &exampleocconfig.Parent{Child: &exampleocconfig.Parent_Child{Two: ygot.String("bar")}},
 		}),
 	}}
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			b := &exampleocpath.Batch{}
+			b := &exampleocconfigpath.Batch{}
 			b.AddPaths(tt.paths...)
 			query := b.State()
 			if tt.config {
 				query = b.Config()
 			}
 
-			got, err := ygnmi.Watch(context.Background(), c, query, func(v *ygnmi.Value[*exampleoc.Root]) error {
+			got, err := ygnmi.Watch(context.Background(), c, query, func(v *ygnmi.Value[*exampleocconfig.Root]) error {
 				if v, ok := v.Val(); ok && v.GetRemoteContainer().GetALeaf() == "foo" && v.GetParent().GetChild().GetTwo() == "bar" {
 					return nil
 				}
@@ -3995,14 +3997,14 @@ func TestBatchWatch(t *testing.T) {
 			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath...)
 			tt.wantVal.RecvTimestamp = got.RecvTimestamp
 
-			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Root]{}), protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleocconfig.Root]{}), protocmp.Transform()); diff != "" {
 				t.Errorf("Watch() returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", diff, got.ComplianceErrors)
 			}
 		})
 	}
 }
 
-func TestCustomRootBatch(t *testing.T) {
+func TestPreferConfigCustomRootBatch(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 	twoPath := testutil.GNMIPath(t, "/parent/child/state/two")
 
@@ -4011,14 +4013,14 @@ func TestCustomRootBatch(t *testing.T) {
 		stub                 func(s *testutil.Stubber)
 		paths                []ygnmi.UntypedQuery
 		wantSubscriptionPath []*gpb.Path
-		wantVal              *ygnmi.Value[*exampleoc.Parent]
+		wantVal              *ygnmi.Value[*exampleocconfig.Parent]
 		wantAddErr           string
 		wantLookupErr        string
 	}{{
 		desc: "not prefix",
 		stub: func(s *testutil.Stubber) {},
 		paths: []ygnmi.UntypedQuery{
-			exampleocpath.Root().Model().Config(),
+			exampleocconfigpath.Root().Model().Config(),
 		},
 		wantAddErr: "is not a prefix",
 	}, {
@@ -4033,16 +4035,16 @@ func TestCustomRootBatch(t *testing.T) {
 			}).Sync()
 		},
 		paths: []ygnmi.UntypedQuery{
-			exampleocpath.Root().Parent().Child().Two().State(),
+			exampleocconfigpath.Root().Parent().Child().Two().State(),
 		},
 		wantSubscriptionPath: []*gpb.Path{
 			twoPath,
 		},
-		wantVal: (&ygnmi.Value[*exampleoc.Parent]{
+		wantVal: (&ygnmi.Value[*exampleocconfig.Parent]{
 			Timestamp: time.Unix(0, 100),
 			Path:      testutil.GNMIPath(t, "/parent"),
-		}).SetVal(&exampleoc.Parent{
-			Child: &exampleoc.Parent_Child{
+		}).SetVal(&exampleocconfig.Parent{
+			Child: &exampleocconfig.Parent_Child{
 				Two: ygot.String("foo"),
 			},
 		}),
@@ -4050,7 +4052,7 @@ func TestCustomRootBatch(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			b := ygnmi.NewBatch(exampleocpath.Root().Parent().State())
+			b := ygnmi.NewBatch(exampleocconfigpath.Root().Parent().State())
 			err := b.AddPaths(tt.paths...)
 			if diff := errdiff.Substring(err, tt.wantAddErr); diff != "" {
 				t.Fatalf("AddPaths returned unexpected diff: %s", diff)
@@ -4069,7 +4071,7 @@ func TestCustomRootBatch(t *testing.T) {
 			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath...)
 			tt.wantVal.RecvTimestamp = got.RecvTimestamp
 
-			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Parent]{}), protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleocconfig.Parent]{}), protocmp.Transform()); diff != "" {
 				t.Errorf("Watch() returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", diff, got.ComplianceErrors)
 			}
 		})
@@ -4118,7 +4120,7 @@ func TestCustomRootBatch(t *testing.T) {
 			}},
 		})
 
-		modelPath := exampleocpath.Root().Model()
+		modelPath := exampleocconfigpath.Root().Model()
 		b := ygnmi.NewBatch(modelPath.SingleKeyMap().State())
 		if err := b.AddPaths(
 			modelPath.SingleKeyAny().Key().State(),
@@ -4127,11 +4129,11 @@ func TestCustomRootBatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		want := getSampleSingleKeyedMap(t)
+		want := getSamplePreferConfigSingleKeyedMap(t)
 		watchCheckFn(t, fakeGNMI, 2*time.Second, client,
 			b.Query(),
 			nil,
-			func(val map[string]*exampleoc.Model_SingleKey) bool {
+			func(val map[string]*exampleocconfig.Model_SingleKey) bool {
 				return cmp.Equal(val, want)
 			},
 			"",
@@ -4144,25 +4146,25 @@ func TestCustomRootBatch(t *testing.T) {
 				gpb.SubscriptionMode_TARGET_DEFINED,
 			},
 			[]uint64{0, 0},
-			[]*ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
-				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+			[]*ygnmi.Value[map[string]*exampleocconfig.Model_SingleKey]{
+				(&ygnmi.Value[map[string]*exampleocconfig.Model_SingleKey]{
 					Path:      testutil.GNMIPath(t, "/model/a"),
 					Timestamp: startTime,
-				}).SetVal(getSampleSingleKeyedMapIncomplete(t)),
-				(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+				}).SetVal(getSamplePreferConfigSingleKeyedMapIncomplete(t)),
+				(&ygnmi.Value[map[string]*exampleocconfig.Model_SingleKey]{
 					Path:      testutil.GNMIPath(t, "/model/a"),
 					Timestamp: startTime.Add(time.Millisecond),
-				}).SetVal(getSampleSingleKeyedMap(t)),
+				}).SetVal(getSamplePreferConfigSingleKeyedMap(t)),
 			},
-			(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
+			(&ygnmi.Value[map[string]*exampleocconfig.Model_SingleKey]{
 				Path:      testutil.GNMIPath(t, "/model/a"),
 				Timestamp: startTime.Add(time.Millisecond),
-			}).SetVal(getSampleSingleKeyedMap(t)),
+			}).SetVal(getSamplePreferConfigSingleKeyedMap(t)),
 		)
 	})
 }
 
-func TestCustomRootWildcardBatch(t *testing.T) {
+func TestPreferConfigCustomRootWildcardBatch(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 	valuePathWild := testutil.GNMIPath(t, "/model/a/single-key[key=*]/state/value")
 	valuePath := testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/value")
@@ -4174,14 +4176,14 @@ func TestCustomRootWildcardBatch(t *testing.T) {
 		stub                 func(s *testutil.Stubber)
 		paths                []ygnmi.UntypedQuery
 		wantSubscriptionPath []*gpb.Path
-		wantVal              []*ygnmi.Value[*exampleoc.Model_SingleKey]
+		wantVal              []*ygnmi.Value[*exampleocconfig.Model_SingleKey]
 		wantAddErr           string
 		wantLookupErr        string
 	}{{
 		desc: "not prefix",
 		stub: func(s *testutil.Stubber) {},
 		paths: []ygnmi.UntypedQuery{
-			exampleocpath.Root().Model().Config(),
+			exampleocconfigpath.Root().Model().Config(),
 		},
 		wantAddErr: "is not a prefix",
 	}, {
@@ -4199,17 +4201,17 @@ func TestCustomRootWildcardBatch(t *testing.T) {
 			}).Sync()
 		},
 		paths: []ygnmi.UntypedQuery{
-			exampleocpath.Root().Model().SingleKeyAny().Value().State(),
-			exampleocpath.Root().Model().SingleKeyAny().Key().State(),
+			exampleocconfigpath.Root().Model().SingleKeyAny().Value().State(),
+			exampleocconfigpath.Root().Model().SingleKeyAny().Key().State(),
 		},
 		wantSubscriptionPath: []*gpb.Path{
 			keyPathWild,
 			valuePathWild,
 		},
-		wantVal: []*ygnmi.Value[*exampleoc.Model_SingleKey]{(&ygnmi.Value[*exampleoc.Model_SingleKey]{
+		wantVal: []*ygnmi.Value[*exampleocconfig.Model_SingleKey]{(&ygnmi.Value[*exampleocconfig.Model_SingleKey]{
 			Timestamp: time.Unix(0, 100),
 			Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]"),
-		}).SetVal(&exampleoc.Model_SingleKey{
+		}).SetVal(&exampleocconfig.Model_SingleKey{
 			Key:   ygot.String("foo"),
 			Value: ygot.Int64(42),
 		})},
@@ -4218,7 +4220,7 @@ func TestCustomRootWildcardBatch(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			b := ygnmi.NewWildcardBatch(exampleocpath.Root().Model().SingleKeyAny().State())
+			b := ygnmi.NewWildcardBatch(exampleocconfigpath.Root().Model().SingleKeyAny().State())
 			err := b.AddPaths(tt.paths...)
 			if diff := errdiff.Substring(err, tt.wantAddErr); diff != "" {
 				t.Fatalf("AddPaths returned unexpected diff: %s", diff)
@@ -4235,14 +4237,14 @@ func TestCustomRootWildcardBatch(t *testing.T) {
 			}
 			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath...)
 
-			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Model_SingleKey]{}), protocmp.Transform(), cmpopts.IgnoreFields(ygnmi.Value[*exampleoc.Model_SingleKey]{}, "RecvTimestamp")); diff != "" {
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleocconfig.Model_SingleKey]{}), protocmp.Transform(), cmpopts.IgnoreFields(ygnmi.Value[*exampleocconfig.Model_SingleKey]{}, "RecvTimestamp")); diff != "" {
 				t.Errorf("Watch() returned unexpected diff (-want,+got):\n%s", diff)
 			}
 		})
 	}
 }
 
-func TestSetBatch(t *testing.T) {
+func TestPreferConfigSetBatch(t *testing.T) {
 	setClient := &testutil.SetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
 	if err != nil {
@@ -4263,12 +4265,12 @@ func TestSetBatch(t *testing.T) {
 				t.Fatalf("Failed to create CLI ygnmi query: %v", err)
 			}
 			ygnmi.BatchUpdate(sb, cliPath, "hello, mercury")
-			ygnmi.BatchUpdate(sb, exampleocpath.Root().Parent().Child().One().Config(), "foo")
+			ygnmi.BatchUpdate(sb, exampleocconfigpath.Root().Parent().Child().One().Config(), "foo")
 			ygnmi.BatchReplace(sb, cliPath, "hello, venus")
-			ygnmi.BatchReplace(sb, exampleocpath.Root().Parent().Child().One().Config(), "bar")
+			ygnmi.BatchReplace(sb, exampleocconfigpath.Root().Parent().Child().One().Config(), "bar")
 			ygnmi.BatchDelete(sb, cliPath)
-			ygnmi.BatchDelete(sb, exampleocpath.Root().Parent().Child().One().Config())
-			ygnmi.BatchUnionReplace(sb, exampleocpath.Root().Parent().Child().One().Config(), "baz")
+			ygnmi.BatchDelete(sb, exampleocconfigpath.Root().Parent().Child().One().Config())
+			ygnmi.BatchUnionReplace(sb, exampleocconfigpath.Root().Parent().Child().One().Config(), "baz")
 			ygnmi.BatchUnionReplaceCLI(sb, "openos", "open sesame")
 		},
 		wantRequest: &gpb.SetRequest{
@@ -4309,8 +4311,8 @@ func TestSetBatch(t *testing.T) {
 	}, {
 		desc: "non leaf update delete",
 		addPaths: func(sb *ygnmi.SetBatch) {
-			ygnmi.BatchUpdate(sb, exampleocpath.Root().Parent().Child().Config(), &exampleoc.Parent_Child{One: ygot.String("foo")})
-			ygnmi.BatchDelete(sb, exampleocpath.Root().Parent().Child().One().Config())
+			ygnmi.BatchUpdate(sb, exampleocconfigpath.Root().Parent().Child().Config(), &exampleocconfig.Parent_Child{One: ygot.String("foo")})
+			ygnmi.BatchDelete(sb, exampleocconfigpath.Root().Parent().Child().One().Config())
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
@@ -4332,7 +4334,7 @@ func TestSetBatch(t *testing.T) {
 	}, {
 		desc: "server error",
 		addPaths: func(sb *ygnmi.SetBatch) {
-			ygnmi.BatchDelete(sb, exampleocpath.Root().Parent().Child().One().Config())
+			ygnmi.BatchDelete(sb, exampleocconfigpath.Root().Parent().Child().One().Config())
 		},
 		stubErr: fmt.Errorf("fake"),
 		wantErr: "fake",
@@ -4365,7 +4367,7 @@ func TestSetBatch(t *testing.T) {
 	}
 }
 
-func TestWatchCancel(t *testing.T) {
+func TestPreferConfigWatchCancel(t *testing.T) {
 	srv := &gnmiS{
 		errCh: make(chan error, 1),
 	}
@@ -4385,7 +4387,7 @@ func TestWatchCancel(t *testing.T) {
 	}
 	c, _ := ygnmi.NewClient(gpb.NewGNMIClient(conn))
 
-	w := ygnmi.Watch(context.Background(), c, exampleocpath.Root().RemoteContainer().ALeaf().State(), func(v *ygnmi.Value[string]) error {
+	w := ygnmi.Watch(context.Background(), c, exampleocconfigpath.Root().RemoteContainer().ALeaf().State(), func(v *ygnmi.Value[string]) error {
 		return nil
 	})
 	if _, err := w.Await(); err != nil {

@@ -169,7 +169,7 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 		return ret, nil
 	}
 
-	unmarshalledData, complianceErrs, err := unmarshal(data, schema.SchemaTree[q.dirName()], goStruct, queryPath, schema, q.isLeaf(), !q.IsState(), q.compressInfo(), opts)
+	unmarshalledData, complianceErrs, err := unmarshal(data, schema.SchemaTree[q.dirName()], goStruct, queryPath, schema, q.isLeaf(), q.isShadowPath(), q.compressInfo(), opts)
 	ret.ComplianceErrors = complianceErrs
 	if err != nil {
 		return ret, err
@@ -290,7 +290,7 @@ func unmarshalSchemaless(data []*DataPoint, val any) (bool, error) {
 // NOTE: The subset of datapoints includes datapoints that are value restriction noncompliant.
 // The second error slice are internal errors, while the returned
 // *ComplianceError stores the compliance errors.
-func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.ValidatedGoStruct, queryPath *gpb.Path, schema *ytypes.Schema, isLeaf, isConfig bool, compressInfo *CompressionInfo, opts *opt) ([]*DataPoint, *ComplianceErrors, error) {
+func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.ValidatedGoStruct, queryPath *gpb.Path, schema *ytypes.Schema, isLeaf, isShadowPath bool, compressInfo *CompressionInfo, opts *opt) ([]*DataPoint, *ComplianceErrors, error) {
 	queryPathStr := pathToString(queryPath)
 	if isLeaf {
 		switch {
@@ -317,7 +317,7 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 	// TODO(wenbli): Add fatal check for duplicate paths, as they're not allowed by GET semantics.
 	for _, dp := range data {
 		var gcopts []ytypes.GetOrCreateNodeOpt
-		if isConfig {
+		if isShadowPath {
 			gcopts = append(gcopts, &ytypes.PreferShadowPath{})
 		}
 		// Sync datapoints don't contain path nor values.
@@ -376,7 +376,7 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 		relPath := util.TrimGNMIPathPrefix(unmarshalPath, util.PathStringToElements(structSchema.Path())[1:])
 		if dp.Value == nil {
 			var dopts []ytypes.DelNodeOpt
-			if isConfig {
+			if isShadowPath {
 				dopts = append(dopts, &ytypes.PreferShadowPath{})
 			}
 			if err := ytypes.DeleteNode(structSchema, structPtr, relPath, dopts...); err == nil {
@@ -386,7 +386,7 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 			}
 		} else {
 			sopts := []ytypes.SetNodeOpt{&ytypes.InitMissingElements{}, &ytypes.TolerateJSONInconsistencies{}}
-			if isConfig {
+			if isShadowPath {
 				sopts = append(sopts, &ytypes.PreferShadowPath{})
 			}
 			// TODO: Fully support partial unmarshaling of JSON blobs.

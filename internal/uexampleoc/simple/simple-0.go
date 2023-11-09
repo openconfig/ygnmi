@@ -68,6 +68,7 @@ func (n *OpenconfigSimple_ParentPath) Child() *OpenconfigSimple_Parent_ChildPath
 		false,
 		false,
 		false,
+		false,
 		ps,
 		nil,
 		nil,
@@ -102,6 +103,7 @@ func (n *OpenconfigSimple_ParentPathAny) Child() *OpenconfigSimple_Parent_ChildP
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigSimple_Parent_Child](
 		"OpenconfigSimple_Parent_Child",
 		true,
+		false,
 		false,
 		false,
 		false,
@@ -164,6 +166,7 @@ func (n *OpenconfigSimple_Parent_ChildPath) Config() *OpenconfigSimple_Parent_Ch
 		false,
 		false,
 		false,
+		false,
 		ps,
 		nil,
 		nil,
@@ -198,6 +201,7 @@ func (n *OpenconfigSimple_Parent_ChildPathAny) Config() *OpenconfigSimple_Parent
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigSimple_Parent_Child_Config](
 		"OpenconfigSimple_Parent_Child_Config",
 		true,
+		false,
 		false,
 		false,
 		false,
@@ -240,6 +244,7 @@ func (n *OpenconfigSimple_Parent_ChildPath) State() *OpenconfigSimple_Parent_Chi
 		false,
 		false,
 		false,
+		false,
 		ps,
 		nil,
 		nil,
@@ -274,6 +279,7 @@ func (n *OpenconfigSimple_Parent_ChildPathAny) State() *OpenconfigSimple_Parent_
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigSimple_Parent_Child_State](
 		"OpenconfigSimple_Parent_Child_State",
 		true,
+		false,
 		false,
 		false,
 		false,
@@ -395,6 +401,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPath) Five() *OpenconfigSimple_Pare
 	ps.ConfigQuery = ygnmi.NewConfigQuery[float32](
 		"OpenconfigSimple_Parent_Child_Config",
 		true,
+		false,
 		true,
 		false,
 		false,
@@ -437,6 +444,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPathAny) Five() *OpenconfigSimple_P
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[float32](
 		"OpenconfigSimple_Parent_Child_Config",
 		true,
+		false,
 		true,
 		false,
 		false,
@@ -479,6 +487,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPath) Four() *OpenconfigSimple_Pare
 	ps.ConfigQuery = ygnmi.NewConfigQuery[oc.Binary](
 		"OpenconfigSimple_Parent_Child_Config",
 		true,
+		false,
 		true,
 		false,
 		false,
@@ -521,6 +530,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPathAny) Four() *OpenconfigSimple_P
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[oc.Binary](
 		"OpenconfigSimple_Parent_Child_Config",
 		true,
+		false,
 		true,
 		false,
 		false,
@@ -563,6 +573,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPath) One() *OpenconfigSimple_Paren
 	ps.ConfigQuery = ygnmi.NewConfigQuery[string](
 		"OpenconfigSimple_Parent_Child_Config",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -609,6 +620,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPathAny) One() *OpenconfigSimple_Pa
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[string](
 		"OpenconfigSimple_Parent_Child_Config",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -655,6 +667,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPath) Six() *OpenconfigSimple_Paren
 	ps.ConfigQuery = ygnmi.NewConfigQuery[[]float32](
 		"OpenconfigSimple_Parent_Child_Config",
 		true,
+		false,
 		true,
 		false,
 		false,
@@ -697,6 +710,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPathAny) Six() *OpenconfigSimple_Pa
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[[]float32](
 		"OpenconfigSimple_Parent_Child_Config",
 		true,
+		false,
 		true,
 		false,
 		false,
@@ -739,6 +753,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPath) Three() *OpenconfigSimple_Par
 	ps.ConfigQuery = ygnmi.NewConfigQuery[oc.E_Simple_Parent_Child_Config_Three](
 		"OpenconfigSimple_Parent_Child_Config",
 		true,
+		false,
 		true,
 		false,
 		false,
@@ -781,6 +796,7 @@ func (n *OpenconfigSimple_Parent_Child_ConfigPathAny) Three() *OpenconfigSimple_
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[oc.E_Simple_Parent_Child_Config_Three](
 		"OpenconfigSimple_Parent_Child_Config",
 		true,
+		false,
 		true,
 		false,
 		false,
@@ -919,6 +935,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePath) Five() *OpenconfigSimple_Paren
 	ps.SingletonQuery = ygnmi.NewSingletonQuery[float32](
 		"OpenconfigSimple_Parent_Child_State",
 		true,
+		false,
 		true,
 		false,
 		false,
@@ -961,6 +978,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePathAny) Five() *OpenconfigSimple_Pa
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[float32](
 		"OpenconfigSimple_Parent_Child_State",
 		true,
+		false,
 		true,
 		false,
 		false,
@@ -1003,6 +1021,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePath) Four() *OpenconfigSimple_Paren
 	ps.SingletonQuery = ygnmi.NewSingletonQuery[oc.Binary](
 		"OpenconfigSimple_Parent_Child_State",
 		true,
+		false,
 		true,
 		false,
 		false,
@@ -1045,6 +1064,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePathAny) Four() *OpenconfigSimple_Pa
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[oc.Binary](
 		"OpenconfigSimple_Parent_Child_State",
 		true,
+		false,
 		true,
 		false,
 		false,
@@ -1087,6 +1107,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePath) One() *OpenconfigSimple_Parent
 	ps.SingletonQuery = ygnmi.NewSingletonQuery[string](
 		"OpenconfigSimple_Parent_Child_State",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -1133,6 +1154,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePathAny) One() *OpenconfigSimple_Par
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[string](
 		"OpenconfigSimple_Parent_Child_State",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -1179,6 +1201,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePath) Six() *OpenconfigSimple_Parent
 	ps.SingletonQuery = ygnmi.NewSingletonQuery[[]float32](
 		"OpenconfigSimple_Parent_Child_State",
 		true,
+		false,
 		true,
 		false,
 		false,
@@ -1221,6 +1244,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePathAny) Six() *OpenconfigSimple_Par
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[[]float32](
 		"OpenconfigSimple_Parent_Child_State",
 		true,
+		false,
 		true,
 		false,
 		false,
@@ -1263,6 +1287,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePath) Three() *OpenconfigSimple_Pare
 	ps.SingletonQuery = ygnmi.NewSingletonQuery[oc.E_Simple_Parent_Child_Config_Three](
 		"OpenconfigSimple_Parent_Child_State",
 		true,
+		false,
 		true,
 		false,
 		false,
@@ -1305,6 +1330,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePathAny) Three() *OpenconfigSimple_P
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[oc.E_Simple_Parent_Child_Config_Three](
 		"OpenconfigSimple_Parent_Child_State",
 		true,
+		false,
 		true,
 		false,
 		false,
@@ -1347,6 +1373,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePath) Two() *OpenconfigSimple_Parent
 	ps.SingletonQuery = ygnmi.NewSingletonQuery[string](
 		"OpenconfigSimple_Parent_Child_State",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -1393,6 +1420,7 @@ func (n *OpenconfigSimple_Parent_Child_StatePathAny) Two() *OpenconfigSimple_Par
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[string](
 		"OpenconfigSimple_Parent_Child_State",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -1454,6 +1482,7 @@ func (n *OpenconfigSimple_RemoteContainerPath) Config() *OpenconfigSimple_Remote
 		false,
 		false,
 		false,
+		false,
 		ps,
 		nil,
 		nil,
@@ -1488,6 +1517,7 @@ func (n *OpenconfigSimple_RemoteContainerPathAny) Config() *OpenconfigSimple_Rem
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigSimple_RemoteContainer_Config](
 		"OpenconfigSimple_RemoteContainer_Config",
 		true,
+		false,
 		false,
 		false,
 		false,
@@ -1530,6 +1560,7 @@ func (n *OpenconfigSimple_RemoteContainerPath) State() *OpenconfigSimple_RemoteC
 		false,
 		false,
 		false,
+		false,
 		ps,
 		nil,
 		nil,
@@ -1564,6 +1595,7 @@ func (n *OpenconfigSimple_RemoteContainerPathAny) State() *OpenconfigSimple_Remo
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[*oc.OpenconfigSimple_RemoteContainer_State](
 		"OpenconfigSimple_RemoteContainer_State",
 		true,
+		false,
 		false,
 		false,
 		false,
@@ -1629,6 +1661,7 @@ func (n *OpenconfigSimple_RemoteContainer_ConfigPath) ALeaf() *OpenconfigSimple_
 	ps.ConfigQuery = ygnmi.NewConfigQuery[string](
 		"OpenconfigSimple_RemoteContainer_Config",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -1675,6 +1708,7 @@ func (n *OpenconfigSimple_RemoteContainer_ConfigPathAny) ALeaf() *OpenconfigSimp
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[string](
 		"OpenconfigSimple_RemoteContainer_Config",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -1747,6 +1781,7 @@ func (n *OpenconfigSimple_RemoteContainer_StatePath) ALeaf() *OpenconfigSimple_R
 	ps.SingletonQuery = ygnmi.NewSingletonQuery[string](
 		"OpenconfigSimple_RemoteContainer_State",
 		true,
+		false,
 		true,
 		true,
 		false,
@@ -1793,6 +1828,7 @@ func (n *OpenconfigSimple_RemoteContainer_StatePathAny) ALeaf() *OpenconfigSimpl
 	ps.WildcardQuery = ygnmi.NewWildcardQuery[string](
 		"OpenconfigSimple_RemoteContainer_State",
 		true,
+		false,
 		true,
 		true,
 		false,

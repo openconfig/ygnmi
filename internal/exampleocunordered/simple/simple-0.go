@@ -94,6 +94,7 @@ func (n *ParentPath) State() ygnmi.SingletonQuery[*oc.Parent] {
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -118,6 +119,7 @@ func (n *ParentPathAny) State() ygnmi.WildcardQuery[*oc.Parent] {
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -140,6 +142,7 @@ func (n *ParentPath) Config() ygnmi.ConfigQuery[*oc.Parent] {
 	return ygnmi.NewConfigQuery[*oc.Parent](
 		"Parent",
 		false,
+		true,
 		false,
 		false,
 		true,
@@ -164,6 +167,7 @@ func (n *ParentPathAny) Config() ygnmi.WildcardQuery[*oc.Parent] {
 	return ygnmi.NewWildcardQuery[*oc.Parent](
 		"Parent",
 		false,
+		true,
 		false,
 		false,
 		true,
@@ -205,6 +209,7 @@ func (n *Parent_Child_FivePath) State() ygnmi.SingletonQuery[float32] {
 	return ygnmi.NewSingletonQuery[float32](
 		"Parent_Child",
 		true,
+		false,
 		true,
 		false,
 		true,
@@ -241,6 +246,7 @@ func (n *Parent_Child_FivePathAny) State() ygnmi.WildcardQuery[float32] {
 	return ygnmi.NewWildcardQuery[float32](
 		"Parent_Child",
 		true,
+		false,
 		true,
 		false,
 		true,
@@ -278,6 +284,7 @@ func (n *Parent_Child_FivePath) Config() ygnmi.ConfigQuery[float32] {
 		"Parent_Child",
 		false,
 		true,
+		true,
 		false,
 		true,
 		false,
@@ -313,6 +320,7 @@ func (n *Parent_Child_FivePathAny) Config() ygnmi.WildcardQuery[float32] {
 	return ygnmi.NewWildcardQuery[float32](
 		"Parent_Child",
 		false,
+		true,
 		true,
 		false,
 		true,
@@ -361,6 +369,7 @@ func (n *Parent_Child_FourPath) State() ygnmi.SingletonQuery[oc.Binary] {
 	return ygnmi.NewSingletonQuery[oc.Binary](
 		"Parent_Child",
 		true,
+		false,
 		true,
 		false,
 		true,
@@ -397,6 +406,7 @@ func (n *Parent_Child_FourPathAny) State() ygnmi.WildcardQuery[oc.Binary] {
 	return ygnmi.NewWildcardQuery[oc.Binary](
 		"Parent_Child",
 		true,
+		false,
 		true,
 		false,
 		true,
@@ -434,6 +444,7 @@ func (n *Parent_Child_FourPath) Config() ygnmi.ConfigQuery[oc.Binary] {
 		"Parent_Child",
 		false,
 		true,
+		true,
 		false,
 		true,
 		false,
@@ -469,6 +480,7 @@ func (n *Parent_Child_FourPathAny) Config() ygnmi.WildcardQuery[oc.Binary] {
 	return ygnmi.NewWildcardQuery[oc.Binary](
 		"Parent_Child",
 		false,
+		true,
 		true,
 		false,
 		true,
@@ -517,6 +529,7 @@ func (n *Parent_Child_OnePath) State() ygnmi.SingletonQuery[string] {
 	return ygnmi.NewSingletonQuery[string](
 		"Parent_Child",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -557,6 +570,7 @@ func (n *Parent_Child_OnePathAny) State() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"Parent_Child",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -600,6 +614,7 @@ func (n *Parent_Child_OnePath) Config() ygnmi.ConfigQuery[string] {
 		true,
 		true,
 		true,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"config", "one"},
@@ -637,6 +652,7 @@ func (n *Parent_Child_OnePathAny) Config() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"Parent_Child",
 		false,
+		true,
 		true,
 		true,
 		true,
@@ -689,6 +705,7 @@ func (n *Parent_Child_SixPath) State() ygnmi.SingletonQuery[[]float32] {
 	return ygnmi.NewSingletonQuery[[]float32](
 		"Parent_Child",
 		true,
+		false,
 		true,
 		false,
 		true,
@@ -725,6 +742,7 @@ func (n *Parent_Child_SixPathAny) State() ygnmi.WildcardQuery[[]float32] {
 	return ygnmi.NewWildcardQuery[[]float32](
 		"Parent_Child",
 		true,
+		false,
 		true,
 		false,
 		true,
@@ -762,6 +780,7 @@ func (n *Parent_Child_SixPath) Config() ygnmi.ConfigQuery[[]float32] {
 		"Parent_Child",
 		false,
 		true,
+		true,
 		false,
 		true,
 		false,
@@ -797,6 +816,7 @@ func (n *Parent_Child_SixPathAny) Config() ygnmi.WildcardQuery[[]float32] {
 	return ygnmi.NewWildcardQuery[[]float32](
 		"Parent_Child",
 		false,
+		true,
 		true,
 		false,
 		true,
@@ -845,6 +865,7 @@ func (n *Parent_Child_ThreePath) State() ygnmi.SingletonQuery[oc.E_Child_Three] 
 	return ygnmi.NewSingletonQuery[oc.E_Child_Three](
 		"Parent_Child",
 		true,
+		false,
 		true,
 		false,
 		true,
@@ -881,6 +902,7 @@ func (n *Parent_Child_ThreePathAny) State() ygnmi.WildcardQuery[oc.E_Child_Three
 	return ygnmi.NewWildcardQuery[oc.E_Child_Three](
 		"Parent_Child",
 		true,
+		false,
 		true,
 		false,
 		true,
@@ -918,6 +940,7 @@ func (n *Parent_Child_ThreePath) Config() ygnmi.ConfigQuery[oc.E_Child_Three] {
 		"Parent_Child",
 		false,
 		true,
+		true,
 		false,
 		true,
 		false,
@@ -953,6 +976,7 @@ func (n *Parent_Child_ThreePathAny) Config() ygnmi.WildcardQuery[oc.E_Child_Thre
 	return ygnmi.NewWildcardQuery[oc.E_Child_Three](
 		"Parent_Child",
 		false,
+		true,
 		true,
 		false,
 		true,
@@ -1001,6 +1025,7 @@ func (n *Parent_Child_TwoPath) State() ygnmi.SingletonQuery[string] {
 	return ygnmi.NewSingletonQuery[string](
 		"Parent_Child",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -1041,6 +1066,7 @@ func (n *Parent_Child_TwoPathAny) State() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"Parent_Child",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -1304,6 +1330,7 @@ func (n *Parent_ChildPath) State() ygnmi.SingletonQuery[*oc.Parent_Child] {
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -1328,6 +1355,7 @@ func (n *Parent_ChildPathAny) State() ygnmi.WildcardQuery[*oc.Parent_Child] {
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -1350,6 +1378,7 @@ func (n *Parent_ChildPath) Config() ygnmi.ConfigQuery[*oc.Parent_Child] {
 	return ygnmi.NewConfigQuery[*oc.Parent_Child](
 		"Parent_Child",
 		false,
+		true,
 		false,
 		false,
 		true,
@@ -1374,6 +1403,7 @@ func (n *Parent_ChildPathAny) Config() ygnmi.WildcardQuery[*oc.Parent_Child] {
 	return ygnmi.NewWildcardQuery[*oc.Parent_Child](
 		"Parent_Child",
 		false,
+		true,
 		false,
 		false,
 		true,
@@ -1415,6 +1445,7 @@ func (n *RemoteContainer_ALeafPath) State() ygnmi.SingletonQuery[string] {
 	return ygnmi.NewSingletonQuery[string](
 		"RemoteContainer",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -1455,6 +1486,7 @@ func (n *RemoteContainer_ALeafPathAny) State() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"RemoteContainer",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -1498,6 +1530,7 @@ func (n *RemoteContainer_ALeafPath) Config() ygnmi.ConfigQuery[string] {
 		true,
 		true,
 		true,
+		true,
 		false,
 		ygnmi.NewNodePath(
 			[]string{"config", "a-leaf"},
@@ -1535,6 +1568,7 @@ func (n *RemoteContainer_ALeafPathAny) Config() ygnmi.WildcardQuery[string] {
 	return ygnmi.NewWildcardQuery[string](
 		"RemoteContainer",
 		false,
+		true,
 		true,
 		true,
 		true,
@@ -1618,6 +1652,7 @@ func (n *RemoteContainerPath) State() ygnmi.SingletonQuery[*oc.RemoteContainer] 
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -1642,6 +1677,7 @@ func (n *RemoteContainerPathAny) State() ygnmi.WildcardQuery[*oc.RemoteContainer
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -1664,6 +1700,7 @@ func (n *RemoteContainerPath) Config() ygnmi.ConfigQuery[*oc.RemoteContainer] {
 	return ygnmi.NewConfigQuery[*oc.RemoteContainer](
 		"RemoteContainer",
 		false,
+		true,
 		false,
 		false,
 		true,
@@ -1688,6 +1725,7 @@ func (n *RemoteContainerPathAny) Config() ygnmi.WildcardQuery[*oc.RemoteContaine
 	return ygnmi.NewWildcardQuery[*oc.RemoteContainer](
 		"RemoteContainer",
 		false,
+		true,
 		false,
 		false,
 		true,

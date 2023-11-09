@@ -154,6 +154,7 @@ func (b *Batch) State() ygnmi.SingletonQuery[*oc.Root] {
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		ygnmi.NewDeviceRootBase(),
@@ -179,6 +180,7 @@ func (b *Batch) Config() ygnmi.SingletonQuery[*oc.Root] {
 	return ygnmi.NewSingletonQuery[*oc.Root](
 		"Root",
 		false,
+		true,
 		false,
 		false,
 		true,
@@ -213,6 +215,7 @@ func (n *RootPath) State() ygnmi.SingletonQuery[*oc.Root] {
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -235,6 +238,7 @@ func (n *RootPath) Config() ygnmi.ConfigQuery[*oc.Root] {
 	return ygnmi.NewConfigQuery[*oc.Root](
 		"Root",
 		false,
+		true,
 		false,
 		false,
 		true,

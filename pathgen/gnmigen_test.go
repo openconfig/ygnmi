@@ -19,6 +19,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/openconfig/gnmi/errdiff"
+	"github.com/openconfig/ygot/genutil"
 	"github.com/openconfig/ygot/ygen"
 )
 
@@ -65,6 +66,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[int32] {
 	return ygnmi.NewSingletonQuery[int32](
 		"Container",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -104,6 +106,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[int32] {
 	return ygnmi.NewWildcardQuery[int32](
 		"Container",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -159,6 +162,7 @@ func (n *Leaf) State() ygnmi.SingletonQuery[int32] {
 	return ygnmi.NewSingletonQuery[int32](
 		"Root",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -198,6 +202,7 @@ func (n *LeafAny) State() ygnmi.WildcardQuery[int32] {
 	return ygnmi.NewWildcardQuery[int32](
 		"Root",
 		true,
+		false,
 		true,
 		true,
 		true,
@@ -264,6 +269,7 @@ func (n *Container_LeafList) State() ygnmi.SingletonQuery[[]uint32] {
 	return ygnmi.NewSingletonQuery[[]uint32](
 		"Container",
 		true,
+		false,
 		true,
 		false,
 		true,
@@ -299,6 +305,7 @@ func (n *Container_LeafListAny) State() ygnmi.WildcardQuery[[]uint32] {
 	return ygnmi.NewWildcardQuery[[]uint32](
 		"Container",
 		true,
+		false,
 		true,
 		false,
 		true,
@@ -335,6 +342,7 @@ func (n *Container_LeafList) Config() ygnmi.ConfigQuery[[]uint32] {
 		"Container",
 		false,
 		true,
+		true,
 		false,
 		true,
 		false,
@@ -369,6 +377,7 @@ func (n *Container_LeafListAny) Config() ygnmi.WildcardQuery[[]uint32] {
 	return ygnmi.NewWildcardQuery[[]uint32](
 		"Container",
 		false,
+		true,
 		true,
 		false,
 		true,
@@ -420,6 +429,7 @@ func (n *Container_Leaf) State() ygnmi.SingletonQuery[E_Child_Three] {
 	return ygnmi.NewSingletonQuery[E_Child_Three](
 		"Container",
 		true,
+		false,
 		true,
 		false,
 		true,
@@ -455,6 +465,7 @@ func (n *Container_LeafAny) State() ygnmi.WildcardQuery[E_Child_Three] {
 	return ygnmi.NewWildcardQuery[E_Child_Three](
 		"Container",
 		true,
+		false,
 		true,
 		false,
 		true,
@@ -519,6 +530,7 @@ func (b *Batch) State() ygnmi.SingletonQuery[*oc.Root] {
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		ygnmi.NewDeviceRootBase(),
@@ -544,6 +556,7 @@ func (b *Batch) Config() ygnmi.SingletonQuery[*oc.Root] {
 	return ygnmi.NewSingletonQuery[*oc.Root](
 		"Root",
 		false,
+		true,
 		false,
 		false,
 		true,
@@ -570,6 +583,7 @@ func (n *Root) State() ygnmi.SingletonQuery[*oc.Root] {
 		true,
 		false,
 		false,
+		false,
 		true,
 		false,
 		n,
@@ -592,6 +606,7 @@ func (n *Root) Config() ygnmi.ConfigQuery[*oc.Root] {
 	return ygnmi.NewConfigQuery[*oc.Root](
 		"Root",
 		false,
+		true,
 		false,
 		false,
 		true,
@@ -614,7 +629,7 @@ func (n *Root) Config() ygnmi.ConfigQuery[*oc.Root] {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			got, err := GNMIGenerator(tt.pathStructName, "Root", tt.dir, tt.node, false)
+			got, err := GNMIGenerator(tt.pathStructName, "Root", genutil.PreferOperationalState, tt.dir, tt.node, false)
 			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
 				t.Fatalf("GNMIGenerator(%q, %v, %v) returned unexpected error diff: %s", tt.pathStructName, tt.dir, tt.node, diff)
 			}
