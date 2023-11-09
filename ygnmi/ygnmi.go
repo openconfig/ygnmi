@@ -51,8 +51,8 @@ type UntypedQuery interface {
 	goStruct() ygot.ValidatedGoStruct
 	// IsState returns if the path for this query is a state node.
 	IsState() bool
-	// IsShadowPath returns if the path for this query is a shadow-path node.
-	IsShadowPath() bool
+	// isShadowPath returns if the path for this query is a shadow-path node.
+	isShadowPath() bool
 	// isLeaf returns if the path for this query is a leaf.
 	isLeaf() bool
 	// isCompressedSchema returns whether the query is for compressed ygot schema.
@@ -659,7 +659,7 @@ func BatchUpdate[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 		path:       q.PathStruct(),
 		val:        setVal,
 		mode:       updatePath,
-		shadowpath: q.IsShadowPath(),
+		shadowpath: q.isShadowPath(),
 	})
 }
 
@@ -673,7 +673,7 @@ func BatchReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 		path:       q.PathStruct(),
 		val:        setVal,
 		mode:       replacePath,
-		shadowpath: q.IsShadowPath(),
+		shadowpath: q.isShadowPath(),
 	})
 }
 
@@ -689,7 +689,7 @@ func BatchUnionReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 		path:       q.PathStruct(),
 		val:        setVal,
 		mode:       unionreplacePath,
-		shadowpath: q.IsShadowPath(),
+		shadowpath: q.isShadowPath(),
 	})
 }
 
@@ -717,7 +717,7 @@ func BatchDelete[T any](sb *SetBatch, q ConfigQuery[T]) {
 	sb.ops = append(sb.ops, &batchOp{
 		path:       q.PathStruct(),
 		mode:       deletePath,
-		shadowpath: q.IsShadowPath(),
+		shadowpath: q.isShadowPath(),
 	})
 }
 
@@ -766,7 +766,7 @@ func (b *Batch[T]) Query() SingletonQuery[T] {
 	return NewSingletonQuery[T](
 		b.root.dirName(),
 		b.root.IsState(),
-		b.root.IsShadowPath(),
+		b.root.isShadowPath(),
 		b.root.isLeaf(),
 		b.root.isScalar(),
 		b.root.isCompressedSchema(),
@@ -825,7 +825,7 @@ func (b *WildcardBatch[T]) Query() WildcardQuery[T] {
 	return NewWildcardQuery[T](
 		b.root.dirName(),
 		b.root.IsState(),
-		b.root.IsShadowPath(),
+		b.root.isShadowPath(),
 		b.root.isLeaf(),
 		b.root.isScalar(),
 		b.root.isCompressedSchema(),

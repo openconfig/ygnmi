@@ -189,7 +189,7 @@ func (q *baseQuery[T]) IsState() bool {
 }
 
 // IsState returns if the Query is for a shadow path node.
-func (q *baseQuery[T]) IsShadowPath() bool {
+func (q *baseQuery[T]) isShadowPath() bool {
 	return q.shadowpath
 }
 
