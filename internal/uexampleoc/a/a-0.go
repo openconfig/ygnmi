@@ -73,7 +73,7 @@ func (n *OpenconfigWithlistval_Model_APath) SingleKeyAny() *OpenconfigWithlistva
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -111,7 +111,7 @@ func (n *OpenconfigWithlistval_Model_APathAny) SingleKeyAny() *OpenconfigWithlis
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -151,7 +151,7 @@ func (n *OpenconfigWithlistval_Model_APath) SingleKey(Key string) *OpenconfigWit
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -191,7 +191,7 @@ func (n *OpenconfigWithlistval_Model_APathAny) SingleKey(Key string) *Openconfig
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -232,7 +232,7 @@ func (n *OpenconfigWithlistval_Model_APath) SingleKeyMap() *OpenconfigWithlistva
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -273,7 +273,7 @@ func (n *OpenconfigWithlistval_Model_APathAny) SingleKeyMap() *OpenconfigWithlis
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -357,7 +357,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) Config() *OpenconfigWithli
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -395,7 +395,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) Config() *OpenconfigWit
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -433,7 +433,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) InnerA() *OpenconfigWithli
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -471,7 +471,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) InnerA() *OpenconfigWit
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -517,7 +517,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) Key() *OpenconfigWithlistv
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -563,7 +563,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) Key() *OpenconfigWithli
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -601,7 +601,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) OrderedLists() *Openconfig
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -639,7 +639,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) OrderedLists() *Opencon
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -677,7 +677,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPath) State() *OpenconfigWithlis
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -715,7 +715,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKeyPathAny) State() *OpenconfigWith
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -801,7 +801,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPath) Key() *OpenconfigWi
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_Config) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -847,7 +847,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPathAny) Key() *Openconfi
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_Config) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -893,7 +893,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPath) Value() *Openconfig
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_Config) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -939,7 +939,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_ConfigPathAny) Value() *Opencon
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_Config) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1027,7 +1027,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPath) Config() 
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1065,7 +1065,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathAny) Config
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1111,7 +1111,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPath) Key() *Op
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1157,7 +1157,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathAny) Key() 
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1195,7 +1195,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPath) State() *
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1233,7 +1233,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKeyPathAny) State(
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1321,7 +1321,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPath) Ke
 		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1369,7 +1369,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPathAny)
 		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1417,7 +1417,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPath) Va
 		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1465,7 +1465,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_ConfigPathAny)
 		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1553,7 +1553,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePath) Key
 		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1601,7 +1601,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePathAny) 
 		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1649,7 +1649,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePath) Val
 		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1697,7 +1697,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_InnerA_SingleKey_StatePathAny) 
 		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1750,7 +1750,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPath) OrderedListMa
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1791,7 +1791,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedListsPathAny) OrderedLis
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_OrderedLists) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1901,7 +1901,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config
 		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1949,7 +1949,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config
 		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1997,7 +1997,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config
 		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -2045,7 +2045,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_Config
 		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -2133,7 +2133,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StateP
 		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -2181,7 +2181,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StateP
 		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -2229,7 +2229,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StateP
 		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -2277,7 +2277,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_OrderedLists_OrderedList_StateP
 		},
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -2387,7 +2387,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePath) Counter() *Openconfi
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -2429,7 +2429,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePathAny) Counter() *Openco
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -2471,7 +2471,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePath) Counters() *Openconf
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -2513,7 +2513,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePathAny) Counters() *Openc
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -2559,7 +2559,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePath) Key() *OpenconfigWit
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -2605,7 +2605,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePathAny) Key() *Openconfig
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -2651,7 +2651,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePath) Value() *OpenconfigW
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -2697,7 +2697,7 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePathAny) Value() *Openconf
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}

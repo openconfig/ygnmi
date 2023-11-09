@@ -71,7 +71,7 @@ func (n *OpenconfigNested_APath) B() *OpenconfigNested_A_BPath {
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -109,7 +109,7 @@ func (n *OpenconfigNested_APathAny) B() *OpenconfigNested_A_BPathAny {
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -167,7 +167,7 @@ func (n *OpenconfigNested_A_BPath) C() *OpenconfigNested_A_B_CPath {
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -205,7 +205,7 @@ func (n *OpenconfigNested_A_BPathAny) C() *OpenconfigNested_A_B_CPathAny {
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -255,7 +255,7 @@ func (n *OpenconfigNested_A_B_CPath) D() *OpenconfigNested_A_B_C_DPath {
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -293,7 +293,7 @@ func (n *OpenconfigNested_A_B_CPathAny) D() *OpenconfigNested_A_B_C_DPathAny {
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -343,7 +343,7 @@ func (n *OpenconfigNested_A_B_C_DPath) E() *OpenconfigNested_A_B_C_D_EPath {
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -381,7 +381,7 @@ func (n *OpenconfigNested_A_B_C_DPathAny) E() *OpenconfigNested_A_B_C_D_EPathAny
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -431,7 +431,7 @@ func (n *OpenconfigNested_A_B_C_D_EPath) F() *OpenconfigNested_A_B_C_D_E_FPath {
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -469,7 +469,7 @@ func (n *OpenconfigNested_A_B_C_D_EPathAny) F() *OpenconfigNested_A_B_C_D_E_FPat
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -519,7 +519,7 @@ func (n *OpenconfigNested_A_B_C_D_E_FPath) G() *OpenconfigNested_A_B_C_D_E_F_GPa
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -557,7 +557,7 @@ func (n *OpenconfigNested_A_B_C_D_E_FPathAny) G() *OpenconfigNested_A_B_C_D_E_F_
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -607,7 +607,7 @@ func (n *OpenconfigNested_A_B_C_D_E_F_GPath) H() *OpenconfigNested_A_B_C_D_E_F_G
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -645,7 +645,7 @@ func (n *OpenconfigNested_A_B_C_D_E_F_GPathAny) H() *OpenconfigNested_A_B_C_D_E_
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -695,7 +695,7 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_HPath) I() *OpenconfigNested_A_B_C_D_E_F
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -733,7 +733,7 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_HPathAny) I() *OpenconfigNested_A_B_C_D_
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -783,7 +783,7 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_IPath) J() *OpenconfigNested_A_B_C_D_E
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -821,7 +821,7 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_IPathAny) J() *OpenconfigNested_A_B_C_
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -871,7 +871,7 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_JPath) K() *OpenconfigNested_A_B_C_D
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -909,7 +909,7 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_JPathAny) K() *OpenconfigNested_A_B_
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -959,7 +959,7 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPath) L() *OpenconfigNested_A_B_C
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -997,7 +997,7 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_KPathAny) L() *OpenconfigNested_A_
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1047,7 +1047,7 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPath) M() *OpenconfigNested_A_B
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1085,7 +1085,7 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_LPathAny) M() *OpenconfigNested_
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1135,7 +1135,7 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPath) State() *OpenconfigNest
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1173,7 +1173,7 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_MPathAny) State() *OpenconfigN
 		nil,
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1245,7 +1245,7 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePath) Foo() *Openconfig
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}
@@ -1291,7 +1291,7 @@ func (n *OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_StatePathAny) Foo() *Opencon
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigNested_A_B_C_D_E_F_G_H_I_J_K_L_M_State) },
 		func() *ytypes.Schema {
 			return &ytypes.Schema{
-				Root:       &oc.Root{},
+				Root:       &oc.Device{},
 				SchemaTree: oc.SchemaTree,
 				Unmarshal:  oc.Unmarshal,
 			}

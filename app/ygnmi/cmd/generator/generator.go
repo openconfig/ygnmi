@@ -21,6 +21,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/openconfig/goyang/pkg/yang"
@@ -61,6 +62,9 @@ func New() *cobra.Command {
 	generator.Flags().Bool("ignore_deviate_notsupported", false, "If set to true, 'deviate not-supported' YANG statements are ignored, thus target nodes are retained in the generated code.")
 	generator.Flags().Bool("ignore_unsupported", false, "If set to true, YANG statements unsupported by ygot are ignored.")
 	generator.Flags().StringSlice("split_package_paths", nil, "Comma-separated YANG schema paths excluding choice/case statements followed by an optional (=packagename) for splitting specified subtrees into its own package. if (=packagename) is not specified, then the schema path will be used to name the package.")
+	generator.Flags().String("fakeroot_name", "root", "Change the name of the ygot-generated fake root entity (ygot's default is \"device\").")
+	generator.Flags().Bool("shorten_enum_leaf_names", true, "If also set to true when compress_paths=true, all leaves of type enumeration will by default not be prefixed with the name of its residing module.")
+	generator.Flags().Bool("annotations", false, "If set to true, metadata annotations are added within the ygot-generated structs.")
 
 	// TODO(wenovus): Delete these hidden flags before or on v1 release.
 	generator.Flags().Bool("typedef_enum_with_defmod", true, "If set to true, all typedefs of type enumeration or identity will be prefixed with the name of its module of definition instead of its residing module.")
@@ -75,6 +79,10 @@ func New() *cobra.Command {
 
 	return generator
 }
+
+var (
+	fakeRootRegex = regexp.MustCompile(`[a-zA-Z]\w*`)
+)
 
 // generate runs the ygnmi PathStruct and optionally the ygot GoStruct generation.
 func generate(cmd *cobra.Command, args []string) error {
@@ -123,6 +131,11 @@ func generate(cmd *cobra.Command, args []string) error {
 		}
 	}
 
+	fakeRootName := viper.GetString("fakeroot_name")
+	if !fakeRootRegex.MatchString(fakeRootName) {
+		return fmt.Errorf("fakeroot_name %q doesn't match pattern %v", fakeRootName, fakeRootRegex.String())
+	}
+
 	pcg := pathgen.GenConfig{
 		PackageName: rootPackageName,
 		GoImports: pathgen.GoImports{
@@ -133,11 +146,11 @@ func generate(cmd *cobra.Command, args []string) error {
 		},
 		CompressBehaviour:                    compressBehaviour,
 		SkipEnumDeduplication:                false,
-		ShortenEnumLeafNames:                 true,
+		ShortenEnumLeafNames:                 viper.GetBool("shorten_enum_leaf_names"),
 		EnumOrgPrefixesToTrim:                []string{viper.GetString("trim_module_prefix")},
 		UseDefiningModuleForTypedefEnumNames: viper.GetBool("typedef_enum_with_defmod"),
 		AppendEnumSuffixForSimpleUnionEnums:  true,
-		FakeRootName:                         "root",
+		FakeRootName:                         fakeRootName,
 		PathStructSuffix:                     "Path",
 		ParseOptions: ygen.ParseOpts{
 			IgnoreUnsupportedStatements: viper.GetBool("ignore_unsupported"),
@@ -191,10 +204,10 @@ func generate(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	return generateStructs(args, schemaStructPath, version)
+	return generateStructs(args, schemaStructPath, version, fakeRootName)
 }
 
-func generateStructs(modules []string, schemaPath, version string) error {
+func generateStructs(modules []string, schemaPath, version, fakeRootName string) error {
 	cmp := genutil.Uncompressed
 	if viper.GetBool("compress_paths") {
 		cmp = genutil.PreferOperationalState
@@ -218,8 +231,8 @@ func generateStructs(modules []string, schemaPath, version string) error {
 				CompressBehaviour:                    cmp,
 				SkipEnumDeduplication:                false,
 				GenerateFakeRoot:                     true,
-				FakeRootName:                         "root",
-				ShortenEnumLeafNames:                 true,
+				FakeRootName:                         fakeRootName,
+				ShortenEnumLeafNames:                 viper.GetBool("shorten_enum_leaf_names"),
 				EnumOrgPrefixesToTrim:                []string{viper.GetString("trim_module_prefix")},
 				UseDefiningModuleForTypedefEnumNames: viper.GetBool("typedef_enum_with_defmod"),
 				EnumerationsUseUnderscores:           true,
@@ -233,8 +246,8 @@ func generateStructs(modules []string, schemaPath, version string) error {
 			YgotImportPath:                      viper.GetString("ygot_path"),
 			YtypesImportPath:                    viper.GetString("ytypes_path"),
 			GoyangImportPath:                    viper.GetString("goyang_path"),
-			GenerateRenameMethod:                false,
-			AddAnnotationFields:                 false,
+			GenerateRenameMethod:                true,
+			AddAnnotationFields:                 viper.GetBool("annotations"),
 			AnnotationPrefix:                    "Λ",
 			AddYangPresence:                     false,
 			GenerateGetters:                     true,

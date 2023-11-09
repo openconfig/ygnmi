@@ -2125,7 +2125,7 @@ func TestGetNodeDataMap(t *testing.T) {
 	}, {
 		name:                      "big test with everything",
 		inIR:                      ir,
-		inFakeRootName:            "root",
+		inFakeRootName:            "Root",
 		inSchemaStructPkgAccessor: "struct.",
 		inPathStructSuffix:        "_Path",
 		inSplitByModule:           true,
@@ -3459,7 +3459,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 	for _, tt := range tests {
 		if tt.want != nil {
 			t.Run(tt.name, func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, ExtraGenerators{}, "oc.", tt.inPathStructSuffix, true, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, nil, tt.inUnifiedPath, true, true, true)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, "Root", ExtraGenerators{}, "oc.", tt.inPathStructSuffix, true, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, nil, tt.inUnifiedPath, true, true, true)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}
@@ -3476,7 +3476,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 
 		if tt.wantNoWildcard != nil {
 			t.Run(tt.name+" no wildcard", func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, ExtraGenerators{}, "oc.", tt.inPathStructSuffix, false, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, nil, tt.inUnifiedPath, true, true, true)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, "Root", ExtraGenerators{}, "oc.", tt.inPathStructSuffix, false, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, nil, tt.inUnifiedPath, true, true, true)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}
@@ -3804,7 +3804,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 		t.Run(tt.name, func(t *testing.T) {
 			var methodBuf strings.Builder
 			var builderBuf strings.Builder
-			if errs := generateChildConstructors(&methodBuf, &builderBuf, tt.inDirectory, tt.inFieldName, tt.inUniqueFieldName, tt.inDirectories, "oc.", tt.inPathStructSuffix, tt.inGenerateWildcardPaths, tt.inChildAccessor, tt.inUnifiedPaths, true, true, NodeDataMap{}, ExtraGenerators{}); errs != nil {
+			if errs := generateChildConstructors(&methodBuf, &builderBuf, tt.inDirectory, tt.inFieldName, tt.inUniqueFieldName, tt.inDirectories, "Root", "oc.", tt.inPathStructSuffix, tt.inGenerateWildcardPaths, tt.inChildAccessor, tt.inUnifiedPaths, true, true, NodeDataMap{}, ExtraGenerators{}); errs != nil {
 				t.Fatal(errs)
 			}
 

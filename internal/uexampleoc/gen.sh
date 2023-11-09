@@ -22,6 +22,7 @@ go run ../../app/ygnmi generator \
   --base_package_path=github.com/openconfig/ygnmi/internal/uexampleoc \
   --split_package_paths=/model/a=a,/model/b \
   --compress_paths=false \
+  --fakeroot_name=device \
   ../../pathgen/testdata/yang/openconfig-simple.yang \
   ../../pathgen/testdata/yang/openconfig-withlistval.yang \
   ../../pathgen/testdata/yang/openconfig-nested.yang

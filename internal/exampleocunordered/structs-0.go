@@ -1105,6 +1105,26 @@ func (t *Model) NewMultiKey(Key1 uint32, Key2 uint64) (*Model_MultiKey, error) {
 	return t.MultiKey[key], nil
 }
 
+// RenameMultiKey renames an entry in the list MultiKey within
+// the Model struct. The entry with key oldK is renamed to newK updating
+// the key within the value.
+func (t *Model) RenameMultiKey(oldK, newK Model_MultiKey_Key) error {
+	if _, ok := t.MultiKey[newK]; ok {
+		return fmt.Errorf("key %v already exists in MultiKey", newK)
+	}
+
+	e, ok := t.MultiKey[oldK]
+	if !ok {
+		return fmt.Errorf("key %v not found in MultiKey", oldK)
+	}
+	e.Key1 = &newK.Key1
+	e.Key2 = &newK.Key2
+
+	t.MultiKey[newK] = e
+	delete(t.MultiKey, oldK)
+	return nil
+}
+
 // GetOrCreateMultiKey retrieves the value with the specified keys from
 // the receiver Model. If the entry does not exist, then it is created.
 // It returns the existing or new list member.
@@ -1217,6 +1237,25 @@ func (t *Model) NewSingleKey(Key string) (*Model_SingleKey, error) {
 	}
 
 	return t.SingleKey[key], nil
+}
+
+// RenameSingleKey renames an entry in the list SingleKey within
+// the Model struct. The entry with key oldK is renamed to newK updating
+// the key within the value.
+func (t *Model) RenameSingleKey(oldK, newK string) error {
+	if _, ok := t.SingleKey[newK]; ok {
+		return fmt.Errorf("key %v already exists in SingleKey", newK)
+	}
+
+	e, ok := t.SingleKey[oldK]
+	if !ok {
+		return fmt.Errorf("key %v not found in SingleKey", oldK)
+	}
+	e.Key = &newK
+
+	t.SingleKey[newK] = e
+	delete(t.SingleKey, oldK)
+	return nil
 }
 
 // GetOrCreateSingleKey retrieves the value with the specified keys from
@@ -1630,6 +1669,25 @@ func (t *Model_SingleKey) NewOrderedList(Key string) (*Model_SingleKey_OrderedLi
 	return t.OrderedList[key], nil
 }
 
+// RenameOrderedList renames an entry in the list OrderedList within
+// the Model_SingleKey struct. The entry with key oldK is renamed to newK updating
+// the key within the value.
+func (t *Model_SingleKey) RenameOrderedList(oldK, newK string) error {
+	if _, ok := t.OrderedList[newK]; ok {
+		return fmt.Errorf("key %v already exists in OrderedList", newK)
+	}
+
+	e, ok := t.OrderedList[oldK]
+	if !ok {
+		return fmt.Errorf("key %v not found in OrderedList", oldK)
+	}
+	e.Key = &newK
+
+	t.OrderedList[newK] = e
+	delete(t.OrderedList, oldK)
+	return nil
+}
+
 // GetOrCreateOrderedList retrieves the value with the specified keys from
 // the receiver Model_SingleKey. If the entry does not exist, then it is created.
 // It returns the existing or new list member.
@@ -1726,6 +1784,25 @@ func (t *Model_SingleKey) NewSingleKey(Key string) (*Model_SingleKey_SingleKey, 
 	}
 
 	return t.SingleKey[key], nil
+}
+
+// RenameSingleKey renames an entry in the list SingleKey within
+// the Model_SingleKey struct. The entry with key oldK is renamed to newK updating
+// the key within the value.
+func (t *Model_SingleKey) RenameSingleKey(oldK, newK string) error {
+	if _, ok := t.SingleKey[newK]; ok {
+		return fmt.Errorf("key %v already exists in SingleKey", newK)
+	}
+
+	e, ok := t.SingleKey[oldK]
+	if !ok {
+		return fmt.Errorf("key %v not found in SingleKey", oldK)
+	}
+	e.Key = &newK
+
+	t.SingleKey[newK] = e
+	delete(t.SingleKey, oldK)
+	return nil
 }
 
 // GetOrCreateSingleKey retrieves the value with the specified keys from

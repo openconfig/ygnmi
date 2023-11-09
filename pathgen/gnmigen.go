@@ -50,9 +50,6 @@ type gnmiStruct struct {
 }
 
 const (
-	// TODO(DanG100): pass options into custom generators and remove this.
-	fakeRootName = "Root"
-
 	wildcardQueryTypeName  = "WildcardQuery"
 	singletonQueryTypeName = "SingletonQuery"
 	configQueryTypeName    = "ConfigQuery"
@@ -70,10 +67,10 @@ var packagesSeen = map[string]bool{}
 //
 // Note: GNMIGenerator requires that PreferOperationalState be true when generating PathStructs.
 // TODO(DanG100): pass schema from parent to child.
-func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeData, _ bool) (string, error) {
-	tmplStruct := defaultTmplStruct(pathStructName, node)
+func GNMIGenerator(pathStructName, fakeRootName string, dir *ygen.ParsedDirectory, node *NodeData, _ bool) (string, error) {
+	tmplStruct := defaultTmplStruct(pathStructName, fakeRootName, node)
 	var b strings.Builder
-	if err := generateOneOff(&b, node, tmplStruct, true); err != nil {
+	if err := generateOneOff(&b, fakeRootName, node, tmplStruct, true); err != nil {
 		return "", err
 	}
 	if err := modifyQueryType(node, &tmplStruct); err != nil {
@@ -114,15 +111,15 @@ func GNMIGenerator(pathStructName string, dir *ygen.ParsedDirectory, node *NodeD
 
 // GNMIGeneratorUncompressed is a plugin generator for generating ygnmi query objects for
 // uncompressed structs.
-func GNMIGeneratorUncompressed(pathStructName string, dir *ygen.ParsedDirectory, node *NodeData, _ bool) (string, error) {
+func GNMIGeneratorUncompressed(pathStructName, fakeRootName string, dir *ygen.ParsedDirectory, node *NodeData, _ bool) (string, error) {
 	var b strings.Builder
-	if err := generateOneOff(&b, node, defaultTmplStruct(pathStructName, node), false); err != nil {
+	if err := generateOneOff(&b, fakeRootName, node, defaultTmplStruct(pathStructName, fakeRootName, node), false); err != nil {
 		return "", err
 	}
 	return b.String(), nil
 }
 
-func defaultTmplStruct(pathStructName string, node *NodeData) gnmiStruct {
+func defaultTmplStruct(pathStructName, fakeRootName string, node *NodeData) gnmiStruct {
 	return gnmiStruct{
 		PathStructName:          pathStructName,
 		GoTypeName:              node.GoTypeName,
@@ -145,7 +142,7 @@ func defaultTmplStruct(pathStructName string, node *NodeData) gnmiStruct {
 }
 
 // generateOneOff generates one-off free-form generated code.
-func generateOneOff(b *strings.Builder, node *NodeData, tmplStruct gnmiStruct, compressPaths bool) error {
+func generateOneOff(b *strings.Builder, fakeRootName string, node *NodeData, tmplStruct gnmiStruct, compressPaths bool) error {
 	if strings.TrimLeft(node.LocalGoTypeName, "*") == fakeRootName {
 		tmplStruct.MethodName = "Query"
 		if compressPaths {
@@ -199,7 +196,7 @@ func modifyQueryType(node *NodeData, s *gnmiStruct) error {
 //
 // This is meant to be used for uncompressed generation, where there is no need
 // to distinguish between config and state queries.
-func GNMIFieldGenerator(pathStructName string, _ *ygen.ParsedDirectory, node *NodeData, wildcard bool) (string, error) {
+func GNMIFieldGenerator(pathStructName, _ string, _ *ygen.ParsedDirectory, node *NodeData, wildcard bool) (string, error) {
 	tmplStruct := gnmiStruct{
 		GoTypeName: node.GoTypeName,
 	}
@@ -225,8 +222,8 @@ func GNMIFieldGenerator(pathStructName string, _ *ygen.ParsedDirectory, node *No
 //
 // This is meant to be used for uncompressed generation, where there is no need
 // to distinguish between config and state queries.
-func GNMIInitGenerator(pathStructName string, _ *ygen.ParsedDirectory, node *NodeData, wildcard bool) (string, error) {
-	tmplStruct := defaultTmplStruct(pathStructName, node)
+func GNMIInitGenerator(pathStructName, fakeRootName string, _ *ygen.ParsedDirectory, node *NodeData, wildcard bool) (string, error) {
+	tmplStruct := defaultTmplStruct(pathStructName, fakeRootName, node)
 	tmplStruct.IsCompressedSchema = false
 	if err := modifyQueryType(node, &tmplStruct); err != nil {
 		return "", err

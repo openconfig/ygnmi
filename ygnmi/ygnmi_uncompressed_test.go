@@ -370,7 +370,7 @@ func TestUncompressedBatchGet(t *testing.T) {
 		stub                 func(s *testutil.Stubber)
 		paths                []ygnmi.PathStruct
 		wantSubscriptionPath []*gpb.Path
-		wantVal              *ygnmi.Value[*uexampleoc.Root]
+		wantVal              *ygnmi.Value[*uexampleoc.Device]
 		wantErr              string
 	}{{
 		desc: "config and state leaves",
@@ -397,10 +397,10 @@ func TestUncompressedBatchGet(t *testing.T) {
 			aLeafSubPath,
 			twoPath,
 		},
-		wantVal: (&ygnmi.Value[*uexampleoc.Root]{
+		wantVal: (&ygnmi.Value[*uexampleoc.Device]{
 			Timestamp: time.Unix(0, 100),
 			Path:      testutil.GNMIPath(t, "/"),
-		}).SetVal(&uexampleoc.Root{
+		}).SetVal(&uexampleoc.Device{
 			RemoteContainer: &uexampleoc.OpenconfigSimple_RemoteContainer{
 				Config: &uexampleoc.OpenconfigSimple_RemoteContainer_Config{ALeaf: ygot.String("foo")},
 			},
@@ -430,7 +430,7 @@ func TestUncompressedBatchGet(t *testing.T) {
 			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath...)
 			tt.wantVal.RecvTimestamp = got.RecvTimestamp
 
-			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*uexampleoc.Root]{}), protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*uexampleoc.Device]{}), protocmp.Transform()); diff != "" {
 				t.Errorf("Lookup() returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", diff, got.ComplianceErrors)
 			}
 		})
