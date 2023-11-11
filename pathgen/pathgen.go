@@ -864,7 +864,7 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 					relPath := longestPath(field.MappedPaths)
 					relMods := longestPath(field.MappedPathModules)
 					if gotLen := len(relPath); gotLen != 2 {
-						errs = util.AppendErr(errs, fmt.Errorf("expected two path elements for the relative path of an ordered map, got %d: %v", gotLen, relPath))
+						errs = util.AppendErr(errs, fmt.Errorf("expected two path elements for the relative path of an atomic list or ordered list, got %d: %v", gotLen, relPath))
 						continue
 					}
 					nodeData.CompressInfo = &CompressionInfo{
@@ -1340,7 +1340,7 @@ func generateChildConstructors(methodBuf *strings.Builder, builderBuf *strings.B
 			return nil
 		}
 		if gotLen := len(path); compressBehaviour.CompressEnabled() && gotLen != 2 {
-			return []error{fmt.Errorf("expected two path elements for the relative path of an ordered map, got %d: %v", gotLen, path)}
+			return []error{fmt.Errorf("expected two path elements for the relative path of an atomic list or ordered list, got %d: %v", gotLen, path)}
 		}
 		fieldData.RelPathList = relPathListFn(path[:1])
 		fieldData.TypeName += WholeKeyedListSuffix
