@@ -21,6 +21,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/openconfig/gnmi/errdiff"
+	"github.com/openconfig/ygnmi/internal/gnmitestutil"
 	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygnmi/internal/uexampleoc"
 	"github.com/openconfig/ygnmi/internal/uexampleoc/uexampleocpath"
@@ -265,7 +266,7 @@ func TestUncompressedTelemetry(t *testing.T) {
 }
 
 func TestUncompressedConfig(t *testing.T) {
-	setClient := &testutil.SetClient{}
+	setClient := &gnmitestutil.SetClient{}
 	c, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
 	if err != nil {
 		t.Fatalf("Unexpected error creating client: %v", err)
@@ -368,14 +369,14 @@ func TestUncompressedBatchGet(t *testing.T) {
 
 	tests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		paths                []ygnmi.PathStruct
 		wantSubscriptionPath []*gpb.Path
 		wantVal              *ygnmi.Value[*uexampleoc.Device]
 		wantErr              string
 	}{{
 		desc: "config and state leaves",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -459,7 +460,7 @@ func TestUncompressedCustomRootBatch(t *testing.T) {
 
 	tests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		paths                []ygnmi.UntypedQuery
 		wantSubscriptionPath []*gpb.Path
 		wantVal              *ygnmi.Value[*uexampleoc.OpenconfigSimple_Parent]
@@ -467,14 +468,14 @@ func TestUncompressedCustomRootBatch(t *testing.T) {
 		wantLookupErr        string
 	}{{
 		desc: "not prefix",
-		stub: func(s *testutil.Stubber) {},
+		stub: func(s *gnmitestutil.Stubber) {},
 		paths: []ygnmi.UntypedQuery{
 			uexampleocpath.Root().Model(),
 		},
 		wantAddErr: "is not a prefix",
 	}, {
 		desc: "success",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -530,7 +531,7 @@ func TestUncompressedCustomRootBatch(t *testing.T) {
 }
 
 func TestUncompressedSetBatch(t *testing.T) {
-	setClient := &testutil.SetClient{}
+	setClient := &gnmitestutil.SetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
 	if err != nil {
 		t.Fatalf("Unexpected error creating client: %v", err)

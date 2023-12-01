@@ -26,6 +26,7 @@ import (
 	"github.com/openconfig/gnmi/errdiff"
 	"github.com/openconfig/ygnmi/exampleoc"
 	"github.com/openconfig/ygnmi/exampleoc/exampleocpath"
+	"github.com/openconfig/ygnmi/internal/gnmitestutil"
 	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygnmi/schemaless"
 	"github.com/openconfig/ygnmi/ygnmi"
@@ -112,7 +113,7 @@ func TestLookup(t *testing.T) {
 
 	leafTests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		inQuery              ygnmi.SingletonQuery[string]
 		wantSubscriptionPath *gpb.Path
 		wantVal              *ygnmi.Value[string]
@@ -120,7 +121,7 @@ func TestLookup(t *testing.T) {
 	}{{
 		desc:    "success update and sync",
 		inQuery: lq,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -137,7 +138,7 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "success update and no sync",
 		inQuery: lq,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -154,7 +155,7 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "success with prefix",
 		inQuery: lq,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Prefix:    testutil.GNMIPath(t, "remote-container"),
@@ -172,7 +173,7 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "success multiple notifs and first no value",
 		inQuery: lq,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Update: []*gpb.Update{},
 			}).Notification(&gpb.Notification{
@@ -191,7 +192,7 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "success no value",
 		inQuery: lq,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Sync()
 		},
 		wantSubscriptionPath: leafPath,
@@ -201,7 +202,7 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "error multiple values",
 		inQuery: lq,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -220,7 +221,7 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "error deprecated path",
 		inQuery: lq,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 101,
 				Update: []*gpb.Update{{
@@ -235,7 +236,7 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "error last path element wrong",
 		inQuery: lq,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 101,
 				Update: []*gpb.Update{{
@@ -248,7 +249,7 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "error non existant path",
 		inQuery: lq,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 101,
 				Update: []*gpb.Update{{
@@ -261,7 +262,7 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "error nil update",
 		inQuery: lq,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 101,
 				Update: []*gpb.Update{{
@@ -274,7 +275,7 @@ func TestLookup(t *testing.T) {
 	}, {
 		desc:    "error wrong type",
 		inQuery: lq,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 101,
 				Update: []*gpb.Update{{
@@ -302,14 +303,14 @@ func TestLookup(t *testing.T) {
 
 	nonLeafTests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		inQuery              ygnmi.SingletonQuery[*exampleoc.Parent_Child]
 		wantSubscriptionPath *gpb.Path
 		wantVal              *ygnmi.Value[*exampleoc.Parent_Child]
 		wantErr              string
 	}{{
 		desc: "success one update and state false",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -328,7 +329,7 @@ func TestLookup(t *testing.T) {
 		}),
 	}, {
 		desc: "success one update and state true",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -347,7 +348,7 @@ func TestLookup(t *testing.T) {
 		}),
 	}, {
 		desc: "success one update with prefix",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Prefix:    testutil.GNMIPath(t, "parent"),
@@ -367,7 +368,7 @@ func TestLookup(t *testing.T) {
 		}),
 	}, {
 		desc: "success ignore state update when state false",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -384,7 +385,7 @@ func TestLookup(t *testing.T) {
 		}),
 	}, {
 		desc: "success ignore non-state update when state true",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -401,7 +402,7 @@ func TestLookup(t *testing.T) {
 		}),
 	}, {
 		desc: "success multiple updates in single notification",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -424,7 +425,7 @@ func TestLookup(t *testing.T) {
 		}),
 	}, {
 		desc: "success multiple notifications",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -450,7 +451,7 @@ func TestLookup(t *testing.T) {
 		}),
 	}, {
 		desc: "success no values",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Sync()
 		},
 		inQuery:              stateQuery,
@@ -609,13 +610,13 @@ func TestLookupWithGet(t *testing.T) {
 
 	tests := []struct {
 		desc        string
-		stub        func(s *testutil.Stubber)
+		stub        func(s *gnmitestutil.Stubber)
 		wantVal     *ygnmi.Value[string]
 		wantRequest *gpb.GetRequest
 		wantErr     string
 	}{{
 		desc: "success",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.GetResponse(&gpb.GetResponse{
 				Notification: []*gpb.Notification{{
 					Timestamp: 100,
@@ -638,7 +639,7 @@ func TestLookupWithGet(t *testing.T) {
 		},
 	}, {
 		desc: "not found error",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.GetResponse(nil, status.Error(codes.NotFound, "test"))
 		},
 		wantVal: (&ygnmi.Value[string]{
@@ -667,12 +668,12 @@ func TestLookupWithGet(t *testing.T) {
 	nonLeafPath := testutil.GNMIPath(t, "/parent/child")
 	nonLeafTests := []struct {
 		desc    string
-		stub    func(s *testutil.Stubber)
+		stub    func(s *gnmitestutil.Stubber)
 		wantVal *ygnmi.Value[*exampleoc.Parent_Child]
 		wantErr string
 	}{{
 		desc: "single leaf",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.GetResponse(&gpb.GetResponse{
 				Notification: []*gpb.Notification{{
 					Timestamp: 100,
@@ -689,7 +690,7 @@ func TestLookupWithGet(t *testing.T) {
 		}).SetVal(&exampleoc.Parent_Child{Three: exampleoc.Child_Three_ONE}),
 	}, {
 		desc: "with extra value",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.GetResponse(&gpb.GetResponse{
 				Notification: []*gpb.Notification{{
 					Timestamp: 100,
@@ -706,7 +707,7 @@ func TestLookupWithGet(t *testing.T) {
 		}).SetVal(&exampleoc.Parent_Child{Three: exampleoc.Child_Three_ONE}),
 	}, {
 		desc: "with invalid type", // TODO: When partial unmarshaling of JSON is supports, this test case should have a value.
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.GetResponse(&gpb.GetResponse{
 				Notification: []*gpb.Notification{{
 					Timestamp: 100,
@@ -855,14 +856,14 @@ func TestGet(t *testing.T) {
 
 	tests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		wantSubscriptionPath *gpb.Path
 		want                 string
 		wantVal              string
 		wantErr              string
 	}{{
 		desc: "value present",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -875,14 +876,14 @@ func TestGet(t *testing.T) {
 		wantVal:              "foo",
 	}, {
 		desc: "value not present",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Sync()
 		},
 		wantSubscriptionPath: leafPath,
 		wantErr:              "value not present",
 	}, {
 		desc: "error nil update",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 101,
 				Update: []*gpb.Update{{
@@ -983,7 +984,7 @@ func TestWatch(t *testing.T) {
 	startTime := time.Now()
 	tests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		dur                  time.Duration
 		wantSubscriptionPath *gpb.Path
 		wantLastVal          *ygnmi.Value[string]
@@ -994,7 +995,7 @@ func TestWatch(t *testing.T) {
 		opts                 []ygnmi.Option
 	}{{
 		desc: "single notif and pred true",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1016,7 +1017,7 @@ func TestWatch(t *testing.T) {
 		}).SetVal("foo"),
 	}, {
 		desc: "single notif and pred true with custom mode",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1040,7 +1041,7 @@ func TestWatch(t *testing.T) {
 		}).SetVal("foo"),
 	}, {
 		desc: "single notif and pred true with custom interval",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1064,7 +1065,7 @@ func TestWatch(t *testing.T) {
 		}).SetVal("foo"),
 	}, {
 		desc: "single notif and pred false error EOF",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1088,7 +1089,7 @@ func TestWatch(t *testing.T) {
 		wantErr: "error receiving gNMI response: EOF",
 	}, {
 		desc: "multiple notif and pred true",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1121,7 +1122,7 @@ func TestWatch(t *testing.T) {
 		}).SetVal("foo"),
 	}, {
 		desc: "multiple notif with deletes",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1152,7 +1153,7 @@ func TestWatch(t *testing.T) {
 		wantErr: "EOF",
 	}, {
 		desc: "negative duration",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Sync()
 		},
 		dur:     -1 * time.Second,
@@ -1202,7 +1203,7 @@ func TestWatch(t *testing.T) {
 
 	nonLeafTests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		opts                 []ygnmi.Option
 		wantSubscriptionPath *gpb.Path
 		wantLastVal          *ygnmi.Value[*exampleoc.Parent_Child]
@@ -1210,7 +1211,7 @@ func TestWatch(t *testing.T) {
 		wantErr              string
 	}{{
 		desc: "single notif and pred false",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1237,7 +1238,7 @@ func TestWatch(t *testing.T) {
 		}),
 	}, {
 		desc: "multiple notif and pred true",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1277,7 +1278,7 @@ func TestWatch(t *testing.T) {
 		}),
 	}, {
 		desc: "multiple notif before sync",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1310,7 +1311,7 @@ func TestWatch(t *testing.T) {
 		}),
 	}, {
 		desc: "delete leaf in container",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1350,7 +1351,7 @@ func TestWatch(t *testing.T) {
 		}),
 	}, {
 		desc: "delete at container level",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1586,7 +1587,7 @@ func TestAwait(t *testing.T) {
 	startTime := time.Now()
 	tests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		dur                  time.Duration
 		wantSubscriptionPath *gpb.Path
 		wantVal              *ygnmi.Value[string]
@@ -1595,7 +1596,7 @@ func TestAwait(t *testing.T) {
 		opts                 []ygnmi.Option
 	}{{
 		desc: "value never equal",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1609,7 +1610,7 @@ func TestAwait(t *testing.T) {
 		wantErr:              "EOF",
 	}, {
 		desc: "success",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1626,7 +1627,7 @@ func TestAwait(t *testing.T) {
 		}).SetVal("foo"),
 	}, {
 		desc: "success with custom mode",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1675,13 +1676,13 @@ func TestAwait(t *testing.T) {
 
 	nonLeafTests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		wantSubscriptionPath *gpb.Path
 		wantLastVal          *ygnmi.Value[*exampleoc.Parent_Child]
 		wantErr              string
 	}{{
 		desc: "value never equal",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1700,7 +1701,7 @@ func TestAwait(t *testing.T) {
 		}),
 	}, {
 		desc: "success",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1755,7 +1756,7 @@ func TestCollect(t *testing.T) {
 	startTime := time.Now()
 	tests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		dur                  time.Duration
 		wantSubscriptionPath *gpb.Path
 		wantVals             []*ygnmi.Value[string]
@@ -1764,7 +1765,7 @@ func TestCollect(t *testing.T) {
 		opts                 []ygnmi.Option
 	}{{
 		desc: "no values",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Sync()
 		},
 		dur:                  time.Second,
@@ -1777,7 +1778,7 @@ func TestCollect(t *testing.T) {
 		},
 	}, {
 		desc: "multiple values",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1807,7 +1808,7 @@ func TestCollect(t *testing.T) {
 		},
 	}, {
 		desc: "multiple values and custom mode",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1853,13 +1854,13 @@ func TestCollect(t *testing.T) {
 
 	nonLeafTests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		wantSubscriptionPath *gpb.Path
 		wantVals             []*ygnmi.Value[*exampleoc.Parent_Child]
 		wantErr              string
 	}{{
 		desc: "one val",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1880,7 +1881,7 @@ func TestCollect(t *testing.T) {
 		},
 	}, {
 		desc: "multiple values",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -1929,13 +1930,13 @@ func TestLookupAll(t *testing.T) {
 
 	leafTests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		wantSubscriptionPath *gpb.Path
 		wantVals             []*ygnmi.Value[int64]
 		wantErr              string
 	}{{
 		desc: "success one value",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -1953,14 +1954,14 @@ func TestLookupAll(t *testing.T) {
 		wantSubscriptionPath: leafPath,
 	}, {
 		desc: "success no values",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Sync()
 		},
 		wantVals:             nil,
 		wantSubscriptionPath: leafPath,
 	}, {
 		desc: "non compliant value",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -1981,7 +1982,7 @@ func TestLookupAll(t *testing.T) {
 		wantSubscriptionPath: leafPath,
 	}, {
 		desc: "success multiples value in same notification",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -2005,7 +2006,7 @@ func TestLookupAll(t *testing.T) {
 		wantSubscriptionPath: leafPath,
 	}, {
 		desc: "success multiples value in different notifications",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -2032,7 +2033,7 @@ func TestLookupAll(t *testing.T) {
 		wantSubscriptionPath: leafPath,
 	}, {
 		desc: "success ignore mismatched paths",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -2045,7 +2046,7 @@ func TestLookupAll(t *testing.T) {
 		wantSubscriptionPath: leafPath,
 	}, {
 		desc: "success ignore mismatched types",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -2058,7 +2059,7 @@ func TestLookupAll(t *testing.T) {
 		wantSubscriptionPath: leafPath,
 	}, {
 		desc: "error nil update val",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -2082,13 +2083,13 @@ func TestLookupAll(t *testing.T) {
 	nonLeafQ := exampleocpath.Root().Model().SingleKeyAny().State()
 	nonLeafTests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		wantSubscriptionPath *gpb.Path
 		wantVals             []*ygnmi.Value[*exampleoc.Model_SingleKey]
 		wantErr              string
 	}{{
 		desc: "one value",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -2108,7 +2109,7 @@ func TestLookupAll(t *testing.T) {
 		wantSubscriptionPath: nonLeafPath,
 	}, {
 		desc: "multiple values",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -2148,7 +2149,7 @@ func TestLookupAll(t *testing.T) {
 		wantSubscriptionPath: nonLeafPath,
 	}, {
 		desc: "non compliant values",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -2177,7 +2178,7 @@ func TestLookupAll(t *testing.T) {
 		wantSubscriptionPath: nonLeafPath,
 	}, {
 		desc: "no values",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Sync()
 		},
 		wantVals:             nil,
@@ -2406,13 +2407,13 @@ func TestGetAll(t *testing.T) {
 
 	tests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		wantSubscriptionPath *gpb.Path
 		wantVals             []int64
 		wantErr              string
 	}{{
 		desc: "success",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -2425,7 +2426,7 @@ func TestGetAll(t *testing.T) {
 		wantSubscriptionPath: leafPath,
 	}, {
 		desc: "success no values",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Sync()
 		},
 		wantErr:              ygnmi.ErrNotPresent.Error(),
@@ -2489,7 +2490,7 @@ func TestWatchAll(t *testing.T) {
 	lq := exampleocpath.Root().Model().SingleKeyAny().Value().State()
 	tests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		dur                  time.Duration
 		wantSubscriptionPath *gpb.Path
 		wantLastVal          *ygnmi.Value[int64]
@@ -2500,7 +2501,7 @@ func TestWatchAll(t *testing.T) {
 	}{{
 		desc: "predicate not true",
 		dur:  time.Second,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -2524,7 +2525,7 @@ func TestWatchAll(t *testing.T) {
 	}, {
 		desc: "predicate becomes true",
 		dur:  time.Second,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -2557,7 +2558,7 @@ func TestWatchAll(t *testing.T) {
 	}, {
 		desc: "predicate becomes true with custom mode",
 		dur:  time.Second,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -2592,7 +2593,7 @@ func TestWatchAll(t *testing.T) {
 	}, {
 		desc: "multiple values in notification",
 		dur:  time.Second,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -2622,7 +2623,7 @@ func TestWatchAll(t *testing.T) {
 	}, {
 		desc: "error nil value",
 		dur:  time.Second,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -2637,7 +2638,7 @@ func TestWatchAll(t *testing.T) {
 	}, {
 		desc: "subscribe fails",
 		dur:  -1 * time.Second,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -2699,7 +2700,7 @@ func TestWatchAll(t *testing.T) {
 	nonLeafQ := exampleocpath.Root().Model().SingleKeyAny().State()
 	nonLeafTests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		dur                  time.Duration
 		wantSubscriptionPath *gpb.Path
 		wantLastVal          *ygnmi.Value[*exampleoc.Model_SingleKey]
@@ -2708,7 +2709,7 @@ func TestWatchAll(t *testing.T) {
 	}{{
 		desc: "predicate not true",
 		dur:  time.Second,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -2736,7 +2737,7 @@ func TestWatchAll(t *testing.T) {
 	}, {
 		desc: "predicate becomes true",
 		dur:  time.Second,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -2786,7 +2787,7 @@ func TestWatchAll(t *testing.T) {
 	}, {
 		desc: "predicate becomes true after some deletions",
 		dur:  time.Second,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -2912,7 +2913,7 @@ func TestCollectAll(t *testing.T) {
 	lq := exampleocpath.Root().Model().SingleKeyAny().Value().State()
 	tests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		dur                  time.Duration
 		wantSubscriptionPath *gpb.Path
 		wantVals             []*ygnmi.Value[int64]
@@ -2922,7 +2923,7 @@ func TestCollectAll(t *testing.T) {
 	}{{
 		desc: "no values",
 		dur:  time.Second,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Sync()
 		},
 		wantErr:              "EOF",
@@ -2931,7 +2932,7 @@ func TestCollectAll(t *testing.T) {
 	}, {
 		desc: "no values with custom mode",
 		dur:  time.Second,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Sync()
 		},
 		opts:                 []ygnmi.Option{ygnmi.WithSubscriptionMode(gpb.SubscriptionMode_ON_CHANGE)},
@@ -2942,7 +2943,7 @@ func TestCollectAll(t *testing.T) {
 	}, {
 		desc: "multiple values",
 		dur:  time.Second,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -2997,7 +2998,7 @@ func TestCollectAll(t *testing.T) {
 	nonLeafQ := exampleocpath.Root().Model().SingleKeyAny().State()
 	nonLeafTests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		dur                  time.Duration
 		wantSubscriptionPath *gpb.Path
 		wantVals             []*ygnmi.Value[*exampleoc.Model_SingleKey]
@@ -3005,7 +3006,7 @@ func TestCollectAll(t *testing.T) {
 	}{{
 		desc: "no values",
 		dur:  time.Second,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Sync()
 		},
 		wantSubscriptionPath: nonLeafPath,
@@ -3014,7 +3015,7 @@ func TestCollectAll(t *testing.T) {
 	}, {
 		desc: "multiple values",
 		dur:  time.Second,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: startTime.UnixNano(),
 				Update: []*gpb.Update{{
@@ -3067,7 +3068,7 @@ func TestCollectAll(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	setClient := &testutil.SetClient{}
+	setClient := &gnmitestutil.SetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
 	if err != nil {
 		t.Fatalf("Unexpected error creating client: %v", err)
@@ -3400,7 +3401,7 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestReplace(t *testing.T) {
-	setClient := &testutil.SetClient{}
+	setClient := &gnmitestutil.SetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
 	if err != nil {
 		t.Fatalf("Unexpected error creating client: %v", err)
@@ -3597,7 +3598,7 @@ func TestReplace(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	setClient := &testutil.SetClient{}
+	setClient := &gnmitestutil.SetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
 	if err != nil {
 		t.Fatalf("Unexpected error creating client: %v", err)
@@ -3695,7 +3696,7 @@ func TestBatchGet(t *testing.T) {
 
 	tests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		config               bool
 		paths                []ygnmi.PathStruct
 		wantSubscriptionPath []*gpb.Path
@@ -3703,7 +3704,7 @@ func TestBatchGet(t *testing.T) {
 		wantErr              string
 	}{{
 		desc: "state leaves",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -3736,7 +3737,7 @@ func TestBatchGet(t *testing.T) {
 	}, {
 		desc:   "config ignore state leaves",
 		config: true,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -3765,7 +3766,7 @@ func TestBatchGet(t *testing.T) {
 		}),
 	}, {
 		desc: "non leaves",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -3844,7 +3845,7 @@ func TestBatchWatch(t *testing.T) {
 
 	tests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		config               bool
 		paths                []ygnmi.PathStruct
 		wantSubscriptionPath []*gpb.Path
@@ -3852,7 +3853,7 @@ func TestBatchWatch(t *testing.T) {
 		wantErr              string
 	}{{
 		desc: "predicate true",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -3881,7 +3882,7 @@ func TestBatchWatch(t *testing.T) {
 		}),
 	}, {
 		desc: "predicate false true false",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -3920,7 +3921,7 @@ func TestBatchWatch(t *testing.T) {
 	}, {
 		desc:   "predicate false",
 		config: true,
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -3940,7 +3941,7 @@ func TestBatchWatch(t *testing.T) {
 		wantErr: "EOF",
 	}, {
 		desc: "non leaves",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -4008,7 +4009,7 @@ func TestCustomRootBatch(t *testing.T) {
 
 	tests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		paths                []ygnmi.UntypedQuery
 		wantSubscriptionPath []*gpb.Path
 		wantVal              *ygnmi.Value[*exampleoc.Parent]
@@ -4016,14 +4017,14 @@ func TestCustomRootBatch(t *testing.T) {
 		wantLookupErr        string
 	}{{
 		desc: "not prefix",
-		stub: func(s *testutil.Stubber) {},
+		stub: func(s *gnmitestutil.Stubber) {},
 		paths: []ygnmi.UntypedQuery{
 			exampleocpath.Root().Model().Config(),
 		},
 		wantAddErr: "is not a prefix",
 	}, {
 		desc: "success",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -4171,7 +4172,7 @@ func TestCustomRootWildcardBatch(t *testing.T) {
 
 	tests := []struct {
 		desc                 string
-		stub                 func(s *testutil.Stubber)
+		stub                 func(s *gnmitestutil.Stubber)
 		paths                []ygnmi.UntypedQuery
 		wantSubscriptionPath []*gpb.Path
 		wantVal              []*ygnmi.Value[*exampleoc.Model_SingleKey]
@@ -4179,14 +4180,14 @@ func TestCustomRootWildcardBatch(t *testing.T) {
 		wantLookupErr        string
 	}{{
 		desc: "not prefix",
-		stub: func(s *testutil.Stubber) {},
+		stub: func(s *gnmitestutil.Stubber) {},
 		paths: []ygnmi.UntypedQuery{
 			exampleocpath.Root().Model().Config(),
 		},
 		wantAddErr: "is not a prefix",
 	}, {
 		desc: "success",
-		stub: func(s *testutil.Stubber) {
+		stub: func(s *gnmitestutil.Stubber) {
 			s.Notification(&gpb.Notification{
 				Timestamp: 100,
 				Update: []*gpb.Update{{
@@ -4243,7 +4244,7 @@ func TestCustomRootWildcardBatch(t *testing.T) {
 }
 
 func TestSetBatch(t *testing.T) {
-	setClient := &testutil.SetClient{}
+	setClient := &gnmitestutil.SetClient{}
 	client, err := ygnmi.NewClient(setClient, ygnmi.WithTarget("dut"))
 	if err != nil {
 		t.Fatalf("Unexpected error creating client: %v", err)

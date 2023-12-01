@@ -25,7 +25,7 @@ import (
 	"github.com/openconfig/gnmi/errdiff"
 	"github.com/openconfig/ygnmi/exampleoc"
 	"github.com/openconfig/ygnmi/internal/exampleocconfig"
-	"github.com/openconfig/ygnmi/internal/testutil"
+	"github.com/openconfig/ygnmi/internal/gnmitestutil"
 	"github.com/openconfig/ygnmi/schemaless"
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/util"
@@ -37,7 +37,7 @@ import (
 	ygottestutil "github.com/openconfig/ygot/testutil"
 )
 
-func lookupCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVal *ygnmi.Value[T]) {
+func lookupCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVal *ygnmi.Value[T]) {
 	t.Helper()
 	got, err := ygnmi.Lookup(context.Background(), c, inQuery)
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
@@ -55,7 +55,7 @@ func lookupCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Cl
 	}
 }
 
-func lookupWithGetCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequest *gpb.GetRequest, wantVal *ygnmi.Value[T]) {
+func lookupWithGetCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequest *gpb.GetRequest, wantVal *ygnmi.Value[T]) {
 	t.Helper()
 	got, err := ygnmi.Lookup(context.Background(), c, inQuery, ygnmi.WithUseGet())
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
@@ -72,7 +72,7 @@ func lookupWithGetCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *y
 	}
 }
 
-func getCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVal T) {
+func getCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVal T) {
 	t.Helper()
 	got, err := ygnmi.Get(context.Background(), c, inQuery)
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
@@ -88,7 +88,7 @@ func getCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Clien
 	}
 }
 
-func watchCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, duration time.Duration, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T],
+func watchCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, duration time.Duration, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T],
 	inOpts []ygnmi.Option, valPred func(T) bool, wantErrSubstring string, wantSubscriptionPaths []*gpb.Path, wantModes []gpb.SubscriptionMode, wantIntervals []uint64, wantVals []*ygnmi.Value[T], wantLastVal *ygnmi.Value[T]) {
 	t.Helper()
 	i := 0
@@ -130,7 +130,7 @@ func watchCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, duration tim
 	}
 }
 
-func collectCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVals []*ygnmi.Value[T]) {
+func collectCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVals []*ygnmi.Value[T]) {
 	t.Helper()
 	vals, err := ygnmi.Collect(context.Background(), c, inQuery).Await()
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
@@ -145,7 +145,7 @@ func collectCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.C
 	}
 }
 
-func lookupAllCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.WildcardQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVals []*ygnmi.Value[T], nonLeaf bool) {
+func lookupAllCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.WildcardQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVals []*ygnmi.Value[T], nonLeaf bool) {
 	t.Helper()
 	got, err := ygnmi.LookupAll(context.Background(), c, inQuery)
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
@@ -171,7 +171,7 @@ func lookupAllCheckFn[T any](t *testing.T, fakeGNMI *testutil.FakeGNMI, c *ygnmi
 	}
 }
 
-func configCheckFn(t *testing.T, setClient *testutil.SetClient, c *ygnmi.Client, op func(*ygnmi.Client) (*ygnmi.Result, error), wantRequest *gpb.SetRequest, stubResponse *gpb.SetResponse, wantErrSubstring string, stubErr error) {
+func configCheckFn(t *testing.T, setClient *gnmitestutil.SetClient, c *ygnmi.Client, op func(*ygnmi.Client) (*ygnmi.Result, error), wantRequest *gpb.SetRequest, stubResponse *gpb.SetResponse, wantErrSubstring string, stubErr error) {
 	t.Helper()
 	setClient.Reset()
 	setClient.AddResponse(stubResponse, stubErr)
@@ -219,8 +219,8 @@ func removeWhitespace(s string) string {
 	return strings.Join(strings.Fields(s), "")
 }
 
-func newClient(t testing.TB) (*testutil.FakeGNMI, *ygnmi.Client) {
-	fakeGNMI, err := testutil.StartGNMI(0)
+func newClient(t testing.TB) (*gnmitestutil.FakeGNMI, *ygnmi.Client) {
+	fakeGNMI, err := gnmitestutil.StartGNMI(0)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -243,7 +243,7 @@ func checkJustReceived(t *testing.T, recvTime time.Time) {
 }
 
 // verifySubscriptionPathsSent verifies the paths of the sent subscription requests is the same as wantPaths.
-func verifySubscriptionPathsSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, wantPaths ...*gpb.Path) {
+func verifySubscriptionPathsSent(t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, wantPaths ...*gpb.Path) {
 	t.Helper()
 	requests := fakeGNMI.Requests()
 	if len(requests) != 1 {
@@ -267,7 +267,7 @@ func verifySubscriptionPathsSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, want
 }
 
 // verifySubscriptionModesSent verifies the modes of the sent subscription requests is the same as wantModes.
-func verifySubscriptionModesSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, wantModes ...gpb.SubscriptionMode) {
+func verifySubscriptionModesSent(t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, wantModes ...gpb.SubscriptionMode) {
 	t.Helper()
 	requests := fakeGNMI.Requests()
 	if len(requests) != 1 {
@@ -286,7 +286,7 @@ func verifySubscriptionModesSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, want
 }
 
 // verifySubscriptionSampleIntervalsSent verifies the modes of the sent subscription requests is the same as wantModes.
-func verifySubscriptionSampleIntervalsSent(t *testing.T, fakeGNMI *testutil.FakeGNMI, wantIntervals ...uint64) {
+func verifySubscriptionSampleIntervalsSent(t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, wantIntervals ...uint64) {
 	t.Helper()
 	requests := fakeGNMI.Requests()
 	if len(requests) != 1 {
