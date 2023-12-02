@@ -71,6 +71,8 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 		return nil, fmt.Errorf("using gnmi.Get is only valid for ONCE subscriptions")
 	}
 
+	ctx = NewContext(ctx, q)
+
 	var sub gpb.GNMI_SubscribeClient
 	var err error
 	if o.useGet {

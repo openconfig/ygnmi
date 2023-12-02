@@ -37,7 +37,7 @@ import (
 	ygottestutil "github.com/openconfig/ygot/testutil"
 )
 
-func lookupCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVal *ygnmi.Value[T]) {
+func lookupCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantSubscriptionPath *gpb.Path, wantVal *ygnmi.Value[T]) {
 	t.Helper()
 	got, err := ygnmi.Lookup(context.Background(), c, inQuery)
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
@@ -53,9 +53,15 @@ func lookupCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnm
 	if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_SingleKey_OrderedList_OrderedMap{}, exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}), protocmp.Transform()); diff != "" {
 		t.Errorf("Lookup(ctx, c, %v) returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", inQuery, diff, got.ComplianceErrors)
 	}
+
+	if wantRequestValues != nil {
+		if diff := cmp.Diff(wantRequestValues, fakeGNMI.LastRequestContextValues()); diff != "" {
+			t.Errorf("RequestValues (-want, +got):\n%s", diff)
+		}
+	}
 }
 
-func lookupWithGetCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequest *gpb.GetRequest, wantVal *ygnmi.Value[T]) {
+func lookupWithGetCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantRequest *gpb.GetRequest, wantVal *ygnmi.Value[T], copts ...cmp.Option) {
 	t.Helper()
 	got, err := ygnmi.Lookup(context.Background(), c, inQuery, ygnmi.WithUseGet())
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
@@ -64,15 +70,22 @@ func lookupWithGetCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, 
 	if err != nil {
 		return
 	}
-	if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_SingleKey_OrderedList_OrderedMap{}, exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}), cmpopts.IgnoreFields(ygnmi.Value[T]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
+	copts = append(copts, cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_SingleKey_OrderedList_OrderedMap{}, exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}), cmpopts.IgnoreFields(ygnmi.Value[T]{}, "RecvTimestamp"), protocmp.Transform())
+	if diff := cmp.Diff(wantVal, got, copts...); diff != "" {
 		t.Errorf("Lookup() returned unexpected diff (-want, +got):\n%s", diff)
 	}
 	if diff := cmp.Diff(wantRequest, fakeGNMI.GetRequests()[0], protocmp.Transform()); diff != "" {
 		t.Errorf("Lookup() GetRequest different from expected (-want, +got):\n%s", diff)
 	}
+
+	if wantRequestValues != nil {
+		if diff := cmp.Diff(wantRequestValues, fakeGNMI.LastRequestContextValues()); diff != "" {
+			t.Errorf("RequestValues (-want, +got):\n%s", diff)
+		}
+	}
 }
 
-func getCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVal T) {
+func getCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantSubscriptionPath *gpb.Path, wantVal T) {
 	t.Helper()
 	got, err := ygnmi.Get(context.Background(), c, inQuery)
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
@@ -86,10 +99,16 @@ func getCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.C
 	if diff := cmp.Diff(wantVal, got, cmp.AllowUnexported(exampleoc.Model_SingleKey_OrderedList_OrderedMap{}, exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{})); diff != "" {
 		t.Errorf("Get(ctx, c, %v) returned unexpected diff (-want,+got):\n %s", inQuery, diff)
 	}
+
+	if wantRequestValues != nil {
+		if diff := cmp.Diff(wantRequestValues, fakeGNMI.LastRequestContextValues()); diff != "" {
+			t.Errorf("RequestValues (-want, +got):\n%s", diff)
+		}
+	}
 }
 
 func watchCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, duration time.Duration, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T],
-	inOpts []ygnmi.Option, valPred func(T) bool, wantErrSubstring string, wantSubscriptionPaths []*gpb.Path, wantModes []gpb.SubscriptionMode, wantIntervals []uint64, wantVals []*ygnmi.Value[T], wantLastVal *ygnmi.Value[T]) {
+	inOpts []ygnmi.Option, valPred func(T) bool, wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantSubscriptionPaths []*gpb.Path, wantModes []gpb.SubscriptionMode, wantIntervals []uint64, wantVals []*ygnmi.Value[T], wantLastVal *ygnmi.Value[T]) {
 	t.Helper()
 	i := 0
 	ctx, cancel := context.WithTimeout(context.Background(), duration)
@@ -128,9 +147,15 @@ func watchCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, duration
 	if diff := cmp.Diff(wantLastVal, val, cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_SingleKey_OrderedList_OrderedMap{}, exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}), protocmp.Transform()); diff != "" {
 		t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
 	}
+
+	if wantRequestValues != nil {
+		if diff := cmp.Diff(wantRequestValues, fakeGNMI.LastRequestContextValues()); diff != "" {
+			t.Errorf("RequestValues (-want, +got):\n%s", diff)
+		}
+	}
 }
 
-func collectCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVals []*ygnmi.Value[T]) {
+func collectCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantSubscriptionPath *gpb.Path, wantVals []*ygnmi.Value[T]) {
 	t.Helper()
 	vals, err := ygnmi.Collect(context.Background(), c, inQuery).Await()
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
@@ -143,9 +168,15 @@ func collectCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygn
 	if diff := cmp.Diff(wantVals, vals, cmpopts.IgnoreFields(ygnmi.Value[T]{}, "RecvTimestamp"), cmp.AllowUnexported(ygnmi.Value[T]{}), protocmp.Transform()); diff != "" {
 		t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
 	}
+
+	if wantRequestValues != nil {
+		if diff := cmp.Diff(wantRequestValues, fakeGNMI.LastRequestContextValues()); diff != "" {
+			t.Errorf("RequestValues (-want, +got):\n%s", diff)
+		}
+	}
 }
 
-func lookupAllCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.WildcardQuery[T], wantErrSubstring string, wantSubscriptionPath *gpb.Path, wantVals []*ygnmi.Value[T], nonLeaf bool) {
+func lookupAllCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.WildcardQuery[T], wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantSubscriptionPath *gpb.Path, wantVals []*ygnmi.Value[T], nonLeaf bool) {
 	t.Helper()
 	got, err := ygnmi.LookupAll(context.Background(), c, inQuery)
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
@@ -168,6 +199,12 @@ func lookupAllCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *y
 	}
 	if diff := cmp.Diff(wantVals, got, copts...); diff != "" {
 		t.Errorf("LookupAll() returned unexpected diff (-want,+got):\n%s", diff)
+	}
+
+	if wantRequestValues != nil {
+		if diff := cmp.Diff(wantRequestValues, fakeGNMI.LastRequestContextValues()); diff != "" {
+			t.Errorf("RequestValues (-want, +got):\n%s", diff)
+		}
 	}
 }
 

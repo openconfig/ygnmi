@@ -132,7 +132,7 @@ func defaultStateTmplStruct(pathStructName, fakeRootName string, compressBehavio
 		SchemaStructPkgAccessor: "oc.",
 		IsState:                 true,
 		IsShadowPath:            compressBehaviour == genutil.PreferIntendedConfig,
-		IsCompressedSchema:      true,
+		IsCompressedSchema:      compressBehaviour.CompressEnabled(),
 		MethodName:              "State",
 		SingletonTypeName:       singletonQueryTypeName,
 		WildcardTypeName:        wildcardQueryTypeName,
@@ -230,7 +230,6 @@ func GNMIFieldGenerator(pathStructName, _ string, compressBehaviour genutil.Comp
 // to distinguish between config and state queries.
 func GNMIInitGenerator(pathStructName, fakeRootName string, compressBehaviour genutil.CompressBehaviour, _ *ygen.ParsedDirectory, node *NodeData, wildcard bool) (string, error) {
 	tmplStruct := defaultStateTmplStruct(pathStructName, fakeRootName, compressBehaviour, node)
-	tmplStruct.IsCompressedSchema = false
 	if err := modifyQueryType(node, &tmplStruct); err != nil {
 		return "", err
 	}

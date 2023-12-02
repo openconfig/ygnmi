@@ -28,8 +28,8 @@ import (
 	"github.com/openconfig/gnmi/errdiff"
 	"github.com/openconfig/ygnmi/internal/exampleocconfig"
 	"github.com/openconfig/ygnmi/internal/exampleocconfig/exampleocconfigpath"
-	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygnmi/internal/gnmitestutil"
+	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygnmi/schemaless"
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/ygot"
@@ -117,6 +117,7 @@ func TestPreferConfigLookup(t *testing.T) {
 		desc                 string
 		stub                 func(s *gnmitestutil.Stubber)
 		inQuery              ygnmi.SingletonQuery[string]
+		wantRequestValues    *ygnmi.RequestValues
 		wantSubscriptionPath *gpb.Path
 		wantVal              *ygnmi.Value[string]
 		wantErr              string
@@ -131,6 +132,10 @@ func TestPreferConfigLookup(t *testing.T) {
 					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
 				}},
 			}).Sync()
+		},
+		wantRequestValues: &ygnmi.RequestValues{
+			CompressedConfigQuery: false,
+			CompressedStateQuery:  true,
 		},
 		wantSubscriptionPath: leafPath,
 		wantVal: (&ygnmi.Value[string]{
@@ -291,7 +296,7 @@ func TestPreferConfigLookup(t *testing.T) {
 	for _, tt := range leafTests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			lookupCheckFn(t, fakeGNMI, c, tt.inQuery, tt.wantErr, tt.wantSubscriptionPath, tt.wantVal)
+			lookupCheckFn(t, fakeGNMI, c, tt.inQuery, tt.wantErr, tt.wantRequestValues, tt.wantSubscriptionPath, tt.wantVal)
 		})
 	}
 
@@ -307,6 +312,7 @@ func TestPreferConfigLookup(t *testing.T) {
 		desc                 string
 		stub                 func(s *gnmitestutil.Stubber)
 		inQuery              ygnmi.SingletonQuery[*exampleocconfig.Parent_Child]
+		wantRequestValues    *ygnmi.RequestValues
 		wantSubscriptionPath *gpb.Path
 		wantVal              *ygnmi.Value[*exampleocconfig.Parent_Child]
 		wantErr              string
@@ -321,7 +327,11 @@ func TestPreferConfigLookup(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		inQuery:              configQuery,
+		inQuery: configQuery,
+		wantRequestValues: &ygnmi.RequestValues{
+			CompressedConfigQuery: true,
+			CompressedStateQuery:  false,
+		},
 		wantSubscriptionPath: rootPath,
 		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Path:      rootPath,
@@ -340,7 +350,11 @@ func TestPreferConfigLookup(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		inQuery:              stateQuery,
+		inQuery: stateQuery,
+		wantRequestValues: &ygnmi.RequestValues{
+			CompressedConfigQuery: false,
+			CompressedStateQuery:  true,
+		},
 		wantSubscriptionPath: rootPath,
 		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Path:      rootPath,
@@ -360,7 +374,11 @@ func TestPreferConfigLookup(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		inQuery:              stateQuery,
+		inQuery: stateQuery,
+		wantRequestValues: &ygnmi.RequestValues{
+			CompressedConfigQuery: false,
+			CompressedStateQuery:  true,
+		},
 		wantSubscriptionPath: rootPath,
 		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Path:      rootPath,
@@ -379,7 +397,11 @@ func TestPreferConfigLookup(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		inQuery:              configQuery,
+		inQuery: configQuery,
+		wantRequestValues: &ygnmi.RequestValues{
+			CompressedConfigQuery: true,
+			CompressedStateQuery:  false,
+		},
 		wantSubscriptionPath: rootPath,
 		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Path:      rootPath,
@@ -456,7 +478,11 @@ func TestPreferConfigLookup(t *testing.T) {
 		stub: func(s *gnmitestutil.Stubber) {
 			s.Sync()
 		},
-		inQuery:              stateQuery,
+		inQuery: stateQuery,
+		wantRequestValues: &ygnmi.RequestValues{
+			CompressedConfigQuery: false,
+			CompressedStateQuery:  true,
+		},
 		wantSubscriptionPath: rootPath,
 		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
 			Path: rootPath,
@@ -466,7 +492,7 @@ func TestPreferConfigLookup(t *testing.T) {
 	for _, tt := range nonLeafTests {
 		t.Run("nonleaf "+tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			lookupCheckFn(t, fakeGNMI, c, tt.inQuery, tt.wantErr, tt.wantSubscriptionPath, tt.wantVal)
+			lookupCheckFn(t, fakeGNMI, c, tt.inQuery, tt.wantErr, tt.wantRequestValues, tt.wantSubscriptionPath, tt.wantVal)
 		})
 	}
 
@@ -483,6 +509,7 @@ func TestPreferConfigLookup(t *testing.T) {
 			t, fakeGNMI, c,
 			exampleocconfigpath.Root().Model().SingleKey("foo").Counter().State(),
 			"",
+			nil,
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counter"),
 			(&ygnmi.Value[float32]{
 				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counter"),
@@ -504,6 +531,7 @@ func TestPreferConfigLookup(t *testing.T) {
 			t, fakeGNMI, c,
 			exampleocconfigpath.Root().Model().SingleKey("foo").Counters().State(),
 			"",
+			nil,
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counters"),
 			(&ygnmi.Value[[]float32]{
 				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counters"),
@@ -551,6 +579,7 @@ func TestPreferConfigLookup(t *testing.T) {
 			t, fakeGNMI, c,
 			ygnmi.SingletonQuery[*exampleocconfig.Model_SingleKey_OrderedList_OrderedMap](exampleocconfigpath.Root().Model().SingleKey("foo").OrderedListMap().Config()),
 			"",
+			nil,
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 			(&ygnmi.Value[*exampleocconfig.Model_SingleKey_OrderedList_OrderedMap]{
 				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
@@ -597,6 +626,7 @@ func TestPreferConfigLookup(t *testing.T) {
 			t, fakeGNMI, c,
 			ygnmi.SingletonQuery[map[string]*exampleocconfig.Model_SingleKey](exampleocconfigpath.Root().Model().SingleKeyMap().Config()),
 			"",
+			nil,
 			testutil.GNMIPath(t, "/model/a"),
 			(&ygnmi.Value[map[string]*exampleocconfig.Model_SingleKey]{
 				Path:      testutil.GNMIPath(t, "/model/a"),
@@ -661,6 +691,10 @@ func TestPreferConfigLookupWithGet(t *testing.T) {
 				t, fakeGNMI, c,
 				exampleocconfigpath.Root().RemoteContainer().ALeaf().State(),
 				"",
+				&ygnmi.RequestValues{
+					CompressedConfigQuery: false,
+					CompressedStateQuery:  true,
+				},
 				tt.wantRequest,
 				tt.wantVal,
 			)
@@ -733,13 +767,24 @@ func TestPreferConfigLookupWithGet(t *testing.T) {
 	for _, tt := range nonLeafTests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			got, err := ygnmi.Lookup[*exampleocconfig.Parent_Child](context.Background(), c, exampleocconfigpath.Root().Parent().Child().Config(), ygnmi.WithUseGet())
-			if err != nil {
-				t.Fatalf("Lookup() returned unexpected error: %v", err)
-			}
-			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleocconfig.Parent_Child]{}), cmpopts.IgnoreFields(ygnmi.TelemetryError{}, "Err"), cmpopts.IgnoreFields(ygnmi.Value[*exampleocconfig.Parent_Child]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
-				t.Errorf("Lookup() returned unexpected diff: %s", diff)
-			}
+			path := exampleocconfigpath.Root().Parent().Child().Config()
+			lookupWithGetCheckFn(
+				t, fakeGNMI, c,
+				ygnmi.SingletonQuery[*exampleocconfig.Parent_Child](path),
+				"",
+				&ygnmi.RequestValues{
+					CompressedConfigQuery: true,
+					CompressedStateQuery:  false,
+				},
+				&gpb.GetRequest{
+					Encoding: gpb.Encoding_JSON_IETF,
+					Type:     gpb.GetRequest_CONFIG,
+					Prefix:   &gpb.Path{},
+					Path:     []*gpb.Path{nonLeafPath},
+				},
+				tt.wantVal,
+				cmpopts.IgnoreFields(ygnmi.TelemetryError{}, "Err"),
+			)
 		})
 	}
 
@@ -784,6 +829,7 @@ func TestPreferConfigLookupWithGet(t *testing.T) {
 			t, fakeGNMI, c,
 			ygnmi.SingletonQuery[*exampleocconfig.Model_SingleKey_OrderedList_OrderedMap](exampleocconfigpath.Root().Model().SingleKey("foo").OrderedListMap().Config()),
 			"",
+			nil,
 			&gpb.GetRequest{
 				Encoding: gpb.Encoding_JSON_IETF,
 				Type:     gpb.GetRequest_CONFIG,
@@ -837,6 +883,7 @@ func TestPreferConfigLookupWithGet(t *testing.T) {
 			t, fakeGNMI, c,
 			ygnmi.SingletonQuery[map[string]*exampleocconfig.Model_SingleKey](exampleocconfigpath.Root().Model().SingleKeyMap().Config()),
 			"",
+			nil,
 			&gpb.GetRequest{
 				Encoding: gpb.Encoding_JSON_IETF,
 				Type:     gpb.GetRequest_CONFIG,
@@ -900,7 +947,13 @@ func TestPreferConfigGet(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			getCheckFn(t, fakeGNMI, c, lq, tt.wantErr, tt.wantSubscriptionPath, tt.wantVal)
+			getCheckFn(
+				t, fakeGNMI, c, lq, tt.wantErr,
+				&ygnmi.RequestValues{
+					CompressedConfigQuery: false,
+					CompressedStateQuery:  true,
+				},
+				tt.wantSubscriptionPath, tt.wantVal)
 		})
 	}
 
@@ -972,6 +1025,7 @@ func TestPreferConfigGet(t *testing.T) {
 		getCheckFn(t, fakeGNMI, c,
 			exampleocconfigpath.Root().Model().SingleKey("foo").OrderedListMap().State(),
 			"",
+			nil,
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 			getSamplePreferConfigOrderedMap(t),
 		)
@@ -1169,6 +1223,10 @@ func TestPreferConfigWatch(t *testing.T) {
 				tt.opts,
 				func(val string) bool { return val == "foo" },
 				tt.wantErr,
+				&ygnmi.RequestValues{
+					CompressedConfigQuery: false,
+					CompressedStateQuery:  true,
+				},
 				[]*gpb.Path{tt.wantSubscriptionPath},
 				[]gpb.SubscriptionMode{tt.wantMode},
 				[]uint64{tt.wantInterval},
@@ -1401,6 +1459,10 @@ func TestPreferConfigWatch(t *testing.T) {
 					return val.One != nil && *val.One == "foo" && val.Three == exampleocconfig.Child_Three_ONE
 				},
 				tt.wantErr,
+				&ygnmi.RequestValues{
+					CompressedConfigQuery: false,
+					CompressedStateQuery:  true,
+				},
 				[]*gpb.Path{tt.wantSubscriptionPath},
 				[]gpb.SubscriptionMode{gpb.SubscriptionMode_TARGET_DEFINED},
 				[]uint64{0},
@@ -1476,6 +1538,7 @@ func TestPreferConfigWatch(t *testing.T) {
 				return cmp.Equal(val, want, cmp.AllowUnexported(exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}))
 			},
 			"",
+			nil,
 			[]*gpb.Path{testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists")},
 			[]gpb.SubscriptionMode{gpb.SubscriptionMode_TARGET_DEFINED},
 			[]uint64{0},
@@ -1560,6 +1623,7 @@ func TestPreferConfigWatch(t *testing.T) {
 				return cmp.Equal(val, want)
 			},
 			"",
+			nil,
 			[]*gpb.Path{testutil.GNMIPath(t, "/model/a")},
 			[]gpb.SubscriptionMode{gpb.SubscriptionMode_TARGET_DEFINED},
 			[]uint64{0},
@@ -1760,6 +1824,7 @@ func TestPreferConfigCollect(t *testing.T) {
 		desc                 string
 		stub                 func(s *gnmitestutil.Stubber)
 		dur                  time.Duration
+		wantRequestValues    *ygnmi.RequestValues
 		wantSubscriptionPath *gpb.Path
 		wantVals             []*ygnmi.Value[string]
 		wantErr              string
@@ -1844,7 +1909,14 @@ func TestPreferConfigCollect(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			collectCheckFn(t, fakeGNMI, client, lq, tt.wantErr, tt.wantSubscriptionPath, tt.wantVals)
+			collectCheckFn(
+				t, fakeGNMI, client, lq, tt.wantErr,
+				&ygnmi.RequestValues{
+					CompressedConfigQuery: false,
+					CompressedStateQuery:  true,
+				},
+				tt.wantSubscriptionPath, tt.wantVals,
+			)
 		})
 	}
 
@@ -1920,7 +1992,13 @@ func TestPreferConfigCollect(t *testing.T) {
 	for _, tt := range nonLeafTests {
 		t.Run("nonleaf "+tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			collectCheckFn(t, fakeGNMI, client, nonLeafQuery, tt.wantErr, tt.wantSubscriptionPath, tt.wantVals)
+			collectCheckFn(
+				t, fakeGNMI, client, nonLeafQuery, tt.wantErr,
+				&ygnmi.RequestValues{
+					CompressedConfigQuery: false,
+					CompressedStateQuery:  true,
+				},
+				tt.wantSubscriptionPath, tt.wantVals)
 		})
 	}
 }
@@ -2077,7 +2155,13 @@ func TestPreferConfigLookupAll(t *testing.T) {
 	for _, tt := range leafTests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			lookupAllCheckFn(t, fakeGNMI, c, lq, tt.wantErr, tt.wantSubscriptionPath, tt.wantVals, false)
+			lookupAllCheckFn(t, fakeGNMI, c, lq, tt.wantErr,
+				&ygnmi.RequestValues{
+					CompressedConfigQuery: false,
+					CompressedStateQuery:  true,
+				},
+				tt.wantSubscriptionPath, tt.wantVals, false,
+			)
 		})
 	}
 
@@ -2190,7 +2274,14 @@ func TestPreferConfigLookupAll(t *testing.T) {
 	for _, tt := range nonLeafTests {
 		t.Run("nonLeaf "+tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			lookupAllCheckFn(t, fakeGNMI, c, nonLeafQ, tt.wantErr, tt.wantSubscriptionPath, tt.wantVals, true)
+			lookupAllCheckFn(
+				t, fakeGNMI, c, nonLeafQ, tt.wantErr,
+				&ygnmi.RequestValues{
+					CompressedConfigQuery: false,
+					CompressedStateQuery:  true,
+				},
+				tt.wantSubscriptionPath, tt.wantVals, true,
+			)
 		})
 	}
 
@@ -2259,6 +2350,7 @@ func TestPreferConfigLookupAll(t *testing.T) {
 			t, fakeGNMI, c,
 			exampleocconfigpath.Root().Model().SingleKeyAny().OrderedListMap().State(),
 			"",
+			nil,
 			testutil.GNMIPath(t, "/model/a/single-key[key=*]/ordered-lists"),
 			[]*ygnmi.Value[*exampleocconfig.Model_SingleKey_OrderedList_OrderedMap]{
 				// In alphabetical order.
@@ -2346,6 +2438,7 @@ func TestPreferConfigLookupAll(t *testing.T) {
 			t, fakeGNMI, c,
 			exampleocconfigpath.Root().Model().SingleKeyAny().SingleKeyMap().State(),
 			"",
+			nil,
 			testutil.GNMIPath(t, "/model/a/single-key[key=*]/inner-a"),
 			[]*ygnmi.Value[map[string]*exampleocconfig.Model_SingleKey_SingleKey]{
 				// In alphabetical order.
@@ -4138,6 +4231,7 @@ func TestPreferConfigCustomRootBatch(t *testing.T) {
 				return cmp.Equal(val, want)
 			},
 			"",
+			nil,
 			[]*gpb.Path{
 				testutil.GNMIPath(t, "/model/a/single-key[key=*]/state/key"),
 				testutil.GNMIPath(t, "/model/a/single-key[key=*]/state/value"),
