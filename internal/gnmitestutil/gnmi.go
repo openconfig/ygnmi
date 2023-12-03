@@ -80,8 +80,8 @@ func (g *FakeGNMI) Requests() []*gpb.SubscribeRequest {
 	return g.agent.Requests()
 }
 
-// Requests returns the request-scoped values from the last ygnmi request sent
-// to the gNMI server.
+// LastRequestContextValues returns the request-scoped values from the last
+// ygnmi request sent to the gNMI server.
 func (g *FakeGNMI) LastRequestContextValues() *ygnmi.RequestValues {
 	return g.clientWrapper.requestValues
 }

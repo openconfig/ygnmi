@@ -115,19 +115,6 @@ func ResolvePath(n PathStruct) (*gpb.Path, map[string]interface{}, error) {
 	return &gpb.Path{Elem: p}, root.CustomData(), nil
 }
 
-// MustPath calls ResolvePath and panics on error.
-// It is intended for use in tests with generated PathStructs.
-//
-//	ygnmi.MustResolvePath(ocpath.Interface("port0").Name().Config().PathStruct())
-//	returns "/interfaces/interface[name=port0]/config/name
-func MustPath(q UntypedQuery) *gpb.Path {
-	p, _, err := ResolvePath(q.PathStruct())
-	if err != nil {
-		panic(err)
-	}
-	return p
-}
-
 // ResolveRelPath returns the partial []*gpb.PathElem representing the
 // PathStruct's relative path.
 func ResolveRelPath(n PathStruct) ([]*gpb.PathElem, []error) {
