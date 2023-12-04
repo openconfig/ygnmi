@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package schemaless
+package schemaless_test
 
 import (
 	"context"
@@ -23,7 +23,9 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/openconfig/ygnmi/internal/gnmitestutil"
 	"github.com/openconfig/ygnmi/internal/testutil"
+	"github.com/openconfig/ygnmi/schemaless"
 	"github.com/openconfig/ygnmi/ygnmi"
 	"google.golang.org/protobuf/testing/protocmp"
 
@@ -47,7 +49,7 @@ func TestGet(t *testing.T) {
 				}},
 			}},
 		}).Sync()
-		query, err := NewConfig[string]("/foo/bar", "")
+		query, err := schemaless.NewConfig[string]("/foo/bar", "")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -72,7 +74,7 @@ func TestGet(t *testing.T) {
 				}},
 			}},
 		}).Sync()
-		query, err := NewConfig[*dynamicData]("/foo/bar", "")
+		query, err := schemaless.NewConfig[*dynamicData]("/foo/bar", "")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -102,7 +104,7 @@ func TestGet(t *testing.T) {
 				}},
 			}},
 		}).Sync()
-		query, err := NewConfig[*dynamicData]("/foo/bar", "testorigin")
+		query, err := schemaless.NewConfig[*dynamicData]("/foo/bar", "testorigin")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -139,7 +141,7 @@ func TestGetAll(t *testing.T) {
 				}},
 			}},
 		}).Sync()
-		query, err := NewWildcard[int]("/foo/bar[name=*]", "")
+		query, err := schemaless.NewWildcard[int]("/foo/bar[name=*]", "")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -169,7 +171,7 @@ func TestGetAll(t *testing.T) {
 				}},
 			}},
 		}).Sync()
-		query, err := NewWildcard[*dynamicData]("/foo/bar[name=*]", "")
+		query, err := schemaless.NewWildcard[*dynamicData]("/foo/bar[name=*]", "")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -216,7 +218,7 @@ func TestWatchAll(t *testing.T) {
 			}},
 		}},
 	})
-	query, err := NewWildcard[int]("/foo/bar[name=*]", "")
+	query, err := schemaless.NewWildcard[int]("/foo/bar[name=*]", "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -252,8 +254,8 @@ func TestWatchAll(t *testing.T) {
 
 }
 
-func newClient(t testing.TB) (*testutil.FakeGNMI, *ygnmi.Client) {
-	fakeGNMI, err := testutil.StartGNMI(0)
+func newClient(t testing.TB) (*gnmitestutil.FakeGNMI, *ygnmi.Client) {
+	fakeGNMI, err := gnmitestutil.StartGNMI(0)
 	if err != nil {
 		t.Fatal(err)
 	}
