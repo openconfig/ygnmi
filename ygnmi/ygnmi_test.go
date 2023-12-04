@@ -115,6 +115,7 @@ func TestLookup(t *testing.T) {
 		desc                 string
 		stub                 func(s *gnmitestutil.Stubber)
 		inQuery              ygnmi.SingletonQuery[string]
+		wantRequestValues    *ygnmi.RequestValues
 		wantSubscriptionPath *gpb.Path
 		wantVal              *ygnmi.Value[string]
 		wantErr              string
@@ -129,6 +130,10 @@ func TestLookup(t *testing.T) {
 					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
 				}},
 			}).Sync()
+		},
+		wantRequestValues: &ygnmi.RequestValues{
+			CompressedConfigQuery: false,
+			CompressedStateQuery:  true,
 		},
 		wantSubscriptionPath: leafPath,
 		wantVal: (&ygnmi.Value[string]{
@@ -289,7 +294,7 @@ func TestLookup(t *testing.T) {
 	for _, tt := range leafTests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			lookupCheckFn(t, fakeGNMI, c, tt.inQuery, tt.wantErr, tt.wantSubscriptionPath, tt.wantVal)
+			lookupCheckFn(t, fakeGNMI, c, tt.inQuery, tt.wantErr, tt.wantRequestValues, tt.wantSubscriptionPath, tt.wantVal)
 		})
 	}
 
@@ -305,6 +310,7 @@ func TestLookup(t *testing.T) {
 		desc                 string
 		stub                 func(s *gnmitestutil.Stubber)
 		inQuery              ygnmi.SingletonQuery[*exampleoc.Parent_Child]
+		wantRequestValues    *ygnmi.RequestValues
 		wantSubscriptionPath *gpb.Path
 		wantVal              *ygnmi.Value[*exampleoc.Parent_Child]
 		wantErr              string
@@ -319,7 +325,11 @@ func TestLookup(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		inQuery:              configQuery,
+		inQuery: configQuery,
+		wantRequestValues: &ygnmi.RequestValues{
+			CompressedConfigQuery: true,
+			CompressedStateQuery:  false,
+		},
 		wantSubscriptionPath: rootPath,
 		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
 			Path:      rootPath,
@@ -338,7 +348,11 @@ func TestLookup(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		inQuery:              stateQuery,
+		inQuery: stateQuery,
+		wantRequestValues: &ygnmi.RequestValues{
+			CompressedConfigQuery: false,
+			CompressedStateQuery:  true,
+		},
 		wantSubscriptionPath: rootPath,
 		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
 			Path:      rootPath,
@@ -358,7 +372,11 @@ func TestLookup(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		inQuery:              stateQuery,
+		inQuery: stateQuery,
+		wantRequestValues: &ygnmi.RequestValues{
+			CompressedConfigQuery: false,
+			CompressedStateQuery:  true,
+		},
 		wantSubscriptionPath: rootPath,
 		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
 			Path:      rootPath,
@@ -377,7 +395,11 @@ func TestLookup(t *testing.T) {
 				}},
 			}).Sync()
 		},
-		inQuery:              configQuery,
+		inQuery: configQuery,
+		wantRequestValues: &ygnmi.RequestValues{
+			CompressedConfigQuery: true,
+			CompressedStateQuery:  false,
+		},
 		wantSubscriptionPath: rootPath,
 		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
 			Path:      rootPath,
@@ -454,7 +476,11 @@ func TestLookup(t *testing.T) {
 		stub: func(s *gnmitestutil.Stubber) {
 			s.Sync()
 		},
-		inQuery:              stateQuery,
+		inQuery: stateQuery,
+		wantRequestValues: &ygnmi.RequestValues{
+			CompressedConfigQuery: false,
+			CompressedStateQuery:  true,
+		},
 		wantSubscriptionPath: rootPath,
 		wantVal: (&ygnmi.Value[*exampleoc.Parent_Child]{
 			Path: rootPath,
@@ -464,7 +490,7 @@ func TestLookup(t *testing.T) {
 	for _, tt := range nonLeafTests {
 		t.Run("nonleaf "+tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			lookupCheckFn(t, fakeGNMI, c, tt.inQuery, tt.wantErr, tt.wantSubscriptionPath, tt.wantVal)
+			lookupCheckFn(t, fakeGNMI, c, tt.inQuery, tt.wantErr, tt.wantRequestValues, tt.wantSubscriptionPath, tt.wantVal)
 		})
 	}
 
@@ -481,6 +507,7 @@ func TestLookup(t *testing.T) {
 			t, fakeGNMI, c,
 			exampleocpath.Root().Model().SingleKey("foo").Counter().State(),
 			"",
+			nil,
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counter"),
 			(&ygnmi.Value[float32]{
 				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counter"),
@@ -502,6 +529,7 @@ func TestLookup(t *testing.T) {
 			t, fakeGNMI, c,
 			exampleocpath.Root().Model().SingleKey("foo").Counters().State(),
 			"",
+			nil,
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counters"),
 			(&ygnmi.Value[[]float32]{
 				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counters"),
@@ -549,6 +577,7 @@ func TestLookup(t *testing.T) {
 			t, fakeGNMI, c,
 			ygnmi.SingletonQuery[*exampleoc.Model_SingleKey_OrderedList_OrderedMap](exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().Config()),
 			"",
+			nil,
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 			(&ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
 				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
@@ -595,6 +624,7 @@ func TestLookup(t *testing.T) {
 			t, fakeGNMI, c,
 			ygnmi.SingletonQuery[map[string]*exampleoc.Model_SingleKey](exampleocpath.Root().Model().SingleKeyMap().Config()),
 			"",
+			nil,
 			testutil.GNMIPath(t, "/model/a"),
 			(&ygnmi.Value[map[string]*exampleoc.Model_SingleKey]{
 				Path:      testutil.GNMIPath(t, "/model/a"),
@@ -659,6 +689,10 @@ func TestLookupWithGet(t *testing.T) {
 				t, fakeGNMI, c,
 				exampleocpath.Root().RemoteContainer().ALeaf().State(),
 				"",
+				&ygnmi.RequestValues{
+					CompressedConfigQuery: false,
+					CompressedStateQuery:  true,
+				},
 				tt.wantRequest,
 				tt.wantVal,
 			)
@@ -731,13 +765,24 @@ func TestLookupWithGet(t *testing.T) {
 	for _, tt := range nonLeafTests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			got, err := ygnmi.Lookup[*exampleoc.Parent_Child](context.Background(), c, exampleocpath.Root().Parent().Child().Config(), ygnmi.WithUseGet())
-			if err != nil {
-				t.Fatalf("Lookup() returned unexpected error: %v", err)
-			}
-			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*exampleoc.Parent_Child]{}), cmpopts.IgnoreFields(ygnmi.TelemetryError{}, "Err"), cmpopts.IgnoreFields(ygnmi.Value[*exampleoc.Parent_Child]{}, "RecvTimestamp"), protocmp.Transform()); diff != "" {
-				t.Errorf("Lookup() returned unexpected diff: %s", diff)
-			}
+			path := exampleocpath.Root().Parent().Child().Config()
+			lookupWithGetCheckFn(
+				t, fakeGNMI, c,
+				ygnmi.SingletonQuery[*exampleoc.Parent_Child](path),
+				"",
+				&ygnmi.RequestValues{
+					CompressedConfigQuery: true,
+					CompressedStateQuery:  false,
+				},
+				&gpb.GetRequest{
+					Encoding: gpb.Encoding_JSON_IETF,
+					Type:     gpb.GetRequest_CONFIG,
+					Prefix:   &gpb.Path{},
+					Path:     []*gpb.Path{nonLeafPath},
+				},
+				tt.wantVal,
+				cmpopts.IgnoreFields(ygnmi.TelemetryError{}, "Err"),
+			)
 		})
 	}
 
@@ -782,6 +827,7 @@ func TestLookupWithGet(t *testing.T) {
 			t, fakeGNMI, c,
 			ygnmi.SingletonQuery[*exampleoc.Model_SingleKey_OrderedList_OrderedMap](exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().Config()),
 			"",
+			nil,
 			&gpb.GetRequest{
 				Encoding: gpb.Encoding_JSON_IETF,
 				Type:     gpb.GetRequest_CONFIG,
@@ -835,6 +881,7 @@ func TestLookupWithGet(t *testing.T) {
 			t, fakeGNMI, c,
 			ygnmi.SingletonQuery[map[string]*exampleoc.Model_SingleKey](exampleocpath.Root().Model().SingleKeyMap().Config()),
 			"",
+			nil,
 			&gpb.GetRequest{
 				Encoding: gpb.Encoding_JSON_IETF,
 				Type:     gpb.GetRequest_CONFIG,
@@ -898,7 +945,13 @@ func TestGet(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			getCheckFn(t, fakeGNMI, c, lq, tt.wantErr, tt.wantSubscriptionPath, tt.wantVal)
+			getCheckFn(
+				t, fakeGNMI, c, lq, tt.wantErr,
+				&ygnmi.RequestValues{
+					CompressedConfigQuery: false,
+					CompressedStateQuery:  true,
+				},
+				tt.wantSubscriptionPath, tt.wantVal)
 		})
 	}
 
@@ -970,6 +1023,7 @@ func TestGet(t *testing.T) {
 		getCheckFn(t, fakeGNMI, c,
 			exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().State(),
 			"",
+			nil,
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 			getSampleOrderedMap(t),
 		)
@@ -1167,6 +1221,10 @@ func TestWatch(t *testing.T) {
 				tt.opts,
 				func(val string) bool { return val == "foo" },
 				tt.wantErr,
+				&ygnmi.RequestValues{
+					CompressedConfigQuery: false,
+					CompressedStateQuery:  true,
+				},
 				[]*gpb.Path{tt.wantSubscriptionPath},
 				[]gpb.SubscriptionMode{tt.wantMode},
 				[]uint64{tt.wantInterval},
@@ -1399,6 +1457,10 @@ func TestWatch(t *testing.T) {
 					return val.One != nil && *val.One == "foo" && val.Three == exampleoc.Child_Three_ONE
 				},
 				tt.wantErr,
+				&ygnmi.RequestValues{
+					CompressedConfigQuery: false,
+					CompressedStateQuery:  true,
+				},
 				[]*gpb.Path{tt.wantSubscriptionPath},
 				[]gpb.SubscriptionMode{gpb.SubscriptionMode_TARGET_DEFINED},
 				[]uint64{0},
@@ -1474,6 +1536,7 @@ func TestWatch(t *testing.T) {
 				return cmp.Equal(val, want, cmp.AllowUnexported(exampleoc.Model_SingleKey_OrderedList_OrderedMap{}))
 			},
 			"",
+			nil,
 			[]*gpb.Path{testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists")},
 			[]gpb.SubscriptionMode{gpb.SubscriptionMode_TARGET_DEFINED},
 			[]uint64{0},
@@ -1558,6 +1621,7 @@ func TestWatch(t *testing.T) {
 				return cmp.Equal(val, want)
 			},
 			"",
+			nil,
 			[]*gpb.Path{testutil.GNMIPath(t, "/model/a")},
 			[]gpb.SubscriptionMode{gpb.SubscriptionMode_TARGET_DEFINED},
 			[]uint64{0},
@@ -1758,6 +1822,7 @@ func TestCollect(t *testing.T) {
 		desc                 string
 		stub                 func(s *gnmitestutil.Stubber)
 		dur                  time.Duration
+		wantRequestValues    *ygnmi.RequestValues
 		wantSubscriptionPath *gpb.Path
 		wantVals             []*ygnmi.Value[string]
 		wantErr              string
@@ -1842,7 +1907,14 @@ func TestCollect(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			collectCheckFn(t, fakeGNMI, client, lq, tt.wantErr, tt.wantSubscriptionPath, tt.wantVals)
+			collectCheckFn(
+				t, fakeGNMI, client, lq, tt.wantErr,
+				&ygnmi.RequestValues{
+					CompressedConfigQuery: false,
+					CompressedStateQuery:  true,
+				},
+				tt.wantSubscriptionPath, tt.wantVals,
+			)
 		})
 	}
 
@@ -1918,7 +1990,13 @@ func TestCollect(t *testing.T) {
 	for _, tt := range nonLeafTests {
 		t.Run("nonleaf "+tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			collectCheckFn(t, fakeGNMI, client, nonLeafQuery, tt.wantErr, tt.wantSubscriptionPath, tt.wantVals)
+			collectCheckFn(
+				t, fakeGNMI, client, nonLeafQuery, tt.wantErr,
+				&ygnmi.RequestValues{
+					CompressedConfigQuery: false,
+					CompressedStateQuery:  true,
+				},
+				tt.wantSubscriptionPath, tt.wantVals)
 		})
 	}
 }
@@ -2075,7 +2153,13 @@ func TestLookupAll(t *testing.T) {
 	for _, tt := range leafTests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			lookupAllCheckFn(t, fakeGNMI, c, lq, tt.wantErr, tt.wantSubscriptionPath, tt.wantVals, false)
+			lookupAllCheckFn(t, fakeGNMI, c, lq, tt.wantErr,
+				&ygnmi.RequestValues{
+					CompressedConfigQuery: false,
+					CompressedStateQuery:  true,
+				},
+				tt.wantSubscriptionPath, tt.wantVals, false,
+			)
 		})
 	}
 
@@ -2188,7 +2272,14 @@ func TestLookupAll(t *testing.T) {
 	for _, tt := range nonLeafTests {
 		t.Run("nonLeaf "+tt.desc, func(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
-			lookupAllCheckFn(t, fakeGNMI, c, nonLeafQ, tt.wantErr, tt.wantSubscriptionPath, tt.wantVals, true)
+			lookupAllCheckFn(
+				t, fakeGNMI, c, nonLeafQ, tt.wantErr,
+				&ygnmi.RequestValues{
+					CompressedConfigQuery: false,
+					CompressedStateQuery:  true,
+				},
+				tt.wantSubscriptionPath, tt.wantVals, true,
+			)
 		})
 	}
 
@@ -2257,6 +2348,7 @@ func TestLookupAll(t *testing.T) {
 			t, fakeGNMI, c,
 			exampleocpath.Root().Model().SingleKeyAny().OrderedListMap().State(),
 			"",
+			nil,
 			testutil.GNMIPath(t, "/model/a/single-key[key=*]/ordered-lists"),
 			[]*ygnmi.Value[*exampleoc.Model_SingleKey_OrderedList_OrderedMap]{
 				// In alphabetical order.
@@ -2344,6 +2436,7 @@ func TestLookupAll(t *testing.T) {
 			t, fakeGNMI, c,
 			exampleocpath.Root().Model().SingleKeyAny().SingleKeyMap().State(),
 			"",
+			nil,
 			testutil.GNMIPath(t, "/model/a/single-key[key=*]/inner-a"),
 			[]*ygnmi.Value[map[string]*exampleoc.Model_SingleKey_SingleKey]{
 				// In alphabetical order.
@@ -4136,6 +4229,7 @@ func TestCustomRootBatch(t *testing.T) {
 				return cmp.Equal(val, want)
 			},
 			"",
+			nil,
 			[]*gpb.Path{
 				testutil.GNMIPath(t, "/model/a/single-key[key=*]/state/key"),
 				testutil.GNMIPath(t, "/model/a/single-key[key=*]/state/value"),

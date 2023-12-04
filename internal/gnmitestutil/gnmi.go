@@ -20,6 +20,7 @@ import (
 	"io"
 
 	"github.com/openconfig/gnmi/testing/fake/gnmi"
+	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/local"
@@ -32,7 +33,7 @@ import (
 type FakeGNMI struct {
 	agent         *gnmi.Agent
 	stub          *Stubber
-	clientWrapper *clientWithGetter
+	clientWrapper *clientWrap
 }
 
 // StartGNMI launches a new fake GNMI server on the given port
@@ -53,7 +54,7 @@ func StartGNMI(port int) (*FakeGNMI, error) {
 	return &FakeGNMI{
 		agent:         agent,
 		stub:          stub,
-		clientWrapper: &clientWithGetter{stub: stub},
+		clientWrapper: &clientWrap{stub: stub},
 	}, nil
 }
 
@@ -79,6 +80,12 @@ func (g *FakeGNMI) Requests() []*gpb.SubscribeRequest {
 	return g.agent.Requests()
 }
 
+// LastRequestContextValues returns the request-scoped values from the last
+// ygnmi request sent to the gNMI server.
+func (g *FakeGNMI) LastRequestContextValues() *ygnmi.RequestValues {
+	return g.clientWrapper.requestValues
+}
+
 // GetRequests returns the set of GetRequests sent to the gNMI server.
 //
 // They're ordered in reverse time of request.
@@ -86,15 +93,17 @@ func (g *FakeGNMI) GetRequests() []*gpb.GetRequest {
 	return g.clientWrapper.getRequests
 }
 
-// clientWithGetter adds gNMI Get functionality to a GNMI client.
-type clientWithGetter struct {
+// clientWrap adds gNMI Get functionality to a GNMI client.
+type clientWrap struct {
 	gpb.GNMIClient
-	stub        *Stubber
-	getRequests []*gpb.GetRequest
+	stub          *Stubber
+	getRequests   []*gpb.GetRequest
+	requestValues *ygnmi.RequestValues
 }
 
 // Get is a fake implementation of gnmi.Get, it returns the GetResponse contained in the stub.
-func (g *clientWithGetter) Get(ctx context.Context, req *gpb.GetRequest, _ ...grpc.CallOption) (*gpb.GetResponse, error) {
+func (g *clientWrap) Get(ctx context.Context, req *gpb.GetRequest, _ ...grpc.CallOption) (*gpb.GetResponse, error) {
+	g.requestValues = ygnmi.FromContext(ctx)
 	g.getRequests = append([]*gpb.GetRequest{req}, g.getRequests...)
 	if len(g.stub.getResponses) == 0 {
 		return nil, io.EOF
@@ -104,6 +113,12 @@ func (g *clientWithGetter) Get(ctx context.Context, req *gpb.GetRequest, _ ...gr
 	err := g.stub.getErrs[0]
 	g.stub.getErrs = g.stub.getErrs[1:]
 	return resp, err
+}
+
+// Subscribe is a wrapper of the fake implementation of gnmi.Subscribe.
+func (g *clientWrap) Subscribe(ctx context.Context, opts ...grpc.CallOption) (gpb.GNMI_SubscribeClient, error) {
+	g.requestValues = ygnmi.FromContext(ctx)
+	return g.GNMIClient.Subscribe(ctx, opts...)
 }
 
 // Stubber is a handle to add stubbed responses.

@@ -265,7 +265,7 @@ func (b *Batch) Query() ygnmi.SingletonQuery[*oc.Device] {
 		false,
 		false,
 		false,
-		true,
+		false,
 		false,
 		ygnmi.NewDeviceRootBase(),
 		nil,

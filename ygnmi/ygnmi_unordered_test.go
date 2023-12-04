@@ -41,6 +41,7 @@ func TestUnorderedOrderedMap(t *testing.T) {
 			t, fakeGNMI, c,
 			ygnmi.SingletonQuery[string](exampleocunorderedpath.Root().Model().SingleKey("foo").OrderedList("foo").Key().Config()),
 			"",
+			nil,
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists/ordered-list[key=foo]/config/key"),
 			(&ygnmi.Value[string]{
 				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists/ordered-list[key=foo]/config/key"),

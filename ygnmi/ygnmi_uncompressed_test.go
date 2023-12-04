@@ -61,6 +61,7 @@ func TestUncompressedTelemetry(t *testing.T) {
 			t, fakeGNMI, c,
 			ygnmi.SingletonQuery[string](uexampleocpath.Root().Model().A().SingleKey("foo").Config().Key()),
 			"",
+			&ygnmi.RequestValues{},
 			testutil.GNMIPath(t, `/model/a/single-key[key=foo]/config/key`),
 			(&ygnmi.Value[string]{
 				Path:      testutil.GNMIPath(t, `/model/a/single-key[key=foo]/config/key`),
@@ -82,6 +83,7 @@ func TestUncompressedTelemetry(t *testing.T) {
 			t, fakeGNMI, c,
 			ygnmi.SingletonQuery[string](uexampleocpath.Root().Model().A().SingleKey("foo").State().Key()),
 			"",
+			&ygnmi.RequestValues{},
 			testutil.GNMIPath(t, `/model/a/single-key[key=foo]/state/key`),
 			(&ygnmi.Value[string]{
 				Path:      testutil.GNMIPath(t, `/model/a/single-key[key=foo]/state/key`),
@@ -131,6 +133,7 @@ func TestUncompressedTelemetry(t *testing.T) {
 			t, fakeGNMI, c,
 			ygnmi.SingletonQuery[*uexampleoc.OpenconfigWithlistval_Model_A](uexampleocpath.Root().Model().A()),
 			"",
+			&ygnmi.RequestValues{},
 			testutil.GNMIPath(t, "/model/a"),
 			(&ygnmi.Value[*uexampleoc.OpenconfigWithlistval_Model_A]{
 				Path:      testutil.GNMIPath(t, "/model/a"),
@@ -180,6 +183,7 @@ func TestUncompressedTelemetry(t *testing.T) {
 			t, fakeGNMI, c,
 			ygnmi.SingletonQuery[map[string]*uexampleoc.OpenconfigWithlistval_Model_A_SingleKey](uexampleocpath.Root().Model().A().SingleKeyMap()),
 			"",
+			&ygnmi.RequestValues{},
 			testutil.GNMIPath(t, "/model/a/single-key"),
 			(&ygnmi.Value[map[string]*uexampleoc.OpenconfigWithlistval_Model_A_SingleKey]{
 				Path:      testutil.GNMIPath(t, "/model/a/single-key"),
@@ -208,6 +212,7 @@ func TestUncompressedTelemetry(t *testing.T) {
 			t, fakeGNMI, c,
 			ygnmi.SingletonQuery[string](uexampleocpath.Root().Model().A().SingleKey("foo").Config().Key()),
 			"EOF",
+			&ygnmi.RequestValues{},
 			testutil.GNMIPath(t, `/model/a/single-key[key=foo]/config/key`),
 			[]*ygnmi.Value[string]{
 				(&ygnmi.Value[string]{
@@ -235,6 +240,7 @@ func TestUncompressedTelemetry(t *testing.T) {
 			t, fakeGNMI, c,
 			ygnmi.SingletonQuery[float32](uexampleocpath.Root().Model().A().SingleKey("foo").State().Counter()),
 			"",
+			&ygnmi.RequestValues{},
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counter"),
 			(&ygnmi.Value[float32]{
 				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counter"),
@@ -256,6 +262,7 @@ func TestUncompressedTelemetry(t *testing.T) {
 			t, fakeGNMI, c,
 			ygnmi.SingletonQuery[[]float32](uexampleocpath.Root().Model().A().SingleKey("foo").State().Counters()),
 			"",
+			&ygnmi.RequestValues{},
 			testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counters"),
 			(&ygnmi.Value[[]float32]{
 				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/state/counters"),
@@ -435,6 +442,10 @@ func TestUncompressedBatchGet(t *testing.T) {
 			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*uexampleoc.Device]{}), protocmp.Transform()); diff != "" {
 				t.Errorf("Lookup() returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", diff, got.ComplianceErrors)
 			}
+
+			if diff := cmp.Diff(&ygnmi.RequestValues{}, fakeGNMI.LastRequestContextValues()); diff != "" {
+				t.Errorf("RequestValues (-want, +got):\n%s", diff)
+			}
 		})
 	}
 	t.Run("immutable query", func(t *testing.T) {
@@ -525,6 +536,10 @@ func TestUncompressedCustomRootBatch(t *testing.T) {
 
 			if diff := cmp.Diff(tt.wantVal, got, cmp.AllowUnexported(ygnmi.Value[*uexampleoc.OpenconfigSimple_Parent]{}), protocmp.Transform()); diff != "" {
 				t.Errorf("Watch() returned unexpected diff (-want,+got):\n %s\nComplianceErrors:\n%v", diff, got.ComplianceErrors)
+			}
+
+			if diff := cmp.Diff(&ygnmi.RequestValues{}, fakeGNMI.LastRequestContextValues()); diff != "" {
+				t.Errorf("RequestValues (-want, +got):\n%s", diff)
 			}
 		})
 	}
