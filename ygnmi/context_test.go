@@ -33,50 +33,50 @@ func TestFromContext(t *testing.T) {
 		desc:      "compress-config",
 		inContext: ygnmi.NewContext(context.Background(), exampleocpath.Root().Parent().Config()),
 		wantRequestValues: &ygnmi.RequestValues{
-			CompressedConfigQuery: true,
-			CompressedStateQuery:  false,
+			StateFiltered:  true,
+			ConfigFiltered: false,
 		},
 	}, {
 		desc:      "compress-config-leaf",
 		inContext: ygnmi.NewContext(context.Background(), exampleocpath.Root().Parent().Child().Five().Config()),
 		wantRequestValues: &ygnmi.RequestValues{
-			CompressedConfigQuery: true,
-			CompressedStateQuery:  false,
+			StateFiltered:  true,
+			ConfigFiltered: false,
 		},
 	}, {
 		desc:      "compress-state",
 		inContext: ygnmi.NewContext(context.Background(), exampleocpath.Root().Parent().State()),
 		wantRequestValues: &ygnmi.RequestValues{
-			CompressedConfigQuery: false,
-			CompressedStateQuery:  true,
+			StateFiltered:  false,
+			ConfigFiltered: true,
 		},
 	}, {
 		desc:      "compress-state-leaf",
 		inContext: ygnmi.NewContext(context.Background(), exampleocpath.Root().Parent().Child().Five().State()),
 		wantRequestValues: &ygnmi.RequestValues{
-			CompressedConfigQuery: false,
-			CompressedStateQuery:  true,
+			StateFiltered:  false,
+			ConfigFiltered: true,
 		},
 	}, {
 		desc:      "uncompressed-container",
 		inContext: ygnmi.NewContext(context.Background(), uexampleocpath.Root().Parent()),
 		wantRequestValues: &ygnmi.RequestValues{
-			CompressedConfigQuery: false,
-			CompressedStateQuery:  false,
+			StateFiltered:  false,
+			ConfigFiltered: false,
 		},
 	}, {
 		desc:      "uncompressed-config-container",
 		inContext: ygnmi.NewContext(context.Background(), uexampleocpath.Root().Parent().Child().Config()),
 		wantRequestValues: &ygnmi.RequestValues{
-			CompressedConfigQuery: false,
-			CompressedStateQuery:  false,
+			StateFiltered:  false,
+			ConfigFiltered: false,
 		},
 	}, {
 		desc:      "uncompressed-leaf",
 		inContext: ygnmi.NewContext(context.Background(), uexampleocpath.Root().Parent().Child().Config().Five()),
 		wantRequestValues: &ygnmi.RequestValues{
-			CompressedConfigQuery: false,
-			CompressedStateQuery:  false,
+			StateFiltered:  false,
+			ConfigFiltered: false,
 		},
 	}}
 

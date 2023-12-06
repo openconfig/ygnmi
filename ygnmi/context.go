@@ -20,12 +20,12 @@ import (
 
 // RequestValues contains request-scoped values for ygnmi queries.
 type RequestValues struct {
-	// CompressedConfigQuery is a key type that means that the query is
-	// uninterested in /state paths.
-	CompressedConfigQuery bool
-	// CompressedStateQuery is a key type that means that the query is
-	// uninterested in /config paths.
-	CompressedStateQuery bool
+	// StateFiltered is a key type that means that the query is
+	// uninterested in /state paths and will filter them out.
+	StateFiltered bool
+	// ConfigFiltered is a key type that means that the query is
+	// uninterested in /config paths and will filter them out.
+	ConfigFiltered bool
 }
 
 // FromContext extracts certain ygnmi request-scoped values, if present.
@@ -37,8 +37,8 @@ func FromContext(ctx context.Context) *RequestValues {
 // NewContext returns a new Context carrying ygnmi request-scoped values.
 func NewContext(ctx context.Context, q UntypedQuery) context.Context {
 	return context.WithValue(ctx, requestValuesKey{}, &RequestValues{
-		CompressedConfigQuery: q.isCompressedSchema() && !q.IsState(),
-		CompressedStateQuery:  q.isCompressedSchema() && q.IsState(),
+		StateFiltered:  q.isCompressedSchema() && !q.IsState(),
+		ConfigFiltered: q.isCompressedSchema() && q.IsState(),
 	})
 }
 

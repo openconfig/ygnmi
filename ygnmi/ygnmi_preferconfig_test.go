@@ -134,8 +134,8 @@ func TestPreferConfigLookup(t *testing.T) {
 			}).Sync()
 		},
 		wantRequestValues: &ygnmi.RequestValues{
-			CompressedConfigQuery: false,
-			CompressedStateQuery:  true,
+			StateFiltered:  false,
+			ConfigFiltered: true,
 		},
 		wantSubscriptionPath: leafPath,
 		wantVal: (&ygnmi.Value[string]{
@@ -329,8 +329,8 @@ func TestPreferConfigLookup(t *testing.T) {
 		},
 		inQuery: configQuery,
 		wantRequestValues: &ygnmi.RequestValues{
-			CompressedConfigQuery: true,
-			CompressedStateQuery:  false,
+			StateFiltered:  true,
+			ConfigFiltered: false,
 		},
 		wantSubscriptionPath: rootPath,
 		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
@@ -352,8 +352,8 @@ func TestPreferConfigLookup(t *testing.T) {
 		},
 		inQuery: stateQuery,
 		wantRequestValues: &ygnmi.RequestValues{
-			CompressedConfigQuery: false,
-			CompressedStateQuery:  true,
+			StateFiltered:  false,
+			ConfigFiltered: true,
 		},
 		wantSubscriptionPath: rootPath,
 		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
@@ -376,8 +376,8 @@ func TestPreferConfigLookup(t *testing.T) {
 		},
 		inQuery: stateQuery,
 		wantRequestValues: &ygnmi.RequestValues{
-			CompressedConfigQuery: false,
-			CompressedStateQuery:  true,
+			StateFiltered:  false,
+			ConfigFiltered: true,
 		},
 		wantSubscriptionPath: rootPath,
 		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
@@ -399,8 +399,8 @@ func TestPreferConfigLookup(t *testing.T) {
 		},
 		inQuery: configQuery,
 		wantRequestValues: &ygnmi.RequestValues{
-			CompressedConfigQuery: true,
-			CompressedStateQuery:  false,
+			StateFiltered:  true,
+			ConfigFiltered: false,
 		},
 		wantSubscriptionPath: rootPath,
 		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
@@ -480,8 +480,8 @@ func TestPreferConfigLookup(t *testing.T) {
 		},
 		inQuery: stateQuery,
 		wantRequestValues: &ygnmi.RequestValues{
-			CompressedConfigQuery: false,
-			CompressedStateQuery:  true,
+			StateFiltered:  false,
+			ConfigFiltered: true,
 		},
 		wantSubscriptionPath: rootPath,
 		wantVal: (&ygnmi.Value[*exampleocconfig.Parent_Child]{
@@ -692,8 +692,8 @@ func TestPreferConfigLookupWithGet(t *testing.T) {
 				exampleocconfigpath.Root().RemoteContainer().ALeaf().State(),
 				"",
 				&ygnmi.RequestValues{
-					CompressedConfigQuery: false,
-					CompressedStateQuery:  true,
+					StateFiltered:  false,
+					ConfigFiltered: true,
 				},
 				tt.wantRequest,
 				tt.wantVal,
@@ -773,8 +773,8 @@ func TestPreferConfigLookupWithGet(t *testing.T) {
 				ygnmi.SingletonQuery[*exampleocconfig.Parent_Child](path),
 				"",
 				&ygnmi.RequestValues{
-					CompressedConfigQuery: true,
-					CompressedStateQuery:  false,
+					StateFiltered:  true,
+					ConfigFiltered: false,
 				},
 				&gpb.GetRequest{
 					Encoding: gpb.Encoding_JSON_IETF,
@@ -950,8 +950,8 @@ func TestPreferConfigGet(t *testing.T) {
 			getCheckFn(
 				t, fakeGNMI, c, lq, tt.wantErr,
 				&ygnmi.RequestValues{
-					CompressedConfigQuery: false,
-					CompressedStateQuery:  true,
+					StateFiltered:  false,
+					ConfigFiltered: true,
 				},
 				tt.wantSubscriptionPath, tt.wantVal)
 		})
@@ -1224,8 +1224,8 @@ func TestPreferConfigWatch(t *testing.T) {
 				func(val string) bool { return val == "foo" },
 				tt.wantErr,
 				&ygnmi.RequestValues{
-					CompressedConfigQuery: false,
-					CompressedStateQuery:  true,
+					StateFiltered:  false,
+					ConfigFiltered: true,
 				},
 				[]*gpb.Path{tt.wantSubscriptionPath},
 				[]gpb.SubscriptionMode{tt.wantMode},
@@ -1460,8 +1460,8 @@ func TestPreferConfigWatch(t *testing.T) {
 				},
 				tt.wantErr,
 				&ygnmi.RequestValues{
-					CompressedConfigQuery: false,
-					CompressedStateQuery:  true,
+					StateFiltered:  false,
+					ConfigFiltered: true,
 				},
 				[]*gpb.Path{tt.wantSubscriptionPath},
 				[]gpb.SubscriptionMode{gpb.SubscriptionMode_TARGET_DEFINED},
@@ -1912,8 +1912,8 @@ func TestPreferConfigCollect(t *testing.T) {
 			collectCheckFn(
 				t, fakeGNMI, client, lq, tt.wantErr,
 				&ygnmi.RequestValues{
-					CompressedConfigQuery: false,
-					CompressedStateQuery:  true,
+					StateFiltered:  false,
+					ConfigFiltered: true,
 				},
 				tt.wantSubscriptionPath, tt.wantVals,
 			)
@@ -1995,8 +1995,8 @@ func TestPreferConfigCollect(t *testing.T) {
 			collectCheckFn(
 				t, fakeGNMI, client, nonLeafQuery, tt.wantErr,
 				&ygnmi.RequestValues{
-					CompressedConfigQuery: false,
-					CompressedStateQuery:  true,
+					StateFiltered:  false,
+					ConfigFiltered: true,
 				},
 				tt.wantSubscriptionPath, tt.wantVals)
 		})
@@ -2157,8 +2157,8 @@ func TestPreferConfigLookupAll(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
 			lookupAllCheckFn(t, fakeGNMI, c, lq, tt.wantErr,
 				&ygnmi.RequestValues{
-					CompressedConfigQuery: false,
-					CompressedStateQuery:  true,
+					StateFiltered:  false,
+					ConfigFiltered: true,
 				},
 				tt.wantSubscriptionPath, tt.wantVals, false,
 			)
@@ -2277,8 +2277,8 @@ func TestPreferConfigLookupAll(t *testing.T) {
 			lookupAllCheckFn(
 				t, fakeGNMI, c, nonLeafQ, tt.wantErr,
 				&ygnmi.RequestValues{
-					CompressedConfigQuery: false,
-					CompressedStateQuery:  true,
+					StateFiltered:  false,
+					ConfigFiltered: true,
 				},
 				tt.wantSubscriptionPath, tt.wantVals, true,
 			)
