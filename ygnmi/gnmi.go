@@ -344,6 +344,9 @@ func removeRedundantModPrefix7951(v any, modName string) any {
 		return newMap
 	case []any:
 		var newSlice []any
+		if v != nil {
+			newSlice = []any{}
+		}
 		for _, v := range v {
 			newSlice = append(newSlice, removeRedundantModPrefix7951(v, modName))
 		}
@@ -356,6 +359,9 @@ func removeRedundantModPrefix7951(v any, modName string) any {
 // wrapJSONIETFSinglePath wraps a single layer of JSON-IETF for the given
 // JSON input.
 func wrapJSONIETFSinglePath(v any, modName, pathName string) any {
+	if v == nil {
+		return map[string]any{}
+	}
 	return map[string]any{fmt.Sprintf("%s:%s", modName, pathName): removeRedundantModPrefix7951(v, modName)}
 }
 
@@ -394,19 +400,12 @@ func set[T any](ctx context.Context, c *Client, q ConfigQuery[T], val T, op setO
 		return nil, nil, err
 	}
 
-	var modifyTypedValueFn func(*gpb.TypedValue) error
-
 	req := &gpb.SetRequest{}
 	var setVal interface{} = val
 	if q.isLeaf() && q.isScalar() {
 		setVal = &val
-	} else if q.compressInfo() != nil && len(q.compressInfo().PostRelPath) > 0 {
-		// When the path struct points to a node that's compressed out,
-		// then we know that the type is a node lower than it should be
-		// as far as the JSON is concerned.
-		modifyTypedValueFn = func(tv *gpb.TypedValue) error { return wrapJSONIETF(tv, q.compressInfo().PostRelPath) }
 	}
-	if err := populateSetRequest(req, path, setVal, op, q.isShadowPath(), modifyTypedValueFn, opts...); err != nil {
+	if err := populateSetRequest(req, path, setVal, op, q.isShadowPath(), q.isLeaf(), q.compressInfo(), opts...); err != nil {
 		return nil, nil, err
 	}
 
@@ -432,7 +431,7 @@ const (
 )
 
 // populateSetRequest fills a SetResponse for a val and operation type.
-func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op setOperation, preferShadowPath bool, modifyTypedValueFn func(*gpb.TypedValue) error, opts ...Option) error {
+func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op setOperation, preferShadowPath, isLeaf bool, compressInfo *CompressionInfo, opts ...Option) error {
 	if req == nil {
 		return fmt.Errorf("cannot populate a nil SetRequest")
 	}
@@ -473,6 +472,14 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op
 			}
 		} else if err != nil {
 			return fmt.Errorf("failed to encode set request: %v", err)
+		}
+
+		var modifyTypedValueFn func(*gpb.TypedValue) error
+		if !isLeaf && compressInfo != nil && len(compressInfo.PostRelPath) > 0 {
+			// When the path struct points to a node that's compressed out,
+			// then we know that the type is a node lower than it should be
+			// as far as the JSON is concerned.
+			modifyTypedValueFn = func(tv *gpb.TypedValue) error { return wrapJSONIETF(tv, compressInfo.PostRelPath) }
 		}
 		if modifyTypedValueFn != nil {
 			if err := modifyTypedValueFn(typedVal); err != nil {

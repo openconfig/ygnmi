@@ -4402,22 +4402,176 @@ func TestSetBatch(t *testing.T) {
 			},
 		},
 	}, {
-		desc: "non leaf update delete",
+		desc: "non leaf update delete replace",
 		addPaths: func(sb *ygnmi.SetBatch) {
 			ygnmi.BatchUpdate(sb, exampleocpath.Root().Parent().Child().Config(), &exampleoc.Parent_Child{One: ygot.String("foo")})
 			ygnmi.BatchDelete(sb, exampleocpath.Root().Parent().Child().One().Config())
+
+			ygnmi.BatchReplace(sb, exampleocpath.Root().Model().SingleKeyMap().Config(), getSampleSingleKeyedMap(t))
+			ygnmi.BatchUpdate(sb, exampleocpath.Root().Model().SingleKeyMap().Config(), getSampleSingleKeyedMap(t))
+			ygnmi.BatchReplace(sb, exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().Config(), getSampleOrderedMap(t))
+			ygnmi.BatchUpdate(sb, exampleocpath.Root().Model().SingleKey("bar").OrderedListMap().Config(), getSampleOrderedMap(t))
+			ygnmi.BatchDelete(sb, exampleocpath.Root().Model().SingleKeyMap().Config())
+			ygnmi.BatchDelete(sb, exampleocpath.Root().Model().SingleKey("baz").OrderedListMap().Config())
 		},
 		wantRequest: &gpb.SetRequest{
 			Prefix: &gpb.Path{
 				Target: "dut",
 			},
+			Replace: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "/model/a"),
+				Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(removeWhitespace(`{
+  "openconfig-withlistval:single-key": [
+    {
+      "config": {
+        "key": "bar",
+        "value": "43"
+      },
+      "key": "bar"
+    },
+    {
+      "config": {
+        "key": "baz",
+        "value": "44"
+      },
+      "key": "baz"
+    },
+    {
+      "config": {
+        "key": "foo",
+        "value": "42"
+      },
+      "key": "foo"
+    }
+  ]
+}`))}},
+			}, {
+				Path: testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
+				Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(removeWhitespace(`{
+  "openconfig-withlistval:ordered-list": [
+    {
+      "config": {
+        "key": "foo",
+        "value": "42"
+      },
+      "key": "foo"
+    },
+    {
+      "config": {
+        "key": "bar",
+        "value": "43"
+      },
+      "key": "bar"
+    },
+    {
+      "config": {
+        "key": "baz",
+        "value": "44"
+      },
+      "key": "baz"
+    }
+  ]
+}`))}},
+			}},
 			Update: []*gpb.Update{{
 				Path: testutil.GNMIPath(t, "parent/child/"),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("{\n  \"openconfig-simple:config\": {\n    \"one\": \"foo\"\n  }\n}")}},
+			}, {
+				Path: testutil.GNMIPath(t, "/model/a"),
+				Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(removeWhitespace(`{
+  "openconfig-withlistval:single-key": [
+    {
+      "config": {
+        "key": "bar",
+        "value": "43"
+      },
+      "key": "bar"
+    },
+    {
+      "config": {
+        "key": "baz",
+        "value": "44"
+      },
+      "key": "baz"
+    },
+    {
+      "config": {
+        "key": "foo",
+        "value": "42"
+      },
+      "key": "foo"
+    }
+  ]
+}`))}},
+			}, {
+				Path: testutil.GNMIPath(t, "/model/a/single-key[key=bar]/ordered-lists"),
+				Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(removeWhitespace(`{
+  "openconfig-withlistval:ordered-list": [
+    {
+      "config": {
+        "key": "foo",
+        "value": "42"
+      },
+      "key": "foo"
+    },
+    {
+      "config": {
+        "key": "bar",
+        "value": "43"
+      },
+      "key": "bar"
+    },
+    {
+      "config": {
+        "key": "baz",
+        "value": "44"
+      },
+      "key": "baz"
+    }
+  ]
+}`))}},
 			}},
 			Delete: []*gpb.Path{
 				testutil.GNMIPath(t, "parent/child/config/one"),
+				testutil.GNMIPath(t, "/model/a"),
+				testutil.GNMIPath(t, "/model/a/single-key[key=baz]/ordered-lists"),
 			},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "non leaf update delete replace nil objects",
+		addPaths: func(sb *ygnmi.SetBatch) {
+			ygnmi.BatchReplace(sb, exampleocpath.Root().Model().SingleKeyMap().Config(), map[string]*exampleoc.Model_SingleKey{})
+			ygnmi.BatchUpdate(sb, exampleocpath.Root().Model().SingleKeyMap().Config(), nil)
+			ygnmi.BatchReplace(sb, exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().Config(), &exampleoc.Model_SingleKey_OrderedList_OrderedMap{})
+			ygnmi.BatchUpdate(sb, exampleocpath.Root().Model().SingleKey("bar").OrderedListMap().Config(), nil)
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Replace: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "/model/a"),
+				Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(removeWhitespace(`{
+  "openconfig-withlistval:single-key": []
+}`))}},
+			}, {
+				Path: testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
+				Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(removeWhitespace(`{
+  "openconfig-withlistval:ordered-list": []
+}`))}},
+			}},
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "/model/a"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(removeWhitespace(`{}`))}},
+			}, {
+				Path: testutil.GNMIPath(t, "/model/a/single-key[key=bar]/ordered-lists"),
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(removeWhitespace(`{}`))}},
+			}},
 		},
 		stubResponse: &gpb.SetResponse{
 			Prefix: &gpb.Path{
