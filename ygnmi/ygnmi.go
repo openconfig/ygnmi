@@ -616,10 +616,12 @@ func Delete[T any](ctx context.Context, c *Client, q ConfigQuery[T], opts ...Opt
 }
 
 type batchOp struct {
-	path       PathStruct
-	val        interface{}
-	mode       setOperation
-	shadowpath bool
+	path         PathStruct
+	val          interface{}
+	mode         setOperation
+	shadowpath   bool
+	isLeaf       bool
+	compressInfo *CompressionInfo
 }
 
 // SetBatch allows multiple Set operations (Replace, Update, Delete) to be applied as part of a single Set transaction.
@@ -636,7 +638,7 @@ func (sb *SetBatch) Set(ctx context.Context, c *Client, opts ...Option) (*Result
 		if err != nil {
 			return nil, err
 		}
-		if err := populateSetRequest(req, path, op.val, op.mode, op.shadowpath, nil, opts...); err != nil {
+		if err := populateSetRequest(req, path, op.val, op.mode, op.shadowpath, op.isLeaf, op.compressInfo, opts...); err != nil {
 			return nil, err
 		}
 	}
@@ -656,10 +658,12 @@ func BatchUpdate[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 		setVal = &val
 	}
 	sb.ops = append(sb.ops, &batchOp{
-		path:       q.PathStruct(),
-		val:        setVal,
-		mode:       updatePath,
-		shadowpath: q.isShadowPath(),
+		path:         q.PathStruct(),
+		val:          setVal,
+		mode:         updatePath,
+		shadowpath:   q.isShadowPath(),
+		isLeaf:       q.isLeaf(),
+		compressInfo: q.compressInfo(),
 	})
 }
 
@@ -670,10 +674,12 @@ func BatchReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 		setVal = &val
 	}
 	sb.ops = append(sb.ops, &batchOp{
-		path:       q.PathStruct(),
-		val:        setVal,
-		mode:       replacePath,
-		shadowpath: q.isShadowPath(),
+		path:         q.PathStruct(),
+		val:          setVal,
+		mode:         replacePath,
+		shadowpath:   q.isShadowPath(),
+		isLeaf:       q.isLeaf(),
+		compressInfo: q.compressInfo(),
 	})
 }
 
@@ -686,10 +692,12 @@ func BatchUnionReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 		setVal = &val
 	}
 	sb.ops = append(sb.ops, &batchOp{
-		path:       q.PathStruct(),
-		val:        setVal,
-		mode:       unionreplacePath,
-		shadowpath: q.isShadowPath(),
+		path:         q.PathStruct(),
+		val:          setVal,
+		mode:         unionreplacePath,
+		shadowpath:   q.isShadowPath(),
+		isLeaf:       q.isLeaf(),
+		compressInfo: q.compressInfo(),
 	})
 }
 
@@ -705,19 +713,22 @@ func BatchUnionReplaceCLI(sb *SetBatch, nos, ascii string) {
 	ps := NewDeviceRootBase()
 	ps.PutCustomData(OriginOverride, nos+"_cli")
 	sb.ops = append(sb.ops, &batchOp{
-		path:       ps,
-		val:        ascii,
-		mode:       unionreplacePath,
-		shadowpath: false,
+		path:         ps,
+		val:          ascii,
+		mode:         unionreplacePath,
+		shadowpath:   false,
+		compressInfo: nil,
 	})
 }
 
 // BatchDelete stores a delete operation in the SetBatch.
 func BatchDelete[T any](sb *SetBatch, q ConfigQuery[T]) {
 	sb.ops = append(sb.ops, &batchOp{
-		path:       q.PathStruct(),
-		mode:       deletePath,
-		shadowpath: q.isShadowPath(),
+		path:         q.PathStruct(),
+		mode:         deletePath,
+		shadowpath:   q.isShadowPath(),
+		isLeaf:       q.isLeaf(),
+		compressInfo: q.compressInfo(),
 	})
 }
 

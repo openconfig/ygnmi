@@ -134,6 +134,18 @@ func TestWrapJSONIETF(t *testing.T) {
     ]
   }
 }`,
+	}, {
+		desc:               "zero-length-list",
+		inQualifiedRelPath: []string{"openconfig-withlistval:ordered-list"},
+		in:                 `[]`,
+		want: `{
+  "openconfig-withlistval:ordered-list": []
+}`,
+	}, {
+		desc:               "null-value",
+		inQualifiedRelPath: []string{"openconfig-withlistval:ordered-list"},
+		in:                 `null`,
+		want:               `{}`,
 	}}
 
 	for _, tt := range tests {
