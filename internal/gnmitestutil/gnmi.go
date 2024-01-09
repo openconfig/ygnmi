@@ -151,6 +151,7 @@ func (s *Stubber) Sync() *Stubber {
 	return s
 }
 
+// SetClient is a test stub for ygnmi APIs exercising gNMI.Set.
 type SetClient struct {
 	gpb.GNMIClient
 	// Responses are the gNMI Responses to return from calls to Set.
@@ -163,6 +164,7 @@ type SetClient struct {
 	i int
 }
 
+// Reset clears SetClient's internal state.
 func (f *SetClient) Reset() {
 	f.Requests = nil
 	f.Responses = nil
@@ -170,12 +172,16 @@ func (f *SetClient) Reset() {
 	f.i = 0
 }
 
+// AddResponse appends a gNMI SetResponse to be returned when gNMI.Set is
+// called.
 func (f *SetClient) AddResponse(resp *gpb.SetResponse, err error) *SetClient {
 	f.Responses = append(f.Responses, resp)
 	f.ResponseErrs = append(f.ResponseErrs, err)
 	return f
 }
 
+// Set is a stub that records the provided request, and returns the next stub
+// response.
 func (f *SetClient) Set(_ context.Context, req *gpb.SetRequest, opts ...grpc.CallOption) (*gpb.SetResponse, error) {
 	defer func() { f.i++ }()
 	f.Requests = append(f.Requests, req)
