@@ -136,16 +136,16 @@ func (c *ComplianceErrors) String() string {
 // NOTE: The datapoints are applied in order as they are in the input slice,
 // *NOT* in order of their timestamps. As such, in order to correctly support
 // Collect calls, the input data must be sorted in order of timestamps.
-func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.ValidatedGoStruct, opts *opt) (*Value[T], error) {
+func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.ValidatedGoStruct, opts *opt) (*Value[T], []*DataPoint, error) {
 	queryPath, err := resolvePath(q.PathStruct())
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	ret := &Value[T]{
 		Path: queryPath,
 	}
 	if len(data) == 0 {
-		return ret, nil
+		return ret, nil, nil
 	}
 	schema := q.schema()
 
@@ -158,7 +158,7 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 
 		delete, err := unmarshalSchemaless(data, setVal)
 		if err != nil {
-			return ret, err
+			return ret, nil, err
 		}
 		ret.Timestamp = data[0].Timestamp
 		ret.RecvTimestamp = data[0].RecvTimestamp
@@ -166,16 +166,16 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 		if !delete {
 			ret.SetVal(val)
 		}
-		return ret, nil
+		return ret, nil, nil
 	}
 
 	unmarshalledData, complianceErrs, err := unmarshal(data, schema.SchemaTree[q.dirName()], goStruct, queryPath, schema, q.isLeaf(), q.isShadowPath(), q.compressInfo(), opts)
 	ret.ComplianceErrors = complianceErrs
 	if err != nil {
-		return ret, err
+		return ret, unmarshalledData, err
 	}
 	if len(unmarshalledData) == 0 {
-		return ret, nil
+		return ret, unmarshalledData, nil
 	}
 
 	path := unmarshalledData[0].Path
@@ -201,13 +201,13 @@ func unmarshalAndExtract[T any](data []*DataPoint, q AnyQuery[T], goStruct ygot.
 	if q.isCompressedSchema() && !q.isLeaf() && !q.IsState() {
 		err := ygot.PruneConfigFalse(q.schema().SchemaTree[q.dirName()], goStruct)
 		if err != nil {
-			return ret, err
+			return ret, unmarshalledData, err
 		}
 	}
 	if val, ok := q.extract(goStruct); ok {
 		ret.SetVal(val)
 	}
-	return ret, nil
+	return ret, unmarshalledData, nil
 }
 
 // unmarshalSchemaless unmarshals the datapoint into the value, returning whether the datapoint was a delete.
