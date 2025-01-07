@@ -3,12 +3,12 @@ module github.com/openconfig/ygnmi
 go 1.18
 
 require (
-	github.com/golang/glog v1.1.0
+	github.com/golang/glog v1.2.2
 	github.com/google/go-cmp v0.6.0
 	github.com/openconfig/gnmi v0.10.0
 	github.com/openconfig/gocloser v0.0.0-20220310182203-c6c950ed3b0b
-	github.com/openconfig/goyang v1.4.4
-	github.com/openconfig/ygot v0.29.17
+	github.com/openconfig/goyang v1.4.5
+	github.com/openconfig/ygot v0.29.20
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.15.0
