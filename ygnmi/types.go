@@ -58,6 +58,7 @@ func NewSingletonQuery[T any](goStructName string, state, shadowpath, leaf, scal
 			goStructFn,
 			subPaths,
 			compressInfo,
+			nil,
 		},
 	}
 }
@@ -79,6 +80,7 @@ func NewConfigQuery[T any](goStructName string, state, shadowpath, leaf, scalar,
 			goStructFn,
 			subPaths,
 			compressInfo,
+			nil,
 		},
 	}
 }
@@ -100,6 +102,7 @@ func NewWildcardQuery[T any](goStructName string, state, shadowpath, leaf, scala
 			goStructFn,
 			subPaths,
 			compressInfo,
+			nil,
 		},
 	}
 }
@@ -176,6 +179,7 @@ type baseQuery[T any] struct {
 	// compInfo stores compression information when the node points to a
 	// path that's compressed out in the generated code.
 	compInfo *CompressionInfo
+	reactors []*reactorPair[T]
 }
 
 // dirName returns the YANG schema name of the GoStruct containing this node.
@@ -278,4 +282,8 @@ func (q *baseQuery[T]) isScalar() bool {
 // schema returns the schema used for unmarshalling.
 func (q *baseQuery[T]) compressInfo() *CompressionInfo {
 	return q.compInfo
+}
+
+func (q *baseQuery[T]) reactorFns() []*reactorPair[T] {
+	return q.reactors
 }
