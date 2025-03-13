@@ -18,6 +18,9 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/openconfig/gnmi/errdiff"
+	gpb "github.com/openconfig/gnmi/proto/gnmi"
+	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygot/ygot"
 	"google.golang.org/protobuf/proto"
 )
@@ -164,6 +167,73 @@ func TestResolveRelPath(t *testing.T) {
 
 			if diff := cmp.Diff(wantPath, gotPath, cmp.Comparer(proto.Equal)); diff != "" {
 				t.Errorf("ResolveRelPath returned diff (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestExtractPathKeys(t *testing.T) {
+	samplePath := testutil.GNMIPath(t, "/lists/list[key1=test][key2=test2]/sublists/sublist[index=1]/some/value")
+
+	tests := []struct {
+		desc      string
+		path      *gpb.Path
+		keystruct any
+		want      any
+		wantErr   string
+	}{{
+		desc:    "nil",
+		path:    samplePath,
+		wantErr: "expected pointer to struct",
+	}, {
+		desc:      "not pointer",
+		path:      samplePath,
+		keystruct: struct{}{},
+		wantErr:   "expected pointer to struct",
+	}, {
+		desc:      "not pointer to struct",
+		path:      samplePath,
+		keystruct: ygot.String("foo"),
+		wantErr:   "expected pointer to struct",
+	}, {
+		desc: "wrong keys",
+		path: samplePath,
+		keystruct: &(struct {
+			ListKey1 string `pathkey:"/foo:key1"`
+		}{}),
+		want: &(struct {
+			ListKey1 string `pathkey:"/foo:key1"`
+		}{}),
+	}, {
+		desc: "all keys",
+		path: samplePath,
+		keystruct: &(struct {
+			ListKey1 string `pathkey:"/lists/list:key1"`
+			ListKey2 string `pathkey:"/lists/list:key2"`
+			SubList  string `pathkey:"/lists/list/sublists/sublist:index"`
+		}{}),
+		want: &(struct {
+			ListKey1 string `pathkey:"/lists/list:key1"`
+			ListKey2 string `pathkey:"/lists/list:key2"`
+			SubList  string `pathkey:"/lists/list/sublists/sublist:index"`
+		}{
+			ListKey1: "test",
+			ListKey2: "test2",
+			SubList:  "1",
+		}),
+	}}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			err := ExtractPathKeys(tt.path, tt.keystruct)
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("ExtractPathKeys() unexpect error: %s", diff)
+			}
+			if err != nil {
+				return
+			}
+			if d := cmp.Diff(tt.keystruct, tt.want); d != "" {
+				t.Errorf("ExtractPathKeys() unexpected diff: %s", d)
 			}
 		})
 	}

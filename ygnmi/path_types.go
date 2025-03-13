@@ -16,6 +16,8 @@ package ygnmi
 
 import (
 	"fmt"
+	"reflect"
+	"strings"
 
 	"github.com/openconfig/gnmi/errlist"
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
@@ -39,6 +41,8 @@ const (
 type PathStruct interface {
 	parent() PathStruct
 	relPath() ([]*gpb.PathElem, []error)
+	schemaPath() []string
+	getKeys() map[string]interface{}
 }
 
 // NewNodePath is the constructor for NodePath.
@@ -154,3 +158,91 @@ func (n *NodePath) relPath() ([]*gpb.PathElem, []error) {
 }
 
 func (n *NodePath) parent() PathStruct { return n.p }
+
+func (n *NodePath) schemaPath() []string { return n.relSchemaPath }
+
+func (n *NodePath) getKeys() map[string]interface{} { return n.keys }
+
+func configToStatePS(ps PathStruct) PathStruct {
+	statePath := []*NodePath{}
+	configPath := []PathStruct{}
+	for ; ps != nil; ps = ps.parent() {
+		sp := make([]string, len(ps.schemaPath()))
+		copy(sp, ps.schemaPath())
+		if len(ps.schemaPath()) == 2 && ps.schemaPath()[0] == "config" {
+			sp[0] = "state"
+		}
+		configPath = append(configPath, ps)
+		statePath = append(statePath, NewNodePath(sp, ps.getKeys(), nil))
+	}
+	for i := 0; i < len(statePath)-2; i++ {
+		statePath[i].p = statePath[i+1]
+	}
+	// Copy the fake root directly
+	statePath[len(statePath)-2].p = configPath[len(configPath)-1]
+	return statePath[0]
+}
+
+func configToState[T any](cfg AnyQuery[T]) AnyQuery[T] {
+	return &SingletonQueryStruct[T]{
+		baseQuery: baseQuery[T]{
+			goStructName:     cfg.dirName(),
+			state:            !cfg.IsState(),
+			shadowpath:       !cfg.isShadowPath(),
+			ps:               configToStatePS(cfg.PathStruct()),
+			leaf:             cfg.isLeaf(),
+			scalar:           cfg.isScalar(),
+			compressedSchema: cfg.isCompressedSchema(),
+			listContainer:    cfg.isListContainer(),
+			extractFn:        cfg.extract,
+			goStructFn:       cfg.goStruct,
+			yschemaFn:        cfg.schema,
+			compInfo:         cfg.compressInfo(),
+		},
+	}
+}
+
+const pathKeyTag = "pathkey"
+
+// ExtractPathKeys extracts keys from gNMI path into a custom struct. Use the "pathkey" field tag to specify the keys to extract.
+// THe format of the pathkey is <path>:<key>
+// Example:
+//
+//	Path: /interfaces/interfaces[name=eth0]/subinterfaces/subinterface[index=0]/config/enabled
+//	Struct Fields: type ifacekey struct { Name string `pathkey:"/interfaces/interfaces:name"` }
+func ExtractPathKeys(path *gpb.Path, keystruct any) error {
+	if keystruct == nil {
+		return fmt.Errorf("expected pointer to struct")
+	}
+	t := reflect.TypeOf(keystruct)
+	if t.Kind() != reflect.Pointer {
+		return fmt.Errorf("unexpected type %v, expected pointer to struct", t.Kind())
+	}
+	if t.Elem().Kind() != reflect.Struct {
+		return fmt.Errorf("unexpected type %v, expected pointer to struct", t.Kind())
+	}
+	t = t.Elem()
+	v := reflect.ValueOf(keystruct).Elem()
+	for i := 0; i < t.NumField(); i++ {
+		key, ok := t.Field(i).Tag.Lookup(pathKeyTag)
+		if !ok {
+			continue
+		}
+		pathKey := strings.Split(key, ":")
+		if len(pathKey) != 2 {
+			return fmt.Errorf("invalid struct key format %q, expect <path>:<key>", key)
+		}
+		elems := strings.Split(strings.TrimPrefix(pathKey[0], "/"), "/")
+		match := true
+		for keyIdx := 0; keyIdx < len(path.Elem) && keyIdx < len(elems); keyIdx++ {
+			if path.Elem[keyIdx].Name != elems[keyIdx] {
+				match = false
+				break
+			}
+		}
+		if match && len(elems) <= len(path.Elem) {
+			v.Field(i).Set(reflect.ValueOf(path.Elem[len(elems)-1].Key[pathKey[1]]))
+		}
+	}
+	return nil
+}

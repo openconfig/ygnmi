@@ -687,6 +687,112 @@ func (n *Model_SingleKeyPathAny) Key() *Model_SingleKey_KeyPathAny {
 	return ps
 }
 
+// NestedListAny (list):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "nested-lists/nested-list"
+//	Path from root:       "/model/a/single-key/nested-lists/nested-list"
+func (n *Model_SingleKeyPath) NestedListAny() *Model_SingleKey_NestedListPathAny {
+	ps := &Model_SingleKey_NestedListPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"nested-lists", "nested-list"},
+			map[string]interface{}{"key": "*"},
+			n,
+		),
+	}
+	return ps
+}
+
+// NestedListAny (list):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "nested-lists/nested-list"
+//	Path from root:       "/model/a/single-key/nested-lists/nested-list"
+func (n *Model_SingleKeyPathAny) NestedListAny() *Model_SingleKey_NestedListPathAny {
+	ps := &Model_SingleKey_NestedListPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"nested-lists", "nested-list"},
+			map[string]interface{}{"key": "*"},
+			n,
+		),
+	}
+	return ps
+}
+
+// NestedList (list):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "nested-lists/nested-list"
+//	Path from root:       "/model/a/single-key/nested-lists/nested-list"
+//
+//	Key: string
+func (n *Model_SingleKeyPath) NestedList(Key string) *Model_SingleKey_NestedListPath {
+	ps := &Model_SingleKey_NestedListPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"nested-lists", "nested-list"},
+			map[string]interface{}{"key": Key},
+			n,
+		),
+	}
+	return ps
+}
+
+// NestedList (list):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "nested-lists/nested-list"
+//	Path from root:       "/model/a/single-key/nested-lists/nested-list"
+//
+//	Key: string
+func (n *Model_SingleKeyPathAny) NestedList(Key string) *Model_SingleKey_NestedListPathAny {
+	ps := &Model_SingleKey_NestedListPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"nested-lists", "nested-list"},
+			map[string]interface{}{"key": Key},
+			n,
+		),
+	}
+	return ps
+}
+
+// NestedListMap (list):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "nested-lists/nested-list"
+//	Path from root:       "/model/a/single-key/nested-lists/nested-list"
+func (n *Model_SingleKeyPath) NestedListMap() *Model_SingleKey_NestedListPathMap {
+	ps := &Model_SingleKey_NestedListPathMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"nested-lists"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+	return ps
+}
+
+// NestedListMap (list):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "nested-lists/nested-list"
+//	Path from root:       "/model/a/single-key/nested-lists/nested-list"
+func (n *Model_SingleKeyPathAny) NestedListMap() *Model_SingleKey_NestedListPathMapAny {
+	ps := &Model_SingleKey_NestedListPathMapAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"nested-lists"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+	return ps
+}
+
 // OrderedListMap (list):
 //
 //	Defining module:      "openconfig-withlistval"
@@ -1019,6 +1125,674 @@ func (n *Model_SingleKeyPathMapAny) Config() ygnmi.WildcardQuery[map[string]*oc.
 		&ygnmi.CompressionInfo{
 			PreRelPath:  []string{"openconfig-withlistval:a"},
 			PostRelPath: []string{"openconfig-withlistval:single-key"},
+		},
+	)
+}
+
+// Model_SingleKey_NestedList_KeyPath represents the /openconfig-withlistval/model/a/single-key/nested-lists/nested-list/state/key YANG schema element.
+type Model_SingleKey_NestedList_KeyPath struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// Model_SingleKey_NestedList_KeyPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/nested-lists/nested-list/state/key YANG schema element.
+type Model_SingleKey_NestedList_KeyPathAny struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// State returns a Query that can be used in gNMI operations.
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "state/key"
+//	Path from root:       "/model/a/single-key/nested-lists/nested-list/state/key"
+func (n *Model_SingleKey_NestedList_KeyPath) State() ygnmi.SingletonQuery[string] {
+	return ygnmi.NewSingletonQuery[string](
+		"Model_SingleKey_NestedList",
+		true,
+		false,
+		true,
+		true,
+		true,
+		false,
+		ygnmi.NewNodePath(
+			[]string{"state", "key"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.Model_SingleKey_NestedList).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey_NestedList) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "state/key"
+//	Path from root:       "/model/a/single-key/nested-lists/nested-list/state/key"
+func (n *Model_SingleKey_NestedList_KeyPathAny) State() ygnmi.WildcardQuery[string] {
+	return ygnmi.NewWildcardQuery[string](
+		"Model_SingleKey_NestedList",
+		true,
+		false,
+		true,
+		true,
+		true,
+		false,
+		ygnmi.NewNodePath(
+			[]string{"state", "key"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.Model_SingleKey_NestedList).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey_NestedList) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "config/key"
+//	Path from root:       "/model/a/single-key/nested-lists/nested-list/config/key"
+func (n *Model_SingleKey_NestedList_KeyPath) Config() ygnmi.ConfigQuery[string] {
+	return ygnmi.NewConfigQuery[string](
+		"Model_SingleKey_NestedList",
+		false,
+		true,
+		true,
+		true,
+		true,
+		false,
+		ygnmi.NewNodePath(
+			[]string{"config", "key"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.Model_SingleKey_NestedList).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey_NestedList) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "config/key"
+//	Path from root:       "/model/a/single-key/nested-lists/nested-list/config/key"
+func (n *Model_SingleKey_NestedList_KeyPathAny) Config() ygnmi.WildcardQuery[string] {
+	return ygnmi.NewWildcardQuery[string](
+		"Model_SingleKey_NestedList",
+		false,
+		true,
+		true,
+		true,
+		true,
+		false,
+		ygnmi.NewNodePath(
+			[]string{"config", "key"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) (string, bool) {
+			ret := gs.(*oc.Model_SingleKey_NestedList).Key
+			if ret == nil {
+				var zero string
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey_NestedList) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+}
+
+// Model_SingleKey_NestedList_ValuePath represents the /openconfig-withlistval/model/a/single-key/nested-lists/nested-list/state/value YANG schema element.
+type Model_SingleKey_NestedList_ValuePath struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// Model_SingleKey_NestedList_ValuePathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/nested-lists/nested-list/state/value YANG schema element.
+type Model_SingleKey_NestedList_ValuePathAny struct {
+	*ygnmi.NodePath
+	parent ygnmi.PathStruct
+}
+
+// State returns a Query that can be used in gNMI operations.
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "state/value"
+//	Path from root:       "/model/a/single-key/nested-lists/nested-list/state/value"
+func (n *Model_SingleKey_NestedList_ValuePath) State() ygnmi.SingletonQuery[int64] {
+	return ygnmi.NewSingletonQuery[int64](
+		"Model_SingleKey_NestedList",
+		true,
+		false,
+		true,
+		true,
+		true,
+		false,
+		ygnmi.NewNodePath(
+			[]string{"state", "value"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) (int64, bool) {
+			ret := gs.(*oc.Model_SingleKey_NestedList).Value
+			if ret == nil {
+				var zero int64
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey_NestedList) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "state/value"
+//	Path from root:       "/model/a/single-key/nested-lists/nested-list/state/value"
+func (n *Model_SingleKey_NestedList_ValuePathAny) State() ygnmi.WildcardQuery[int64] {
+	return ygnmi.NewWildcardQuery[int64](
+		"Model_SingleKey_NestedList",
+		true,
+		false,
+		true,
+		true,
+		true,
+		false,
+		ygnmi.NewNodePath(
+			[]string{"state", "value"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) (int64, bool) {
+			ret := gs.(*oc.Model_SingleKey_NestedList).Value
+			if ret == nil {
+				var zero int64
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey_NestedList) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "config/value"
+//	Path from root:       "/model/a/single-key/nested-lists/nested-list/config/value"
+func (n *Model_SingleKey_NestedList_ValuePath) Config() ygnmi.ConfigQuery[int64] {
+	return ygnmi.NewConfigQuery[int64](
+		"Model_SingleKey_NestedList",
+		false,
+		true,
+		true,
+		true,
+		true,
+		false,
+		ygnmi.NewNodePath(
+			[]string{"config", "value"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) (int64, bool) {
+			ret := gs.(*oc.Model_SingleKey_NestedList).Value
+			if ret == nil {
+				var zero int64
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey_NestedList) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "config/value"
+//	Path from root:       "/model/a/single-key/nested-lists/nested-list/config/value"
+func (n *Model_SingleKey_NestedList_ValuePathAny) Config() ygnmi.WildcardQuery[int64] {
+	return ygnmi.NewWildcardQuery[int64](
+		"Model_SingleKey_NestedList",
+		false,
+		true,
+		true,
+		true,
+		true,
+		false,
+		ygnmi.NewNodePath(
+			[]string{"config", "value"},
+			nil,
+			n.parent,
+		),
+		func(gs ygot.ValidatedGoStruct) (int64, bool) {
+			ret := gs.(*oc.Model_SingleKey_NestedList).Value
+			if ret == nil {
+				var zero int64
+				return zero, false
+			}
+			return *ret, true
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey_NestedList) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+}
+
+// Model_SingleKey_NestedListPath represents the /openconfig-withlistval/model/a/single-key/nested-lists/nested-list YANG schema element.
+type Model_SingleKey_NestedListPath struct {
+	*ygnmi.NodePath
+}
+
+// Model_SingleKey_NestedListPathAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/nested-lists/nested-list YANG schema element.
+type Model_SingleKey_NestedListPathAny struct {
+	*ygnmi.NodePath
+}
+
+// Model_SingleKey_NestedListPathMap represents the /openconfig-withlistval/model/a/single-key/nested-lists/nested-list YANG schema element.
+type Model_SingleKey_NestedListPathMap struct {
+	*ygnmi.NodePath
+}
+
+// Model_SingleKey_NestedListPathMapAny represents the wildcard version of the /openconfig-withlistval/model/a/single-key/nested-lists/nested-list YANG schema element.
+type Model_SingleKey_NestedListPathMapAny struct {
+	*ygnmi.NodePath
+}
+
+// Key (leaf):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "*/key"
+//	Path from root:       "/model/a/single-key/nested-lists/nested-list/*/key"
+func (n *Model_SingleKey_NestedListPath) Key() *Model_SingleKey_NestedList_KeyPath {
+	ps := &Model_SingleKey_NestedList_KeyPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "key"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+	return ps
+}
+
+// Key (leaf):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "*/key"
+//	Path from root:       "/model/a/single-key/nested-lists/nested-list/*/key"
+func (n *Model_SingleKey_NestedListPathAny) Key() *Model_SingleKey_NestedList_KeyPathAny {
+	ps := &Model_SingleKey_NestedList_KeyPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "key"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+	return ps
+}
+
+// Value (leaf):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "*/value"
+//	Path from root:       "/model/a/single-key/nested-lists/nested-list/*/value"
+func (n *Model_SingleKey_NestedListPath) Value() *Model_SingleKey_NestedList_ValuePath {
+	ps := &Model_SingleKey_NestedList_ValuePath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "value"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+	return ps
+}
+
+// Value (leaf):
+//
+//	Defining module:      "openconfig-withlistval"
+//	Instantiating module: "openconfig-withlistval"
+//	Path from parent:     "*/value"
+//	Path from root:       "/model/a/single-key/nested-lists/nested-list/*/value"
+func (n *Model_SingleKey_NestedListPathAny) Value() *Model_SingleKey_NestedList_ValuePathAny {
+	ps := &Model_SingleKey_NestedList_ValuePathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"*", "value"},
+			map[string]interface{}{},
+			n,
+		),
+		parent: n,
+	}
+	return ps
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *Model_SingleKey_NestedListPath) State() ygnmi.SingletonQuery[*oc.Model_SingleKey_NestedList] {
+	return ygnmi.NewSingletonQuery[*oc.Model_SingleKey_NestedList](
+		"Model_SingleKey_NestedList",
+		true,
+		false,
+		false,
+		false,
+		true,
+		false,
+		n,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *Model_SingleKey_NestedListPathAny) State() ygnmi.WildcardQuery[*oc.Model_SingleKey_NestedList] {
+	return ygnmi.NewWildcardQuery[*oc.Model_SingleKey_NestedList](
+		"Model_SingleKey_NestedList",
+		true,
+		false,
+		false,
+		false,
+		true,
+		false,
+		n,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *Model_SingleKey_NestedListPath) Config() ygnmi.ConfigQuery[*oc.Model_SingleKey_NestedList] {
+	return ygnmi.NewConfigQuery[*oc.Model_SingleKey_NestedList](
+		"Model_SingleKey_NestedList",
+		false,
+		true,
+		false,
+		false,
+		true,
+		false,
+		n,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *Model_SingleKey_NestedListPathAny) Config() ygnmi.WildcardQuery[*oc.Model_SingleKey_NestedList] {
+	return ygnmi.NewWildcardQuery[*oc.Model_SingleKey_NestedList](
+		"Model_SingleKey_NestedList",
+		false,
+		true,
+		false,
+		false,
+		true,
+		false,
+		n,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *Model_SingleKey_NestedListPathMap) State() ygnmi.SingletonQuery[map[string]*oc.Model_SingleKey_NestedList] {
+	return ygnmi.NewSingletonQuery[map[string]*oc.Model_SingleKey_NestedList](
+		"Model_SingleKey",
+		true,
+		false,
+		false,
+		false,
+		true,
+		true,
+		n,
+		func(gs ygot.ValidatedGoStruct) (map[string]*oc.Model_SingleKey_NestedList, bool) {
+			ret := gs.(*oc.Model_SingleKey).NestedList
+			return ret, ret != nil
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		&ygnmi.CompressionInfo{
+			PreRelPath:  []string{"openconfig-withlistval:nested-lists"},
+			PostRelPath: []string{"openconfig-withlistval:nested-list"},
+		},
+	)
+}
+
+// State returns a Query that can be used in gNMI operations.
+func (n *Model_SingleKey_NestedListPathMapAny) State() ygnmi.WildcardQuery[map[string]*oc.Model_SingleKey_NestedList] {
+	return ygnmi.NewWildcardQuery[map[string]*oc.Model_SingleKey_NestedList](
+		"Model_SingleKey",
+		true,
+		false,
+		false,
+		false,
+		true,
+		true,
+		n,
+		func(gs ygot.ValidatedGoStruct) (map[string]*oc.Model_SingleKey_NestedList, bool) {
+			ret := gs.(*oc.Model_SingleKey).NestedList
+			return ret, ret != nil
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		&ygnmi.CompressionInfo{
+			PreRelPath:  []string{"openconfig-withlistval:nested-lists"},
+			PostRelPath: []string{"openconfig-withlistval:nested-list"},
+		},
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *Model_SingleKey_NestedListPathMap) Config() ygnmi.ConfigQuery[map[string]*oc.Model_SingleKey_NestedList] {
+	return ygnmi.NewConfigQuery[map[string]*oc.Model_SingleKey_NestedList](
+		"Model_SingleKey",
+		false,
+		true,
+		false,
+		false,
+		true,
+		true,
+		n,
+		func(gs ygot.ValidatedGoStruct) (map[string]*oc.Model_SingleKey_NestedList, bool) {
+			ret := gs.(*oc.Model_SingleKey).NestedList
+			return ret, ret != nil
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		&ygnmi.CompressionInfo{
+			PreRelPath:  []string{"openconfig-withlistval:nested-lists"},
+			PostRelPath: []string{"openconfig-withlistval:nested-list"},
+		},
+	)
+}
+
+// Config returns a Query that can be used in gNMI operations.
+func (n *Model_SingleKey_NestedListPathMapAny) Config() ygnmi.WildcardQuery[map[string]*oc.Model_SingleKey_NestedList] {
+	return ygnmi.NewWildcardQuery[map[string]*oc.Model_SingleKey_NestedList](
+		"Model_SingleKey",
+		false,
+		true,
+		false,
+		false,
+		true,
+		true,
+		n,
+		func(gs ygot.ValidatedGoStruct) (map[string]*oc.Model_SingleKey_NestedList, bool) {
+			ret := gs.(*oc.Model_SingleKey).NestedList
+			return ret, ret != nil
+		},
+		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey) },
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Root{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		&ygnmi.CompressionInfo{
+			PreRelPath:  []string{"openconfig-withlistval:nested-lists"},
+			PostRelPath: []string{"openconfig-withlistval:nested-list"},
 		},
 	)
 }

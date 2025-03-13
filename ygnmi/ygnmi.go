@@ -27,6 +27,7 @@ import (
 	"github.com/openconfig/ygot/ygot"
 	"github.com/openconfig/ygot/ytypes"
 	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/proto"
 
 	log "github.com/golang/glog"
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
@@ -848,4 +849,228 @@ func (b *WildcardBatch[T]) Query() WildcardQuery[T] {
 		queryPaths,
 		b.root.compressInfo(),
 	)
+}
+
+// NewReconciler creates a new reconciler. See Reconciler type documentation for information.
+func NewReconciler[T ygot.GoStruct](c *Client, q ConfigQuery[T], opts ...Option) (*Reconciler[T], error) {
+	state := configToState(q.(AnyQuery[T]))
+	return &Reconciler[T]{
+		rootCfg:   q,
+		rootState: state,
+		c:         c,
+		opts:      opts,
+		errCh:     make(chan error),
+	}, nil
+}
+
+// ReconcilerAbortErr stops the reconcilation loop.
+var ReconcilerAbortErr = fmt.Errorf("reconciler abort")
+
+// Reconciler subscribes to a non-leaf config query, updates to the path invoke a callback function.
+// The callback function accepts a GoStruct for the config and state types for the root query.
+// This intended for writing a funcs that watches some config, checks whether config == state, and makes changes to some system until they converge.
+// Reconcilers contain a root callback function invoked on every Update, and sub reconcilers that only invokes for specific paths under the root.
+// Reconciler doesn't stop until the context is cancelled or  ReconcilerAbortErr is returned by any callback func.
+type Reconciler[T ygot.GoStruct] struct {
+	opts      []Option
+	c         *Client
+	rootCfg   AnyQuery[T]
+	rootState AnyQuery[T]
+	errCh     chan error
+	subRecs   []*subRec[T]
+}
+
+type subRec[T ygot.GoStruct] struct {
+	cfg   *gpb.Path
+	state *gpb.Path
+	fn    func(cfg *Value[T], state *Value[T]) error
+}
+
+// AddPaths adds a sub reconcilers to the main reconciler. The callback function is only invokes when gNMI update matching the query are received.
+// The query must be a child of the root path.
+func (r *Reconciler[T]) AddPaths(q UntypedQuery, fn func(cfg *Value[T], state *Value[T]) error) error {
+	rootCfgPath, err := resolvePath(r.rootCfg.PathStruct())
+	if err != nil {
+		return err
+	}
+
+	cfgPath, err := resolvePath(q.PathStruct())
+	if err != nil {
+		return err
+	}
+
+	state := configToStatePS(q.PathStruct())
+	statePath, err := resolvePath(state)
+	if err != nil {
+		return err
+	}
+	if !util.PathMatchesQuery(cfgPath, rootCfgPath) {
+		return fmt.Errorf("root path %v is not a prefix of %v", rootCfgPath, cfgPath)
+	}
+
+	r.subRecs = append(r.subRecs, &subRec[T]{
+		cfg:   cfgPath,
+		state: statePath,
+		fn:    fn,
+	})
+	return nil
+}
+
+// Start starts the reconciler.
+func (r *Reconciler[T]) Start(ctx context.Context, fn func(cfg *Value[T], state *Value[T]) error) {
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithCancel(ctx)
+
+	resolvedOpts := resolveOpts(r.opts)
+	sub, err := subscribe(ctx, r.c, r.rootCfg, gpb.SubscriptionList_STREAM, resolvedOpts)
+	if err != nil {
+		cancel()
+		r.errCh <- err
+		return
+	}
+
+	dataCh, errCh := receiveStream(ctx, sub, r.rootCfg)
+	go func() {
+		defer cancel()
+		// Create an intially empty GoStruct, into which all received datapoints will be unmarshalled.
+		cfg := r.rootCfg.goStruct()
+		state := r.rootState.goStruct()
+		for {
+			select {
+			case <-ctx.Done():
+				r.errCh <- ctx.Err()
+				return
+			case data := <-dataCh:
+				cfgVal, err := unmarshalAndExtract(data, r.rootCfg, cfg, resolvedOpts)
+				if err != nil {
+					r.errCh <- err
+					return
+				}
+				stateVal, err := unmarshalAndExtract(data, r.rootState, state, resolvedOpts)
+				if err != nil {
+					r.errCh <- err
+					return
+				}
+
+				// Pair up the datapoint so updates to /foo/state/value and /foo/config/value only call the predicate once.
+				configPoints := map[string]*DataPoint{}
+				statePoints := map[string]*DataPoint{}
+				cfgToStatePaths := map[string]string{}
+				for _, p := range data {
+					if p.Sync {
+						continue
+					}
+					pathStr, err := ygot.PathToString(p.Path)
+					if err != nil {
+						r.errCh <- err
+						return
+					}
+					swapPath := swapConfigStatePath(p.Path)
+					swapPathStr, err := ygot.PathToString(swapPath)
+					if err != nil {
+						r.errCh <- err
+						return
+					}
+					if p.Path.Elem[len(p.Path.Elem)-2].Name == "config" {
+						configPoints[pathStr] = p
+						cfgToStatePaths[pathStr] = swapPathStr
+					} else {
+						statePoints[pathStr] = p
+					}
+				}
+
+				for _, sr := range r.subRecs {
+					for cfgPath, cfgPoint := range configPoints {
+						if !util.PathMatchesQuery(cfgPoint.Path, sr.cfg) {
+							continue
+						}
+						cfgVal := &Value[T]{
+							val:              cfgVal.val,
+							present:          cfgVal.present,
+							Path:             cfgPoint.Path, // Use the datapoint path, (leaf)
+							Timestamp:        cfgVal.Timestamp,
+							RecvTimestamp:    cfgVal.RecvTimestamp,
+							ComplianceErrors: cfgVal.ComplianceErrors,
+						}
+						stateVal := &Value[T]{
+							val:              stateVal.val,
+							present:          stateVal.present,
+							Path:             swapConfigStatePath(cfgPoint.Path),
+							Timestamp:        stateVal.Timestamp,
+							RecvTimestamp:    stateVal.RecvTimestamp,
+							ComplianceErrors: stateVal.ComplianceErrors,
+						}
+
+						delete(statePoints, cfgToStatePaths[cfgPath])
+
+						err := sr.fn(cfgVal, stateVal)
+						if errors.Is(err, ReconcilerAbortErr) {
+							r.errCh <- err
+							return
+						} else if err != nil {
+							log.Warningf("reconciler error: %v", err)
+						}
+					}
+					for _, statePoint := range statePoints {
+						if !util.PathMatchesQuery(statePoint.Path, sr.state) {
+							continue
+						}
+						stateVal := &Value[T]{
+							val:              stateVal.val,
+							present:          stateVal.present,
+							Path:             statePoint.Path,
+							Timestamp:        stateVal.Timestamp,
+							RecvTimestamp:    stateVal.RecvTimestamp,
+							ComplianceErrors: stateVal.ComplianceErrors,
+						}
+						cfgVal := &Value[T]{
+							val:     cfgVal.val,
+							present: cfgVal.present,
+							// This path may exist since not all state paths hve config paths. This should be fine because the use case for this is reconcilation config and state
+							// so the callback may need handle cases where a state path exists but the config hasn't been created.
+							Path:             swapConfigStatePath(statePoint.Path),
+							Timestamp:        cfgVal.Timestamp,
+							RecvTimestamp:    cfgVal.RecvTimestamp,
+							ComplianceErrors: cfgVal.ComplianceErrors,
+						}
+						err := sr.fn(cfgVal, stateVal)
+						if errors.Is(err, ReconcilerAbortErr) {
+							r.errCh <- err
+							return
+						} else if err != nil {
+							log.Warningf("reconciler error: %v", err)
+						}
+					}
+				}
+				err = fn(cfgVal, stateVal)
+				if errors.Is(err, ReconcilerAbortErr) {
+					r.errCh <- err
+					return
+				} else if err != nil {
+					log.Warningf("reconciler error: %v", err)
+				}
+			case err := <-errCh:
+				r.errCh <- err
+				return
+			}
+		}
+	}()
+}
+
+// Await blocks until the reconciler exists.
+func (r *Reconciler[T]) Await() error {
+	return <-r.errCh
+}
+
+func swapConfigStatePath(p *gpb.Path) *gpb.Path {
+	swap := proto.Clone(p).(*gpb.Path)
+	if len(swap.Elem) < 2 {
+		return swap
+	}
+	if swap.Elem[len(swap.Elem)-2].Name == "config" {
+		swap.Elem[len(swap.Elem)-2].Name = "state"
+	} else if swap.Elem[len(swap.Elem)-2].Name == "state" {
+		swap.Elem[len(swap.Elem)-2].Name = "config"
+	}
+	return swap
 }
