@@ -1062,6 +1062,96 @@ func (r *Reconciler[T]) Await() error {
 	return <-r.errCh
 }
 
+// ReconcilerAddSubPath adds a wildcard path handler to a reconciler. The query must be a subquery of the root reconciler query.
+// The function is called for any changes to paths that match the query (config or state).
+// Using the keystruct, it is possible retrieve the keys of parebt lists, while the function operates only on the updates to a sublist.
+// Ideally this would be a method, but then we couldn't have the correct type paramaters.
+func ReconcilerAddSubPath[R ygot.GoStruct, S any, K any](r *Reconciler[R], cfgQ ConfigQuery[S], keystruct K, fn func(cfg *Value[S], state *Value[S], ks K) error) error {
+	cfgPath, err := resolvePath(cfgQ.PathStruct())
+	if err != nil {
+		return err
+	}
+
+	stateQ := configToState(cfgQ.(AnyQuery[S]))
+	statePath, err := resolvePath(stateQ.PathStruct())
+	if err != nil {
+		return err
+	}
+
+	rootPath, err := resolvePath(r.rootCfg.PathStruct())
+	if err != nil {
+		return err
+	}
+
+	// Use the elem names only since we don't care about keys matching.
+	pre := []string{}
+	for _, e := range rootPath.Elem {
+		pre = append(pre, e.Name)
+	}
+
+	r.subRecs = append(r.subRecs, &subRec[R]{
+		cfg:   cfgPath,
+		state: statePath,
+		fn: func(cfg, state *Value[R]) error {
+			// Create a copy of the root config and state values, and set the val in the Value struct to field from the root val.
+			subCfg := &Value[S]{
+				Path:             cfg.Path,
+				Timestamp:        cfg.Timestamp,
+				RecvTimestamp:    cfg.RecvTimestamp,
+				ComplianceErrors: cfg.ComplianceErrors,
+			}
+			cfgOpts := []ytypes.GetNodeOpt{}
+			if cfgQ.isShadowPath() {
+				cfgOpts = append(cfgOpts, &ytypes.PreferShadowPath{})
+			}
+			cfgRelPath := util.TrimGNMIPathPrefix(cfg.Path, pre)
+			cfgRelPath.Elem = cfgRelPath.Elem[:len(cfgPath.Elem)-len(pre)]
+
+			cfgR, ok := cfg.Val()
+			if ok {
+				cfgV, err := ytypes.GetNode(r.rootCfg.schema().SchemaTree[r.rootCfg.dirName()], cfgR, cfgRelPath, cfgOpts...)
+				if err != nil {
+					log.Infof("reconciler cfg, get node error: %v", err)
+				}
+				if len(cfgV) == 1 && cfgV[0].Data != nil {
+					subCfg.val = cfgV[0].Data.(S)
+					subCfg.present = true
+				}
+			}
+			// Same for state
+			subState := &Value[S]{
+				Path:             state.Path,
+				Timestamp:        state.Timestamp,
+				RecvTimestamp:    state.RecvTimestamp,
+				ComplianceErrors: state.ComplianceErrors,
+			}
+			stateOpts := []ytypes.GetNodeOpt{}
+			if stateQ.isShadowPath() {
+				stateOpts = append(stateOpts, &ytypes.PreferShadowPath{})
+			}
+			stateRelPath := util.TrimGNMIPathPrefix(state.Path, pre)
+			stateRelPath.Elem = stateRelPath.Elem[:len(statePath.Elem)-len(pre)]
+
+			stateR, ok := cfg.Val()
+			if ok {
+				stateV, err := ytypes.GetNode(r.rootState.schema().SchemaTree[r.rootState.dirName()], stateR, stateRelPath, stateOpts...)
+				if err != nil {
+					log.Infof("reconciler cfg, get node error: %v", err)
+				}
+				if len(stateV) == 1 && stateV[0].Data != nil {
+					subState.val = stateV[0].Data.(S)
+					subState.present = true
+				}
+			}
+			if err := ExtractPathKeys(subCfg.Path, keystruct); err != nil {
+				log.Warningf("couldn't extract path keys: %v", err)
+			}
+			return fn(subCfg, subState, keystruct)
+		},
+	})
+	return nil
+}
+
 func swapConfigStatePath(p *gpb.Path) *gpb.Path {
 	swap := proto.Clone(p).(*gpb.Path)
 	if len(swap.Elem) < 2 {
