@@ -4747,7 +4747,7 @@ func TestReconcile(t *testing.T) {
 				t.Fatal(err)
 			}
 			subPathCount := 0
-			err = r.AddPaths(exampleocpath.Root().Parent().Child().One().Config(), func(cfg, state *ygnmi.Value[*exampleoc.Parent_Child]) error {
+			err = r.AddSubReconciler(exampleocpath.Root().Parent().Child().One().Config(), func(cfg, state *ygnmi.Value[*exampleoc.Parent_Child]) error {
 				cfgV, _ := cfg.Val()
 				if d := cmp.Diff(cfgV, tt.wantCfg[subPathCount]); d != "" {
 					t.Errorf("callback %d, unexpected cfg diff: %s", subPathCount, d)

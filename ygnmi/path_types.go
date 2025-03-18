@@ -21,6 +21,7 @@ import (
 
 	"github.com/openconfig/gnmi/errlist"
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
+	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygot"
 )
 
@@ -163,14 +164,16 @@ func (n *NodePath) schemaPath() []string { return n.relSchemaPath }
 
 func (n *NodePath) getKeys() map[string]interface{} { return n.keys }
 
+// configToStatePS converts a config path struct it's equivalent state path struct.
+// Note: This function only works for OpenConfig style path structs, where the last container is either "config" or "state".
 func configToStatePS(ps PathStruct) PathStruct {
 	statePath := []*NodePath{}
 	configPath := []PathStruct{}
 	for ; ps != nil; ps = ps.parent() {
 		sp := make([]string, len(ps.schemaPath()))
 		copy(sp, ps.schemaPath())
-		if len(ps.schemaPath()) == 2 && ps.schemaPath()[0] == "config" {
-			sp[0] = "state"
+		if len(ps.schemaPath()) == 2 && ps.schemaPath()[0] == configPathElem {
+			sp[0] = statePathElem
 		}
 		configPath = append(configPath, ps)
 		statePath = append(statePath, NewNodePath(sp, ps.getKeys(), nil))
@@ -205,7 +208,7 @@ func configToState[T any](cfg AnyQuery[T]) AnyQuery[T] {
 const pathKeyTag = "pathkey"
 
 // ExtractPathKeys extracts keys from gNMI path into a custom struct. Use the "pathkey" field tag to specify the keys to extract.
-// THe format of the pathkey is <path>:<key>
+// The format of the pathkey is <path>:<key>
 // Example:
 //
 //	Path: /interfaces/interfaces[name=eth0]/subinterfaces/subinterface[index=0]/config/enabled
@@ -215,10 +218,7 @@ func ExtractPathKeys(path *gpb.Path, keystruct any) error {
 		return fmt.Errorf("expected pointer to struct")
 	}
 	t := reflect.TypeOf(keystruct)
-	if t.Kind() != reflect.Pointer {
-		return fmt.Errorf("unexpected type %v, expected pointer to struct", t.Kind())
-	}
-	if t.Elem().Kind() != reflect.Struct {
+	if ok := util.IsTypeStructPtr(t); !ok {
 		return fmt.Errorf("unexpected type %v, expected pointer to struct", t.Kind())
 	}
 	t = t.Elem()

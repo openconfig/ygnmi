@@ -868,8 +868,8 @@ var ReconcilerAbortErr = fmt.Errorf("reconciler abort")
 
 // Reconciler subscribes to a non-leaf config query, updates to the path invoke a callback function.
 // The callback function accepts a GoStruct for the config and state types for the root query.
-// This intended for writing a funcs that watches some config, checks whether config == state, and makes changes to some system until they converge.
-// Reconcilers contain a root callback function invoked on every Update, and sub reconcilers that only invokes for specific paths under the root.
+// This intended for writing a function that watches some config, checks whether config == state, and makes changes to some system until they converge.
+// Reconcilers contain a root callback function invoked on every Update, and sub reconcilers that are only invoked for specific paths under the root.
 // Reconciler doesn't stop until the context is cancelled or  ReconcilerAbortErr is returned by any callback func.
 type Reconciler[T ygot.GoStruct] struct {
 	opts      []Option
@@ -886,9 +886,9 @@ type subRec[T ygot.GoStruct] struct {
 	fn    func(cfg *Value[T], state *Value[T]) error
 }
 
-// AddPaths adds a sub reconcilers to the main reconciler. The callback function is only invokes when gNMI update matching the query are received.
+// AddSubReconciler adds a sub reconciler to the main reconciler. The callback function is only invokes when gNMI update matching the query are received.
 // The query must be a child of the root path.
-func (r *Reconciler[T]) AddPaths(q UntypedQuery, fn func(cfg *Value[T], state *Value[T]) error) error {
+func (r *Reconciler[T]) AddSubReconciler(q UntypedQuery, fn func(cfg *Value[T], state *Value[T]) error) error {
 	rootCfgPath, err := resolvePath(r.rootCfg.PathStruct())
 	if err != nil {
 		return err
@@ -1026,7 +1026,7 @@ func (r *Reconciler[T]) Start(ctx context.Context, fn func(cfg *Value[T], state 
 						cfgVal := &Value[T]{
 							val:     cfgVal.val,
 							present: cfgVal.present,
-							// This path may exist since not all state paths hve config paths. This should be fine because the use case for this is reconcilation config and state
+							// This path may exist since not all state paths have config paths. This should be fine because the use case for this is reconcilation config and state
 							// so the callback may need handle cases where a state path exists but the config hasn't been created.
 							Path:             swapConfigStatePath(statePoint.Path),
 							Timestamp:        cfgVal.Timestamp,
@@ -1062,15 +1062,20 @@ func (r *Reconciler[T]) Await() error {
 	return <-r.errCh
 }
 
+const (
+	configPathElem = "config"
+	statePathElem  = "state"
+)
+
 func swapConfigStatePath(p *gpb.Path) *gpb.Path {
 	swap := proto.Clone(p).(*gpb.Path)
 	if len(swap.Elem) < 2 {
 		return swap
 	}
-	if swap.Elem[len(swap.Elem)-2].Name == "config" {
-		swap.Elem[len(swap.Elem)-2].Name = "state"
-	} else if swap.Elem[len(swap.Elem)-2].Name == "state" {
-		swap.Elem[len(swap.Elem)-2].Name = "config"
+	if swap.Elem[len(swap.Elem)-2].Name == configPathElem {
+		swap.Elem[len(swap.Elem)-2].Name = statePathElem
+	} else if swap.Elem[len(swap.Elem)-2].Name == statePathElem {
+		swap.Elem[len(swap.Elem)-2].Name = configPathElem
 	}
 	return swap
 }

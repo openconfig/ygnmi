@@ -4749,7 +4749,7 @@ func TestPreferConfigReconcile(t *testing.T) {
 				t.Fatal(err)
 			}
 			subPathCount := 0
-			err = r.AddPaths(exampleocconfigpath.Root().Parent().Child().One().Config(), func(cfg, state *ygnmi.Value[*exampleocconfig.Parent_Child]) error {
+			err = r.AddSubReconciler(exampleocconfigpath.Root().Parent().Child().One().Config(), func(cfg, state *ygnmi.Value[*exampleocconfig.Parent_Child]) error {
 				cfgV, _ := cfg.Val()
 				if d := cmp.Diff(cfgV, tt.wantCfg[subPathCount]); d != "" {
 					t.Errorf("callback %d, unexpected cfg diff: %s", subPathCount, d)
