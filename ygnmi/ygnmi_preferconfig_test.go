@@ -18,7 +18,9 @@ package ygnmi_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"net"
 	"testing"
 	"time"
@@ -4644,5 +4646,137 @@ func TestPreferConfigWatchCancel(t *testing.T) {
 	}
 	if err := <-srv.errCh; err == nil {
 		t.Fatalf("Watch() unexpected error: got %v, want context.Cancel", err)
+	}
+}
+
+func TestPreferConfigReconcile(t *testing.T) {
+	fakeGNMI, c := newClient(t)
+	twoPath := testutil.GNMIPath(t, "/parent/child/state/two")
+	oneStatePath := testutil.GNMIPath(t, "/parent/child/state/one")
+	oneConfigPath := testutil.GNMIPath(t, "/parent/child/config/one")
+
+	tests := []struct {
+		desc      string
+		stub      func(s *gnmitestutil.Stubber)
+		config    bool
+		wantErr   string
+		wantCfg   []*exampleocconfig.Parent_Child
+		wantState []*exampleocconfig.Parent_Child
+	}{{
+		desc: "simple leaf test",
+		stub: func(s *gnmitestutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: oneStatePath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "one-state"}},
+				}, {
+					Path: oneConfigPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "one-config"}},
+				}, {
+					Path: twoPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "two"}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: 101,
+				Update: []*gpb.Update{{
+					Path: oneStatePath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "one-state2"}},
+				}},
+			}).Notification(&gpb.Notification{
+				Timestamp: 102,
+				Update: []*gpb.Update{{
+					Path: oneConfigPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "one-config2"}},
+				}},
+			})
+		},
+		wantCfg: []*exampleocconfig.Parent_Child{{
+			One: ygot.String("one-config"),
+		}, {
+			One: ygot.String("one-config"),
+		}, {
+			One: ygot.String("one-config2"),
+		}},
+		wantState: []*exampleocconfig.Parent_Child{{
+			One: ygot.String("one-state"),
+			Two: ygot.String("two"),
+		}, {
+			One: ygot.String("one-state2"),
+			Two: ygot.String("two"),
+		}, {
+			One: ygot.String("one-state2"),
+			Two: ygot.String("two"),
+		}},
+	}, {
+		desc: "delete",
+		stub: func(s *gnmitestutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: 100,
+				Update: []*gpb.Update{{
+					Path: oneStatePath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "one-state"}},
+				}, {
+					Path: oneConfigPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "one-config"}},
+				}, {
+					Path: twoPath,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "two"}},
+				}},
+			}).Sync().Notification(&gpb.Notification{
+				Timestamp: 101,
+				Delete:    []*gpb.Path{oneStatePath},
+			})
+		},
+		wantCfg: []*exampleocconfig.Parent_Child{{
+			One: ygot.String("one-config"),
+		}, {
+			One: ygot.String("one-config"),
+		}},
+		wantState: []*exampleocconfig.Parent_Child{{
+			One: ygot.String("one-state"),
+			Two: ygot.String("two"),
+		}, {
+			Two: ygot.String("two"),
+		}},
+	}}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			r, err := ygnmi.NewReconciler(c, exampleocconfigpath.Root().Parent().Child().Config())
+			if err != nil {
+				t.Fatal(err)
+			}
+			subPathCount := 0
+			err = r.AddSubReconciler(exampleocconfigpath.Root().Parent().Child().One().Config(), func(cfg, state *ygnmi.Value[*exampleocconfig.Parent_Child]) error {
+				cfgV, _ := cfg.Val()
+				if d := cmp.Diff(cfgV, tt.wantCfg[subPathCount]); d != "" {
+					t.Errorf("callback %d, unexpected cfg diff: %s", subPathCount, d)
+				}
+				stateV, _ := state.Val()
+				if d := cmp.Diff(stateV, tt.wantState[subPathCount]); d != "" {
+					t.Errorf("callback %d, unexpected state diff: %s", subPathCount, d)
+				}
+				subPathCount++
+				return nil
+			})
+			if err != nil {
+				t.Fatalf("unexpected error adding path: %v", err)
+			}
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			r.Start(ctx, func(cfg, state *ygnmi.Value[*exampleocconfig.Parent_Child]) error {
+				return nil
+			})
+
+			err = r.Await()
+			if diff := errdiff.Substring(err, tt.wantErr); !errors.Is(err, io.EOF) && diff != "" {
+				t.Fatalf("Watch() returned unexpected diff: %s", diff)
+			}
+			if err != nil {
+				return
+			}
+		})
 	}
 }

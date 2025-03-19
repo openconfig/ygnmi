@@ -59,6 +59,24 @@ module openconfig-withlistval {
             }
           }
 
+          container nested-lists {
+            list nested-list {
+              key "key";
+              leaf key {
+                type leafref {
+                  path "../config/key";
+                }
+              }
+              container config {
+                  uses single-key-config;
+              }
+              container state {
+                config false;
+                uses single-key-config;
+              }
+            }
+          }
+
           container ordered-lists {
             list ordered-list {
               key "key";
