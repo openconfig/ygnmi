@@ -193,13 +193,17 @@ func NewClient(c gpb.GNMIClient, opts ...ClientOption) (*Client, error) {
 // Option can be used modify the behavior of the gNMI requests used by the ygnmi calls (Lookup, Await, etc.).
 type Option func(*opt)
 
+// ValidateFn is a function that validates the datapoint.
+type ValidateFn func(*DataPoint) error
+
 type opt struct {
-	useGet         bool
-	mode           gpb.SubscriptionMode
-	encoding       gpb.Encoding
-	preferProto    bool
-	setFallback    bool
-	sampleInterval uint64
+	useGet             bool
+	mode               gpb.SubscriptionMode
+	encoding           gpb.Encoding
+	preferProto        bool
+	setFallback        bool
+	sampleInterval     uint64
+	datapointValidator ValidateFn
 }
 
 // resolveOpts applies all the options and returns a struct containing the result.
@@ -262,6 +266,15 @@ func WithSetPreferProtoEncoding() Option {
 func WithSetFallbackEncoding() Option {
 	return func(o *opt) {
 		o.setFallback = true
+	}
+}
+
+// WithDatapointValidator creates an option that validates the datapoint.
+// This option is only relevant for Watch, WatchAll, Collect, CollectAll, Await which are STREAM subscriptions.
+// The mode applies to all paths in the Subscription.
+func WithDatapointValidator(fn ValidateFn) Option {
+	return func(o *opt) {
+		o.datapointValidator = fn
 	}
 }
 

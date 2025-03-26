@@ -15,6 +15,8 @@
 package ygnmi
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -772,19 +774,21 @@ func TestUnmarshal(t *testing.T) {
 	}
 
 	failingTests := []struct {
-		name                  string
-		inData                []*DataPoint
-		inQueryPath           *gpb.Path
-		inStructSchema        *yang.Entry
-		inStruct              ygot.ValidatedGoStruct
-		inLeaf                bool
-		inPreferShadowPath    bool
-		wantUnmarshalledData  []*DataPoint
-		wantStruct            ygot.ValidatedGoStruct
-		wantErrSubstr         string
-		wantPathErrSubstr     *TelemetryError
-		wantTypeErrSubstr     *TelemetryError
-		wantValidateErrSubstr string
+		name                           string
+		inData                         []*DataPoint
+		inQueryPath                    *gpb.Path
+		inStructSchema                 *yang.Entry
+		inStruct                       ygot.ValidatedGoStruct
+		inLeaf                         bool
+		inPreferShadowPath             bool
+		wantUnmarshalledData           []*DataPoint
+		wantStruct                     ygot.ValidatedGoStruct
+		wantErrSubstr                  string
+		wantPathErrSubstr              *TelemetryError
+		wantTypeErrSubstr              *TelemetryError
+		wantValidateErrSubstr          string
+		wantDataPointValidateErrSubstr string
+		opts                           *opt
 	}{{
 		name: "fail to retrieve uint64 due to wrong type",
 		inData: []*DataPoint{{
@@ -970,11 +974,37 @@ func TestUnmarshal(t *testing.T) {
 			Value: &gpb.TypedValue{Value: &gpb.TypedValue_IntVal{IntVal: 43}},
 			Err:   errors.New(`path uses deprecated and unsupported Element field`),
 		},
+	}, {
+		name: "invalid timestamp: not having nanoseconds accuracy",
+		inData: []*DataPoint{{
+			Path:          testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf"),
+			Value:         &gpb.TypedValue{Value: &gpb.TypedValue_UintVal{UintVal: 42}},
+			Timestamp:     time.Unix(2, 2),
+			RecvTimestamp: time.Unix(1, 1),
+		}},
+		inQueryPath:                    testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf"),
+		inStructSchema:                 superContainerSchema.Dir["leaf-container-struct"],
+		inStruct:                       &testutil.LeafContainerStruct{},
+		inLeaf:                         true,
+		wantDataPointValidateErrSubstr: "datapoint timestamp does not have nanosecond accuracy",
+		wantUnmarshalledData: []*DataPoint{{
+			Path:          testutil.GNMIPath(t, "super-container/leaf-container-struct/uint64-leaf"),
+			Value:         &gpb.TypedValue{Value: &gpb.TypedValue_UintVal{UintVal: 42}},
+			Timestamp:     time.Unix(2, 2),
+			RecvTimestamp: time.Unix(1, 1),
+		}},
+		opts: &opt{datapointValidator: func(dp *DataPoint) error {
+			ns := dp.Timestamp.UnixNano()
+			if len(strconv.FormatInt(ns, 10)) != 19 {
+				return fmt.Errorf("datapoint timestamp does not have nanosecond accuracy")
+			}
+			return nil
+		}},
 	}}
 
 	for _, tt := range failingTests {
 		t.Run(tt.name, func(t *testing.T) {
-			unmarshalledData, complianceErrs, errs := unmarshal(tt.inData, tt.inStructSchema, tt.inStruct, tt.inQueryPath, schemaStruct(), tt.inLeaf, tt.inPreferShadowPath, nil, &opt{})
+			unmarshalledData, complianceErrs, errs := unmarshal(tt.inData, tt.inStructSchema, tt.inStruct, tt.inQueryPath, schemaStruct(), tt.inLeaf, tt.inPreferShadowPath, nil, tt.opts)
 			if errs != nil {
 				t.Fatalf("unmarshal: got more than one error: %v", errs)
 			}
@@ -983,11 +1013,12 @@ func TestUnmarshal(t *testing.T) {
 			}
 
 			var pathErrs, typeErrs []*TelemetryError
-			var validateErrs []error
+			var validateErrs, dataPointValidateErrs []error
 			if complianceErrs != nil {
 				pathErrs = complianceErrs.PathErrors
 				typeErrs = complianceErrs.TypeErrors
 				validateErrs = complianceErrs.ValidateErrors
+				dataPointValidateErrs = complianceErrs.DataPointValidateErrors
 				// Validate documentation on error
 				if !strings.Contains(complianceErrs.String(), "https://github.com/openconfig/ygnmi#noncompliance-errors") {
 					t.Errorf("ComplianceError String() didn't contain expected reference to documentation.")
@@ -1002,9 +1033,12 @@ func TestUnmarshal(t *testing.T) {
 			if len(validateErrs) > 1 {
 				t.Fatalf("unmarshal: got more than one validate error: %v", validateErrs)
 			}
+			if len(dataPointValidateErrs) > 1 {
+				t.Fatalf("unmarshal: got more than one datapoint validate error: %v", dataPointValidateErrs)
+			}
 
 			// Populate errors for validation.
-			var err, validateErr error
+			var err, validateErr, dataPointValidateErr error
 			var pathErr, typeErr *TelemetryError
 			if len(pathErrs) == 1 {
 				pathErr = pathErrs[0]
@@ -1014,6 +1048,9 @@ func TestUnmarshal(t *testing.T) {
 			}
 			if len(validateErrs) == 1 {
 				validateErr = validateErrs[0]
+			}
+			if len(dataPointValidateErrs) == 1 {
+				dataPointValidateErr = dataPointValidateErrs[0]
 			}
 
 			// Validate expected errors
@@ -1043,6 +1080,9 @@ func TestUnmarshal(t *testing.T) {
 
 			if diff := errdiff.Substring(validateErr, tt.wantValidateErrSubstr); diff != "" {
 				t.Fatalf("unmarshal: did not get expected validateErr substring:\n%s", diff)
+			}
+			if diff := errdiff.Substring(dataPointValidateErr, tt.wantDataPointValidateErrSubstr); diff != "" {
+				t.Fatalf("unmarshal: did not get expected dataPointValidateErr substring:\n%s", diff)
 			}
 		})
 	}

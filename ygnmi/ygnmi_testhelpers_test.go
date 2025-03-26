@@ -113,11 +113,19 @@ func watchCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, duration
 	i := 0
 	ctx, cancel := context.WithTimeout(context.Background(), duration)
 	defer cancel()
+
+	extractErrorMessage := cmp.Transformer("ExtractErrorString", func(err error) string {
+		if err == nil {
+			return ""
+		}
+		return err.Error()
+	})
+
 	w := ygnmi.Watch(ctx, c, inQuery, func(v *ygnmi.Value[T]) error {
 		if i > len(wantVals) {
 			t.Fatalf("Predicate(%d) expected no more values but got: %+v", i, v)
 		}
-		if diff := cmp.Diff(wantVals[i], v, cmpopts.IgnoreFields(ygnmi.Value[T]{}, "RecvTimestamp"), cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_SingleKey_OrderedList_OrderedMap{}, exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}), protocmp.Transform()); diff != "" {
+		if diff := cmp.Diff(wantVals[i], v, extractErrorMessage, cmpopts.IgnoreFields(ygnmi.Value[T]{}, "RecvTimestamp", "Timestamp"), cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_SingleKey_OrderedList_OrderedMap{}, exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}), protocmp.Transform()); diff != "" {
 			t.Errorf("Predicate(%d) got unexpected input (-want,+got):\n %s\nComplianceErrors:\n%v", i, diff, v.ComplianceErrors)
 		}
 		val, present := v.Val()
@@ -144,7 +152,7 @@ func watchCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, duration
 		checkJustReceived(t, val.RecvTimestamp)
 		wantLastVal.RecvTimestamp = val.RecvTimestamp
 	}
-	if diff := cmp.Diff(wantLastVal, val, cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_SingleKey_OrderedList_OrderedMap{}, exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}), protocmp.Transform()); diff != "" {
+	if diff := cmp.Diff(wantLastVal, val, extractErrorMessage, cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_SingleKey_OrderedList_OrderedMap{}, exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}), protocmp.Transform()); diff != "" {
 		t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
 	}
 

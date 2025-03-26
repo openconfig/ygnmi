@@ -89,6 +89,9 @@ type ComplianceErrors struct {
 	// ValidateErrors are compliance errors encountered while doing schema
 	// validation on the unmarshalled data.
 	ValidateErrors []error
+	// DataPointValidateErrors are compliance errors encountered while validating
+	// the datapoint.
+	DataPointValidateErrors []error
 }
 
 func (c *ComplianceErrors) String() string {
@@ -308,6 +311,7 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 	var unmarshalledDatapoints []*DataPoint
 	var pathUnmarshalErrs []*TelemetryError
 	var typeUnmarshalErrs []*TelemetryError
+	var dpValidateErrs util.Errors
 
 	errs := &errlist.List{}
 	if !schema.IsValid() {
@@ -323,6 +327,14 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 		// Sync datapoints don't contain path nor values.
 		if dp.Sync {
 			continue
+		}
+
+		// Check if the datapoint is valid.
+		if opts != nil && opts.datapointValidator != nil {
+			err := opts.datapointValidator(dp)
+			if err != nil {
+				dpValidateErrs = append(dpValidateErrs, err)
+			}
 		}
 
 		dpPathStr := pathToString(dp.Path)
@@ -390,7 +402,7 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 				sopts = append(sopts, &ytypes.PreferShadowPath{})
 			}
 			// TODO: Fully support partial unmarshaling of JSON blobs.
-			if opts.useGet {
+			if opts != nil && opts.useGet {
 				sopts = append(sopts, &ytypes.IgnoreExtraFields{})
 			}
 			// 2. Check for type compliance (since path should already be compliant).
@@ -404,8 +416,13 @@ func unmarshal(data []*DataPoint, structSchema *yang.Entry, structPtr ygot.Valid
 	}
 	// 3. Check for value (restriction) compliance.
 	validateErrs := ytypes.Validate(structSchema, structPtr)
-	if pathUnmarshalErrs != nil || typeUnmarshalErrs != nil || validateErrs != nil {
-		return unmarshalledDatapoints, &ComplianceErrors{PathErrors: pathUnmarshalErrs, TypeErrors: typeUnmarshalErrs, ValidateErrors: validateErrs}, errs.Err()
+	if pathUnmarshalErrs != nil || typeUnmarshalErrs != nil || validateErrs != nil || dpValidateErrs != nil {
+		return unmarshalledDatapoints, &ComplianceErrors{
+			PathErrors:              pathUnmarshalErrs,
+			TypeErrors:              typeUnmarshalErrs,
+			ValidateErrors:          validateErrs,
+			DataPointValidateErrors: dpValidateErrs,
+		}, errs.Err()
 	}
 	return unmarshalledDatapoints, nil, errs.Err()
 }

@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"strconv"
 	"testing"
 	"time"
 
@@ -1039,6 +1040,21 @@ func TestPreferConfigWatch(t *testing.T) {
 	path := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
 	lq := exampleocconfigpath.Root().RemoteContainer().ALeaf().State()
 
+	datapointValidator := func(dp *ygnmi.DataPoint) error {
+		// Validate the timestamp
+		if !dp.Timestamp.IsZero() {
+			ns := dp.Timestamp.UnixNano()
+			if len(strconv.FormatInt(ns, 10)) != 19 {
+				return fmt.Errorf("datapoint timestamp does not have nanosecond accuracy")
+			}
+			if dp.RecvTimestamp.Before(dp.Timestamp) {
+				return fmt.Errorf("datapoint receive timestamp is before notification timestamp")
+			}
+		}
+
+		return nil
+	}
+
 	startTime := time.Now()
 	tests := []struct {
 		desc                 string
@@ -1072,6 +1088,58 @@ func TestPreferConfigWatch(t *testing.T) {
 		wantLastVal: (&ygnmi.Value[string]{
 			Timestamp: startTime,
 			Path:      path,
+		}).SetVal("foo"),
+	}, {
+		desc: "single notif and pred true with validate timestamp option - success",
+		stub: func(s *gnmitestutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.UnixNano(),
+				Update: []*gpb.Update{{
+					Path: path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		opts: []ygnmi.Option{ygnmi.WithDatapointValidator(datapointValidator)},
+		dur:  time.Second,
+		wantVals: []*ygnmi.Value[string]{
+			(&ygnmi.Value[string]{
+				Timestamp: startTime,
+				Path:      path,
+			}).SetVal("foo")},
+		wantSubscriptionPath: path,
+		wantLastVal: (&ygnmi.Value[string]{
+			Timestamp: startTime,
+			Path:      path,
+		}).SetVal("foo"),
+	}, {
+		desc: "single notif and pred true with validate timestamp option - error",
+		stub: func(s *gnmitestutil.Stubber) {
+			s.Notification(&gpb.Notification{
+				Timestamp: startTime.Add(30 * time.Second).UnixNano(),
+				Update: []*gpb.Update{{
+					Path: path,
+					Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+				}},
+			}).Sync()
+		},
+		opts: []ygnmi.Option{ygnmi.WithDatapointValidator(datapointValidator)},
+		dur:  time.Second,
+		wantVals: []*ygnmi.Value[string]{
+			(&ygnmi.Value[string]{
+				Timestamp: startTime.Add(30 * time.Second),
+				Path:      path,
+				ComplianceErrors: &ygnmi.ComplianceErrors{
+					DataPointValidateErrors: []error{fmt.Errorf("datapoint receive timestamp is before notification timestamp")},
+				},
+			}).SetVal("foo")},
+		wantSubscriptionPath: path,
+		wantLastVal: (&ygnmi.Value[string]{
+			Timestamp: startTime.Add(30 * time.Second),
+			Path:      path,
+			ComplianceErrors: &ygnmi.ComplianceErrors{
+				DataPointValidateErrors: []error{fmt.Errorf("datapoint receive timestamp is before notification timestamp")},
+			},
 		}).SetVal("foo"),
 	}, {
 		desc: "single notif and pred true with custom mode",
