@@ -201,6 +201,10 @@ type GenConfig struct {
 	// reside in the provided package. The mapped string is the custom name for
 	// the package (optional).
 	SplitPackagePaths map[string]string
+	//UseModuleNameAsPathOrigin uses the YANG module name to the origin for generated gNMI paths.
+	UseModuleNameAsPathOrigin bool
+	//PathOriginName specifies the origin name for generated gNMI paths.
+	PathOriginName string	
 }
 
 // GoImports contains package import options.
@@ -270,6 +274,8 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 		NestedDirectories:                   false,
 		AbsoluteMapPaths:                    false,
 		AppendEnumSuffixForSimpleUnionEnums: cg.AppendEnumSuffixForSimpleUnionEnums,
+		UseModuleNameAsPathOrigin: cg.UseModuleNameAsPathOrigin,
+		PathOriginName: cg.PathOriginName,		
 	}
 
 	var errs util.Errors
@@ -567,6 +573,8 @@ type NodeData struct {
 	// ConfigFalse indicates whether the node is "config false" or "config
 	// true" in its YANG schema definition.
 	ConfigFalse bool
+	// PathOriginName is the name of the origin for this node.
+	PathOriginName string	
 }
 
 // CompressionInfo contains information about a compressed path element for a
@@ -679,6 +687,13 @@ type {{ .TypeName }}{{ .WildcardSuffix }} struct {
 	parent ygnmi.PathStruct
 {{- end }}
 	{{- .ExtraWildcardFields }}
+}
+{{- end }}
+
+{{- if $.PathOriginName }}
+// PathOrigin returns the name of the origin for the path object.
+func (n *{{.TypeName}}) PathOriginName() string {
+     return "{{ $.PathOriginName }}"
 }
 {{- end }}
 `)
@@ -828,6 +843,16 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 				DirectoryName:         field.YANGDetails.Path,
 				ConfigFalse:           field.YANGDetails.ConfigFalse,
 			}
+			// If PathOriginName has a value, the value is set to the PathOriginName of the node.
+			// Else if UseModuleNameAsPathOrigin of the node is true,
+			// YANG module name is set to the PathOriginName of the node.
+			if ir.PathOriginName != "" {
+			   	nodeData.PathOriginName = ir.PathOriginName
+			}else if ir.UseModuleNameAsPathOrigin {
+				nodeData.PathOriginName = field.YANGDetails.RootElementModule
+			} else {
+			       nodeData.PathOriginName = ""
+			}
 
 			switch {
 			case !isLeaf && isKeyedList(fieldDir) && !(generateAtomicLists && isCompressedAtomicList(fieldDir)): // Non-atomic lists
@@ -964,6 +989,8 @@ type goPathStructData struct {
 	// ExtraFields are extra fields in the generated struct by extra
 	// generators.
 	ExtraWildcardFields string
+	// PathOriginName is the name of the origin for the PathStruct.
+	PathOriginName string	
 }
 
 // genExtraFields calls the extra generators to append extra fields.
@@ -1094,6 +1121,9 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 		if err := structData.genExtraFields(nodeDataMap, fakeRootName, compressBehaviour, directory, extraGens.StructFields); err != nil {
 			return nil, util.AppendErr(errs, err)
 		}
+		// The PathOriginName from the nodeDataMap is set to that of the structData
+		structData.PathOriginName = nodeDataMap[structData.TypeName].PathOriginName
+
 		if err := goPathStructTemplate.Execute(&structBuf, structData); err != nil {
 			return nil, util.AppendErr(errs, err)
 		}
