@@ -204,7 +204,7 @@ type GenConfig struct {
 	//UseModuleNameAsPathOrigin uses the YANG module name to the origin for generated gNMI paths.
 	UseModuleNameAsPathOrigin bool
 	//PathOriginName specifies the origin name for generated gNMI paths.
-	PathOriginName string	
+	PathOriginName string
 }
 
 // GoImports contains package import options.
@@ -274,8 +274,8 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 		NestedDirectories:                   false,
 		AbsoluteMapPaths:                    false,
 		AppendEnumSuffixForSimpleUnionEnums: cg.AppendEnumSuffixForSimpleUnionEnums,
-		UseModuleNameAsPathOrigin: cg.UseModuleNameAsPathOrigin,
-		PathOriginName: cg.PathOriginName,		
+		UseModuleNameAsPathOrigin:           cg.UseModuleNameAsPathOrigin,
+		PathOriginName:                      cg.PathOriginName,
 	}
 
 	var errs util.Errors
@@ -574,7 +574,7 @@ type NodeData struct {
 	// true" in its YANG schema definition.
 	ConfigFalse bool
 	// PathOriginName is the name of the origin for this node.
-	PathOriginName string	
+	PathOriginName string
 }
 
 // CompressionInfo contains information about a compressed path element for a
@@ -847,11 +847,11 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 			// Else if UseModuleNameAsPathOrigin of the node is true,
 			// YANG module name is set to the PathOriginName of the node.
 			if ir.PathOriginName != "" {
-			   	nodeData.PathOriginName = ir.PathOriginName
-			}else if ir.UseModuleNameAsPathOrigin {
+				nodeData.PathOriginName = ir.PathOriginName
+			} else if ir.UseModuleNameAsPathOrigin {
 				nodeData.PathOriginName = field.YANGDetails.RootElementModule
 			} else {
-			       nodeData.PathOriginName = ""
+				nodeData.PathOriginName = ""
 			}
 
 			switch {
@@ -990,7 +990,7 @@ type goPathStructData struct {
 	// generators.
 	ExtraWildcardFields string
 	// PathOriginName is the name of the origin for the PathStruct.
-	PathOriginName string	
+	PathOriginName string
 }
 
 // genExtraFields calls the extra generators to append extra fields.
