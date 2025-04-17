@@ -843,13 +843,9 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 				DirectoryName:         field.YANGDetails.Path,
 				ConfigFalse:           field.YANGDetails.ConfigFalse,
 			}
-			// If PathOriginName has a value, the value is set to the PathOriginName of the node.
-			// Else if UseModuleNameAsPathOrigin of the node is true,
-			// YANG module name is set to the PathOriginName of the node.
-			if ir.PathOriginName != "" {
-				nodeData.PathOriginName = ir.PathOriginName
-			} else if ir.UseModuleNameAsPathOrigin {
-				nodeData.PathOriginName = field.YANGDetails.RootElementModule
+			// If NodeDetails.PathOriginName has a value, the value is set to the PathOriginName of the node.
+			if field.PathOriginName != "" {
+				nodeData.PathOriginName = field.PathOriginName
 			} else {
 				nodeData.PathOriginName = ""
 			}
