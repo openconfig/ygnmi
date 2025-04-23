@@ -62,6 +62,9 @@ func TestGeneratePathCode(t *testing.T) {
 		inPathStructSuffix      string
 		inIgnoreUnsupported     bool
 		inIgnoreAtomicLists     bool
+		// inPathOriginName sets an arbitrary name to the path origin and inUseModuleNameAsPathOrigin uses the YANG module name there.
+		inPathOriginName            string
+		inUseModuleNameAsPathOrigin bool
 		// checkYANGPath says whether to check for the YANG path in the NodeDataMap.
 		checkYANGPath bool
 		// wantStructsCodeFile is the path of the generated Go code that the output of the test should be compared to.
@@ -1284,6 +1287,128 @@ func TestGeneratePathCode(t *testing.T) {
 		inSchemaStructPkgPath:                  "",
 		inPathStructSuffix:                     "Path",
 		wantStructsCodeFile:                    filepath.Join(TestRoot, "testdata/structs/openconfig-camelcase-compress.path-txt"),
+	}, {
+		name:                                   "simple openconfig test with path origin name set",
+		inFiles:                                []string{filepath.Join(datapath, "openconfig-orderedlist.yang")},
+		inCompressBehaviour:                    genutil.PreferOperationalState,
+		inShortenEnumLeafNames:                 true,
+		inUseDefiningModuleForTypedefEnumNames: true,
+		inGenerateWildcardPaths:                true,
+		inSchemaStructPkgPath:                  "",
+		inPathStructSuffix:                     "Path",
+		inPathOriginName:                       "test-origin",
+		checkYANGPath:                          true,
+		wantStructsCodeFile:                    filepath.Join(TestRoot, "testdata/structs/openconfig-setpathorigin.path-txt"),
+		wantNodeDataMap: NodeDataMap{
+			"DevicePath": {
+				GoTypeName:            "*Device",
+				LocalGoTypeName:       "*Device",
+				SubsumingGoStructName: "Device",
+				YANGPath:              "/",
+				GoPathPackageName:     "ocstructs",
+				DirectoryName:         "/device",
+			},
+			"ModelPath": {
+				GoTypeName:            "*Model",
+				LocalGoTypeName:       "*Model",
+				GoFieldName:           "Model",
+				SubsumingGoStructName: "Model",
+				YANGPath:              "/openconfig-orderedlist/model",
+				GoPathPackageName:     "ocstructs",
+				DirectoryName:         "/openconfig-orderedlist/model",
+				PathOriginName:        "test-origin",
+			},
+			"Model_OrderedListPathMap": {
+				GoTypeName:            "*Model_OrderedList_OrderedMap",
+				LocalGoTypeName:       "*Model_OrderedList_OrderedMap",
+				GoFieldName:           "OrderedList",
+				SubsumingGoStructName: "Model",
+				IsListContainer:       true,
+				YANGPath:              "/openconfig-orderedlist/model/ordered-lists/ordered-list",
+				GoPathPackageName:     "ocstructs",
+				DirectoryName:         "/openconfig-orderedlist/model/ordered-lists/ordered-list",
+				CompressInfo: &CompressionInfo{
+					PreRelPathList:  `"openconfig-orderedlist:ordered-lists"`,
+					PostRelPathList: `"openconfig-orderedlist:ordered-list"`,
+				},
+				PathOriginName: "test-origin",
+			},
+			"Model_OrderedList_KeyPath": {
+				GoTypeName:            "string",
+				LocalGoTypeName:       "string",
+				GoFieldName:           "Key",
+				SubsumingGoStructName: "Model_OrderedList",
+				IsLeaf:                true,
+				IsScalarField:         true,
+				YANGTypeName:          "string",
+				YANGPath:              "/openconfig-orderedlist/model/ordered-lists/ordered-list/state/key",
+				GoPathPackageName:     "ocstructs",
+				YANGFieldName:         "key",
+				DirectoryName:         "/openconfig-orderedlist/model/ordered-lists/ordered-list",
+				ConfigFalse:           true,
+				PathOriginName:        "test-origin",
+			}},
+	}, {
+		name:                                   "simple openconfig test with path origin name as module name",
+		inFiles:                                []string{filepath.Join(datapath, "openconfig-orderedlist.yang")},
+		inCompressBehaviour:                    genutil.PreferOperationalState,
+		inShortenEnumLeafNames:                 true,
+		inUseDefiningModuleForTypedefEnumNames: true,
+		inGenerateWildcardPaths:                true,
+		inSchemaStructPkgPath:                  "",
+		inPathStructSuffix:                     "Path",
+		inUseModuleNameAsPathOrigin:            true,
+		checkYANGPath:                          true,
+		wantStructsCodeFile:                    filepath.Join(TestRoot, "testdata/structs/openconfig-usemodulenameaspathorigin.path-txt"),
+		wantNodeDataMap: NodeDataMap{
+			"DevicePath": {
+				GoTypeName:            "*Device",
+				LocalGoTypeName:       "*Device",
+				SubsumingGoStructName: "Device",
+				YANGPath:              "/",
+				GoPathPackageName:     "ocstructs",
+				DirectoryName:         "/device",
+			},
+			"ModelPath": {
+				GoTypeName:            "*Model",
+				LocalGoTypeName:       "*Model",
+				GoFieldName:           "Model",
+				SubsumingGoStructName: "Model",
+				YANGPath:              "/openconfig-orderedlist/model",
+				GoPathPackageName:     "ocstructs",
+				DirectoryName:         "/openconfig-orderedlist/model",
+				PathOriginName:        "openconfig-orderedlist",
+			},
+			"Model_OrderedListPathMap": {
+				GoTypeName:            "*Model_OrderedList_OrderedMap",
+				LocalGoTypeName:       "*Model_OrderedList_OrderedMap",
+				GoFieldName:           "OrderedList",
+				SubsumingGoStructName: "Model",
+				IsListContainer:       true,
+				YANGPath:              "/openconfig-orderedlist/model/ordered-lists/ordered-list",
+				GoPathPackageName:     "ocstructs",
+				DirectoryName:         "/openconfig-orderedlist/model/ordered-lists/ordered-list",
+				CompressInfo: &CompressionInfo{
+					PreRelPathList:  `"openconfig-orderedlist:ordered-lists"`,
+					PostRelPathList: `"openconfig-orderedlist:ordered-list"`,
+				},
+				PathOriginName: "openconfig-orderedlist",
+			},
+			"Model_OrderedList_KeyPath": {
+				GoTypeName:            "string",
+				LocalGoTypeName:       "string",
+				GoFieldName:           "Key",
+				SubsumingGoStructName: "Model_OrderedList",
+				IsLeaf:                true,
+				IsScalarField:         true,
+				YANGTypeName:          "string",
+				YANGPath:              "/openconfig-orderedlist/model/ordered-lists/ordered-list/state/key",
+				GoPathPackageName:     "ocstructs",
+				YANGFieldName:         "key",
+				DirectoryName:         "/openconfig-orderedlist/model/ordered-lists/ordered-list",
+				ConfigFalse:           true,
+				PathOriginName:        "openconfig-orderedlist",
+			}},
 	}}
 
 	for _, tt := range tests {
@@ -1302,6 +1427,8 @@ func TestGeneratePathCode(t *testing.T) {
 				cg.PackageName = "ocstructs"
 				cg.IgnoreAtomicLists = tt.inIgnoreAtomicLists
 				cg.ParseOptions.IgnoreUnsupportedStatements = tt.inIgnoreUnsupported
+				cg.PathOriginName = tt.inPathOriginName
+				cg.UseModuleNameAsPathOrigin = tt.inUseModuleNameAsPathOrigin
 
 				gotCode, gotNodeDataMap, err := cg.GeneratePathCode(tt.inFiles, tt.inIncludePaths)
 				if err != nil && !tt.wantErr {
@@ -2103,6 +2230,77 @@ func TestGetNodeDataMap(t *testing.T) {
 			},
 		},
 	}
+
+	irWithOrigin := &ygen.IR{
+		Directories: map[string]*ygen.ParsedDirectory{
+			"/root": {
+				Name:       "Root",
+				Type:       ygen.Container,
+				Path:       "/root",
+				IsFakeRoot: true,
+				Fields: map[string]*ygen.NodeDetails{
+					"container": {
+						Name: "Container",
+						YANGDetails: ygen.YANGNodeDetails{
+							Name:              "container",
+							Defaults:          nil,
+							BelongingModule:   "root-module",
+							RootElementModule: "root-module",
+							DefiningModule:    "root-module",
+							Path:              "/root-module/container",
+							SchemaPath:        "/container",
+							LeafrefTargetPath: "",
+							Description:       "",
+						},
+						Type:                    ygen.ContainerNode,
+						LangType:                nil,
+						MappedPaths:             [][]string{{"container"}},
+						MappedPathModules:       [][]string{{"root-module"}},
+						ShadowMappedPaths:       nil,
+						ShadowMappedPathModules: nil,
+					},
+				},
+			},
+			"/root-module/container": {
+				Name: "Container",
+				Type: ygen.List,
+				Path: "/root-module/container",
+				Fields: map[string]*ygen.NodeDetails{
+					"leaf": {
+						Name: "Leaf",
+						YANGDetails: ygen.YANGNodeDetails{
+							Name:              "leaf",
+							Defaults:          []string{"foo"},
+							BelongingModule:   "root-module",
+							RootElementModule: "root-module",
+							DefiningModule:    "root-module",
+							Path:              "/root-module/container/leaf",
+							SchemaPath:        "/container/leaf",
+							LeafrefTargetPath: "",
+							Description:       "",
+						},
+						Flags: map[string]string{yangTypeNameFlagKey: "int32"},
+						Type:  ygen.LeafNode,
+						LangType: &ygen.MappedType{
+							NativeType: "int32",
+						},
+						MappedPaths:             [][]string{{"leaf"}},
+						MappedPathModules:       [][]string{{"root-module"}},
+						ShadowMappedPaths:       nil,
+						ShadowMappedPathModules: nil,
+						PathOriginName:          "test-origin",
+					},
+				},
+				ListKeys:          nil,
+				ListKeyYANGNames:  nil,
+				PackageName:       "",
+				IsFakeRoot:        false,
+				BelongingModule:   "root-module",
+				RootElementModule: "root-module",
+				DefiningModule:    "root-module",
+			},
+		},
+	}
 	tests := []struct {
 		name                      string
 		inIR                      *ygen.IR
@@ -2366,6 +2564,59 @@ func TestGetNodeDataMap(t *testing.T) {
 			"List_Path",
 			"List_PathMap",
 			"List_UnionKey_Path",
+			"Root_Path",
+		},
+	}, {
+		name:                      "smalle test with PathOriginName",
+		inIR:                      irWithOrigin,
+		inFakeRootName:            "Root",
+		inSchemaStructPkgAccessor: "struct.",
+		inPathStructSuffix:        "_Path",
+		inSplitByModule:           true,
+		inPackageName:             "device",
+		inPackageSuffix:           "path",
+		wantNodeDataMap: NodeDataMap{
+			"Container_Leaf_Path": {
+				GoTypeName:            "int32",
+				LocalGoTypeName:       "int32",
+				GoFieldName:           "Leaf",
+				SubsumingGoStructName: "Container",
+				IsLeaf:                true,
+				IsScalarField:         true,
+				HasDefault:            true,
+				YANGTypeName:          "int32",
+				GoPathPackageName:     "rootmodulepath",
+				DirectoryName:         "/root-module/container",
+				YANGFieldName:         "leaf",
+				PathOriginName:        "test-origin",
+			},
+			"Container_Path": {
+				GoTypeName:            "*struct.Container",
+				LocalGoTypeName:       "*Container",
+				GoFieldName:           "Container",
+				SubsumingGoStructName: "Container",
+				IsLeaf:                false,
+				IsScalarField:         false,
+				HasDefault:            false,
+				YANGTypeName:          "",
+				GoPathPackageName:     "rootmodulepath",
+				DirectoryName:         "/root-module/container",
+				YANGFieldName:         "",
+			},
+			"Root_Path": {
+				GoTypeName:            "*struct.Root",
+				LocalGoTypeName:       "*Root",
+				GoFieldName:           "",
+				SubsumingGoStructName: "Root",
+				IsLeaf:                false,
+				IsScalarField:         false,
+				HasDefault:            false,
+				GoPathPackageName:     "device",
+				DirectoryName:         "/root",
+			}},
+		wantSorted: []string{
+			"Container_Leaf_Path",
+			"Container_Path",
 			"Root_Path",
 		},
 	}}
@@ -2685,6 +2936,7 @@ func TestGenerateDirectorySnippet(t *testing.T) {
 		inPackageName      string
 		inPackageSuffix    string
 		inUnifiedPath      bool
+		inNodeDataMap      NodeDataMap
 		// want may be omitted to skip testing.
 		want []GoPathStructCodeSnippet
 		// wantNoWildcard may be omitted to skip testing.
@@ -3454,12 +3706,56 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 			Package:         "rootmodulepath",
 			ExtraGeneration: "",
 		}},
+	}, {
+		name:            "container with PathOriginName",
+		inDirectory:     directories["/root-module/container"],
+		inPackageName:   "device",
+		inPackageSuffix: "path",
+		inNodeDataMap: NodeDataMap{
+			"Container": {
+				GoTypeName:            "*struct.Container",
+				LocalGoTypeName:       "*Container",
+				GoFieldName:           "Container",
+				SubsumingGoStructName: "Container",
+				IsLeaf:                false,
+				IsScalarField:         false,
+				HasDefault:            false,
+				YANGTypeName:          "",
+				GoPathPackageName:     "rootmodulepath",
+				DirectoryName:         "/root-module/container",
+				YANGFieldName:         "",
+				PathOriginName:        "test-origin",
+			},
+		},
+		want: []GoPathStructCodeSnippet{{
+			PathStructName: "Container",
+			StructBase: `
+// Container represents the /root-module/container YANG schema element.
+type Container struct {
+	*ygnmi.NodePath
+}
+
+// ContainerAny represents the wildcard version of the /root-module/container YANG schema element.
+type ContainerAny struct {
+	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Container) PathOriginName() string {
+     return "test-origin"
+}
+`,
+			ChildConstructors: ``,
+			Package:           "device",
+			ExtraGeneration:   "",
+		},
+		},
 	}}
 
 	for _, tt := range tests {
 		if tt.want != nil {
 			t.Run(tt.name, func(t *testing.T) {
-				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, nil, "Root", ExtraGenerators{}, "oc.", tt.inPathStructSuffix, true, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, nil, tt.inUnifiedPath, true, true, genutil.PreferOperationalState)
+				got, gotErr := generateDirectorySnippet(tt.inDirectory, directories, tt.inNodeDataMap, "Root", ExtraGenerators{}, "oc.", tt.inPathStructSuffix, true, tt.inSplitByModule, "", tt.inPackageName, tt.inPackageSuffix, nil, tt.inUnifiedPath, true, true, genutil.PreferOperationalState)
 				if gotErr != nil {
 					t.Fatalf("func generateDirectorySnippet, unexpected error: %v", gotErr)
 				}
@@ -3468,6 +3764,7 @@ func (n *ListPathAny) WithUnionKey(UnionKey oc.RootElementModule_List_UnionKey_U
 					got[i].ChildConstructors = trimDocComments(s.ChildConstructors)
 					t.Log(got[i])
 				}
+
 				if diff := cmp.Diff(tt.want, got); diff != "" {
 					t.Errorf("func generateDirectorySnippet mismatch (-want, +got): %s\n", diff)
 				}

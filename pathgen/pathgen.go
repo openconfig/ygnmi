@@ -691,6 +691,7 @@ type {{ .TypeName }}{{ .WildcardSuffix }} struct {
 {{- end }}
 
 {{- if $.PathOriginName }}
+
 // PathOrigin returns the name of the origin for the path object.
 func (n *{{.TypeName}}) PathOriginName() string {
      return "{{ $.PathOriginName }}"
@@ -1118,7 +1119,9 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 			return nil, util.AppendErr(errs, err)
 		}
 		// The PathOriginName from the nodeDataMap is set to that of the structData
-		structData.PathOriginName = nodeDataMap[structData.TypeName].PathOriginName
+		if nodeData, ok := nodeDataMap[structData.TypeName]; ok {
+			structData.PathOriginName = nodeData.PathOriginName
+		}
 
 		if err := goPathStructTemplate.Execute(&structBuf, structData); err != nil {
 			return nil, util.AppendErr(errs, err)
