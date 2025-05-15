@@ -104,6 +104,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/parent",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"Parent_ChildPath": {
 				GoTypeName:            "*Parent_Child",
@@ -117,6 +118,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_FourPath": {
 				GoTypeName:            "Binary",
@@ -132,6 +134,7 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "four",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_OnePath": {
 				GoTypeName:            "string",
@@ -147,6 +150,7 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "one",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_ThreePath": {
 				GoTypeName:            "E_Child_Three",
@@ -162,6 +166,7 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "three",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_TwoPath": {
 				GoTypeName:            "string",
@@ -177,6 +182,7 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "two",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_FivePath": {
 				GoTypeName:            "Binary",
@@ -190,6 +196,7 @@ func TestGeneratePathCode(t *testing.T) {
 				YANGFieldName:         "five",
 				DirectoryName:         "/openconfig-simple/parent/child",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_SixPath": {
 				GoTypeName:            "[]Binary",
@@ -203,6 +210,7 @@ func TestGeneratePathCode(t *testing.T) {
 				YANGFieldName:         "six",
 				DirectoryName:         "/openconfig-simple/parent/child",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			},
 			"RemoteContainerPath": {
 				GoTypeName:            "*RemoteContainer",
@@ -216,6 +224,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/remote-container",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"RemoteContainer_ALeafPath": {
 				GoTypeName:            "string",
@@ -231,6 +240,7 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/openconfig-simple/remote-container",
 				YANGFieldName:         "a-leaf",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			}},
 	}, {
 		name:                    "simple openconfig test with compression off",
@@ -271,6 +281,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/parent",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"Parent_ChildPath": {
 				GoTypeName:            "*Parent_Child",
@@ -283,6 +294,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_FourPath": {
 				GoTypeName:            "Binary",
@@ -296,6 +308,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "four",
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_OnePath": {
 				GoTypeName:            "string",
@@ -309,6 +322,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "one",
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_ThreePath": {
 				GoTypeName:            "E_Child_Three",
@@ -322,6 +336,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "three",
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_TwoPath": {
 				GoTypeName:            "string",
@@ -336,6 +351,7 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "two",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_FivePath": {
 				GoTypeName:            "Binary",
@@ -348,6 +364,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				YANGFieldName:         "five",
 				DirectoryName:         "/openconfig-simple/parent/child",
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_SixPath": {
 				GoTypeName:            "[]Binary",
@@ -360,6 +377,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				YANGFieldName:         "six",
 				DirectoryName:         "/openconfig-simple/parent/child",
+				PathOriginName:        "openconfig",
 			},
 			"RemoteContainerPath": {
 				GoTypeName:            "*RemoteContainer",
@@ -372,6 +390,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/remote-container",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"RemoteContainer_ALeafPath": {
 				GoTypeName:            "string",
@@ -385,6 +404,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/remote-container",
 				YANGFieldName:         "a-leaf",
+				PathOriginName:        "openconfig",
 			}},
 	}, {
 		name:                                   "simple openconfig test with excludeState=true",
@@ -416,6 +436,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/parent",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"Parent_ChildPath": {
 				GoTypeName:            "*Parent_Child",
@@ -428,6 +449,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_FourPath": {
 				GoTypeName:            "Binary",
@@ -441,6 +463,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "four",
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_OnePath": {
 				GoTypeName:            "string",
@@ -454,6 +477,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "one",
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_ThreePath": {
 				GoTypeName:            "E_Child_Three",
@@ -467,6 +491,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/parent/child",
 				YANGFieldName:         "three",
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_FivePath": {
 				GoTypeName:            "Binary",
@@ -479,6 +504,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				YANGFieldName:         "five",
 				DirectoryName:         "/openconfig-simple/parent/child",
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_SixPath": {
 				GoTypeName:            "[]Binary",
@@ -491,6 +517,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				YANGFieldName:         "six",
 				DirectoryName:         "/openconfig-simple/parent/child",
+				PathOriginName:        "openconfig",
 			},
 			"RemoteContainerPath": {
 				GoTypeName:            "*RemoteContainer",
@@ -503,6 +530,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/remote-container",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"RemoteContainer_ALeafPath": {
 				GoTypeName:            "string",
@@ -516,6 +544,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple/remote-container",
 				YANGFieldName:         "a-leaf",
+				PathOriginName:        "openconfig",
 			}},
 	}, {
 		name:                                   "simple openconfig test with ordered list",
@@ -545,6 +574,7 @@ func TestGeneratePathCode(t *testing.T) {
 				YANGPath:              "/openconfig-orderedlist/model",
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-orderedlist/model",
+				PathOriginName:        "openconfig",
 			},
 			"Model_OrderedListPathMap": {
 				GoTypeName:            "*Model_OrderedList_OrderedMap",
@@ -559,6 +589,7 @@ func TestGeneratePathCode(t *testing.T) {
 					PreRelPathList:  `"openconfig-orderedlist:ordered-lists"`,
 					PostRelPathList: `"openconfig-orderedlist:ordered-list"`,
 				},
+				PathOriginName: "openconfig",
 			},
 			"Model_OrderedList_KeyPath": {
 				GoTypeName:            "string",
@@ -573,6 +604,7 @@ func TestGeneratePathCode(t *testing.T) {
 				YANGFieldName:         "key",
 				DirectoryName:         "/openconfig-orderedlist/model/ordered-lists/ordered-list",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			}},
 	}, {
 		name:                                   "simple openconfig test with ordered list but atomic generation turned off",
@@ -603,6 +635,7 @@ func TestGeneratePathCode(t *testing.T) {
 				YANGPath:              "/openconfig-orderedlist/model",
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-orderedlist/model",
+				PathOriginName:        "openconfig",
 			},
 			"Model_OrderedListPath": {
 				GoTypeName:            "*Model_OrderedList",
@@ -612,6 +645,7 @@ func TestGeneratePathCode(t *testing.T) {
 				YANGPath:              "/openconfig-orderedlist/model/ordered-lists/ordered-list",
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-orderedlist/model/ordered-lists/ordered-list",
+				PathOriginName:        "openconfig",
 			},
 			"Model_OrderedList_KeyPath": {
 				GoTypeName:            "string",
@@ -626,6 +660,7 @@ func TestGeneratePathCode(t *testing.T) {
 				YANGFieldName:         "key",
 				DirectoryName:         "/openconfig-orderedlist/model/ordered-lists/ordered-list",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			}},
 	}, {
 		name:                                   "simple openconfig test with list",
@@ -697,6 +732,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/dup-enum",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"DupEnum_APath": {
 				GoTypeName:            "E_DupEnum_A",
@@ -710,6 +746,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/dup-enum",
 				YANGFieldName:         "A",
+				PathOriginName:        "openconfig",
 			},
 			"DupEnum_BPath": {
 				GoTypeName:            "E_DupEnum_B",
@@ -723,6 +760,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/dup-enum",
 				YANGFieldName:         "B",
+				PathOriginName:        "openconfig",
 			},
 			"PlatformPath": {
 				GoTypeName:            "*Platform",
@@ -735,6 +773,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/platform",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"Platform_ComponentPath": {
 				GoTypeName:            "*Platform_Component",
@@ -747,6 +786,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/platform/component",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"Platform_Component_E1Path": {
 				GoTypeName:            "Platform_Component_E1_Union",
@@ -760,6 +800,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/platform/component",
 				YANGFieldName:         "e1",
+				PathOriginName:        "openconfig",
 			},
 			"Platform_Component_EnumeratedPath": {
 				GoTypeName:            "Platform_Component_Enumerated_Union",
@@ -773,6 +814,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/platform/component",
 				YANGFieldName:         "enumerated",
+				PathOriginName:        "openconfig",
 			},
 			"Platform_Component_PowerPath": {
 				GoTypeName:            "Platform_Component_Power_Union",
@@ -786,6 +828,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/platform/component",
 				YANGFieldName:         "power",
+				PathOriginName:        "openconfig",
 			},
 			"Platform_Component_R1Path": {
 				GoTypeName:            "Platform_Component_E1_Union",
@@ -799,6 +842,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/platform/component",
 				YANGFieldName:         "r1",
+				PathOriginName:        "openconfig",
 			},
 			"Platform_Component_TypePath": {
 				GoTypeName:            "Platform_Component_Type_Union",
@@ -812,6 +856,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/platform/component",
 				YANGFieldName:         "type",
+				PathOriginName:        "openconfig",
 			}},
 	}, {
 		name:                    "simple openconfig test with union & typedef & identity & enum, with enum names not shortened",
@@ -841,6 +886,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/dup-enum",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"DupEnum_APath": {
 				GoTypeName:            "E_OpenconfigUnione_DupEnum_A",
@@ -854,6 +900,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/dup-enum",
 				YANGFieldName:         "A",
+				PathOriginName:        "openconfig",
 			},
 			"DupEnum_BPath": {
 				GoTypeName:            "E_OpenconfigUnione_DupEnum_B",
@@ -867,6 +914,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/dup-enum",
 				YANGFieldName:         "B",
+				PathOriginName:        "openconfig",
 			},
 			"PlatformPath": {
 				GoTypeName:            "*Platform",
@@ -879,6 +927,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/platform",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"Platform_ComponentPath": {
 				GoTypeName:            "*Platform_Component",
@@ -891,6 +940,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/platform/component",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"Platform_Component_E1Path": {
 				GoTypeName:            "Platform_Component_E1_Union",
@@ -904,6 +954,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/platform/component",
 				YANGFieldName:         "e1",
+				PathOriginName:        "openconfig",
 			},
 			"Platform_Component_EnumeratedPath": {
 				GoTypeName:            "Platform_Component_Enumerated_Union",
@@ -917,6 +968,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/platform/component",
 				YANGFieldName:         "enumerated",
+				PathOriginName:        "openconfig",
 			},
 			"Platform_Component_PowerPath": {
 				GoTypeName:            "Platform_Component_Power_Union",
@@ -930,6 +982,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/platform/component",
 				YANGFieldName:         "power",
+				PathOriginName:        "openconfig",
 			},
 			"Platform_Component_R1Path": {
 				GoTypeName:            "Platform_Component_E1_Union",
@@ -943,6 +996,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/platform/component",
 				YANGFieldName:         "r1",
+				PathOriginName:        "openconfig",
 			},
 			"Platform_Component_TypePath": {
 				GoTypeName:            "Platform_Component_Type_Union",
@@ -956,6 +1010,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-unione/platform/component",
 				YANGFieldName:         "type",
+				PathOriginName:        "openconfig",
 			}},
 	}, {
 		name:                                   "simple openconfig test with submodule and union list key",
@@ -987,6 +1042,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/enum-module/a-lists/a-list",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"AListPathMap": {
 				GoTypeName:            "map[AList_Value_Union]*AList",
@@ -998,6 +1054,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/enum-module/a-lists/a-list",
 				CompressInfo:          &CompressionInfo{PreRelPathList: `"enum-module:a-lists"`, PostRelPathList: `"enum-module:a-list"`},
+				PathOriginName:        "openconfig",
 			},
 			"AList_ValuePath": {
 				GoTypeName:            "AList_Value_Union",
@@ -1012,6 +1069,7 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/enum-module/a-lists/a-list",
 				YANGFieldName:         "value",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			},
 			"BListPath": {
 				GoTypeName:            "*BList",
@@ -1024,6 +1082,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/enum-module/b-lists/b-list",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"BListPathMap": {
 				GoTypeName:            "map[BList_Value_Union]*BList",
@@ -1035,6 +1094,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/enum-module/b-lists/b-list",
 				CompressInfo:          &CompressionInfo{PreRelPathList: `"enum-module:b-lists"`, PostRelPathList: `"enum-module:b-list"`},
+				PathOriginName:        "openconfig",
 			},
 			"BList_ValuePath": {
 				GoTypeName:            "BList_Value_Union",
@@ -1049,6 +1109,7 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/enum-module/b-lists/b-list",
 				YANGFieldName:         "value",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			},
 			"CPath": {
 				GoTypeName:            "*C",
@@ -1061,6 +1122,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/enum-module/c",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"C_ClPath": {
 				GoTypeName:            "E_EnumModule_Cl",
@@ -1075,6 +1137,7 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/enum-module/c",
 				YANGFieldName:         "cl",
 				ConfigFalse:           false,
+				PathOriginName:        "openconfig",
 			},
 			"ParentPath": {
 				GoTypeName:            "*Parent",
@@ -1087,6 +1150,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/enum-module/parent",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"Parent_ChildPath": {
 				GoTypeName:            "*Parent_Child",
@@ -1099,6 +1163,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/enum-module/parent/child",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_IdPath": {
 				GoTypeName:            "E_EnumTypes_ID",
@@ -1113,6 +1178,7 @@ func TestGeneratePathCode(t *testing.T) {
 				YANGFieldName:         "id",
 				DirectoryName:         "/enum-module/parent/child",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_Id2Path": {
 				GoTypeName:            "E_EnumTypes_ID",
@@ -1127,6 +1193,7 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/enum-module/parent/child",
 				YANGFieldName:         "id2",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_EnumPath": {
 				GoTypeName:            "E_EnumTypes_TdEnum",
@@ -1141,6 +1208,7 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/enum-module/parent/child",
 				YANGFieldName:         "enum",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			},
 			"Parent_Child_InlineEnumPath": {
 				GoTypeName:            "E_Child_InlineEnum",
@@ -1155,6 +1223,7 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/enum-module/parent/child",
 				YANGFieldName:         "inline-enum",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			}},
 	}, {
 		name:                                   "simple openconfig test with choice and cases",
@@ -1200,6 +1269,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple-target/native",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"Native_A": {
 				GoTypeName:            "string",
@@ -1214,6 +1284,7 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/openconfig-simple-target/native",
 				YANGFieldName:         "a",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			},
 			"Native_B": {
 				GoTypeName:            "string",
@@ -1228,6 +1299,7 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/openconfig-simple-target/native",
 				YANGFieldName:         "b",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			},
 			"Target": {
 				GoTypeName:            "*oc.Target",
@@ -1240,6 +1312,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple-target/target",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"Target_Foo": {
 				GoTypeName:            "*oc.Target_Foo",
@@ -1252,6 +1325,7 @@ func TestGeneratePathCode(t *testing.T) {
 				GoPathPackageName:     "ocstructs",
 				DirectoryName:         "/openconfig-simple-target/target/foo",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"Target_Foo_A": {
 				GoTypeName:            "string",
@@ -1266,6 +1340,7 @@ func TestGeneratePathCode(t *testing.T) {
 				DirectoryName:         "/openconfig-simple-target/target/foo",
 				YANGFieldName:         "a",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			}},
 	}, {
 		name:                                   "simple openconfig test with camelcase-name extension",
@@ -2278,6 +2353,7 @@ func TestGetNodeDataMap(t *testing.T) {
 							SchemaPath:        "/container/leaf",
 							LeafrefTargetPath: "",
 							Description:       "",
+							Origin:            "test-origin",
 						},
 						Flags: map[string]string{yangTypeNameFlagKey: "int32"},
 						Type:  ygen.LeafNode,
@@ -2288,7 +2364,6 @@ func TestGetNodeDataMap(t *testing.T) {
 						MappedPathModules:       [][]string{{"root-module"}},
 						ShadowMappedPaths:       nil,
 						ShadowMappedPathModules: nil,
-						PathOriginName:          "test-origin",
 					},
 				},
 				ListKeys:          nil,

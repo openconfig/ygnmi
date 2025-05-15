@@ -690,7 +690,7 @@ type {{ .TypeName }}{{ .WildcardSuffix }} struct {
 }
 {{- end }}
 
-{{- if $.PathOriginName }}
+{{- if and $.PathOriginName (ne $.PathOriginName "openconfig") }}
 
 // PathOrigin returns the name of the origin for the path object.
 func (n *{{.TypeName}}) PathOriginName() string {
@@ -844,11 +844,9 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 				DirectoryName:         field.YANGDetails.Path,
 				ConfigFalse:           field.YANGDetails.ConfigFalse,
 			}
-			// If NodeDetails.PathOriginName has a value, the value is set to the PathOriginName of the node.
-			if field.PathOriginName != "" {
-				nodeData.PathOriginName = field.PathOriginName
-			} else {
-				nodeData.PathOriginName = ""
+			// If NodeDetails.YANGDetails.Origin has a value, the value is set to the PathOriginName of the node.
+			if field.YANGDetails.Origin != "" {
+				nodeData.PathOriginName = field.YANGDetails.Origin
 			}
 
 			switch {
