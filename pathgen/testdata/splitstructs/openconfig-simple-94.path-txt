@@ -27,6 +27,11 @@ type Parent_ChildAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Parent_Child) PathOriginName() string {
+     return "openconfig"
+}
+
 // Five (leaf): 
 // 	Defining module:      "openconfig-simple"
 // 	Instantiating module: "openconfig-simple"
@@ -227,4 +232,9 @@ type RemoteContainer_ALeaf struct {
 // RemoteContainer_ALeafAny represents the wildcard version of the /openconfig-simple/remote-container/state/a-leaf YANG schema element.
 type RemoteContainer_ALeafAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *RemoteContainer_ALeaf) PathOriginName() string {
+     return ""
 }

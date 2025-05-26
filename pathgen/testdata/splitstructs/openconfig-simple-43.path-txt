@@ -27,6 +27,11 @@ type RemoteContainer_ALeafAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *RemoteContainer_ALeaf) PathOriginName() string {
+     return ""
+}
+
 // RemoteContainer represents the /openconfig-simple/remote-container YANG schema element.
 type RemoteContainer struct {
 	*ygnmi.NodePath
@@ -35,6 +40,11 @@ type RemoteContainer struct {
 // RemoteContainerAny represents the wildcard version of the /openconfig-simple/remote-container YANG schema element.
 type RemoteContainerAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *RemoteContainer) PathOriginName() string {
+     return "openconfig"
 }
 
 // ALeaf (leaf): 

@@ -2306,7 +2306,7 @@ func TestGetNodeDataMap(t *testing.T) {
 		},
 	}
 
-	irWithOrigin := &ygen.IR{
+	irWithSetOrigin := &ygen.IR{
 		Directories: map[string]*ygen.ParsedDirectory{
 			"/root": {
 				Name:       "Root",
@@ -2326,6 +2326,7 @@ func TestGetNodeDataMap(t *testing.T) {
 							SchemaPath:        "/container",
 							LeafrefTargetPath: "",
 							Description:       "",
+							Origin:            "test-origin",
 						},
 						Type:                    ygen.ContainerNode,
 						LangType:                nil,
@@ -2416,6 +2417,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				GoPathPackageName:     "rootmodulepath",
 				DirectoryName:         "/root-module/container",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"ContainerWithConfig_Path": {
 				GoTypeName:            "*struct.ContainerWithConfig",
@@ -2428,6 +2430,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				GoPathPackageName:     "rootmodulepath",
 				DirectoryName:         "/root-module/container-with-config",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"ContainerWithConfig_Leaflist_Path": {
 				GoTypeName:            "[]uint32",
@@ -2441,6 +2444,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				GoPathPackageName:     "rootmodulepath",
 				DirectoryName:         "/root-module/container-with-config",
 				YANGFieldName:         "leaflist",
+				PathOriginName:        "openconfig",
 			},
 			"Container_Leaf_Path": {
 				GoTypeName:            "int32",
@@ -2454,6 +2458,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				GoPathPackageName:     "rootmodulepath",
 				DirectoryName:         "/root-module/container",
 				YANGFieldName:         "leaf",
+				PathOriginName:        "openconfig",
 			},
 			"Leaf_Path": {
 				GoTypeName:            "struct.Binary",
@@ -2467,6 +2472,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				GoPathPackageName:     "device",
 				DirectoryName:         "/root",
 				YANGFieldName:         "leaf",
+				PathOriginName:        "openconfig",
 			},
 			"LeafWithDefault_Path": {
 				GoTypeName:            "string",
@@ -2480,6 +2486,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				GoPathPackageName:     "device",
 				DirectoryName:         "/root",
 				YANGFieldName:         "leaf-with-default",
+				PathOriginName:        "openconfig",
 			},
 			"List_Path": {
 				GoTypeName:            "*struct.List",
@@ -2492,6 +2499,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				GoPathPackageName:     "rootmodulepath",
 				DirectoryName:         "/root-module/list-container/list",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"List_PathMap": {
 				GoTypeName:            "map[struct.List_Key]*struct.List",
@@ -2506,6 +2514,7 @@ func TestGetNodeDataMap(t *testing.T) {
 					PreRelPathList:  `"root-module:list-container"`,
 					PostRelPathList: `"root-module:list"`,
 				},
+				PathOriginName: "openconfig",
 			},
 			"ListWithState_Path": {
 				GoTypeName:            "*struct.ListWithState",
@@ -2518,6 +2527,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				GoPathPackageName:     "rootmodulepath",
 				DirectoryName:         "/root-module/list-container-with-state/list-with-state",
 				YANGFieldName:         "",
+				PathOriginName:        "openconfig",
 			},
 			"ListWithState_PathMap": {
 				GoTypeName:            "map[float64]*struct.ListWithState",
@@ -2532,6 +2542,7 @@ func TestGetNodeDataMap(t *testing.T) {
 					PreRelPathList:  `"root-module:list-container-with-state"`,
 					PostRelPathList: `"root-module:list-with-state"`,
 				},
+				PathOriginName: "openconfig",
 			},
 			"ListWithState_Key_Path": {
 				GoTypeName:            "float64",
@@ -2546,6 +2557,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				DirectoryName:         "/root-module/list-container-with-state/list-with-state",
 				YANGFieldName:         "key",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			},
 			"List_Key1_Path": {
 				GoTypeName:            "string",
@@ -2559,6 +2571,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				GoPathPackageName:     "rootmodulepath",
 				DirectoryName:         "/root-module/list-container/list",
 				YANGFieldName:         "key1",
+				PathOriginName:        "openconfig",
 			},
 			"List_Key2_Path": {
 				GoTypeName:            "struct.Binary",
@@ -2572,6 +2585,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				GoPathPackageName:     "rootmodulepath",
 				DirectoryName:         "/root-module/list-container/list",
 				YANGFieldName:         "key2",
+				PathOriginName:        "openconfig",
 			},
 			"List_UnionKey_Path": {
 				GoTypeName:            "struct.RootElementModule_List_UnionKey_Union",
@@ -2585,6 +2599,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				GoPathPackageName:     "rootmodulepath",
 				DirectoryName:         "/root-module/list-container/list",
 				YANGFieldName:         "union-key",
+				PathOriginName:        "openconfig",
 			},
 			"Root_Path": {
 				GoTypeName:            "*struct.Root",
@@ -2607,6 +2622,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				DirectoryName:         "/root-module/keyless-list-container/keyless-list",
 				YANGFieldName:         "",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			},
 			"KeylessList_Leaf_Path": {
 				GoTypeName:            "int32",
@@ -2621,6 +2637,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				DirectoryName:         "/root-module/keyless-list-container/keyless-list",
 				YANGFieldName:         "leaf",
 				ConfigFalse:           true,
+				PathOriginName:        "openconfig",
 			}},
 		wantSorted: []string{
 			"ContainerWithConfig_Leaflist_Path",
@@ -2642,8 +2659,8 @@ func TestGetNodeDataMap(t *testing.T) {
 			"Root_Path",
 		},
 	}, {
-		name:                      "smalle test with PathOriginName",
-		inIR:                      irWithOrigin,
+		name:                      "smalle test with arbitrary PathOriginName",
+		inIR:                      irWithSetOrigin,
 		inFakeRootName:            "Root",
 		inSchemaStructPkgAccessor: "struct.",
 		inPathStructSuffix:        "_Path",
@@ -2677,6 +2694,7 @@ func TestGetNodeDataMap(t *testing.T) {
 				GoPathPackageName:     "rootmodulepath",
 				DirectoryName:         "/root-module/container",
 				YANGFieldName:         "",
+				PathOriginName:        "test-origin",
 			},
 			"Root_Path": {
 				GoTypeName:            "*struct.Root",
@@ -3033,6 +3051,11 @@ type ContainerWithConfig_Leaflist struct {
 type ContainerWithConfig_LeaflistAny struct {
 	*ygnmi.NodePath
 }
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *ContainerWithConfig_Leaflist) PathOriginName() string {
+     return ""
+}
 `,
 			ChildConstructors: ``,
 			Package:           "device",
@@ -3048,6 +3071,11 @@ type ContainerWithConfig struct {
 // ContainerWithConfigAny represents the wildcard version of the /root-module/container-with-config YANG schema element.
 type ContainerWithConfigAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *ContainerWithConfig) PathOriginName() string {
+     return ""
 }
 `,
 			ChildConstructors: `
@@ -3083,6 +3111,11 @@ func (n *ContainerWithConfigAny) Leaflist() *ContainerWithConfig_LeaflistAny {
 type ContainerWithConfig_Leaflist struct {
 	*ygnmi.NodePath
 }
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *ContainerWithConfig_Leaflist) PathOriginName() string {
+     return ""
+}
 `,
 			ChildConstructors: ``,
 			Package:           "device",
@@ -3093,6 +3126,11 @@ type ContainerWithConfig_Leaflist struct {
 // ContainerWithConfig represents the /root-module/container-with-config YANG schema element.
 type ContainerWithConfig struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *ContainerWithConfig) PathOriginName() string {
+     return ""
 }
 `,
 			ChildConstructors: `
@@ -3130,6 +3168,11 @@ type ContainerWithConfig_LeaflistAny struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
 }
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *ContainerWithConfig_Leaflist) PathOriginName() string {
+     return ""
+}
 `,
 			ChildConstructors: ``,
 			Package:           "device",
@@ -3145,6 +3188,11 @@ type ContainerWithConfig struct {
 // ContainerWithConfigAny represents the wildcard version of the /root-module/container-with-config YANG schema element.
 type ContainerWithConfigAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *ContainerWithConfig) PathOriginName() string {
+     return ""
 }
 `,
 			ChildConstructors: `
@@ -3183,6 +3231,11 @@ type ContainerWithConfig_Leaflist struct {
 	*ygnmi.NodePath
 	parent ygnmi.PathStruct
 }
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *ContainerWithConfig_Leaflist) PathOriginName() string {
+     return ""
+}
 `,
 			ChildConstructors: ``,
 			Package:           "device",
@@ -3193,6 +3246,11 @@ type ContainerWithConfig_Leaflist struct {
 // ContainerWithConfig represents the /root-module/container-with-config YANG schema element.
 type ContainerWithConfig struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *ContainerWithConfig) PathOriginName() string {
+     return ""
 }
 `,
 			ChildConstructors: `
@@ -3229,6 +3287,11 @@ type LeafPath struct {
 type LeafPathAny struct {
 	*ygnmi.NodePath
 }
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *LeafPath) PathOriginName() string {
+     return ""
+}
 `,
 			ChildConstructors: ``,
 			Package:           "ocpathstructs",
@@ -3244,6 +3307,11 @@ type LeafWithDefaultPath struct {
 // LeafWithDefaultPathAny represents the wildcard version of the /root-module/leaf-with-default YANG schema element.
 type LeafWithDefaultPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *LeafWithDefaultPath) PathOriginName() string {
+     return ""
 }
 `,
 			ChildConstructors: ``,
@@ -3295,6 +3363,11 @@ func (n *RootPath) ListWithStateMap() *ListWithStatePathMap {
 type LeafPath struct {
 	*ygnmi.NodePath
 }
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *LeafPath) PathOriginName() string {
+     return ""
+}
 `,
 			ChildConstructors: ``,
 			Package:           "ocpathstructs",
@@ -3305,6 +3378,11 @@ type LeafPath struct {
 // LeafWithDefaultPath represents the /root-module/leaf-with-default YANG schema element.
 type LeafWithDefaultPath struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *LeafWithDefaultPath) PathOriginName() string {
+     return ""
 }
 `,
 			ChildConstructors: ``,
@@ -3355,6 +3433,11 @@ type List_Key1 struct {
 type List_Key1Any struct {
 	*ygnmi.NodePath
 }
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *List_Key1) PathOriginName() string {
+     return ""
+}
 `,
 			ChildConstructors: ``,
 			Package:           "device",
@@ -3371,6 +3454,11 @@ type List_Key2 struct {
 type List_Key2Any struct {
 	*ygnmi.NodePath
 }
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *List_Key2) PathOriginName() string {
+     return ""
+}
 `,
 			ChildConstructors: ``,
 			Package:           "device",
@@ -3386,6 +3474,11 @@ type List_UnionKey struct {
 // List_UnionKeyAny represents the wildcard version of the /root-module/list-container/list/union-key YANG schema element.
 type List_UnionKeyAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *List_UnionKey) PathOriginName() string {
+     return ""
 }
 `,
 			ChildConstructors: ``,
@@ -3404,6 +3497,11 @@ type ListAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *List) PathOriginName() string {
+     return ""
+}
+
 // ListMap represents the /root-module/list-container/list YANG schema element.
 type ListMap struct {
 	*ygnmi.NodePath
@@ -3412,6 +3510,11 @@ type ListMap struct {
 // ListMapAny represents the wildcard version of the /root-module/list-container/list YANG schema element.
 type ListMapAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *ListMap) PathOriginName() string {
+     return ""
 }
 `,
 			ChildConstructors: `
@@ -3491,6 +3594,11 @@ func (n *ListAny) UnionKey() *List_UnionKeyAny {
 type List_Key1 struct {
 	*ygnmi.NodePath
 }
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *List_Key1) PathOriginName() string {
+     return ""
+}
 `,
 			ChildConstructors: ``,
 			Package:           "device",
@@ -3502,6 +3610,11 @@ type List_Key1 struct {
 type List_Key2 struct {
 	*ygnmi.NodePath
 }
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *List_Key2) PathOriginName() string {
+     return ""
+}
 `,
 			ChildConstructors: ``,
 			Package:           "device",
@@ -3512,6 +3625,11 @@ type List_Key2 struct {
 // List_UnionKey represents the /root-module/list-container/list/union-key YANG schema element.
 type List_UnionKey struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *List_UnionKey) PathOriginName() string {
+     return ""
 }
 `,
 			ChildConstructors: ``,
@@ -3525,9 +3643,19 @@ type List struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *List) PathOriginName() string {
+     return ""
+}
+
 // ListMap represents the /root-module/list-container/list YANG schema element.
 type ListMap struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *ListMap) PathOriginName() string {
+     return ""
 }
 `,
 			ChildConstructors: `
@@ -3581,6 +3709,11 @@ func (n *List) UnionKey() *List_UnionKey {
 type LeafPath struct {
 	*ygnmi.NodePath
 }
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *LeafPath) PathOriginName() string {
+     return ""
+}
 `,
 			ChildConstructors: ``,
 			Package:           "device",
@@ -3591,6 +3724,11 @@ type LeafPath struct {
 // LeafWithDefaultPath represents the /root-module/leaf-with-default YANG schema element.
 type LeafWithDefaultPath struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *LeafWithDefaultPath) PathOriginName() string {
+     return ""
 }
 `,
 			ChildConstructors: ``,
@@ -3666,6 +3804,11 @@ type LeafPath struct {
 type LeafPathAny struct {
 	*ygnmi.NodePath
 }
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *LeafPath) PathOriginName() string {
+     return ""
+}
 `,
 			ChildConstructors: ``,
 			Package:           "device",
@@ -3681,6 +3824,11 @@ type LeafWithDefaultPath struct {
 // LeafWithDefaultPathAny represents the wildcard version of the /root-module/leaf-with-default YANG schema element.
 type LeafWithDefaultPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *LeafWithDefaultPath) PathOriginName() string {
+     return ""
 }
 `,
 			ChildConstructors: ``,

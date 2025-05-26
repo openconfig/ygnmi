@@ -52,6 +52,11 @@ type ModelPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *ModelPath) PathOriginName() string {
+     return "openconfig"
+}
+
 // OrderedListAny (list): 
 // 	Defining module:      "openconfig-orderedlist"
 // 	Instantiating module: "openconfig-orderedlist"
@@ -130,6 +135,11 @@ type Model_OrderedList_KeyPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Model_OrderedList_KeyPath) PathOriginName() string {
+     return ""
+}
+
 // Model_OrderedListPath represents the /openconfig-orderedlist/model/ordered-lists/ordered-list YANG schema element.
 type Model_OrderedListPath struct {
 	*ygnmi.NodePath
@@ -140,6 +150,11 @@ type Model_OrderedListPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Model_OrderedListPath) PathOriginName() string {
+     return "openconfig"
+}
+
 // Model_OrderedListPathMap represents the /openconfig-orderedlist/model/ordered-lists/ordered-list YANG schema element.
 type Model_OrderedListPathMap struct {
 	*ygnmi.NodePath
@@ -148,6 +163,11 @@ type Model_OrderedListPathMap struct {
 // Model_OrderedListPathMapAny represents the wildcard version of the /openconfig-orderedlist/model/ordered-lists/ordered-list YANG schema element.
 type Model_OrderedListPathMapAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Model_OrderedListPathMap) PathOriginName() string {
+     return "openconfig"
 }
 
 // Key (leaf): 

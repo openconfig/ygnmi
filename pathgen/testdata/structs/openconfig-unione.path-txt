@@ -68,6 +68,11 @@ type DupEnum_APathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *DupEnum_APath) PathOriginName() string {
+     return ""
+}
+
 // DupEnum_BPath represents the /openconfig-unione/dup-enum/state/B YANG schema element.
 type DupEnum_BPath struct {
 	*ygnmi.NodePath
@@ -78,6 +83,11 @@ type DupEnum_BPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *DupEnum_BPath) PathOriginName() string {
+     return ""
+}
+
 // DupEnumPath represents the /openconfig-unione/dup-enum YANG schema element.
 type DupEnumPath struct {
 	*ygnmi.NodePath
@@ -86,6 +96,11 @@ type DupEnumPath struct {
 // DupEnumPathAny represents the wildcard version of the /openconfig-unione/dup-enum YANG schema element.
 type DupEnumPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *DupEnumPath) PathOriginName() string {
+     return "openconfig"
 }
 
 // A (leaf): 
@@ -162,6 +177,11 @@ type PlatformPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *PlatformPath) PathOriginName() string {
+     return "openconfig"
+}
+
 // Component (container): 
 // 	Defining module:      "openconfig-unione"
 // 	Instantiating module: "openconfig-unione"
@@ -204,6 +224,11 @@ type Platform_Component_E1PathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Platform_Component_E1Path) PathOriginName() string {
+     return ""
+}
+
 // Platform_Component_EnumeratedPath represents the /openconfig-unione/platform/component/state/enumerated YANG schema element.
 type Platform_Component_EnumeratedPath struct {
 	*ygnmi.NodePath
@@ -212,6 +237,11 @@ type Platform_Component_EnumeratedPath struct {
 // Platform_Component_EnumeratedPathAny represents the wildcard version of the /openconfig-unione/platform/component/state/enumerated YANG schema element.
 type Platform_Component_EnumeratedPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Platform_Component_EnumeratedPath) PathOriginName() string {
+     return ""
 }
 
 // Platform_Component_PowerPath represents the /openconfig-unione/platform/component/state/power YANG schema element.
@@ -224,6 +254,11 @@ type Platform_Component_PowerPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Platform_Component_PowerPath) PathOriginName() string {
+     return ""
+}
+
 // Platform_Component_R1Path represents the /openconfig-unione/platform/component/state/r1 YANG schema element.
 type Platform_Component_R1Path struct {
 	*ygnmi.NodePath
@@ -232,6 +267,11 @@ type Platform_Component_R1Path struct {
 // Platform_Component_R1PathAny represents the wildcard version of the /openconfig-unione/platform/component/state/r1 YANG schema element.
 type Platform_Component_R1PathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Platform_Component_R1Path) PathOriginName() string {
+     return ""
 }
 
 // Platform_Component_TypePath represents the /openconfig-unione/platform/component/state/type YANG schema element.
@@ -244,6 +284,11 @@ type Platform_Component_TypePathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Platform_Component_TypePath) PathOriginName() string {
+     return ""
+}
+
 // Platform_ComponentPath represents the /openconfig-unione/platform/component YANG schema element.
 type Platform_ComponentPath struct {
 	*ygnmi.NodePath
@@ -252,6 +297,11 @@ type Platform_ComponentPath struct {
 // Platform_ComponentPathAny represents the wildcard version of the /openconfig-unione/platform/component YANG schema element.
 type Platform_ComponentPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Platform_ComponentPath) PathOriginName() string {
+     return "openconfig"
 }
 
 // E1 (leaf): 

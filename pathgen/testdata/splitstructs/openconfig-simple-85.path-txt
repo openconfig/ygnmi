@@ -26,6 +26,11 @@ type RemoteContainerPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *RemoteContainerPath) PathOriginName() string {
+     return "openconfig"
+}
+
 // ALeaf (leaf): 
 // 	Defining module:      "openconfig-remote"
 // 	Instantiating module: "openconfig-simple"

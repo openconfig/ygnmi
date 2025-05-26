@@ -26,6 +26,11 @@ type ChoiceCaseAnonymousCase_APathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *ChoiceCaseAnonymousCase_APath) PathOriginName() string {
+     return ""
+}
+
 // ChoiceCaseAnonymousCase_BPath represents the /choice-case-example/choice-case-anonymous-case/foo/b/b YANG schema element.
 type ChoiceCaseAnonymousCase_BPath struct {
 	*ygnmi.NodePath
@@ -36,6 +41,11 @@ type ChoiceCaseAnonymousCase_BPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *ChoiceCaseAnonymousCase_BPath) PathOriginName() string {
+     return ""
+}
+
 // ChoiceCaseAnonymousCasePath represents the /choice-case-example/choice-case-anonymous-case YANG schema element.
 type ChoiceCaseAnonymousCasePath struct {
 	*ygnmi.NodePath
@@ -44,6 +54,11 @@ type ChoiceCaseAnonymousCasePath struct {
 // ChoiceCaseAnonymousCasePathAny represents the wildcard version of the /choice-case-example/choice-case-anonymous-case YANG schema element.
 type ChoiceCaseAnonymousCasePathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *ChoiceCaseAnonymousCasePath) PathOriginName() string {
+     return "openconfig"
 }
 
 // A (leaf): 
@@ -120,6 +135,11 @@ type ChoiceCaseWithLeafref_PtrPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *ChoiceCaseWithLeafref_PtrPath) PathOriginName() string {
+     return ""
+}
+
 // ChoiceCaseWithLeafref_ReferencedPath represents the /choice-case-example/choice-case-with-leafref/referenced YANG schema element.
 type ChoiceCaseWithLeafref_ReferencedPath struct {
 	*ygnmi.NodePath
@@ -130,6 +150,11 @@ type ChoiceCaseWithLeafref_ReferencedPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *ChoiceCaseWithLeafref_ReferencedPath) PathOriginName() string {
+     return ""
+}
+
 // ChoiceCaseWithLeafrefPath represents the /choice-case-example/choice-case-with-leafref YANG schema element.
 type ChoiceCaseWithLeafrefPath struct {
 	*ygnmi.NodePath
@@ -138,6 +163,11 @@ type ChoiceCaseWithLeafrefPath struct {
 // ChoiceCaseWithLeafrefPathAny represents the wildcard version of the /choice-case-example/choice-case-with-leafref YANG schema element.
 type ChoiceCaseWithLeafrefPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *ChoiceCaseWithLeafrefPath) PathOriginName() string {
+     return "openconfig"
 }
 
 // Ptr (leaf): 
@@ -272,6 +302,11 @@ type SimpleChoiceCase_APathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *SimpleChoiceCase_APath) PathOriginName() string {
+     return ""
+}
+
 // SimpleChoiceCase_BPath represents the /choice-case-example/simple-choice-case/foo/baz/b YANG schema element.
 type SimpleChoiceCase_BPath struct {
 	*ygnmi.NodePath
@@ -282,6 +317,11 @@ type SimpleChoiceCase_BPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *SimpleChoiceCase_BPath) PathOriginName() string {
+     return ""
+}
+
 // SimpleChoiceCasePath represents the /choice-case-example/simple-choice-case YANG schema element.
 type SimpleChoiceCasePath struct {
 	*ygnmi.NodePath
@@ -290,6 +330,11 @@ type SimpleChoiceCasePath struct {
 // SimpleChoiceCasePathAny represents the wildcard version of the /choice-case-example/simple-choice-case YANG schema element.
 type SimpleChoiceCasePathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *SimpleChoiceCasePath) PathOriginName() string {
+     return "openconfig"
 }
 
 // A (leaf): 

@@ -69,6 +69,11 @@ type OpenconfigSimple_ParentPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_ParentPath) PathOriginName() string {
+     return "openconfig"
+}
+
 // Child (container): 
 // 	Defining module:      "openconfig-simple"
 // 	Instantiating module: "openconfig-simple"
@@ -109,6 +114,11 @@ type OpenconfigSimple_Parent_ChildPath struct {
 // OpenconfigSimple_Parent_ChildPathAny represents the wildcard version of the /openconfig-simple/parent/child YANG schema element.
 type OpenconfigSimple_Parent_ChildPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_Parent_ChildPath) PathOriginName() string {
+     return "openconfig"
 }
 
 // Config (container): 
@@ -185,6 +195,11 @@ type OpenconfigSimple_Parent_Child_Config_FivePathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_Parent_Child_Config_FivePath) PathOriginName() string {
+     return ""
+}
+
 // OpenconfigSimple_Parent_Child_Config_FourPath represents the /openconfig-simple/parent/child/config/four YANG schema element.
 type OpenconfigSimple_Parent_Child_Config_FourPath struct {
 	*ygnmi.NodePath
@@ -193,6 +208,11 @@ type OpenconfigSimple_Parent_Child_Config_FourPath struct {
 // OpenconfigSimple_Parent_Child_Config_FourPathAny represents the wildcard version of the /openconfig-simple/parent/child/config/four YANG schema element.
 type OpenconfigSimple_Parent_Child_Config_FourPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_Parent_Child_Config_FourPath) PathOriginName() string {
+     return ""
 }
 
 // OpenconfigSimple_Parent_Child_Config_OnePath represents the /openconfig-simple/parent/child/config/one YANG schema element.
@@ -205,6 +225,11 @@ type OpenconfigSimple_Parent_Child_Config_OnePathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_Parent_Child_Config_OnePath) PathOriginName() string {
+     return ""
+}
+
 // OpenconfigSimple_Parent_Child_Config_SixPath represents the /openconfig-simple/parent/child/config/six YANG schema element.
 type OpenconfigSimple_Parent_Child_Config_SixPath struct {
 	*ygnmi.NodePath
@@ -213,6 +238,11 @@ type OpenconfigSimple_Parent_Child_Config_SixPath struct {
 // OpenconfigSimple_Parent_Child_Config_SixPathAny represents the wildcard version of the /openconfig-simple/parent/child/config/six YANG schema element.
 type OpenconfigSimple_Parent_Child_Config_SixPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_Parent_Child_Config_SixPath) PathOriginName() string {
+     return ""
 }
 
 // OpenconfigSimple_Parent_Child_Config_ThreePath represents the /openconfig-simple/parent/child/config/three YANG schema element.
@@ -225,6 +255,11 @@ type OpenconfigSimple_Parent_Child_Config_ThreePathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_Parent_Child_Config_ThreePath) PathOriginName() string {
+     return ""
+}
+
 // OpenconfigSimple_Parent_Child_ConfigPath represents the /openconfig-simple/parent/child/config YANG schema element.
 type OpenconfigSimple_Parent_Child_ConfigPath struct {
 	*ygnmi.NodePath
@@ -233,6 +268,11 @@ type OpenconfigSimple_Parent_Child_ConfigPath struct {
 // OpenconfigSimple_Parent_Child_ConfigPathAny represents the wildcard version of the /openconfig-simple/parent/child/config YANG schema element.
 type OpenconfigSimple_Parent_Child_ConfigPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_Parent_Child_ConfigPath) PathOriginName() string {
+     return "openconfig"
 }
 
 // Five (leaf): 
@@ -405,6 +445,11 @@ type OpenconfigSimple_Parent_Child_State_FivePathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_Parent_Child_State_FivePath) PathOriginName() string {
+     return ""
+}
+
 // OpenconfigSimple_Parent_Child_State_FourPath represents the /openconfig-simple/parent/child/state/four YANG schema element.
 type OpenconfigSimple_Parent_Child_State_FourPath struct {
 	*ygnmi.NodePath
@@ -413,6 +458,11 @@ type OpenconfigSimple_Parent_Child_State_FourPath struct {
 // OpenconfigSimple_Parent_Child_State_FourPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/four YANG schema element.
 type OpenconfigSimple_Parent_Child_State_FourPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_Parent_Child_State_FourPath) PathOriginName() string {
+     return ""
 }
 
 // OpenconfigSimple_Parent_Child_State_OnePath represents the /openconfig-simple/parent/child/state/one YANG schema element.
@@ -425,6 +475,11 @@ type OpenconfigSimple_Parent_Child_State_OnePathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_Parent_Child_State_OnePath) PathOriginName() string {
+     return ""
+}
+
 // OpenconfigSimple_Parent_Child_State_SixPath represents the /openconfig-simple/parent/child/state/six YANG schema element.
 type OpenconfigSimple_Parent_Child_State_SixPath struct {
 	*ygnmi.NodePath
@@ -433,6 +488,11 @@ type OpenconfigSimple_Parent_Child_State_SixPath struct {
 // OpenconfigSimple_Parent_Child_State_SixPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/six YANG schema element.
 type OpenconfigSimple_Parent_Child_State_SixPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_Parent_Child_State_SixPath) PathOriginName() string {
+     return ""
 }
 
 // OpenconfigSimple_Parent_Child_State_ThreePath represents the /openconfig-simple/parent/child/state/three YANG schema element.
@@ -445,6 +505,11 @@ type OpenconfigSimple_Parent_Child_State_ThreePathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_Parent_Child_State_ThreePath) PathOriginName() string {
+     return ""
+}
+
 // OpenconfigSimple_Parent_Child_State_TwoPath represents the /openconfig-simple/parent/child/state/two YANG schema element.
 type OpenconfigSimple_Parent_Child_State_TwoPath struct {
 	*ygnmi.NodePath
@@ -455,6 +520,11 @@ type OpenconfigSimple_Parent_Child_State_TwoPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_Parent_Child_State_TwoPath) PathOriginName() string {
+     return ""
+}
+
 // OpenconfigSimple_Parent_Child_StatePath represents the /openconfig-simple/parent/child/state YANG schema element.
 type OpenconfigSimple_Parent_Child_StatePath struct {
 	*ygnmi.NodePath
@@ -463,6 +533,11 @@ type OpenconfigSimple_Parent_Child_StatePath struct {
 // OpenconfigSimple_Parent_Child_StatePathAny represents the wildcard version of the /openconfig-simple/parent/child/state YANG schema element.
 type OpenconfigSimple_Parent_Child_StatePathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_Parent_Child_StatePath) PathOriginName() string {
+     return "openconfig"
 }
 
 // Five (leaf): 
@@ -667,6 +742,11 @@ type OpenconfigSimple_RemoteContainerPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_RemoteContainerPath) PathOriginName() string {
+     return "openconfig"
+}
+
 // Config (container): 
 // 	Defining module:      "openconfig-remote"
 // 	Instantiating module: "openconfig-simple"
@@ -741,6 +821,11 @@ type OpenconfigSimple_RemoteContainer_Config_ALeafPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_RemoteContainer_Config_ALeafPath) PathOriginName() string {
+     return ""
+}
+
 // OpenconfigSimple_RemoteContainer_ConfigPath represents the /openconfig-simple/remote-container/config YANG schema element.
 type OpenconfigSimple_RemoteContainer_ConfigPath struct {
 	*ygnmi.NodePath
@@ -749,6 +834,11 @@ type OpenconfigSimple_RemoteContainer_ConfigPath struct {
 // OpenconfigSimple_RemoteContainer_ConfigPathAny represents the wildcard version of the /openconfig-simple/remote-container/config YANG schema element.
 type OpenconfigSimple_RemoteContainer_ConfigPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_RemoteContainer_ConfigPath) PathOriginName() string {
+     return "openconfig"
 }
 
 // ALeaf (leaf): 
@@ -793,6 +883,11 @@ type OpenconfigSimple_RemoteContainer_State_ALeafPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_RemoteContainer_State_ALeafPath) PathOriginName() string {
+     return ""
+}
+
 // OpenconfigSimple_RemoteContainer_StatePath represents the /openconfig-simple/remote-container/state YANG schema element.
 type OpenconfigSimple_RemoteContainer_StatePath struct {
 	*ygnmi.NodePath
@@ -801,6 +896,11 @@ type OpenconfigSimple_RemoteContainer_StatePath struct {
 // OpenconfigSimple_RemoteContainer_StatePathAny represents the wildcard version of the /openconfig-simple/remote-container/state YANG schema element.
 type OpenconfigSimple_RemoteContainer_StatePathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *OpenconfigSimple_RemoteContainer_StatePath) PathOriginName() string {
+     return "openconfig"
 }
 
 // ALeaf (leaf): 

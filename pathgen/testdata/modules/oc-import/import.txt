@@ -26,6 +26,11 @@ type Child_TestPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Child_TestPath) PathOriginName() string {
+     return ""
+}
+
 // ChildPath represents the /openconfig-import/child YANG schema element.
 type ChildPath struct {
 	*ygnmi.NodePath
@@ -34,6 +39,11 @@ type ChildPath struct {
 // ChildPathAny represents the wildcard version of the /openconfig-import/child YANG schema element.
 type ChildPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *ChildPath) PathOriginName() string {
+     return "openconfig"
 }
 
 // Test (leaf): 

@@ -70,6 +70,11 @@ type ParentAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Parent) PathOriginName() string {
+     return "openconfig"
+}
+
 // Child (container): 
 // 	Defining module:      "openconfig-simple"
 // 	Instantiating module: "openconfig-simple"
@@ -110,4 +115,9 @@ type Parent_Child_Five struct {
 // Parent_Child_FiveAny represents the wildcard version of the /openconfig-simple/parent/child/state/five YANG schema element.
 type Parent_Child_FiveAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Parent_Child_Five) PathOriginName() string {
+     return ""
 }

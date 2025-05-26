@@ -690,13 +690,10 @@ type {{ .TypeName }}{{ .WildcardSuffix }} struct {
 }
 {{- end }}
 
-{{- if and $.PathOriginName (ne $.PathOriginName "openconfig") }}
-
 // PathOrigin returns the name of the origin for the path object.
 func (n *{{.TypeName}}) PathOriginName() string {
      return "{{ $.PathOriginName }}"
 }
-{{- end }}
 `)
 
 	// goPathChildConstructorTemplate generates the child constructor method
@@ -845,9 +842,14 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 				ConfigFalse:           field.YANGDetails.ConfigFalse,
 			}
 			// If NodeDetails.YANGDetails.Origin has a value, the value is set to the PathOriginName of the node.
-			if field.YANGDetails.Origin != "" {
-				nodeData.PathOriginName = field.YANGDetails.Origin
+			// If it is the empty string, we currently set it explicitly to "openconfig"
+			// until the 'origin' extention of YANG model is parsed by ygot.
+			origin := field.YANGDetails.Origin
+			// TODO: remove this workaround when the origin attribute is returned in the ygot IR.
+			if origin == "" {
+				origin = "openconfig" // explicitly override the empty origin
 			}
+			nodeData.PathOriginName = origin
 
 			switch {
 			case !isLeaf && isKeyedList(fieldDir) && !(generateAtomicLists && isCompressedAtomicList(fieldDir)): // Non-atomic lists

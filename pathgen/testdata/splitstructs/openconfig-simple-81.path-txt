@@ -26,6 +26,11 @@ type Parent_Child_FivePathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Parent_Child_FivePath) PathOriginName() string {
+     return ""
+}
+
 // Parent_Child_FourPath represents the /openconfig-simple/parent/child/state/four YANG schema element.
 type Parent_Child_FourPath struct {
 	*ygnmi.NodePath
@@ -34,4 +39,9 @@ type Parent_Child_FourPath struct {
 // Parent_Child_FourPathAny represents the wildcard version of the /openconfig-simple/parent/child/state/four YANG schema element.
 type Parent_Child_FourPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Parent_Child_FourPath) PathOriginName() string {
+     return ""
 }

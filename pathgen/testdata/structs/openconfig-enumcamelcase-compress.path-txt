@@ -52,6 +52,11 @@ type Foo_BarPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Foo_BarPath) PathOriginName() string {
+     return ""
+}
+
 // Foo_BazPath represents the /openconfig-enumcamelcase/foo/baz YANG schema element.
 type Foo_BazPath struct {
 	*ygnmi.NodePath
@@ -62,6 +67,11 @@ type Foo_BazPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Foo_BazPath) PathOriginName() string {
+     return ""
+}
+
 // FooPath represents the /openconfig-enumcamelcase/foo YANG schema element.
 type FooPath struct {
 	*ygnmi.NodePath
@@ -70,6 +80,11 @@ type FooPath struct {
 // FooPathAny represents the wildcard version of the /openconfig-enumcamelcase/foo YANG schema element.
 type FooPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *FooPath) PathOriginName() string {
+     return "openconfig"
 }
 
 // Bar (leaf): 
