@@ -843,7 +843,7 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 			}
 			// If NodeDetails.YANGDetails.Origin has a value, the value is set to the PathOriginName of the node.
 			// If it is the empty string, we currently set it explicitly to "openconfig"
-			// until the 'origin' extention of YANG model is parsed by ygot.
+			// until the 'origin' extension of YANG model is parsed by ygot.
 			origin := field.YANGDetails.Origin
 			// TODO: remove this workaround when the origin attribute is returned in the ygot IR.
 			if origin == "" {
