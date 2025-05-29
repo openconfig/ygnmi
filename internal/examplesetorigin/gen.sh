@@ -25,7 +25,7 @@ cd "$(dirname "$0")"
 go run ../../app/ygnmi generator \
   --trim_module_prefix=openconfig \
   --prefer_operational_state=false \
-  --base_package_path=github.com/openconfig/ygnmi/internal/setpathorigin \
+  --base_package_path=github.com/openconfig/ygnmi/internal/examplesetorigin/setpathorigin \
   --output_dir=setpathorigin \
   --split_package_paths=/model/a=a,/model/b \
   --split_top_level_packages=false \
@@ -42,7 +42,7 @@ go run ../../app/ygnmi generator \
 go run ../../app/ygnmi generator \
   --trim_module_prefix=openconfig \
   --prefer_operational_state=false \
-  --base_package_path=github.com/openconfig/ygnmi/internal/usemodulenameaspathorigin \
+  --base_package_path=github.com/openconfig/ygnmi/internal/examplesetorigin/usemodulenameaspathorigin \
   --output_dir=usemodulenameaspathorigin  \
   --split_package_paths=/model/a=a,/model/b \
   --split_top_level_packages=false \
