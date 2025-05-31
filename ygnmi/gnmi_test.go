@@ -169,7 +169,7 @@ func TestWrapJSONIETF(t *testing.T) {
 
 type MockPathStructWithOrigin struct {
 	originName string
-	p          PathStruct
+	_          PathStruct
 }
 
 func (m *MockPathStructWithOrigin) PathOriginName() string {
@@ -229,7 +229,7 @@ func TestResolvePathWithPathOriginName(t *testing.T) {
 }
 
 type MockPathStructWithoutOrigin struct {
-	p PathStruct
+	_ PathStruct
 }
 
 func (m *MockPathStructWithoutOrigin) parent() PathStruct {
