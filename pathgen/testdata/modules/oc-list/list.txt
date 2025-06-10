@@ -26,6 +26,11 @@ type ModelPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *ModelPath) PathOriginName() string {
+     return "openconfig"
+}
+
 // AtomicListMap (list): 
 // 	Defining module:      "openconfig-withlist"
 // 	Instantiating module: "openconfig-withlist"
@@ -416,6 +421,11 @@ type Model_AtomicListPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Model_AtomicListPath) PathOriginName() string {
+     return ""
+}
+
 // Model_AtomicListPathMap represents the /openconfig-withlist/model/atomic-lists/atomic-list YANG schema element.
 type Model_AtomicListPathMap struct {
 	*ygnmi.NodePath
@@ -424,6 +434,11 @@ type Model_AtomicListPathMap struct {
 // Model_AtomicListPathMapAny represents the wildcard version of the /openconfig-withlist/model/atomic-lists/atomic-list YANG schema element.
 type Model_AtomicListPathMapAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Model_AtomicListPathMap) PathOriginName() string {
+     return ""
 }
 
 // Model_AtomicListElementPath represents the /openconfig-withlist/model/atomic-list-elements/atomic-list-element YANG schema element.
@@ -436,6 +451,11 @@ type Model_AtomicListElementPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Model_AtomicListElementPath) PathOriginName() string {
+     return "openconfig"
+}
+
 // Model_AtomicListElementPathMap represents the /openconfig-withlist/model/atomic-list-elements/atomic-list-element YANG schema element.
 type Model_AtomicListElementPathMap struct {
 	*ygnmi.NodePath
@@ -444,6 +464,11 @@ type Model_AtomicListElementPathMap struct {
 // Model_AtomicListElementPathMapAny represents the wildcard version of the /openconfig-withlist/model/atomic-list-elements/atomic-list-element YANG schema element.
 type Model_AtomicListElementPathMapAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Model_AtomicListElementPathMap) PathOriginName() string {
+     return "openconfig"
 }
 
 // Model_MultiKey_Key1Path represents the /openconfig-withlist/model/b/multi-key/state/key1 YANG schema element.
@@ -456,6 +481,11 @@ type Model_MultiKey_Key1PathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Model_MultiKey_Key1Path) PathOriginName() string {
+     return ""
+}
+
 // Model_MultiKey_Key2Path represents the /openconfig-withlist/model/b/multi-key/state/key2 YANG schema element.
 type Model_MultiKey_Key2Path struct {
 	*ygnmi.NodePath
@@ -464,6 +494,11 @@ type Model_MultiKey_Key2Path struct {
 // Model_MultiKey_Key2PathAny represents the wildcard version of the /openconfig-withlist/model/b/multi-key/state/key2 YANG schema element.
 type Model_MultiKey_Key2PathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Model_MultiKey_Key2Path) PathOriginName() string {
+     return ""
 }
 
 // Model_MultiKeyPath represents the /openconfig-withlist/model/b/multi-key YANG schema element.
@@ -476,6 +511,11 @@ type Model_MultiKeyPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Model_MultiKeyPath) PathOriginName() string {
+     return "openconfig"
+}
+
 // Model_MultiKeyPathMap represents the /openconfig-withlist/model/b/multi-key YANG schema element.
 type Model_MultiKeyPathMap struct {
 	*ygnmi.NodePath
@@ -484,6 +524,11 @@ type Model_MultiKeyPathMap struct {
 // Model_MultiKeyPathMapAny represents the wildcard version of the /openconfig-withlist/model/b/multi-key YANG schema element.
 type Model_MultiKeyPathMapAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Model_MultiKeyPathMap) PathOriginName() string {
+     return "openconfig"
 }
 
 // Key1 (leaf): 
@@ -560,6 +605,11 @@ type Model_NoKeyPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Model_NoKeyPath) PathOriginName() string {
+     return "openconfig"
+}
+
 // Model_SingleKey_KeyPath represents the /openconfig-withlist/model/a/single-key/state/key YANG schema element.
 type Model_SingleKey_KeyPath struct {
 	*ygnmi.NodePath
@@ -568,6 +618,11 @@ type Model_SingleKey_KeyPath struct {
 // Model_SingleKey_KeyPathAny represents the wildcard version of the /openconfig-withlist/model/a/single-key/state/key YANG schema element.
 type Model_SingleKey_KeyPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Model_SingleKey_KeyPath) PathOriginName() string {
+     return ""
 }
 
 // Model_SingleKeyPath represents the /openconfig-withlist/model/a/single-key YANG schema element.
@@ -580,6 +635,11 @@ type Model_SingleKeyPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Model_SingleKeyPath) PathOriginName() string {
+     return "openconfig"
+}
+
 // Model_SingleKeyPathMap represents the /openconfig-withlist/model/a/single-key YANG schema element.
 type Model_SingleKeyPathMap struct {
 	*ygnmi.NodePath
@@ -588,6 +648,11 @@ type Model_SingleKeyPathMap struct {
 // Model_SingleKeyPathMapAny represents the wildcard version of the /openconfig-withlist/model/a/single-key YANG schema element.
 type Model_SingleKeyPathMapAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Model_SingleKeyPathMap) PathOriginName() string {
+     return "openconfig"
 }
 
 // Key (leaf): 

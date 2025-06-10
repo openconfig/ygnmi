@@ -66,6 +66,8 @@ func New() *cobra.Command {
 	generator.Flags().Bool("shorten_enum_leaf_names", true, "If also set to true when compress_paths=true, all leaves of type enumeration will by default not be prefixed with the name of its residing module.")
 	generator.Flags().Bool("annotations", false, "If set to true, metadata annotations are added within the ygot-generated structs.")
 	generator.Flags().Bool("prefer_operational_state", true, "If set to true, state (config false) fields in the YANG schema are preferred over intended config leaves in the generated Go code with compressed schema paths. This flag is only valid for compress_paths=true.")
+	generator.Flags().Bool("use_module_name_as_path_origin", false, "If set to true, the YANG module name will be used as the origin in the generated gNMI paths.")
+	generator.Flags().String("set_path_origin", "", "Change the name of the origin in the generated gNMI paths.")
 
 	// TODO(wenovus): Delete these hidden flags before or on v1 release.
 	generator.Flags().Bool("typedef_enum_with_defmod", true, "If set to true, all typedefs of type enumeration or identity will be prefixed with the name of its module of definition instead of its residing module.")
@@ -169,17 +171,19 @@ func generate(cmd *cobra.Command, args []string) error {
 				},
 			},
 		},
-		GeneratingBinary:        version,
-		GenerateWildcardPaths:   true,
-		TrimPackageModulePrefix: viper.GetString("trim_module_prefix"),
-		SplitByModule:           viper.GetBool("split_top_level_packages"),
-		BasePackagePath:         viper.GetString("base_package_path"),
-		PackageSuffix:           "",
-		UnifyPathStructs:        true,
-		ExtraGenerators:         extraGenerators,
-		IgnoreAtomic:            !viper.GetBool("generate_atomic"),
-		IgnoreAtomicLists:       !viper.GetBool("generate_atomic_lists"),
-		SplitPackagePaths:       splitPackagePaths,
+		GeneratingBinary:          version,
+		GenerateWildcardPaths:     true,
+		TrimPackageModulePrefix:   viper.GetString("trim_module_prefix"),
+		SplitByModule:             viper.GetBool("split_top_level_packages"),
+		BasePackagePath:           viper.GetString("base_package_path"),
+		PackageSuffix:             "",
+		UnifyPathStructs:          true,
+		ExtraGenerators:           extraGenerators,
+		IgnoreAtomic:              !viper.GetBool("generate_atomic"),
+		IgnoreAtomicLists:         !viper.GetBool("generate_atomic_lists"),
+		SplitPackagePaths:         splitPackagePaths,
+		UseModuleNameAsPathOrigin: viper.GetBool("use_module_name_as_path_origin"),
+		PathOriginName:            viper.GetString("set_path_origin"),
 	}
 
 	pathCode, _, errs := pcg.GeneratePathCode(args, viper.GetStringSlice("paths"))
@@ -239,6 +243,8 @@ func generateStructs(modules []string, schemaPath, version, fakeRootName string,
 				UseDefiningModuleForTypedefEnumNames: viper.GetBool("typedef_enum_with_defmod"),
 				EnumerationsUseUnderscores:           true,
 			},
+			UseModuleNameAsPathOrigin: viper.GetBool("use_module_name_as_path_origin"),
+			PathOriginName:            viper.GetString("set_path_origin"),
 		},
 		gogen.GoOpts{
 			PackageName:                         path.Base(schemaPath),

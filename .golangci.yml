@@ -3,6 +3,7 @@ run:
   skip-dirs:
     - pathgen/testdata
     - exampleoc
+    - internal/examplesetorigin
 
 linters:
   enable:

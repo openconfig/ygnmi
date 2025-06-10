@@ -70,6 +70,11 @@ type Native_AAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Native_A) PathOriginName() string {
+     return ""
+}
+
 // Native_B represents the /openconfig-simple-target/native/state/b YANG schema element.
 type Native_B struct {
 	*ygnmi.NodePath
@@ -80,6 +85,11 @@ type Native_BAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Native_B) PathOriginName() string {
+     return ""
+}
+
 // Native represents the /openconfig-simple-target/native YANG schema element.
 type Native struct {
 	*ygnmi.NodePath
@@ -88,6 +98,11 @@ type Native struct {
 // NativeAny represents the wildcard version of the /openconfig-simple-target/native YANG schema element.
 type NativeAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Native) PathOriginName() string {
+     return "openconfig"
 }
 
 // A (leaf): 
@@ -164,6 +179,11 @@ type TargetAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Target) PathOriginName() string {
+     return "openconfig"
+}
+
 // Foo (container): 
 // 	Defining module:      "openconfig-simple-augment"
 // 	Instantiating module: "openconfig-simple-target"
@@ -206,6 +226,11 @@ type Target_Foo_AAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Target_Foo_A) PathOriginName() string {
+     return ""
+}
+
 // Target_Foo represents the /openconfig-simple-target/target/foo YANG schema element.
 type Target_Foo struct {
 	*ygnmi.NodePath
@@ -214,6 +239,11 @@ type Target_Foo struct {
 // Target_FooAny represents the wildcard version of the /openconfig-simple-target/target/foo YANG schema element.
 type Target_FooAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Target_Foo) PathOriginName() string {
+     return "openconfig"
 }
 
 // A (leaf): 

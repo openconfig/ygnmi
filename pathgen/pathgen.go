@@ -201,6 +201,10 @@ type GenConfig struct {
 	// reside in the provided package. The mapped string is the custom name for
 	// the package (optional).
 	SplitPackagePaths map[string]string
+	//UseModuleNameAsPathOrigin uses the YANG module name to the origin for generated gNMI paths.
+	UseModuleNameAsPathOrigin bool
+	//PathOriginName specifies the origin name for generated gNMI paths.
+	PathOriginName string
 }
 
 // GoImports contains package import options.
@@ -270,6 +274,8 @@ func (cg *GenConfig) GeneratePathCode(yangFiles, includePaths []string) (map[str
 		NestedDirectories:                   false,
 		AbsoluteMapPaths:                    false,
 		AppendEnumSuffixForSimpleUnionEnums: cg.AppendEnumSuffixForSimpleUnionEnums,
+		UseModuleNameAsPathOrigin:           cg.UseModuleNameAsPathOrigin,
+		PathOriginName:                      cg.PathOriginName,
 	}
 
 	var errs util.Errors
@@ -567,6 +573,8 @@ type NodeData struct {
 	// ConfigFalse indicates whether the node is "config false" or "config
 	// true" in its YANG schema definition.
 	ConfigFalse bool
+	// PathOriginName is the name of the origin for this node.
+	PathOriginName string
 }
 
 // CompressionInfo contains information about a compressed path element for a
@@ -681,6 +689,11 @@ type {{ .TypeName }}{{ .WildcardSuffix }} struct {
 	{{- .ExtraWildcardFields }}
 }
 {{- end }}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *{{.TypeName}}) PathOriginName() string {
+     return "{{ $.PathOriginName }}"
+}
 `)
 
 	// goPathChildConstructorTemplate generates the child constructor method
@@ -828,6 +841,15 @@ func getNodeDataMap(ir *ygen.IR, fakeRootName, schemaStructPkgAccessor, pathStru
 				DirectoryName:         field.YANGDetails.Path,
 				ConfigFalse:           field.YANGDetails.ConfigFalse,
 			}
+			// If NodeDetails.YANGDetails.Origin has a value, the value is set to the PathOriginName of the node.
+			// If it is the empty string, we currently set it explicitly to "openconfig"
+			// until the 'origin' extension of YANG model is parsed by ygot.
+			origin := field.YANGDetails.Origin
+			// TODO: remove this workaround when the origin attribute is returned in the ygot IR.
+			if origin == "" {
+				origin = "openconfig" // explicitly override the empty origin
+			}
+			nodeData.PathOriginName = origin
 
 			switch {
 			case !isLeaf && isKeyedList(fieldDir) && !(generateAtomicLists && isCompressedAtomicList(fieldDir)): // Non-atomic lists
@@ -964,6 +986,8 @@ type goPathStructData struct {
 	// ExtraFields are extra fields in the generated struct by extra
 	// generators.
 	ExtraWildcardFields string
+	// PathOriginName is the name of the origin for the PathStruct.
+	PathOriginName string
 }
 
 // genExtraFields calls the extra generators to append extra fields.
@@ -1094,6 +1118,11 @@ func generateDirectorySnippet(directory *ygen.ParsedDirectory, directories map[s
 		if err := structData.genExtraFields(nodeDataMap, fakeRootName, compressBehaviour, directory, extraGens.StructFields); err != nil {
 			return nil, util.AppendErr(errs, err)
 		}
+		// The PathOriginName from the nodeDataMap is set to that of the structData
+		if nodeData, ok := nodeDataMap[structData.TypeName]; ok {
+			structData.PathOriginName = nodeData.PathOriginName
+		}
+
 		if err := goPathStructTemplate.Execute(&structBuf, structData); err != nil {
 			return nil, util.AppendErr(errs, err)
 		}

@@ -26,6 +26,11 @@ type AList_ValuePathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *AList_ValuePath) PathOriginName() string {
+     return ""
+}
+
 // AListPath represents the /enum-module/a-lists/a-list YANG schema element.
 type AListPath struct {
 	*ygnmi.NodePath
@@ -36,6 +41,11 @@ type AListPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *AListPath) PathOriginName() string {
+     return "openconfig"
+}
+
 // AListPathMap represents the /enum-module/a-lists/a-list YANG schema element.
 type AListPathMap struct {
 	*ygnmi.NodePath
@@ -44,6 +54,11 @@ type AListPathMap struct {
 // AListPathMapAny represents the wildcard version of the /enum-module/a-lists/a-list YANG schema element.
 type AListPathMapAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *AListPathMap) PathOriginName() string {
+     return "openconfig"
 }
 
 // Value (leaf): 
@@ -88,6 +103,11 @@ type BList_ValuePathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *BList_ValuePath) PathOriginName() string {
+     return ""
+}
+
 // BListPath represents the /enum-module/b-lists/b-list YANG schema element.
 type BListPath struct {
 	*ygnmi.NodePath
@@ -98,6 +118,11 @@ type BListPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *BListPath) PathOriginName() string {
+     return "openconfig"
+}
+
 // BListPathMap represents the /enum-module/b-lists/b-list YANG schema element.
 type BListPathMap struct {
 	*ygnmi.NodePath
@@ -106,6 +131,11 @@ type BListPathMap struct {
 // BListPathMapAny represents the wildcard version of the /enum-module/b-lists/b-list YANG schema element.
 type BListPathMapAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *BListPathMap) PathOriginName() string {
+     return "openconfig"
 }
 
 // Value (leaf): 
@@ -150,6 +180,11 @@ type C_ClPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *C_ClPath) PathOriginName() string {
+     return ""
+}
+
 // CPath represents the /enum-module/c YANG schema element.
 type CPath struct {
 	*ygnmi.NodePath
@@ -158,6 +193,11 @@ type CPath struct {
 // CPathAny represents the wildcard version of the /enum-module/c YANG schema element.
 type CPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *CPath) PathOriginName() string {
+     return "openconfig"
 }
 
 // Cl (leaf): 
@@ -344,6 +384,11 @@ type ParentPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *ParentPath) PathOriginName() string {
+     return "openconfig"
+}
+
 // Child (container): 
 // 	Defining module:      "enum-module"
 // 	Instantiating module: "enum-module"
@@ -386,6 +431,11 @@ type Parent_Child_EnumPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Parent_Child_EnumPath) PathOriginName() string {
+     return ""
+}
+
 // Parent_Child_IdPath represents the /enum-module/parent/child/state/id YANG schema element.
 type Parent_Child_IdPath struct {
 	*ygnmi.NodePath
@@ -394,6 +444,11 @@ type Parent_Child_IdPath struct {
 // Parent_Child_IdPathAny represents the wildcard version of the /enum-module/parent/child/state/id YANG schema element.
 type Parent_Child_IdPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Parent_Child_IdPath) PathOriginName() string {
+     return ""
 }
 
 // Parent_Child_Id2Path represents the /enum-module/parent/child/state/id2 YANG schema element.
@@ -406,6 +461,11 @@ type Parent_Child_Id2PathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Parent_Child_Id2Path) PathOriginName() string {
+     return ""
+}
+
 // Parent_Child_InlineEnumPath represents the /enum-module/parent/child/state/inline-enum YANG schema element.
 type Parent_Child_InlineEnumPath struct {
 	*ygnmi.NodePath
@@ -416,6 +476,11 @@ type Parent_Child_InlineEnumPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Parent_Child_InlineEnumPath) PathOriginName() string {
+     return ""
+}
+
 // Parent_ChildPath represents the /enum-module/parent/child YANG schema element.
 type Parent_ChildPath struct {
 	*ygnmi.NodePath
@@ -424,6 +489,11 @@ type Parent_ChildPath struct {
 // Parent_ChildPathAny represents the wildcard version of the /enum-module/parent/child YANG schema element.
 type Parent_ChildPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Parent_ChildPath) PathOriginName() string {
+     return "openconfig"
 }
 
 // Enum (leaf): 

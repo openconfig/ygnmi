@@ -26,6 +26,11 @@ type Native_APathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *Native_APath) PathOriginName() string {
+     return ""
+}
+
 // NativePath represents the /openconfig-simple-target/native YANG schema element.
 type NativePath struct {
 	*ygnmi.NodePath
@@ -34,6 +39,11 @@ type NativePath struct {
 // NativePathAny represents the wildcard version of the /openconfig-simple-target/native YANG schema element.
 type NativePathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *NativePath) PathOriginName() string {
+     return "openconfig"
 }
 
 // A (leaf): 
@@ -76,4 +86,9 @@ type TargetPath struct {
 // TargetPathAny represents the wildcard version of the /openconfig-simple-target/target YANG schema element.
 type TargetPathAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *TargetPath) PathOriginName() string {
+     return "openconfig"
 }

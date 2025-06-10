@@ -69,6 +69,11 @@ type ParentPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *ParentPath) PathOriginName() string {
+     return "openconfig"
+}
+
 // Child (container): 
 // 	Defining module:      "openconfig-simple"
 // 	Instantiating module: "openconfig-simple"

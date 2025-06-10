@@ -26,6 +26,11 @@ type BGPPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *BGPPath) PathOriginName() string {
+     return "openconfig"
+}
+
 // NeighborAny (list): 
 // 	Defining module:      "openconfig-camelcase"
 // 	Instantiating module: "openconfig-camelcase"
@@ -136,6 +141,11 @@ type BGP_Neighbor_PeerIPPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *BGP_Neighbor_PeerIPPath) PathOriginName() string {
+     return ""
+}
+
 // BGP_NeighborPath represents the /openconfig-camelcase/bgp/neighbors/neighbor YANG schema element.
 type BGP_NeighborPath struct {
 	*ygnmi.NodePath
@@ -146,6 +156,11 @@ type BGP_NeighborPathAny struct {
 	*ygnmi.NodePath
 }
 
+// PathOrigin returns the name of the origin for the path object.
+func (n *BGP_NeighborPath) PathOriginName() string {
+     return "openconfig"
+}
+
 // BGP_NeighborPathMap represents the /openconfig-camelcase/bgp/neighbors/neighbor YANG schema element.
 type BGP_NeighborPathMap struct {
 	*ygnmi.NodePath
@@ -154,6 +169,11 @@ type BGP_NeighborPathMap struct {
 // BGP_NeighborPathMapAny represents the wildcard version of the /openconfig-camelcase/bgp/neighbors/neighbor YANG schema element.
 type BGP_NeighborPathMapAny struct {
 	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *BGP_NeighborPathMap) PathOriginName() string {
+     return "openconfig"
 }
 
 // PeerIP (leaf): 
