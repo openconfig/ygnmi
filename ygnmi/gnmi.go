@@ -23,28 +23,62 @@ import (
 	"strings"
 	"time"
 
-	"github.com/openconfig/ygnmi/internal/logutil"
-	"github.com/openconfig/ygot/util"
-	"github.com/openconfig/ygot/ygot"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/encoding/prototext"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/anypb"
+	"google3/base/go/log"
+	"google3/third_party/golang/grpc/codes/codes"
+	"google3/third_party/golang/grpc/status/status"
+	"google3/third_party/golang/protobuf/v2/encoding/prototext/prototext"
+	"google3/third_party/golang/protobuf/v2/proto/proto"
+	"google3/third_party/golang/ygot/util/util"
+	"google3/third_party/golang/ygot/ygot/ygot"
+	"google3/third_party/openconfig/ygnmi/internal/logutil/logutil"
 
-	log "github.com/golang/glog"
-	gpb "github.com/openconfig/gnmi/proto/gnmi"
-	closer "github.com/openconfig/gocloser"
+	closer "google3/third_party/openconfig/gocloser/closer"
+
+	anypb "google3/google/protobuf/any_go_proto"
+	gpb "google3/third_party/openconfig/gnmi/proto/gnmi/gnmi_go_proto"
 )
 
 // subscribe create a gNMI SubscribeClient for the given query.
 func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.SubscriptionList_Mode, o *opt) (_ gpb.GNMI_SubscribeClient, rerr error) {
+	var queryPaths []*gpb.Path
 	var subs []*gpb.Subscription
 	for _, path := range q.subPaths() {
 		path, err := resolvePath(path)
 		if err != nil {
 			return nil, err
 		}
+		queryPaths = append(queryPaths, path)
+	}
+	if len(queryPaths) > 0 && o.ft != nil {
+		if !q.isLeaf() {
+			return nil, fmt.Errorf("functional translators only support leaf queries, given %+v", queryPaths)
+		}
+		if len(queryPaths) != 1 {
+			// This should never happen because leaf queries should only have one path. (Batch queries with multiple leaf paths still don't have isLeaf == true)
+			return nil, fmt.Errorf("functional translators only support one query path, given %d paths", len(queryPaths))
+		}
+		// Convert the query path to a schema path by stripping keys because output paths provided to FT
+		// OutputToInput() for subscription translation must be schema paths. This is expected to cause
+		// the subscription to return more data than just the requested key, but we'll filter the output
+		// in receive() to only include paths matching the keys we actually queried.
+		schemaPath := proto.Clone(queryPaths[0]).(*gpb.Path)
+		for _, elem := range schemaPath.Elem {
+			elem.Key = nil
+		}
+		match, inputs, err := o.ft.OutputToInput(schemaPath)
+		if err != nil {
+			log.ErrorContextf(ctx, "Received error from FunctionalTranslator.OutputToInput(): %v", err)
+			return nil, err
+		}
+		if !match {
+			return nil, fmt.Errorf("FunctionalTranslator.OutputToInput() did not match on path: %s", prototext.Format(schemaPath))
+		}
+
+		log.V(2).InfoContextf(ctx, "FunctionalTranslator.OutputToInput() mapped original query path %s to actual subscription paths: %+v", prototext.Format(queryPaths[0]), inputs)
+		queryPaths = inputs
+	}
+
+	for _, path := range queryPaths {
 		subs = append(subs, &gpb.Subscription{
 			Path: &gpb.Path{
 				Elem:   path.GetElem(),
@@ -93,7 +127,7 @@ func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.Su
 	}
 	defer closer.Close(&rerr, sub.CloseSend, "error closing gNMI send stream")
 	if !o.useGet {
-		log.V(c.requestLogLevel).Info(prototext.Format(sr))
+		log.V(c.requestLogLevel).InfoContext(ctx, prototext.Format(sr))
 	}
 	if err := sub.Send(sr); err != nil {
 		// If the server closes the RPC with an error, the real error may only be visible on Recv.
@@ -165,12 +199,26 @@ func (gs *getSubscriber) CloseSend() error {
 // the data is returned as-is and the second return value is true. If Delete paths are present in
 // the update, they are appended to the given data before the Update values. If deletesExpected
 // is false, however, any deletes received will cause an error.
-func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bool) ([]*DataPoint, bool, error) {
+func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bool, queryPath *gpb.Path, o *opt) ([]*DataPoint, bool, error) {
 	res, err := sub.Recv()
 	if err != nil {
 		return data, false, err
 	}
 	recvTS := time.Now()
+
+	if o.ft != nil {
+		out, err := o.ft.Translate(res)
+		if err != nil {
+			log.Errorf("FunctionalTranslator.Translate() failed to translate notification: %v", err)
+			return data, false, nil
+		}
+		if out == nil {
+			log.V(2).Infof("Received nil response from functional translatator with input: %s", prototext.Format(res))
+			return data, false, nil
+		}
+		log.V(2).Infof("FT successfully translated a notification. input: %s, output: %s", prototext.Format(res), prototext.Format(out))
+		res = out
+	}
 
 	switch v := res.Response.(type) {
 	case *gpb.SubscribeResponse_Update:
@@ -205,6 +253,14 @@ func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bo
 				return data, false, err
 			}
 			log.V(2).Infof("Constructed datapoint for delete: %v", dp)
+			// Filter out paths that don't match the query here as a workaround for the edge case where we
+			// query a path including a specific key and the FT subscribes to more data than just that.
+			// This extra data would otherwise be filtered out downstream but with a compliance error.
+			// This uses the same logic that unmarshal(...) in unmarshal.go uses to check compliance.
+			if o.ft != nil && !util.PathMatchesQuery(dp.Path, queryPath) {
+				log.V(2).Infof("Skipping delete datapoint that doesn't match the query. path: %s, query: %s", prototext.Format(dp.Path), prototext.Format(queryPath))
+				continue
+			}
 			data = append(data, dp)
 		}
 		for _, u := range n.GetUpdate() {
@@ -220,6 +276,10 @@ func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bo
 				return data, false, err
 			}
 			log.V(2).Infof("Constructed datapoint for update: %v", dp)
+			if o.ft != nil && !util.PathMatchesQuery(dp.Path, queryPath) {
+				log.V(2).Infof("Skipping update datapoint that doesn't match the query. path: %s, query: %s", prototext.Format(dp.Path), prototext.Format(queryPath))
+				continue
+			}
 			data = append(data, dp)
 		}
 		return data, false, nil
@@ -237,10 +297,14 @@ func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bo
 
 // receiveAll receives data until the context deadline is reached, or when a sync response is received.
 // This func is only used when receiving data from a ONCE subscription.
-func receiveAll(sub gpb.GNMI_SubscribeClient, deletesExpected bool) (data []*DataPoint, err error) {
+func receiveAll[T any](sub gpb.GNMI_SubscribeClient, deletesExpected bool, query AnyQuery[T], o *opt) (data []*DataPoint, err error) {
+	queryPath, err := resolvePath(query.PathStruct())
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve path: %w", err)
+	}
 	for {
 		var sync bool
-		data, sync, err = receive(sub, data, deletesExpected)
+		data, sync, err = receive(sub, data, deletesExpected, queryPath, o)
 		if err != nil {
 			if err == io.EOF {
 				// TODO(wenbli): It is unclear whether "subscribe ONCE stream closed without sync_response"
@@ -266,7 +330,7 @@ func receiveAll(sub gpb.GNMI_SubscribeClient, deletesExpected bool) (data []*Dat
 // Note: this does not imply that mode is gpb.SubscriptionList_STREAM (though it usually is).
 // If the query is a leaf, each datapoint will be sent the chan individually.
 // If the query is a non-leaf, all the datapoints from a SubscriptionResponse are bundled.
-func receiveStream[T any](ctx context.Context, sub gpb.GNMI_SubscribeClient, query AnyQuery[T]) (<-chan []*DataPoint, <-chan error) {
+func receiveStream[T any](ctx context.Context, sub gpb.GNMI_SubscribeClient, query AnyQuery[T], o *opt) (<-chan []*DataPoint, <-chan error) {
 	dataCh := make(chan []*DataPoint)
 	errCh := make(chan error)
 
@@ -278,8 +342,14 @@ func receiveStream[T any](ctx context.Context, sub gpb.GNMI_SubscribeClient, que
 		var hasSynced bool
 		var sync bool
 		var err error
+
+		queryPath, err := resolvePath(query.PathStruct())
+		if err != nil {
+			errCh <- fmt.Errorf("failed to resolve path: %w", err)
+			return
+		}
 		for {
-			recvData, sync, err = receive(sub, recvData, true)
+			recvData, sync, err = receive(sub, recvData, true, queryPath, o)
 			if err != nil {
 				// In the case that the context is cancelled, the reader of errCh
 				// may have gone away. In order to avoid this goroutine blocking
@@ -557,11 +627,6 @@ func resolvePath(q PathStruct) (*gpb.Path, error) {
 	if err != nil {
 		return nil, err
 	}
-	if originSetter, ok := q.(interface{ PathOriginName() string }); ok {
-		// When the path struct has the method PathOriginName(),
-		// then the output of the method is set to the path.Origin
-		path.Origin = originSetter.PathOriginName()
-	}
 	if origin, ok := opts[OriginOverride]; ok {
 		path.Origin = origin.(string)
 	}
@@ -573,3 +638,4 @@ func resolvePath(q PathStruct) (*gpb.Path, error) {
 
 	return path, nil
 }
+

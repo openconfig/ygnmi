@@ -26,24 +26,24 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/openconfig/gnmi/errdiff"
-	"github.com/openconfig/ygnmi/internal/exampleocconfig"
-	"github.com/openconfig/ygnmi/internal/exampleocconfig/exampleocconfigpath"
-	"github.com/openconfig/ygnmi/internal/gnmitestutil"
-	"github.com/openconfig/ygnmi/internal/testutil"
-	"github.com/openconfig/ygnmi/schemaless"
-	"github.com/openconfig/ygnmi/ygnmi"
-	"github.com/openconfig/ygot/ygot"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials/local"
-	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/testing/protocmp"
+	"google3/third_party/golang/cmp/cmp"
+	"google3/third_party/golang/cmp/cmpopts/cmpopts"
+	"google3/third_party/golang/grpc/codes/codes"
+	"google3/third_party/golang/grpc/credentials/local/local"
+	"google3/third_party/golang/grpc/grpc"
+	"google3/third_party/golang/grpc/status/status"
+	"google3/third_party/golang/protobuf/v2/proto/proto"
+	"google3/third_party/golang/protobuf/v2/testing/protocmp/protocmp"
+	"google3/third_party/golang/ygot/ygot/ygot"
+	"google3/third_party/openconfig/gnmi/errdiff/errdiff"
+	"google3/third_party/openconfig/ygnmi/internal/exampleocconfig/exampleocconfig"
+	"google3/third_party/openconfig/ygnmi/internal/exampleocconfig/exampleocconfigpath/exampleocconfigpath"
+	"google3/third_party/openconfig/ygnmi/internal/gnmitestutil/gnmitestutil"
+	"google3/third_party/openconfig/ygnmi/internal/testutil/testutil"
+	"google3/third_party/openconfig/ygnmi/schemaless/schemaless"
+	"google3/third_party/openconfig/ygnmi/ygnmi/ygnmi"
 
-	gpb "github.com/openconfig/gnmi/proto/gnmi"
+	gpb "google3/third_party/openconfig/gnmi/proto/gnmi/gnmi_go_proto"
 )
 
 func getSamplePreferConfigOrderedMap(t *testing.T) *exampleocconfig.Model_SingleKey_OrderedList_OrderedMap {
@@ -700,6 +700,7 @@ func TestPreferConfigLookupWithGet(t *testing.T) {
 				},
 				tt.wantRequest,
 				tt.wantVal,
+				false,
 			)
 		})
 	}
@@ -786,7 +787,7 @@ func TestPreferConfigLookupWithGet(t *testing.T) {
 					Path:     []*gpb.Path{nonLeafPath},
 				},
 				tt.wantVal,
-				cmpopts.IgnoreFields(ygnmi.TelemetryError{}, "Err"),
+				true,
 			)
 		})
 	}
@@ -843,6 +844,7 @@ func TestPreferConfigLookupWithGet(t *testing.T) {
 				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 				Timestamp: time.Unix(0, 100),
 			}).SetVal(getSamplePreferConfigOrderedMap(t)),
+			true,
 		)
 	})
 
@@ -897,6 +899,7 @@ func TestPreferConfigLookupWithGet(t *testing.T) {
 				Path:      testutil.GNMIPath(t, "/model/a"),
 				Timestamp: time.Unix(0, 100),
 			}).SetVal(getSamplePreferConfigSingleKeyedMap(t)),
+			true,
 		)
 	})
 }
@@ -1290,7 +1293,6 @@ func TestPreferConfigWatch(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
 			watchCheckFn(t, fakeGNMI, tt.dur, client,
 				lq,
-				tt.opts,
 				func(val string) bool { return val == "foo" },
 				tt.wantErr,
 				&ygnmi.RequestValues{
@@ -1302,6 +1304,7 @@ func TestPreferConfigWatch(t *testing.T) {
 				[]uint64{tt.wantInterval},
 				tt.wantVals,
 				tt.wantLastVal,
+				tt.opts...,
 			)
 		})
 	}
@@ -1524,7 +1527,6 @@ func TestPreferConfigWatch(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
 			watchCheckFn(t, fakeGNMI, 2*time.Second, client,
 				nonLeafQuery,
-				tt.opts,
 				func(val *exampleocconfig.Parent_Child) bool {
 					return val.One != nil && *val.One == "foo" && val.Three == exampleocconfig.Child_Three_ONE
 				},
@@ -1538,6 +1540,7 @@ func TestPreferConfigWatch(t *testing.T) {
 				[]uint64{0},
 				tt.wantVals,
 				tt.wantLastVal,
+				tt.opts...,
 			)
 		})
 	}
@@ -1603,7 +1606,6 @@ func TestPreferConfigWatch(t *testing.T) {
 		want := getSamplePreferConfigOrderedMap(t)
 		watchCheckFn(t, fakeGNMI, 2*time.Second, client,
 			exampleocconfigpath.Root().Model().SingleKey("foo").OrderedListMap().State(),
-			nil,
 			func(val *exampleocconfig.Model_SingleKey_OrderedList_OrderedMap) bool {
 				return cmp.Equal(val, want, cmp.AllowUnexported(exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}))
 			},
@@ -1688,7 +1690,6 @@ func TestPreferConfigWatch(t *testing.T) {
 		want := getSamplePreferConfigSingleKeyedMap(t)
 		watchCheckFn(t, fakeGNMI, 2*time.Second, client,
 			exampleocconfigpath.Root().Model().SingleKeyMap().State(),
-			nil,
 			func(val map[string]*exampleocconfig.Model_SingleKey) bool {
 				return cmp.Equal(val, want)
 			},
@@ -4296,7 +4297,6 @@ func TestPreferConfigCustomRootBatch(t *testing.T) {
 		want := getSamplePreferConfigSingleKeyedMap(t)
 		watchCheckFn(t, fakeGNMI, 2*time.Second, client,
 			b.Query(),
-			nil,
 			func(val map[string]*exampleocconfig.Model_SingleKey) bool {
 				return cmp.Equal(val, want)
 			},
@@ -4848,3 +4848,4 @@ func TestPreferConfigReconcile(t *testing.T) {
 		})
 	}
 }
+

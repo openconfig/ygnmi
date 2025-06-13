@@ -20,26 +20,27 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/openconfig/gnmi/errdiff"
-	"github.com/openconfig/ygnmi/exampleoc"
-	"github.com/openconfig/ygnmi/internal/exampleocconfig"
-	"github.com/openconfig/ygnmi/internal/gnmitestutil"
-	"github.com/openconfig/ygnmi/schemaless"
-	"github.com/openconfig/ygnmi/ygnmi"
-	"github.com/openconfig/ygot/util"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/testing/protocmp"
-	"google.golang.org/protobuf/types/known/anypb"
+	"google3/third_party/golang/cmp/cmp"
+	"google3/third_party/golang/cmp/cmpopts/cmpopts"
+	"google3/third_party/golang/protobuf/v2/proto/proto"
+	"google3/third_party/golang/protobuf/v2/testing/protocmp/protocmp"
+	"google3/third_party/golang/ygot/util/util"
+	"google3/third_party/openconfig/gnmi/errdiff/errdiff"
+	"google3/third_party/openconfig/ygnmi/exampleoc/exampleoc"
+	"google3/third_party/openconfig/ygnmi/internal/exampleocconfig/exampleocconfig"
+	"google3/third_party/openconfig/ygnmi/internal/gnmitestutil/gnmitestutil"
+	"google3/third_party/openconfig/ygnmi/schemaless/schemaless"
+	"google3/third_party/openconfig/ygnmi/ygnmi/ygnmi"
 
-	gpb "github.com/openconfig/gnmi/proto/gnmi"
-	ygottestutil "github.com/openconfig/ygot/testutil"
+	ygottestutil "google3/third_party/golang/ygot/testutil/testutil"
+
+	anypb "google3/google/protobuf/any_go_proto"
+	gpb "google3/third_party/openconfig/gnmi/proto/gnmi/gnmi_go_proto"
 )
 
-func lookupCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantSubscriptionPath *gpb.Path, wantVal *ygnmi.Value[T]) {
+func lookupCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantSubscriptionPath *gpb.Path, wantVal *ygnmi.Value[T], ygnmiOpts ...ygnmi.Option) {
 	t.Helper()
-	got, err := ygnmi.Lookup(context.Background(), c, inQuery)
+	got, err := ygnmi.Lookup(context.Background(), c, inQuery, ygnmiOpts...)
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
 		t.Fatalf("Lookup(ctx, c, %v) returned unexpected diff: %s", inQuery, diff)
 	}
@@ -61,7 +62,7 @@ func lookupCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnm
 	}
 }
 
-func lookupWithGetCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantRequest *gpb.GetRequest, wantVal *ygnmi.Value[T], copts ...cmp.Option) {
+func lookupWithGetCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantRequest *gpb.GetRequest, wantVal *ygnmi.Value[T], nonLeaf bool) {
 	t.Helper()
 	got, err := ygnmi.Lookup(context.Background(), c, inQuery, ygnmi.WithUseGet())
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
@@ -70,7 +71,10 @@ func lookupWithGetCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, 
 	if err != nil {
 		return
 	}
-	copts = append(copts, cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_SingleKey_OrderedList_OrderedMap{}, exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}), cmpopts.IgnoreFields(ygnmi.Value[T]{}, "RecvTimestamp"), protocmp.Transform())
+	copts := []cmp.Option{cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_SingleKey_OrderedList_OrderedMap{}, exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}), cmpopts.IgnoreFields(ygnmi.Value[T]{}, "RecvTimestamp"), protocmp.Transform()}
+	if nonLeaf {
+		copts = append(copts, cmpopts.IgnoreFields(ygnmi.TelemetryError{}, "Err"))
+	}
 	if diff := cmp.Diff(wantVal, got, copts...); diff != "" {
 		t.Errorf("Lookup() returned unexpected diff (-want, +got):\n%s", diff)
 	}
@@ -85,9 +89,9 @@ func lookupWithGetCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, 
 	}
 }
 
-func getCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantSubscriptionPath *gpb.Path, wantVal T) {
+func getCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantSubscriptionPath *gpb.Path, wantVal T, ygnmiOpts ...ygnmi.Option) {
 	t.Helper()
-	got, err := ygnmi.Get(context.Background(), c, inQuery)
+	got, err := ygnmi.Get(context.Background(), c, inQuery, ygnmiOpts...)
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
 		t.Fatalf("Get(ctx, c, %v) returned unexpected diff: %s", inQuery, diff)
 	}
@@ -108,7 +112,7 @@ func getCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.C
 }
 
 func watchCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, duration time.Duration, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T],
-	inOpts []ygnmi.Option, valPred func(T) bool, wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantSubscriptionPaths []*gpb.Path, wantModes []gpb.SubscriptionMode, wantIntervals []uint64, wantVals []*ygnmi.Value[T], wantLastVal *ygnmi.Value[T]) {
+	valPred func(T) bool, wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantSubscriptionPaths []*gpb.Path, wantModes []gpb.SubscriptionMode, wantIntervals []uint64, wantVals []*ygnmi.Value[T], wantLastVal *ygnmi.Value[T], ygnmiOpts ...ygnmi.Option) {
 	t.Helper()
 	i := 0
 	ctx, cancel := context.WithTimeout(context.Background(), duration)
@@ -134,7 +138,7 @@ func watchCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, duration
 			return nil
 		}
 		return ygnmi.Continue
-	}, inOpts...)
+	}, ygnmiOpts...)
 	val, err := w.Await()
 	if i < len(wantVals) {
 		t.Errorf("Predicate received too few values: got %d, want %d", i, len(wantVals))
@@ -367,3 +371,4 @@ func (g *gnmiS) Subscribe(srv gpb.GNMI_SubscribeServer) error {
 	g.errCh <- err
 	return nil
 }
+
