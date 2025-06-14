@@ -23,19 +23,18 @@ import (
 	"strings"
 	"time"
 
-	"google3/base/go/log"
-	"google3/third_party/golang/grpc/codes/codes"
-	"google3/third_party/golang/grpc/status/status"
-	"google3/third_party/golang/protobuf/v2/encoding/prototext/prototext"
-	"google3/third_party/golang/protobuf/v2/proto/proto"
-	"google3/third_party/golang/ygot/util/util"
-	"google3/third_party/golang/ygot/ygot/ygot"
-	"google3/third_party/openconfig/ygnmi/internal/logutil/logutil"
+	"github.com/openconfig/ygnmi/internal/logutil"
+	"github.com/openconfig/ygot/util"
+	"github.com/openconfig/ygot/ygot"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 
-	closer "google3/third_party/openconfig/gocloser/closer"
-
-	anypb "google3/google/protobuf/any_go_proto"
-	gpb "google3/third_party/openconfig/gnmi/proto/gnmi/gnmi_go_proto"
+	log "github.com/golang/glog"
+	gpb "github.com/openconfig/gnmi/proto/gnmi"
+	closer "github.com/openconfig/gocloser"
 )
 
 // subscribe create a gNMI SubscribeClient for the given query.

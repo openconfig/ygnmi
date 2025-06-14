@@ -20,22 +20,21 @@ import (
 	"testing"
 	"time"
 
-	"google3/third_party/golang/cmp/cmp"
-	"google3/third_party/golang/cmp/cmpopts/cmpopts"
-	"google3/third_party/golang/protobuf/v2/proto/proto"
-	"google3/third_party/golang/protobuf/v2/testing/protocmp/protocmp"
-	"google3/third_party/golang/ygot/util/util"
-	"google3/third_party/openconfig/gnmi/errdiff/errdiff"
-	"google3/third_party/openconfig/ygnmi/exampleoc/exampleoc"
-	"google3/third_party/openconfig/ygnmi/internal/exampleocconfig/exampleocconfig"
-	"google3/third_party/openconfig/ygnmi/internal/gnmitestutil/gnmitestutil"
-	"google3/third_party/openconfig/ygnmi/schemaless/schemaless"
-	"google3/third_party/openconfig/ygnmi/ygnmi/ygnmi"
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/openconfig/gnmi/errdiff"
+	"github.com/openconfig/ygnmi/exampleoc"
+	"github.com/openconfig/ygnmi/internal/exampleocconfig"
+	"github.com/openconfig/ygnmi/internal/gnmitestutil"
+	"github.com/openconfig/ygnmi/schemaless"
+	"github.com/openconfig/ygnmi/ygnmi"
+	"github.com/openconfig/ygot/util"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/anypb"
 
-	ygottestutil "google3/third_party/golang/ygot/testutil/testutil"
-
-	anypb "google3/google/protobuf/any_go_proto"
-	gpb "google3/third_party/openconfig/gnmi/proto/gnmi/gnmi_go_proto"
+	gpb "github.com/openconfig/gnmi/proto/gnmi"
+	ygottestutil "github.com/openconfig/ygot/testutil"
 )
 
 func lookupCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantSubscriptionPath *gpb.Path, wantVal *ygnmi.Value[T], ygnmiOpts ...ygnmi.Option) {
