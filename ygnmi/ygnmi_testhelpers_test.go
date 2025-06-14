@@ -370,4 +370,3 @@ func (g *gnmiS) Subscribe(srv gpb.GNMI_SubscribeServer) error {
 	g.errCh <- err
 	return nil
 }
-

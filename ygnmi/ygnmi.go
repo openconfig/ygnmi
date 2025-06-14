@@ -31,6 +31,7 @@ import (
 
 	log "github.com/golang/glog"
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
+)
 
 // UntypedQuery is a generic gNMI query for wildcard or non-wildcard state or config paths.
 // Supported operations: Batch.
@@ -1188,4 +1189,3 @@ func swapConfigStatePath(p *gpb.Path) *gpb.Path {
 	}
 	return swap
 }
-

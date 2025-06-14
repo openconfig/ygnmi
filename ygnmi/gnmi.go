@@ -626,6 +626,11 @@ func resolvePath(q PathStruct) (*gpb.Path, error) {
 	if err != nil {
 		return nil, err
 	}
+	if originSetter, ok := q.(interface{ PathOriginName() string }); ok {
+		// When the path struct has the method PathOriginName(),
+		// then the output of the method is set to the path.Origin
+		path.Origin = originSetter.PathOriginName()
+	}
 	if origin, ok := opts[OriginOverride]; ok {
 		path.Origin = origin.(string)
 	}
@@ -637,4 +642,3 @@ func resolvePath(q PathStruct) (*gpb.Path, error) {
 
 	return path, nil
 }
-
