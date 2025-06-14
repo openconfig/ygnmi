@@ -33,6 +33,7 @@ import (
 	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygnmi/schemaless"
 	"github.com/openconfig/ygnmi/ygnmi"
+	"github.com/openconfig/util/util"
 	"github.com/openconfig/ygot/ygot"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
