@@ -993,10 +993,12 @@ func TestLookupFT(t *testing.T) {
 	t.Run("non-leaf query not supported - batch", func(t *testing.T) {
 		fakeGNMI.Stub().Sync()
 		batch := ygnmi.NewBatch(exampleocpath.Root().Parent().State())
-		batch.AddPaths(
+		if err := batch.AddPaths(
 			exampleocpath.Root().Parent().Child().One().State(),
 			exampleocpath.Root().Parent().Child().Two().State(),
-		)
+		); err != nil {
+			t.Fatalf("Failed to add paths to batch: %v", err)
+		}
 		lookupCheckFn(
 			t, fakeGNMI, c, batch.Query(), "functional translators only support leaf queries",
 			&ygnmi.RequestValues{
