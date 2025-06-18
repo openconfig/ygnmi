@@ -35,7 +35,6 @@ import (
 	"github.com/openconfig/ygnmi/internal/testutil"
 	"github.com/openconfig/ygnmi/schemaless"
 	"github.com/openconfig/ygnmi/ygnmi"
-	"github.com/openconfig/ygot/util"
 	"github.com/openconfig/ygot/ygot"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -110,72 +109,6 @@ func getSamplePreferConfigInnerSingleKeyedMapIncomplete(t *testing.T) map[string
 	sk.GetOrCreateSingleKey("foo").SetValue(42)
 	sk.GetOrCreateSingleKey("bar").SetValue(43)
 	return sk.SingleKey
-}
-
-type fakeFT struct {
-	inPath  *gpb.Path
-	outPath *gpb.Path
-
-	inkKeyIxs []int
-	outKeyIxs []int
-}
-
-func (e *fakeFT) OutputToInput(out *gpb.Path) (bool, []*gpb.Path, error) {
-	// Error out if a non-schema path (with any keys, including wildcards) is passed in. OutputToInput()
-	// only works with schema paths.
-	for _, elem := range out.GetElem() {
-		for _, key := range elem.GetKey() {
-			if key != "" {
-				return false, nil, fmt.Errorf("OutputToInput() got a non-schema path with keys set, which is not supported: %+v", out)
-			}
-		}
-	}
-	ftOutSchemaPath, err := ygot.PathToSchemaPath(e.outPath)
-	if err != nil {
-		return false, nil, err
-	}
-	outSchemaPath, err := ygot.PathToSchemaPath(out)
-	if err != nil {
-		return false, nil, err
-	}
-	if ftOutSchemaPath != outSchemaPath {
-		return false, nil, nil
-	}
-	return true, []*gpb.Path{e.inPath}, nil
-}
-
-func (e *fakeFT) Translate(in *gpb.SubscribeResponse) (*gpb.SubscribeResponse, error) {
-	ftInSchemaPath, err := ygot.PathToSchemaPath(e.inPath)
-	if err != nil {
-		return nil, err
-	}
-	if in.GetUpdate().GetPrefix() != nil && len(in.GetUpdate().GetPrefix().GetElem()) > 0 {
-		return nil, fmt.Errorf("non-empty prefix found, but we're assuming there won't be a prefix for simplicity. Prefix: %+v", in.GetUpdate().GetPrefix())
-	}
-	out := proto.Clone(in).(*gpb.SubscribeResponse)
-	for _, u := range out.GetUpdate().GetUpdate() {
-		// Simulate an error if we get "invalid".
-		if u.GetVal().GetStringVal() != "" && u.GetVal().GetStringVal() == "invalid" {
-			return nil, errors.New("invalid")
-		}
-		inPath, err := util.JoinPaths(in.GetUpdate().GetPrefix(), u.GetPath())
-		if err != nil {
-			return nil, err
-		}
-		inSchemaPath, err := ygot.PathToSchemaPath(inPath)
-		if err != nil {
-			return nil, err
-		}
-		if inSchemaPath != ftInSchemaPath {
-			return nil, nil
-		}
-		outPath := proto.Clone(e.outPath).(*gpb.Path)
-		for i, inkIx := range e.inkKeyIxs {
-			outPath.Elem[e.outKeyIxs[i]].Key = u.GetPath().GetElem()[inkIx].GetKey()
-		}
-		u.Path = outPath
-	}
-	return out, nil
 }
 
 func TestPreferConfigLookup(t *testing.T) {
