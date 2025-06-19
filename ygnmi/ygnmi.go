@@ -196,6 +196,60 @@ type Option func(*opt)
 // ValidateFn is a function that validates the datapoint.
 type ValidateFn func(*DataPoint) error
 
+// FunctionalTranslator objects translate gNMI subscriptions and notifications to address
+// deviations in OpenConfig compliance.
+//
+// A functional translator is responsible for:
+//   - Determining the necessary subscription(s) to support a specific set of *output* leaf paths
+//     (using OutputToInput). This is done via mapping desired OpenConfig paths to the
+//     corresponding vendor-native paths or alternative OpenConfig paths.
+//   - Translating notifications from those subscriptions into the requested target paths.
+//
+// Example: Consider a functional translator, laserTranslator, designed to handle temperature
+// alerting threshold paths. The vendor-native paths have separate paths for severity ("critical" or
+// "warning"), while the OpenConfig schema models severity as a key within a single path.
+//
+//	Output: /components/component/transceiver/thresholds/threshold/state/module-temperature-upper
+//	 - Input: /vendor/native/transceivers/critical/upper
+//	 - Input: /vendor/native/transceivers/warning/upper
+//	Output: /components/component/transceiver/thresholds/threshold/state/module-temperature-lower
+//	 - Input: /vendor/native/transceivers/critical/lower
+//	 - Input: /vendor/native/transceivers/warning/lower
+//
+// Example OutputToInput invocation:
+//
+//	laserTranslator.OutputToInput(/components/component/transceiver/thresholds/threshold/state/module-temperature-lower) returns:
+//	 - match: true
+//	 - inputs: [/vendor/native/transceivers/critical/lower, /vendor/native/transceivers/warning/lower]
+//
+// Example Translate invocation:
+//
+//	laserTranslator.Translate([
+//	 /vendor/native/transceivers[name=Optics0/0/0/0]/critical/lower: 10,
+//	 /vendor/native/transceivers[name=Optics0/0/0/0]/warning/lower: 50,
+//	]) returns:
+//	 - /components/component[name=Optics0/0/0/0]/transceiver/thresholds/threshold[severity=critical]/state/module-temperature-lower: 10
+//	 - /components/component[name=Optics0/0/0/0]/transceiver/thresholds/threshold[severity=warning]/state/module-temperature-lower: 50
+type FunctionalTranslator interface {
+	// Translate translates gNMI notifications from vendor-native paths or alternative
+	// OpenConfig paths to schema compliant OpenConfig paths.
+	//
+	//  - It must support translation for updates.
+	//  - It may optionally support translation for deletes; if delete translation is not
+	//    supported, deletes received must be silently ignored.
+	//  - Paths in the notification that are not within the scope of the functional
+	//    translator must be silently ignored.
+	Translate(*gpb.SubscribeResponse) (*gpb.SubscribeResponse, error)
+
+	// OutputToInput returns the input subscription path(s) required by Translate for the
+	// desired output path.
+	//
+	//  - The "match" value provided in the return indicates whether the requested output path
+	//    is in scope for translation by this translator. match == (len(inputs) > 0 && rerr == nil)
+	//  - The output path must be a schema path without any keys specified, including wildcards.
+	OutputToInput(output *gpb.Path) (match bool, inputs []*gpb.Path, rerr error)
+}
+
 type opt struct {
 	useGet             bool
 	mode               gpb.SubscriptionMode
@@ -204,6 +258,7 @@ type opt struct {
 	setFallback        bool
 	sampleInterval     uint64
 	datapointValidator ValidateFn
+	ft                 FunctionalTranslator
 }
 
 // resolveOpts applies all the options and returns a struct containing the result.
@@ -278,6 +333,48 @@ func WithDatapointValidator(fn ValidateFn) Option {
 	}
 }
 
+// WithFT creates an option to set a functional translator that intercepts and translates gNMI
+// subscriptions and notifications.
+//
+// Functional translator output paths must be leaf paths, so ygnmi methods will throw an error if
+// the path is not a leaf path.
+//
+// To illustrate, consider a functional translator laserTranslator designed to handle temperature
+// alerting threshold paths. The vendor-native paths have separate paths for severity ("critical" or
+// "warning"), while the OpenConfig schema models severity as a key within a single path.
+//
+//	Leaf path, supported:
+//	 ygnmi.Lookup(ctx, c, gnmi.OC().Components().Component().Transceiver().Thresholds().Threshold().ModuleTemperatureUpper().State(), WithFT(laserTranslator))
+//	Non-leaf path, not supported, returns an error:
+//	 ygnmi.Lookup(ctx, c, gnmi.OC().Components().Component().Transceiver().Thresholds().Threshold().State(), WithFT(laserTranslator))
+//
+// Functional translator subscription translation (OutputToInput) output paths must be schema paths,
+// without any keys specified. ygnmi still supports querying with a key, but this works by
+// subscribing to all keys and filtering the response. This may result in O(n) subscription
+// performance when O(1) is expected.
+//
+//	No keys, supported:
+//	 ygnmi.Lookup(ctx, c, gnmi.OC().Components().Component().Transceiver().Thresholds().Threshold().ModuleTemperatureUpper().State(), WithFT(laserTranslator))
+//	 	 Actual subscription: /vendor/native/transceivers/critical/upper
+//				      /vendor/native/transceivers/warning/upper
+//	With key, supported but we subscribe to all keys internally:
+//	 ygnmi.Lookup(ctx, c, gnmi.OC().Components().Component("Optics0/0/0/0").Transceiver().Thresholds().Threshold("critical").ModuleTemperatureUpper().State(), WithFT(laserTranslator))
+//	 	 Actual subscription: /vendor/native/transceivers/critical/upper
+//				      /vendor/native/transceivers/warning/upper
+//		 Note that the subscription includes all tranceivers as in the previous example.
+//		 ygnmi.Lookup still behaves as expected and only returns data for Optics0/0/0/0.
+//
+// ygnmi methods will return an error if the queried path doesn't match the paths in scope for the
+// functional translator according to the OutputToInput method.
+//
+//	Path that doesn't match the translator, not supported, returns an error:
+//	 ygnmi.Lookup(ctx, c, gnmi.OC().System().BootTime().State(), WithFT(laserTranslator))
+func WithFT(ft FunctionalTranslator) Option {
+	return func(o *opt) {
+		o.ft = ft
+	}
+}
+
 // Lookup fetches the value of a SingletonQuery with a ONCE subscription.
 func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T], opts ...Option) (*Value[T], error) {
 	resolvedOpts := resolveOpts(opts)
@@ -285,7 +382,7 @@ func Lookup[T any](ctx context.Context, c *Client, q SingletonQuery[T], opts ...
 	if err != nil {
 		return nil, fmt.Errorf("failed to subscribe to path: %w", err)
 	}
-	data, err := receiveAll(sub, false)
+	data, err := receiveAll(sub, false, q, resolvedOpts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to receive to data: %w", err)
 	}
@@ -363,7 +460,7 @@ func Watch[T any](ctx context.Context, c *Client, q SingletonQuery[T], pred func
 		return w
 	}
 
-	dataCh, errCh := receiveStream[T](ctx, sub, q)
+	dataCh, errCh := receiveStream[T](ctx, sub, q, resolvedOpts)
 	go func() {
 		defer cancel()
 		// Create an intially empty GoStruct, into which all received datapoints will be unmarshalled.
@@ -448,7 +545,7 @@ func LookupAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], opts .
 	if err != nil {
 		return nil, fmt.Errorf("failed to subscribe to path: %w", err)
 	}
-	data, err := receiveAll(sub, false)
+	data, err := receiveAll(sub, false, q, resolvedOpts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to receive to data: %w", err)
 	}
@@ -524,7 +621,7 @@ func WatchAll[T any](ctx context.Context, c *Client, q WildcardQuery[T], pred fu
 		return w
 	}
 
-	dataCh, errCh := receiveStream[T](ctx, sub, q)
+	dataCh, errCh := receiveStream[T](ctx, sub, q, resolvedOpts)
 	go func() {
 		defer cancel()
 		// Create a map intially empty GoStruct, into which all received datapoints will be unmarshalled based on their path prefixes.
@@ -942,7 +1039,7 @@ func (r *Reconciler[T]) Start(ctx context.Context, fn func(cfg *Value[T], state 
 		return
 	}
 
-	dataCh, errCh := receiveStream(ctx, sub, r.rootCfg)
+	dataCh, errCh := receiveStream(ctx, sub, r.rootCfg, resolvedOpts)
 	go func() {
 		defer cancel()
 		// Create an intially empty GoStruct, into which all received datapoints will be unmarshalled.

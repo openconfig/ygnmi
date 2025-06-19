@@ -698,6 +698,7 @@ func TestLookupWithGet(t *testing.T) {
 				},
 				tt.wantRequest,
 				tt.wantVal,
+				false,
 			)
 		})
 	}
@@ -784,7 +785,7 @@ func TestLookupWithGet(t *testing.T) {
 					Path:     []*gpb.Path{nonLeafPath},
 				},
 				tt.wantVal,
-				cmpopts.IgnoreFields(ygnmi.TelemetryError{}, "Err"),
+				true,
 			)
 		})
 	}
@@ -841,6 +842,7 @@ func TestLookupWithGet(t *testing.T) {
 				Path:      testutil.GNMIPath(t, "/model/a/single-key[key=foo]/ordered-lists"),
 				Timestamp: time.Unix(0, 100),
 			}).SetVal(getSampleOrderedMap(t)),
+			true,
 		)
 	})
 
@@ -895,6 +897,90 @@ func TestLookupWithGet(t *testing.T) {
 				Path:      testutil.GNMIPath(t, "/model/a"),
 				Timestamp: time.Unix(0, 100),
 			}).SetVal(getSampleSingleKeyedMap(t)),
+			true,
+		)
+	})
+}
+
+func TestLookupFT(t *testing.T) {
+	fakeGNMI, c := newClient(t)
+	ft := &fakeFT{
+		inPath:  testutil.GNMIPath(t, "/parent/child/state/one"),
+		outPath: testutil.GNMIPath(t, "/parent/child/state/two"),
+	}
+	t.Run("non-leaf query not supported - subtree", func(t *testing.T) {
+		fakeGNMI.Stub().Sync()
+		nonLeafQ := exampleocpath.Root().Parent().State()
+		lookupCheckFn(
+			t, fakeGNMI, c, nonLeafQ, "functional translators only support leaf queries",
+			&ygnmi.RequestValues{
+				StateFiltered:  false,
+				ConfigFiltered: true,
+			},
+			nil,
+			nil,
+			ygnmi.WithFT(ft),
+		)
+	})
+
+	t.Run("non-leaf query not supported - batch", func(t *testing.T) {
+		fakeGNMI.Stub().Sync()
+		batch := ygnmi.NewBatch(exampleocpath.Root().Parent().State())
+		if err := batch.AddPaths(
+			exampleocpath.Root().Parent().Child().One().State(),
+			exampleocpath.Root().Parent().Child().Two().State(),
+		); err != nil {
+			t.Fatalf("Failed to add paths to batch: %v", err)
+		}
+		lookupCheckFn(
+			t, fakeGNMI, c, batch.Query(), "functional translators only support leaf queries",
+			&ygnmi.RequestValues{
+				StateFiltered:  false,
+				ConfigFiltered: true,
+			},
+			nil,
+			nil,
+			ygnmi.WithFT(ft),
+		)
+	})
+
+	t.Run("translate with specific key - must filter out other keys", func(t *testing.T) {
+		inListNoKeyPath := testutil.GNMIPath(t, "/model/a/single-key/config/key")
+		outListNoKeyPath := testutil.GNMIPath(t, "/model/a/single-key/state/key")
+		inListSpecificKeyPath1 := testutil.GNMIPath(t, "/model/a/single-key[key=baz]/config/key")
+		inListSpecificKeyPath2 := testutil.GNMIPath(t, "/model/a/single-key[key=biz]/config/key")
+		outListSpecificKeyPath := testutil.GNMIPath(t, "/model/a/single-key[key=baz]/state/key")
+		outListSpecificKeyQ := exampleocpath.Root().Model().SingleKey("baz").Key().State()
+		specificKeyFt := &fakeFT{
+			inPath:    inListNoKeyPath,
+			outPath:   outListNoKeyPath,
+			inkKeyIxs: []int{2},
+			outKeyIxs: []int{2},
+		}
+
+		newFakeGNMI, newC := newClient(t)
+		newFakeGNMI.Stub().Notification(&gpb.Notification{
+			Timestamp: 100,
+			Update: []*gpb.Update{{
+				Path: inListSpecificKeyPath1,
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+			}, {
+				Path: inListSpecificKeyPath2,
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+			}},
+		}).Sync()
+
+		lookupCheckFn(t, newFakeGNMI, newC, outListSpecificKeyQ, "",
+			&ygnmi.RequestValues{
+				StateFiltered:  false,
+				ConfigFiltered: true,
+			},
+			inListNoKeyPath,
+			(&ygnmi.Value[string]{
+				Timestamp: time.Unix(0, 100),
+				Path:      outListSpecificKeyPath,
+			}).SetVal("foo"),
+			ygnmi.WithFT(specificKeyFt),
 		)
 	})
 }
@@ -1031,6 +1117,172 @@ func TestGet(t *testing.T) {
 			getSampleOrderedMap(t),
 		)
 	})
+}
+
+func TestGetFT(t *testing.T) {
+	fakeGNMI, c := newClient(t)
+	inPath := testutil.GNMIPath(t, "/parent/child/state/one")
+	outPath := testutil.GNMIPath(t, "/parent/child/state/two")
+	otherPath := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
+	outQ := exampleocpath.Root().Parent().Child().Two().State()
+	otherQ := exampleocpath.Root().RemoteContainer().ALeaf().State()
+	ft := &fakeFT{inPath: inPath, outPath: outPath}
+
+	tests := []struct {
+		desc                 string
+		stub                 func(s *gnmitestutil.Stubber)
+		query                ygnmi.SingletonQuery[string]
+		ft                   *fakeFT
+		wantSubscriptionPath *gpb.Path
+		want                 string
+		wantVal              string
+		wantErr              string
+	}{
+		{
+			desc: "translate",
+			stub: func(s *gnmitestutil.Stubber) {
+				s.Notification(&gpb.Notification{
+					Timestamp: 100,
+					Update: []*gpb.Update{{
+						Path: inPath,
+						Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+					}},
+				}).Sync()
+			},
+			query:                outQ,
+			ft:                   ft,
+			wantSubscriptionPath: inPath,
+			wantVal:              "foo",
+		},
+		{
+			desc: "value not present",
+			stub: func(s *gnmitestutil.Stubber) {
+				s.Sync()
+			},
+			query:                outQ,
+			ft:                   ft,
+			wantSubscriptionPath: inPath,
+			wantErr:              "value not present",
+		},
+		{
+			desc: "query path does not match FT OutputToInput - error",
+			stub: func(s *gnmitestutil.Stubber) {
+				s.Notification(&gpb.Notification{
+					Timestamp: 100,
+					Update: []*gpb.Update{{
+						Path: otherPath,
+						Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+					}},
+				}).Sync()
+			},
+			query:                otherQ,
+			ft:                   ft,
+			wantSubscriptionPath: otherPath,
+			wantErr:              "did not match on path",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			getCheckFn(
+				t, fakeGNMI, c, tt.query, tt.wantErr,
+				&ygnmi.RequestValues{
+					StateFiltered:  false,
+					ConfigFiltered: true,
+				},
+				tt.wantSubscriptionPath, tt.wantVal,
+				ygnmi.WithFT(tt.ft),
+			)
+		})
+	}
+}
+
+func TestLookupAllFT(t *testing.T) {
+	fakeGNMI, c := newClient(t)
+
+	inListNoKeyPath := testutil.GNMIPath(t, "/model/a/single-key/config/key")
+	outListNoKeyPath := testutil.GNMIPath(t, "/model/a/single-key/state/key")
+	outListWildcardQ := exampleocpath.Root().Model().SingleKeyAny().Key().State()
+	ft := &fakeFT{
+		inPath:    inListNoKeyPath,
+		outPath:   outListNoKeyPath,
+		inkKeyIxs: []int{2},
+		outKeyIxs: []int{2},
+	}
+
+	tests := []struct {
+		desc                 string
+		stub                 func(s *gnmitestutil.Stubber)
+		query                ygnmi.WildcardQuery[string]
+		ft                   *fakeFT
+		wantSubscriptionPath *gpb.Path
+		want                 []*ygnmi.Value[string]
+		wantErr              string
+	}{
+		{
+			desc: "translate wildcard",
+			stub: func(s *gnmitestutil.Stubber) {
+				s.Notification(&gpb.Notification{
+					Timestamp: 100,
+					Update: []*gpb.Update{{
+						Path: testutil.GNMIPath(t, "/model/a/single-key[key=baz]/config/key"),
+						Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+					}, {
+						Path: testutil.GNMIPath(t, "/model/a/single-key[key=biz]/config/key"),
+						Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+					}},
+				}).Sync()
+			},
+			query:                outListWildcardQ,
+			ft:                   ft,
+			wantSubscriptionPath: inListNoKeyPath,
+			want: []*ygnmi.Value[string]{
+				(&ygnmi.Value[string]{Path: testutil.GNMIPath(t, "/model/a/single-key[key=baz]/state/key"), Timestamp: time.Unix(0, 100)}).SetVal("foo"),
+				(&ygnmi.Value[string]{Path: testutil.GNMIPath(t, "/model/a/single-key[key=biz]/state/key"), Timestamp: time.Unix(0, 100)}).SetVal("bar"),
+			},
+		},
+		{
+			desc: "translate valid notifications even if others make the FT error out",
+			stub: func(s *gnmitestutil.Stubber) {
+				s.Notification(&gpb.Notification{
+					Timestamp: 100,
+					Update: []*gpb.Update{{
+						Path: testutil.GNMIPath(t, "/model/a/single-key[key=baz]/config/key"),
+						Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+					},
+					},
+				}).Notification(&gpb.Notification{
+					Timestamp: 100,
+					Update: []*gpb.Update{{
+						Path: testutil.GNMIPath(t, "/model/a/single-key[key=biz]/config/key"),
+						Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "invalid"}},
+					},
+					},
+				}).Sync()
+			},
+			query:                outListWildcardQ,
+			ft:                   ft,
+			wantSubscriptionPath: inListNoKeyPath,
+			want:                 []*ygnmi.Value[string]{(&ygnmi.Value[string]{Path: testutil.GNMIPath(t, "/model/a/single-key[key=baz]/state/key"), Timestamp: time.Unix(0, 100)}).SetVal("foo")},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			got, err := ygnmi.LookupAll(context.Background(), c, tt.query, ygnmi.WithFT(tt.ft))
+			if diff := errdiff.Substring(err, tt.wantErr); diff != "" {
+				t.Fatalf("LookupAll() returned unexpected diff: %s", diff)
+			}
+			verifySubscriptionPathsSent(t, fakeGNMI, tt.wantSubscriptionPath)
+			if diff := cmp.Diff(tt.want, got, cmpopts.EquateEmpty(), protocmp.Transform(),
+				cmp.AllowUnexported(ygnmi.Value[string]{}),
+				cmpopts.IgnoreFields(ygnmi.Value[string]{}, "RecvTimestamp", "ComplianceErrors")); diff != "" {
+				t.Errorf("LookupAll() returned unexpected diff (-want,+got):\n%s", diff)
+			}
+		})
+	}
 }
 
 func TestWatch(t *testing.T) {
@@ -1288,7 +1540,6 @@ func TestWatch(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
 			watchCheckFn(t, fakeGNMI, tt.dur, client,
 				lq,
-				tt.opts,
 				func(val string) bool { return val == "foo" },
 				tt.wantErr,
 				&ygnmi.RequestValues{
@@ -1300,6 +1551,7 @@ func TestWatch(t *testing.T) {
 				[]uint64{tt.wantInterval},
 				tt.wantVals,
 				tt.wantLastVal,
+				tt.opts...,
 			)
 		})
 	}
@@ -1522,7 +1774,6 @@ func TestWatch(t *testing.T) {
 			tt.stub(fakeGNMI.Stub())
 			watchCheckFn(t, fakeGNMI, 2*time.Second, client,
 				nonLeafQuery,
-				tt.opts,
 				func(val *exampleoc.Parent_Child) bool {
 					return val.One != nil && *val.One == "foo" && val.Three == exampleoc.Child_Three_ONE
 				},
@@ -1536,6 +1787,7 @@ func TestWatch(t *testing.T) {
 				[]uint64{0},
 				tt.wantVals,
 				tt.wantLastVal,
+				tt.opts...,
 			)
 		})
 	}
@@ -1601,7 +1853,6 @@ func TestWatch(t *testing.T) {
 		want := getSampleOrderedMap(t)
 		watchCheckFn(t, fakeGNMI, 2*time.Second, client,
 			exampleocpath.Root().Model().SingleKey("foo").OrderedListMap().State(),
-			nil,
 			func(val *exampleoc.Model_SingleKey_OrderedList_OrderedMap) bool {
 				return cmp.Equal(val, want, cmp.AllowUnexported(exampleoc.Model_SingleKey_OrderedList_OrderedMap{}))
 			},
@@ -1686,7 +1937,6 @@ func TestWatch(t *testing.T) {
 		want := getSampleSingleKeyedMap(t)
 		watchCheckFn(t, fakeGNMI, 2*time.Second, client,
 			exampleocpath.Root().Model().SingleKeyMap().State(),
-			nil,
 			func(val map[string]*exampleoc.Model_SingleKey) bool {
 				return cmp.Equal(val, want)
 			},
@@ -1711,6 +1961,123 @@ func TestWatch(t *testing.T) {
 			}).SetVal(getSampleSingleKeyedMap(t)),
 		)
 	})
+}
+
+func TestWatchFT(t *testing.T) {
+	fakeGNMI, client := newClient(t)
+	inPath := testutil.GNMIPath(t, "/parent/child/state/one")
+	outPath := testutil.GNMIPath(t, "/parent/child/state/two")
+	otherPath := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
+	outQ := exampleocpath.Root().Parent().Child().Two().State()
+	otherQ := exampleocpath.Root().RemoteContainer().ALeaf().State()
+	ft := &fakeFT{inPath: inPath, outPath: outPath}
+	startTime := time.Now()
+
+	tests := []struct {
+		desc                 string
+		stub                 func(s *gnmitestutil.Stubber)
+		query                ygnmi.SingletonQuery[string]
+		dur                  time.Duration
+		wantSubscriptionPath *gpb.Path
+		wantLastVal          *ygnmi.Value[string]
+		wantVals             []*ygnmi.Value[string]
+		wantErr              string
+	}{
+		{
+			desc: "single notif and pred true - translate",
+			stub: func(s *gnmitestutil.Stubber) {
+				s.Notification(&gpb.Notification{
+					Timestamp: startTime.UnixNano(),
+					Update: []*gpb.Update{{
+						Path: inPath,
+						Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+					}},
+				}).Sync()
+			},
+			query: outQ,
+			dur:   time.Second,
+			wantVals: []*ygnmi.Value[string]{
+				(&ygnmi.Value[string]{
+					Timestamp: startTime,
+					Path:      outPath,
+				}).SetVal("foo")},
+			wantSubscriptionPath: inPath,
+			wantLastVal: (&ygnmi.Value[string]{
+				Timestamp: startTime,
+				Path:      outPath,
+			}).SetVal("foo"),
+		},
+		{
+			desc: "multiple notif and pred true - translate",
+			stub: func(s *gnmitestutil.Stubber) {
+				s.Notification(&gpb.Notification{
+					Timestamp: startTime.UnixNano(),
+					Update: []*gpb.Update{{
+						Path: inPath,
+						Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "bar"}},
+					}},
+				}).Sync().Notification(&gpb.Notification{
+					Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+					Update: []*gpb.Update{{
+						Path: inPath,
+						Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+					}},
+				})
+			},
+			query: outQ,
+			dur:   time.Second,
+			wantVals: []*ygnmi.Value[string]{
+				(&ygnmi.Value[string]{
+					Timestamp: startTime,
+					Path:      outPath,
+				}).SetVal("bar"),
+				(&ygnmi.Value[string]{
+					Timestamp: startTime.Add(time.Millisecond),
+					Path:      outPath,
+				}).SetVal("foo"),
+			},
+			wantSubscriptionPath: inPath,
+			wantLastVal: (&ygnmi.Value[string]{
+				Timestamp: startTime.Add(time.Millisecond),
+				Path:      outPath,
+			}).SetVal("foo"),
+		},
+		{
+			desc: "single notif and pred true - query path doesn't match FT OutputToInput - error",
+			stub: func(s *gnmitestutil.Stubber) {
+				s.Notification(&gpb.Notification{
+					Timestamp: startTime.UnixNano(),
+					Update: []*gpb.Update{{
+						Path: otherPath,
+						Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "foo"}},
+					}},
+				}).Sync()
+			},
+			query:   otherQ,
+			dur:     time.Second,
+			wantErr: "did not match on path",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.stub(fakeGNMI.Stub())
+			watchCheckFn(t, fakeGNMI, tt.dur, client,
+				tt.query,
+				func(val string) bool { return val == "foo" },
+				tt.wantErr,
+				&ygnmi.RequestValues{
+					StateFiltered:  false,
+					ConfigFiltered: true,
+				},
+				[]*gpb.Path{tt.wantSubscriptionPath},
+				[]gpb.SubscriptionMode{gpb.SubscriptionMode_TARGET_DEFINED},
+				[]uint64{0},
+				tt.wantVals,
+				tt.wantLastVal,
+				ygnmi.WithFT(ft),
+			)
+		})
+	}
 }
 
 func TestAwait(t *testing.T) {
@@ -4294,7 +4661,6 @@ func TestCustomRootBatch(t *testing.T) {
 		want := getSampleSingleKeyedMap(t)
 		watchCheckFn(t, fakeGNMI, 2*time.Second, client,
 			b.Query(),
-			nil,
 			func(val map[string]*exampleoc.Model_SingleKey) bool {
 				return cmp.Equal(val, want)
 			},

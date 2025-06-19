@@ -16,6 +16,8 @@ package ygnmi_test
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -29,6 +31,7 @@ import (
 	"github.com/openconfig/ygnmi/schemaless"
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/util"
+	"github.com/openconfig/ygot/ygot"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -37,9 +40,9 @@ import (
 	ygottestutil "github.com/openconfig/ygot/testutil"
 )
 
-func lookupCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantSubscriptionPath *gpb.Path, wantVal *ygnmi.Value[T]) {
+func lookupCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantSubscriptionPath *gpb.Path, wantVal *ygnmi.Value[T], ygnmiOpts ...ygnmi.Option) {
 	t.Helper()
-	got, err := ygnmi.Lookup(context.Background(), c, inQuery)
+	got, err := ygnmi.Lookup(context.Background(), c, inQuery, ygnmiOpts...)
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
 		t.Fatalf("Lookup(ctx, c, %v) returned unexpected diff: %s", inQuery, diff)
 	}
@@ -61,7 +64,7 @@ func lookupCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnm
 	}
 }
 
-func lookupWithGetCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantRequest *gpb.GetRequest, wantVal *ygnmi.Value[T], copts ...cmp.Option) {
+func lookupWithGetCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantRequest *gpb.GetRequest, wantVal *ygnmi.Value[T], nonLeaf bool) {
 	t.Helper()
 	got, err := ygnmi.Lookup(context.Background(), c, inQuery, ygnmi.WithUseGet())
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
@@ -70,7 +73,10 @@ func lookupWithGetCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, 
 	if err != nil {
 		return
 	}
-	copts = append(copts, cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_SingleKey_OrderedList_OrderedMap{}, exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}), cmpopts.IgnoreFields(ygnmi.Value[T]{}, "RecvTimestamp"), protocmp.Transform())
+	copts := []cmp.Option{cmp.AllowUnexported(ygnmi.Value[T]{}, exampleoc.Model_SingleKey_OrderedList_OrderedMap{}, exampleocconfig.Model_SingleKey_OrderedList_OrderedMap{}), cmpopts.IgnoreFields(ygnmi.Value[T]{}, "RecvTimestamp"), protocmp.Transform()}
+	if nonLeaf {
+		copts = append(copts, cmpopts.IgnoreFields(ygnmi.TelemetryError{}, "Err"))
+	}
 	if diff := cmp.Diff(wantVal, got, copts...); diff != "" {
 		t.Errorf("Lookup() returned unexpected diff (-want, +got):\n%s", diff)
 	}
@@ -85,9 +91,9 @@ func lookupWithGetCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, 
 	}
 }
 
-func getCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantSubscriptionPath *gpb.Path, wantVal T) {
+func getCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T], wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantSubscriptionPath *gpb.Path, wantVal T, ygnmiOpts ...ygnmi.Option) {
 	t.Helper()
-	got, err := ygnmi.Get(context.Background(), c, inQuery)
+	got, err := ygnmi.Get(context.Background(), c, inQuery, ygnmiOpts...)
 	if diff := errdiff.Substring(err, wantErrSubstring); diff != "" {
 		t.Fatalf("Get(ctx, c, %v) returned unexpected diff: %s", inQuery, diff)
 	}
@@ -108,7 +114,7 @@ func getCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, c *ygnmi.C
 }
 
 func watchCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, duration time.Duration, c *ygnmi.Client, inQuery ygnmi.SingletonQuery[T],
-	inOpts []ygnmi.Option, valPred func(T) bool, wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantSubscriptionPaths []*gpb.Path, wantModes []gpb.SubscriptionMode, wantIntervals []uint64, wantVals []*ygnmi.Value[T], wantLastVal *ygnmi.Value[T]) {
+	valPred func(T) bool, wantErrSubstring string, wantRequestValues *ygnmi.RequestValues, wantSubscriptionPaths []*gpb.Path, wantModes []gpb.SubscriptionMode, wantIntervals []uint64, wantVals []*ygnmi.Value[T], wantLastVal *ygnmi.Value[T], ygnmiOpts ...ygnmi.Option) {
 	t.Helper()
 	i := 0
 	ctx, cancel := context.WithTimeout(context.Background(), duration)
@@ -134,7 +140,7 @@ func watchCheckFn[T any](t *testing.T, fakeGNMI *gnmitestutil.FakeGNMI, duration
 			return nil
 		}
 		return ygnmi.Continue
-	}, inOpts...)
+	}, ygnmiOpts...)
 	val, err := w.Await()
 	if i < len(wantVals) {
 		t.Errorf("Predicate received too few values: got %d, want %d", i, len(wantVals))
@@ -366,4 +372,70 @@ func (g *gnmiS) Subscribe(srv gpb.GNMI_SubscribeServer) error {
 	err := srv.Send(&gpb.SubscribeResponse{Response: &gpb.SubscribeResponse_SyncResponse{}})
 	g.errCh <- err
 	return nil
+}
+
+type fakeFT struct {
+	inPath  *gpb.Path
+	outPath *gpb.Path
+
+	inkKeyIxs []int
+	outKeyIxs []int
+}
+
+func (e *fakeFT) OutputToInput(out *gpb.Path) (bool, []*gpb.Path, error) {
+	// Error out if a non-schema path (with any keys, including wildcards) is passed in. OutputToInput()
+	// only works with schema paths.
+	for _, elem := range out.GetElem() {
+		for _, key := range elem.GetKey() {
+			if key != "" {
+				return false, nil, fmt.Errorf("OutputToInput() got a non-schema path with keys set, which is not supported: %+v", out)
+			}
+		}
+	}
+	ftOutSchemaPath, err := ygot.PathToSchemaPath(e.outPath)
+	if err != nil {
+		return false, nil, err
+	}
+	outSchemaPath, err := ygot.PathToSchemaPath(out)
+	if err != nil {
+		return false, nil, err
+	}
+	if ftOutSchemaPath != outSchemaPath {
+		return false, nil, nil
+	}
+	return true, []*gpb.Path{e.inPath}, nil
+}
+
+func (e *fakeFT) Translate(in *gpb.SubscribeResponse) (*gpb.SubscribeResponse, error) {
+	ftInSchemaPath, err := ygot.PathToSchemaPath(e.inPath)
+	if err != nil {
+		return nil, err
+	}
+	if in.GetUpdate().GetPrefix() != nil && len(in.GetUpdate().GetPrefix().GetElem()) > 0 {
+		return nil, fmt.Errorf("non-empty prefix found, but we're assuming there won't be a prefix for simplicity. Prefix: %+v", in.GetUpdate().GetPrefix())
+	}
+	out := proto.Clone(in).(*gpb.SubscribeResponse)
+	for _, u := range out.GetUpdate().GetUpdate() {
+		// Simulate an error if we get "invalid".
+		if u.GetVal().GetStringVal() != "" && u.GetVal().GetStringVal() == "invalid" {
+			return nil, errors.New("invalid")
+		}
+		inPath, err := util.JoinPaths(in.GetUpdate().GetPrefix(), u.GetPath())
+		if err != nil {
+			return nil, err
+		}
+		inSchemaPath, err := ygot.PathToSchemaPath(inPath)
+		if err != nil {
+			return nil, err
+		}
+		if inSchemaPath != ftInSchemaPath {
+			return nil, nil
+		}
+		outPath := proto.Clone(e.outPath).(*gpb.Path)
+		for i, inkIx := range e.inkKeyIxs {
+			outPath.Elem[e.outKeyIxs[i]].Key = u.GetPath().GetElem()[inkIx].GetKey()
+		}
+		u.Path = outPath
+	}
+	return out, nil
 }
