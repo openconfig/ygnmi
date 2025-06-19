@@ -439,4 +439,3 @@ func (e *fakeFT) Translate(in *gpb.SubscribeResponse) (*gpb.SubscribeResponse, e
 	}
 	return out, nil
 }
-
