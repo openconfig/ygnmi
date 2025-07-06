@@ -517,12 +517,22 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op
 		} else if s, ok := val.(string); ok && strings.HasSuffix(path.Origin, "_cli") {
 			typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: s}}
 		} else if opt.preferProto {
-			typedVal, err = ygot.EncodeTypedValue(val, gpb.Encoding_JSON_IETF, &ygot.RFC7951JSONConfig{AppendModuleName: true, PreferShadowPath: preferShadowPath})
+			typedVal, err = ygot.EncodeTypedValue(val, gpb.Encoding_JSON_IETF, &ygot.RFC7951JSONConfig{AppendModuleName: opt.appendModuleName, PreferShadowPath: preferShadowPath})
 		} else {
-			typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{}}
 			// Since the GoStructs are generated using preferOperationalState, we
 			// need to turn on preferShadowPath to prefer marshalling config paths.
-			typedVal.Value.(*gpb.TypedValue_JsonIetfVal).JsonIetfVal, err = ygot.Marshal7951(val, ygot.JSONIndent("  "), &ygot.RFC7951JSONConfig{AppendModuleName: true, PreferShadowPath: preferShadowPath})
+			var b []byte
+			b, err = ygot.Marshal7951(val, ygot.JSONIndent("  "), &ygot.RFC7951JSONConfig{AppendModuleName: opt.appendModuleName, PreferShadowPath: preferShadowPath})
+
+			// Respect the encoding option.
+			switch opt.encoding {
+			case gpb.Encoding_JSON:
+				typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_JsonVal{JsonVal: b}}
+			case gpb.Encoding_JSON_IETF:
+				fallthrough
+			default:
+				typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: b}}
+			}
 		}
 
 		if err != nil && opt.setFallback && path.Origin != "openconfig" {

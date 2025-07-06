@@ -258,13 +258,15 @@ type opt struct {
 	setFallback        bool
 	sampleInterval     uint64
 	datapointValidator ValidateFn
+	appendModuleName   bool
 	ft                 FunctionalTranslator
 }
 
 // resolveOpts applies all the options and returns a struct containing the result.
 func resolveOpts(opts []Option) *opt {
 	o := &opt{
-		encoding: gpb.Encoding_PROTO,
+		encoding:         gpb.Encoding_PROTO,
+		appendModuleName: true,
 	}
 	for _, opt := range opts {
 		opt(o)
@@ -330,6 +332,12 @@ func WithSetFallbackEncoding() Option {
 func WithDatapointValidator(fn ValidateFn) Option {
 	return func(o *opt) {
 		o.datapointValidator = fn
+	}
+}
+
+func WithAppendModuleName(append bool) Option {
+	return func(o *opt) {
+		o.appendModuleName = append
 	}
 }
 
