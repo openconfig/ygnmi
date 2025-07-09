@@ -335,6 +335,11 @@ func WithDatapointValidator(fn ValidateFn) Option {
 	}
 }
 
+// WithAppendModuleName creates an option that determines whether the module name is prepended to
+// elements that are defined within a different YANG module than their parent.
+//
+// By default, the module name is prepended to the element name, e.g. "openconfig-interfaces:interface".
+// Use this option to disable this behavior.
 func WithAppendModuleName(append bool) Option {
 	return func(o *opt) {
 		o.appendModuleName = append
