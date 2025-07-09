@@ -554,7 +554,7 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op
 		}
 
 		var modifyTypedValueFn func(*gpb.TypedValue) error
-		if !isLeaf && compressInfo != nil && len(compressInfo.PostRelPath) > 0 {
+		if !isLeaf && compressInfo != nil && len(compressInfo.PostRelPath) > 0 && len(typedVal.GetJsonIetfVal()) > 0 {
 			// When the path struct points to a node that's compressed out,
 			// then we know that the type is a node lower than it should be
 			// as far as the JSON is concerned.
