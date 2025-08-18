@@ -205,23 +205,22 @@ func receive(sub gpb.GNMI_SubscribeClient, data []*DataPoint, deletesExpected bo
 	}
 	recvTS := time.Now()
 
-	if o.ft != nil {
-		out, err := o.ft.Translate(res)
-		if err != nil {
-			log.Errorf("FunctionalTranslator.Translate() failed to translate notification: %v", err)
-			return data, false, nil
-		}
-		if out == nil {
-			log.V(2).Infof("Received nil response from functional translatator with input: %s", prototext.Format(res))
-			return data, false, nil
-		}
-		log.V(2).Infof("FT successfully translated a notification. input: %s, output: %s", prototext.Format(res), prototext.Format(out))
-		res = out
-	}
-
 	switch v := res.Response.(type) {
 	case *gpb.SubscribeResponse_Update:
-		n := v.Update
+		if o.ft != nil {
+			out, err := o.ft.Translate(res)
+			if err != nil {
+				log.Errorf("FunctionalTranslator.Translate() failed to translate notification: %v", err)
+				return data, false, nil
+			}
+			if out == nil {
+				log.V(2).Infof("Received nil response from functional translatator with input: %s", prototext.Format(res))
+				return data, false, nil
+			}
+			log.V(2).Infof("FT successfully translated a notification. input: %s, output: %s", prototext.Format(res), prototext.Format(out))
+			res = out
+		}
+		n := res.GetUpdate()
 		if !deletesExpected && len(n.Delete) != 0 {
 			return data, false, fmt.Errorf("unexpected delete updates: %v", n.Delete)
 		}
