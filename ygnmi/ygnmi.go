@@ -259,12 +259,14 @@ type opt struct {
 	sampleInterval     uint64
 	datapointValidator ValidateFn
 	ft                 FunctionalTranslator
+	appendModuleName   bool
 }
 
 // resolveOpts applies all the options and returns a struct containing the result.
 func resolveOpts(opts []Option) *opt {
 	o := &opt{
-		encoding: gpb.Encoding_PROTO,
+		encoding:         gpb.Encoding_PROTO,
+		appendModuleName: true,
 	}
 	for _, opt := range opts {
 		opt(o)
@@ -372,6 +374,14 @@ func WithDatapointValidator(fn ValidateFn) Option {
 func WithFT(ft FunctionalTranslator) Option {
 	return func(o *opt) {
 		o.ft = ft
+	}
+}
+
+// WithoutAppendModuleName creates an option to set AppendModuleName to false when marshalling the RFC 7951 config.
+// This can only be used on Set.
+func WithoutAppendModuleName() Option {
+	return func(o *opt) {
+		o.appendModuleName = false
 	}
 }
 
