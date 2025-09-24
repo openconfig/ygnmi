@@ -111,6 +111,14 @@ func getSamplePreferConfigInnerSingleKeyedMapIncomplete(t *testing.T) map[string
 	return sk.SingleKey
 }
 
+func getSamplePreferConfigParent(t *testing.T) *exampleocconfig.Parent {
+	model := &exampleocconfig.Parent{}
+	model.GetOrCreateChild().SetOne("foo")
+	model.GetOrCreateChild().SetTwo("bar")
+	model.GetOrCreateChild().SetThree(exampleocconfig.Child_Three_ONE)
+	return model
+}
+
 func TestPreferConfigLookup(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 	leafPath := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
@@ -3781,6 +3789,64 @@ func TestPreferConfigUpdate(t *testing.T) {
     }
   ]
 }`))}},
+			}},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "simple parent and json encoding",
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
+			return ygnmi.Update(context.Background(), c, exampleocconfigpath.Root().Parent().Config(), getSamplePreferConfigParent(t), ygnmi.WithEncoding(gpb.Encoding_JSON))
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "/parent"),
+				Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonVal{JsonVal: []byte(`{
+  "openconfig-simple:child": {
+    "config": {
+      "one": "foo",
+      "three": "ONE"
+    },
+    "state": {
+      "two": "bar"
+    }
+  }
+}`)}},
+			}},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "simple parent without module name",
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
+			return ygnmi.Update(context.Background(), c, exampleocconfigpath.Root().Parent().Config(), getSamplePreferConfigParent(t), ygnmi.WithSkipModuleNames())
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "/parent"),
+				Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`{
+  "child": {
+    "config": {
+      "one": "foo",
+      "three": "ONE"
+    },
+    "state": {
+      "two": "bar"
+    }
+  }
+}`)}},
 			}},
 		},
 		stubResponse: &gpb.SetResponse{

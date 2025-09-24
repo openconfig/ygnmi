@@ -109,6 +109,14 @@ func getSampleInnerSingleKeyedMapIncomplete(t *testing.T) map[string]*exampleoc.
 	return sk.SingleKey
 }
 
+func getSampleParent(t *testing.T) *exampleoc.Parent {
+	model := &exampleoc.Parent{}
+	model.GetOrCreateChild().SetOne("foo")
+	model.GetOrCreateChild().SetTwo("bar")
+	model.GetOrCreateChild().SetThree(exampleoc.Child_Three_ONE)
+	return model
+}
+
 func TestLookup(t *testing.T) {
 	fakeGNMI, c := newClient(t)
 	leafPath := testutil.GNMIPath(t, "/remote-container/state/a-leaf")
@@ -3779,6 +3787,64 @@ func TestUpdate(t *testing.T) {
     }
   ]
 }`))}},
+			}},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "simple parent and json encoding",
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
+			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Parent().Config(), getSampleParent(t), ygnmi.WithEncoding(gpb.Encoding_JSON))
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "/parent"),
+				Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonVal{JsonVal: []byte(`{
+  "openconfig-simple:child": {
+    "config": {
+      "one": "foo",
+      "three": "ONE"
+    },
+    "state": {
+      "two": "bar"
+    }
+  }
+}`)}},
+			}},
+		},
+		stubResponse: &gpb.SetResponse{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+		},
+	}, {
+		desc: "simple parent without module name",
+		op: func(c *ygnmi.Client) (*ygnmi.Result, error) {
+			return ygnmi.Update(context.Background(), c, exampleocpath.Root().Parent().Config(), getSampleParent(t), ygnmi.WithSkipModuleNames())
+		},
+		wantRequest: &gpb.SetRequest{
+			Prefix: &gpb.Path{
+				Target: "dut",
+			},
+			Update: []*gpb.Update{{
+				Path: testutil.GNMIPath(t, "/parent"),
+				Val: &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`{
+  "child": {
+    "config": {
+      "one": "foo",
+      "three": "ONE"
+    },
+    "state": {
+      "two": "bar"
+    }
+  }
+}`)}},
 			}},
 		},
 		stubResponse: &gpb.SetResponse{

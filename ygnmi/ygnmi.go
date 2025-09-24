@@ -258,13 +258,15 @@ type opt struct {
 	setFallback        bool
 	sampleInterval     uint64
 	datapointValidator ValidateFn
+	appendModuleName   bool
 	ft                 FunctionalTranslator
 }
 
 // resolveOpts applies all the options and returns a struct containing the result.
 func resolveOpts(opts []Option) *opt {
 	o := &opt{
-		encoding: gpb.Encoding_PROTO,
+		encoding:         gpb.Encoding_PROTO,
+		appendModuleName: true,
 	}
 	for _, opt := range opts {
 		opt(o)
@@ -330,6 +332,17 @@ func WithSetFallbackEncoding() Option {
 func WithDatapointValidator(fn ValidateFn) Option {
 	return func(o *opt) {
 		o.datapointValidator = fn
+	}
+}
+
+// WithSkipModuleNames creates an option that avoids prepending the module name to
+// elements that are defined within a different YANG module than their parent.
+//
+// By default, the module name is prepended to the element name, e.g. "openconfig-interfaces:interface".
+// Use this option to disable this behavior.
+func WithSkipModuleNames() Option {
+	return func(o *opt) {
+		o.appendModuleName = false
 	}
 }
 
