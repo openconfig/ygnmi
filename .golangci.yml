@@ -1,32 +1,41 @@
-run:
-  timeout: 10m
-  skip-dirs:
-    - pathgen/testdata
-    - exampleoc
-    - internal/examplesetorigin
-
+version: "2"
 linters:
   enable:
-    - gofmt
     - revive
-    - goimports
-
-linters-settings:
-  revive:
-    confidence: 0.8
+  settings:
+    revive:
+      confidence: 0.8
+      rules:
+        - name: error-strings
+        - name: exported
+  exclusions:
+    generated: lax
     rules:
-    - name: error-strings
-    - name: exported
-
-issues:
-  exclude:
-    - receiver-naming # This appears to broken with generics.
-  exclude-use-default: false
-  exclude-rules:
-    # Exclude naming complaints from schema.
-    - path: internal/testutil
-      linters: revive
-    # Adding a package comment breaks other linters
-    - path: ygnmi/types.go
-      linters: unused
-
+      - linters:
+          - revive
+        path: internal/testutil
+      - linters:
+          - unused
+        path: ygnmi/types.go
+      - path: (.+)\.go$
+        text: receiver-naming
+    paths:
+      - pathgen/testdata
+      - exampleoc
+      - internal/examplesetorigin
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - pathgen/testdata
+      - exampleoc
+      - internal/examplesetorigin
+      - third_party$
+      - builtin$
+      - examples$
