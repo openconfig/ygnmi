@@ -5,6 +5,8 @@ on:
     branches: [ main ]
   pull_request:
 
+permissions: {}
+
 jobs:
   go:
     uses: openconfig/common-ci/.github/workflows/basic_go.yml@2dd20d500dc65de2927c44877398fdd141ee09ba
@@ -12,6 +14,11 @@ jobs:
       static-analysis-excludes-regex: exampleoc
       skip-gofmt: true
       skip-staticcheck: true
+    permissions:
+      contents: read
+      packages: read
+      # To report Github Actions status checks
+      statuses: write
 
   generate:
     runs-on: ubuntu-latest
