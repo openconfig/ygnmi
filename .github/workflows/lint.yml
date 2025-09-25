@@ -16,7 +16,7 @@ jobs:
           go-version: '1.x'
       - uses: actions/checkout@v3
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@5119dcd8011e92182ce8219d9e9efc82f16fddb6 # v8
         with:
           version: latest
           only-new-issues: true
