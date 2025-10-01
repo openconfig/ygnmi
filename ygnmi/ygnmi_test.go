@@ -5168,7 +5168,7 @@ func TestWatchCancel(t *testing.T) {
 		//nolint:errcheck // Don't care about this error.
 		s.Serve(l)
 	}()
-	conn, err := grpc.Dial(l.Addr().String(), grpc.WithTransportCredentials(local.NewCredentials()))
+	conn, err := grpc.NewClient(l.Addr().String(), grpc.WithTransportCredentials(local.NewCredentials()))
 	if err != nil {
 		t.Fatal(err)
 	}

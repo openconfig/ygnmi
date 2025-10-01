@@ -275,7 +275,7 @@ func newClient(t testing.TB) (*gnmitestutil.FakeGNMI, *ygnmi.Client) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	gnmiClient, err := fakeGNMI.Dial(context.Background())
+	gnmiClient, err := fakeGNMI.Dial()
 	if err != nil {
 		t.Fatal(err)
 	}
