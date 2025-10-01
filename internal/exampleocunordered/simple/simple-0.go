@@ -21,6 +21,7 @@ using the following YANG input files:
   - ../../pathgen/testdata/yang/openconfig-simple.yang
   - ../../pathgen/testdata/yang/openconfig-withlistval.yang
   - ../../pathgen/testdata/yang/openconfig-nested.yang
+  - ../../pathgen/testdata/yang/openconfig-unione.yang
 
 Imported modules were sourced from:
 */
@@ -231,7 +232,8 @@ func (n *Parent_Child_FivePath) State() ygnmi.SingletonQuery[float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) (float32, bool) {
 			ret := gs.(*oc.Parent_Child).Five
-			return ygot.BinaryToFloat32(ret), !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ygot.BinaryToFloat32(ret), v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		func() *ytypes.Schema {
@@ -268,7 +270,8 @@ func (n *Parent_Child_FivePathAny) State() ygnmi.WildcardQuery[float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) (float32, bool) {
 			ret := gs.(*oc.Parent_Child).Five
-			return ygot.BinaryToFloat32(ret), !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ygot.BinaryToFloat32(ret), v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		func() *ytypes.Schema {
@@ -305,7 +308,8 @@ func (n *Parent_Child_FivePath) Config() ygnmi.ConfigQuery[float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) (float32, bool) {
 			ret := gs.(*oc.Parent_Child).Five
-			return ygot.BinaryToFloat32(ret), !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ygot.BinaryToFloat32(ret), v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		func() *ytypes.Schema {
@@ -342,7 +346,8 @@ func (n *Parent_Child_FivePathAny) Config() ygnmi.WildcardQuery[float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) (float32, bool) {
 			ret := gs.(*oc.Parent_Child).Five
-			return ygot.BinaryToFloat32(ret), !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ygot.BinaryToFloat32(ret), v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		func() *ytypes.Schema {
@@ -396,7 +401,8 @@ func (n *Parent_Child_FourPath) State() ygnmi.SingletonQuery[oc.Binary] {
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.Binary, bool) {
 			ret := gs.(*oc.Parent_Child).Four
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		func() *ytypes.Schema {
@@ -433,7 +439,8 @@ func (n *Parent_Child_FourPathAny) State() ygnmi.WildcardQuery[oc.Binary] {
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.Binary, bool) {
 			ret := gs.(*oc.Parent_Child).Four
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		func() *ytypes.Schema {
@@ -470,7 +477,8 @@ func (n *Parent_Child_FourPath) Config() ygnmi.ConfigQuery[oc.Binary] {
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.Binary, bool) {
 			ret := gs.(*oc.Parent_Child).Four
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		func() *ytypes.Schema {
@@ -507,7 +515,8 @@ func (n *Parent_Child_FourPathAny) Config() ygnmi.WildcardQuery[oc.Binary] {
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.Binary, bool) {
 			ret := gs.(*oc.Parent_Child).Four
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		func() *ytypes.Schema {
@@ -742,7 +751,8 @@ func (n *Parent_Child_SixPath) State() ygnmi.SingletonQuery[[]float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) ([]float32, bool) {
 			ret := gs.(*oc.Parent_Child).Six
-			return binarySliceToFloatSlice(ret), !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return binarySliceToFloatSlice(ret), v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		func() *ytypes.Schema {
@@ -779,7 +789,8 @@ func (n *Parent_Child_SixPathAny) State() ygnmi.WildcardQuery[[]float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) ([]float32, bool) {
 			ret := gs.(*oc.Parent_Child).Six
-			return binarySliceToFloatSlice(ret), !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return binarySliceToFloatSlice(ret), v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		func() *ytypes.Schema {
@@ -816,7 +827,8 @@ func (n *Parent_Child_SixPath) Config() ygnmi.ConfigQuery[[]float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) ([]float32, bool) {
 			ret := gs.(*oc.Parent_Child).Six
-			return binarySliceToFloatSlice(ret), !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return binarySliceToFloatSlice(ret), v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		func() *ytypes.Schema {
@@ -853,7 +865,8 @@ func (n *Parent_Child_SixPathAny) Config() ygnmi.WildcardQuery[[]float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) ([]float32, bool) {
 			ret := gs.(*oc.Parent_Child).Six
-			return binarySliceToFloatSlice(ret), !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return binarySliceToFloatSlice(ret), v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		func() *ytypes.Schema {
@@ -907,7 +920,8 @@ func (n *Parent_Child_ThreePath) State() ygnmi.SingletonQuery[oc.E_Child_Three] 
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.E_Child_Three, bool) {
 			ret := gs.(*oc.Parent_Child).Three
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		func() *ytypes.Schema {
@@ -944,7 +958,8 @@ func (n *Parent_Child_ThreePathAny) State() ygnmi.WildcardQuery[oc.E_Child_Three
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.E_Child_Three, bool) {
 			ret := gs.(*oc.Parent_Child).Three
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		func() *ytypes.Schema {
@@ -981,7 +996,8 @@ func (n *Parent_Child_ThreePath) Config() ygnmi.ConfigQuery[oc.E_Child_Three] {
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.E_Child_Three, bool) {
 			ret := gs.(*oc.Parent_Child).Three
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		func() *ytypes.Schema {
@@ -1018,7 +1034,8 @@ func (n *Parent_Child_ThreePathAny) Config() ygnmi.WildcardQuery[oc.E_Child_Thre
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.E_Child_Three, bool) {
 			ret := gs.(*oc.Parent_Child).Three
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Parent_Child) },
 		func() *ytypes.Schema {

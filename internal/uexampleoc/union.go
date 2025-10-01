@@ -23,7 +23,138 @@ using the following YANG input files:
   - ../../pathgen/testdata/yang/openconfig-simple.yang
   - ../../pathgen/testdata/yang/openconfig-withlistval.yang
   - ../../pathgen/testdata/yang/openconfig-nested.yang
+  - ../../pathgen/testdata/yang/openconfig-unione.yang
 
 Imported modules were sourced from:
 */
 package uexampleoc
+
+import (
+	"fmt"
+)
+
+// OpenconfigUnione_Platform_Component_State_E1_Union is an interface that is implemented by valid types for the union
+// for the leaf /openconfig-unione/platform/component/state/e1 within the YANG schema.
+// Union type can be one of [UnionString, UnionUint32].
+type OpenconfigUnione_Platform_Component_State_E1_Union interface {
+	// Union type can be one of [UnionString, UnionUint32]
+	Documentation_for_OpenconfigUnione_Platform_Component_State_E1_Union()
+}
+
+// Documentation_for_OpenconfigUnione_Platform_Component_State_E1_Union ensures that UnionString
+// implements the OpenconfigUnione_Platform_Component_State_E1_Union interface.
+func (UnionString) Documentation_for_OpenconfigUnione_Platform_Component_State_E1_Union() {}
+
+// Documentation_for_OpenconfigUnione_Platform_Component_State_E1_Union ensures that UnionUint32
+// implements the OpenconfigUnione_Platform_Component_State_E1_Union interface.
+func (UnionUint32) Documentation_for_OpenconfigUnione_Platform_Component_State_E1_Union() {}
+
+// To_OpenconfigUnione_Platform_Component_State_E1_Union takes an input interface{} and attempts to convert it to a struct
+// which implements the OpenconfigUnione_Platform_Component_State_E1_Union union. It returns an error if the interface{} supplied
+// cannot be converted to a type within the union.
+func (t *OpenconfigUnione_Platform_Component_State) To_OpenconfigUnione_Platform_Component_State_E1_Union(i interface{}) (OpenconfigUnione_Platform_Component_State_E1_Union, error) {
+	if v, ok := i.(OpenconfigUnione_Platform_Component_State_E1_Union); ok {
+		return v, nil
+	}
+	switch v := i.(type) {
+	case string:
+		return UnionString(v), nil
+	case uint32:
+		return UnionUint32(v), nil
+	}
+	return nil, fmt.Errorf("cannot convert %v to OpenconfigUnione_Platform_Component_State_E1_Union, unknown union type, got: %T, want any of [string, uint32]", i, i)
+}
+
+// OpenconfigUnione_Platform_Component_State_Enumerated_Union is an interface that is implemented by valid types for the union
+// for the leaf /openconfig-unione/platform/component/state/enumerated within the YANG schema.
+// Union type can be one of [E_Unione_EnumOne, UnionString].
+type OpenconfigUnione_Platform_Component_State_Enumerated_Union interface {
+	// Union type can be one of [E_Unione_EnumOne, UnionString]
+	Documentation_for_OpenconfigUnione_Platform_Component_State_Enumerated_Union()
+}
+
+// Documentation_for_OpenconfigUnione_Platform_Component_State_Enumerated_Union ensures that E_Unione_EnumOne
+// implements the OpenconfigUnione_Platform_Component_State_Enumerated_Union interface.
+func (E_Unione_EnumOne) Documentation_for_OpenconfigUnione_Platform_Component_State_Enumerated_Union() {
+}
+
+// Documentation_for_OpenconfigUnione_Platform_Component_State_Enumerated_Union ensures that UnionString
+// implements the OpenconfigUnione_Platform_Component_State_Enumerated_Union interface.
+func (UnionString) Documentation_for_OpenconfigUnione_Platform_Component_State_Enumerated_Union() {}
+
+// To_OpenconfigUnione_Platform_Component_State_Enumerated_Union takes an input interface{} and attempts to convert it to a struct
+// which implements the OpenconfigUnione_Platform_Component_State_Enumerated_Union union. It returns an error if the interface{} supplied
+// cannot be converted to a type within the union.
+func (t *OpenconfigUnione_Platform_Component_State) To_OpenconfigUnione_Platform_Component_State_Enumerated_Union(i interface{}) (OpenconfigUnione_Platform_Component_State_Enumerated_Union, error) {
+	if v, ok := i.(OpenconfigUnione_Platform_Component_State_Enumerated_Union); ok {
+		return v, nil
+	}
+	switch v := i.(type) {
+	case string:
+		return UnionString(v), nil
+	}
+	return nil, fmt.Errorf("cannot convert %v to OpenconfigUnione_Platform_Component_State_Enumerated_Union, unknown union type, got: %T, want any of [E_Unione_EnumOne, string]", i, i)
+}
+
+// OpenconfigUnione_Platform_Component_State_Power_Union is an interface that is implemented by valid types for the union
+// for the leaf /openconfig-unione/platform/component/state/power within the YANG schema.
+// Union type can be one of [*UnionUnsupported, E_Unione_Platform_Component_State_Power_Enum, UnionUint32].
+type OpenconfigUnione_Platform_Component_State_Power_Union interface {
+	// Union type can be one of [*UnionUnsupported, E_Unione_Platform_Component_State_Power_Enum, UnionUint32]
+	Documentation_for_OpenconfigUnione_Platform_Component_State_Power_Union()
+}
+
+// Documentation_for_OpenconfigUnione_Platform_Component_State_Power_Union ensures that *UnionUnsupported
+// implements the OpenconfigUnione_Platform_Component_State_Power_Union interface.
+func (*UnionUnsupported) Documentation_for_OpenconfigUnione_Platform_Component_State_Power_Union() {}
+
+// Documentation_for_OpenconfigUnione_Platform_Component_State_Power_Union ensures that E_Unione_Platform_Component_State_Power_Enum
+// implements the OpenconfigUnione_Platform_Component_State_Power_Union interface.
+func (E_Unione_Platform_Component_State_Power_Enum) Documentation_for_OpenconfigUnione_Platform_Component_State_Power_Union() {
+}
+
+// Documentation_for_OpenconfigUnione_Platform_Component_State_Power_Union ensures that UnionUint32
+// implements the OpenconfigUnione_Platform_Component_State_Power_Union interface.
+func (UnionUint32) Documentation_for_OpenconfigUnione_Platform_Component_State_Power_Union() {}
+
+// To_OpenconfigUnione_Platform_Component_State_Power_Union takes an input interface{} and attempts to convert it to a struct
+// which implements the OpenconfigUnione_Platform_Component_State_Power_Union union. It returns an error if the interface{} supplied
+// cannot be converted to a type within the union.
+func (t *OpenconfigUnione_Platform_Component_State) To_OpenconfigUnione_Platform_Component_State_Power_Union(i interface{}) (OpenconfigUnione_Platform_Component_State_Power_Union, error) {
+	if v, ok := i.(OpenconfigUnione_Platform_Component_State_Power_Union); ok {
+		return v, nil
+	}
+	switch v := i.(type) {
+	case uint32:
+		return UnionUint32(v), nil
+	case interface{}:
+		return &UnionUnsupported{v}, nil
+	}
+	return nil, fmt.Errorf("cannot convert %v to OpenconfigUnione_Platform_Component_State_Power_Union, unknown union type, got: %T, want any of [E_Unione_Platform_Component_State_Power_Enum, interface{}, uint32]", i, i)
+}
+
+// OpenconfigUnione_Platform_Component_State_Type_Union is an interface that is implemented by valid types for the union
+// for the leaf /openconfig-unione/platform/component/state/type within the YANG schema.
+// Union type can be one of [E_Unione_HARDWARE, E_Unione_SOFTWARE].
+type OpenconfigUnione_Platform_Component_State_Type_Union interface {
+	// Union type can be one of [E_Unione_HARDWARE, E_Unione_SOFTWARE]
+	Documentation_for_OpenconfigUnione_Platform_Component_State_Type_Union()
+}
+
+// Documentation_for_OpenconfigUnione_Platform_Component_State_Type_Union ensures that E_Unione_HARDWARE
+// implements the OpenconfigUnione_Platform_Component_State_Type_Union interface.
+func (E_Unione_HARDWARE) Documentation_for_OpenconfigUnione_Platform_Component_State_Type_Union() {}
+
+// Documentation_for_OpenconfigUnione_Platform_Component_State_Type_Union ensures that E_Unione_SOFTWARE
+// implements the OpenconfigUnione_Platform_Component_State_Type_Union interface.
+func (E_Unione_SOFTWARE) Documentation_for_OpenconfigUnione_Platform_Component_State_Type_Union() {}
+
+// To_OpenconfigUnione_Platform_Component_State_Type_Union takes an input interface{} and attempts to convert it to a struct
+// which implements the OpenconfigUnione_Platform_Component_State_Type_Union union. It returns an error if the interface{} supplied
+// cannot be converted to a type within the union.
+func (t *OpenconfigUnione_Platform_Component_State) To_OpenconfigUnione_Platform_Component_State_Type_Union(i interface{}) (OpenconfigUnione_Platform_Component_State_Type_Union, error) {
+	if v, ok := i.(OpenconfigUnione_Platform_Component_State_Type_Union); ok {
+		return v, nil
+	}
+	return nil, fmt.Errorf("cannot convert %v to OpenconfigUnione_Platform_Component_State_Type_Union, unknown union type, got: %T, want any of [E_Unione_HARDWARE, E_Unione_SOFTWARE]", i, i)
+}

@@ -21,6 +21,7 @@ using the following YANG input files:
   - ../../pathgen/testdata/yang/openconfig-simple.yang
   - ../../pathgen/testdata/yang/openconfig-withlistval.yang
   - ../../pathgen/testdata/yang/openconfig-nested.yang
+  - ../../pathgen/testdata/yang/openconfig-unione.yang
 
 Imported modules were sourced from:
 */
@@ -1355,7 +1356,8 @@ func (n *Model_SingleKey_CounterPath) State() ygnmi.SingletonQuery[float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) (float32, bool) {
 			ret := gs.(*oc.Model_SingleKey).Counter
-			return ygot.BinaryToFloat32(ret), !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ygot.BinaryToFloat32(ret), v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey) },
 		func() *ytypes.Schema {
@@ -1392,7 +1394,8 @@ func (n *Model_SingleKey_CounterPathAny) State() ygnmi.WildcardQuery[float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) (float32, bool) {
 			ret := gs.(*oc.Model_SingleKey).Counter
-			return ygot.BinaryToFloat32(ret), !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ygot.BinaryToFloat32(ret), v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey) },
 		func() *ytypes.Schema {
@@ -1446,7 +1449,8 @@ func (n *Model_SingleKey_CountersPath) State() ygnmi.SingletonQuery[[]float32] {
 		),
 		func(gs ygot.ValidatedGoStruct) ([]float32, bool) {
 			ret := gs.(*oc.Model_SingleKey).Counters
-			return binarySliceToFloatSlice(ret), !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return binarySliceToFloatSlice(ret), v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey) },
 		func() *ytypes.Schema {
@@ -1483,7 +1487,8 @@ func (n *Model_SingleKey_CountersPathAny) State() ygnmi.WildcardQuery[[]float32]
 		),
 		func(gs ygot.ValidatedGoStruct) ([]float32, bool) {
 			ret := gs.(*oc.Model_SingleKey).Counters
-			return binarySliceToFloatSlice(ret), !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return binarySliceToFloatSlice(ret), v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Model_SingleKey) },
 		func() *ytypes.Schema {

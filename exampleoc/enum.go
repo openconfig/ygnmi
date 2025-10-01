@@ -23,6 +23,7 @@ using the following YANG input files:
   - ../pathgen/testdata/yang/openconfig-simple.yang
   - ../pathgen/testdata/yang/openconfig-withlistval.yang
   - ../pathgen/testdata/yang/openconfig-nested.yang
+  - ../pathgen/testdata/yang/openconfig-unione.yang
 
 Imported modules were sourced from:
 */
@@ -59,4 +60,172 @@ const (
 	Child_Three_ONE E_Child_Three = 1
 	// Child_Three_TWO corresponds to the value TWO of Child_Three
 	Child_Three_TWO E_Child_Three = 2
+)
+
+// E_Component_Power_Enum is a derived int64 type which is used to represent
+// the enumerated node Component_Power_Enum. An additional value named
+// Component_Power_Enum_UNSET is added to the enumeration which is used as
+// the nil value, indicating that the enumeration was not explicitly set by
+// the program importing the generated structures.
+type E_Component_Power_Enum int64
+
+// IsYANGGoEnum ensures that Component_Power_Enum implements the yang.GoEnum
+// interface. This ensures that Component_Power_Enum can be identified as a
+// mapped type for a YANG enumeration.
+func (E_Component_Power_Enum) IsYANGGoEnum() {}
+
+// ΛMap returns the value lookup map associated with  Component_Power_Enum.
+func (E_Component_Power_Enum) ΛMap() map[string]map[int64]ygot.EnumDefinition { return ΛEnum }
+
+// String returns a logging-friendly string for E_Component_Power_Enum.
+func (e E_Component_Power_Enum) String() string {
+	return ygot.EnumLogString(e, int64(e), "E_Component_Power_Enum")
+}
+
+const (
+	// Component_Power_Enum_UNSET corresponds to the value UNSET of Component_Power_Enum
+	Component_Power_Enum_UNSET E_Component_Power_Enum = 0
+	// Component_Power_Enum_ON corresponds to the value ON of Component_Power_Enum
+	Component_Power_Enum_ON E_Component_Power_Enum = 1
+	// Component_Power_Enum_OFF corresponds to the value OFF of Component_Power_Enum
+	Component_Power_Enum_OFF E_Component_Power_Enum = 2
+)
+
+// E_DupEnum_A is a derived int64 type which is used to represent
+// the enumerated node DupEnum_A. An additional value named
+// DupEnum_A_UNSET is added to the enumeration which is used as
+// the nil value, indicating that the enumeration was not explicitly set by
+// the program importing the generated structures.
+type E_DupEnum_A int64
+
+// IsYANGGoEnum ensures that DupEnum_A implements the yang.GoEnum
+// interface. This ensures that DupEnum_A can be identified as a
+// mapped type for a YANG enumeration.
+func (E_DupEnum_A) IsYANGGoEnum() {}
+
+// ΛMap returns the value lookup map associated with  DupEnum_A.
+func (E_DupEnum_A) ΛMap() map[string]map[int64]ygot.EnumDefinition { return ΛEnum }
+
+// String returns a logging-friendly string for E_DupEnum_A.
+func (e E_DupEnum_A) String() string {
+	return ygot.EnumLogString(e, int64(e), "E_DupEnum_A")
+}
+
+const (
+	// DupEnum_A_UNSET corresponds to the value UNSET of DupEnum_A
+	DupEnum_A_UNSET E_DupEnum_A = 0
+	// DupEnum_A_A_A corresponds to the value A_A of DupEnum_A
+	DupEnum_A_A_A E_DupEnum_A = 1
+	// DupEnum_A_A_B corresponds to the value A_B of DupEnum_A
+	DupEnum_A_A_B E_DupEnum_A = 2
+)
+
+// E_DupEnum_B is a derived int64 type which is used to represent
+// the enumerated node DupEnum_B. An additional value named
+// DupEnum_B_UNSET is added to the enumeration which is used as
+// the nil value, indicating that the enumeration was not explicitly set by
+// the program importing the generated structures.
+type E_DupEnum_B int64
+
+// IsYANGGoEnum ensures that DupEnum_B implements the yang.GoEnum
+// interface. This ensures that DupEnum_B can be identified as a
+// mapped type for a YANG enumeration.
+func (E_DupEnum_B) IsYANGGoEnum() {}
+
+// ΛMap returns the value lookup map associated with  DupEnum_B.
+func (E_DupEnum_B) ΛMap() map[string]map[int64]ygot.EnumDefinition { return ΛEnum }
+
+// String returns a logging-friendly string for E_DupEnum_B.
+func (e E_DupEnum_B) String() string {
+	return ygot.EnumLogString(e, int64(e), "E_DupEnum_B")
+}
+
+const (
+	// DupEnum_B_UNSET corresponds to the value UNSET of DupEnum_B
+	DupEnum_B_UNSET E_DupEnum_B = 0
+	// DupEnum_B_B_A corresponds to the value B_A of DupEnum_B
+	DupEnum_B_B_A E_DupEnum_B = 1
+	// DupEnum_B_B_B corresponds to the value B_B of DupEnum_B
+	DupEnum_B_B_B E_DupEnum_B = 2
+)
+
+// E_Unione_EnumOne is a derived int64 type which is used to represent
+// the enumerated node Unione_EnumOne. An additional value named
+// Unione_EnumOne_UNSET is added to the enumeration which is used as
+// the nil value, indicating that the enumeration was not explicitly set by
+// the program importing the generated structures.
+type E_Unione_EnumOne int64
+
+// IsYANGGoEnum ensures that Unione_EnumOne implements the yang.GoEnum
+// interface. This ensures that Unione_EnumOne can be identified as a
+// mapped type for a YANG enumeration.
+func (E_Unione_EnumOne) IsYANGGoEnum() {}
+
+// ΛMap returns the value lookup map associated with  Unione_EnumOne.
+func (E_Unione_EnumOne) ΛMap() map[string]map[int64]ygot.EnumDefinition { return ΛEnum }
+
+// String returns a logging-friendly string for E_Unione_EnumOne.
+func (e E_Unione_EnumOne) String() string {
+	return ygot.EnumLogString(e, int64(e), "E_Unione_EnumOne")
+}
+
+const (
+	// Unione_EnumOne_UNSET corresponds to the value UNSET of Unione_EnumOne
+	Unione_EnumOne_UNSET E_Unione_EnumOne = 0
+	// Unione_EnumOne_ONE corresponds to the value ONE of Unione_EnumOne
+	Unione_EnumOne_ONE E_Unione_EnumOne = 1
+)
+
+// E_Unione_HARDWARE is a derived int64 type which is used to represent
+// the enumerated node Unione_HARDWARE. An additional value named
+// Unione_HARDWARE_UNSET is added to the enumeration which is used as
+// the nil value, indicating that the enumeration was not explicitly set by
+// the program importing the generated structures.
+type E_Unione_HARDWARE int64
+
+// IsYANGGoEnum ensures that Unione_HARDWARE implements the yang.GoEnum
+// interface. This ensures that Unione_HARDWARE can be identified as a
+// mapped type for a YANG enumeration.
+func (E_Unione_HARDWARE) IsYANGGoEnum() {}
+
+// ΛMap returns the value lookup map associated with  Unione_HARDWARE.
+func (E_Unione_HARDWARE) ΛMap() map[string]map[int64]ygot.EnumDefinition { return ΛEnum }
+
+// String returns a logging-friendly string for E_Unione_HARDWARE.
+func (e E_Unione_HARDWARE) String() string {
+	return ygot.EnumLogString(e, int64(e), "E_Unione_HARDWARE")
+}
+
+const (
+	// Unione_HARDWARE_UNSET corresponds to the value UNSET of Unione_HARDWARE
+	Unione_HARDWARE_UNSET E_Unione_HARDWARE = 0
+	// Unione_HARDWARE_CARD corresponds to the value CARD of Unione_HARDWARE
+	Unione_HARDWARE_CARD E_Unione_HARDWARE = 1
+)
+
+// E_Unione_SOFTWARE is a derived int64 type which is used to represent
+// the enumerated node Unione_SOFTWARE. An additional value named
+// Unione_SOFTWARE_UNSET is added to the enumeration which is used as
+// the nil value, indicating that the enumeration was not explicitly set by
+// the program importing the generated structures.
+type E_Unione_SOFTWARE int64
+
+// IsYANGGoEnum ensures that Unione_SOFTWARE implements the yang.GoEnum
+// interface. This ensures that Unione_SOFTWARE can be identified as a
+// mapped type for a YANG enumeration.
+func (E_Unione_SOFTWARE) IsYANGGoEnum() {}
+
+// ΛMap returns the value lookup map associated with  Unione_SOFTWARE.
+func (E_Unione_SOFTWARE) ΛMap() map[string]map[int64]ygot.EnumDefinition { return ΛEnum }
+
+// String returns a logging-friendly string for E_Unione_SOFTWARE.
+func (e E_Unione_SOFTWARE) String() string {
+	return ygot.EnumLogString(e, int64(e), "E_Unione_SOFTWARE")
+}
+
+const (
+	// Unione_SOFTWARE_UNSET corresponds to the value UNSET of Unione_SOFTWARE
+	Unione_SOFTWARE_UNSET E_Unione_SOFTWARE = 0
+	// Unione_SOFTWARE_OS corresponds to the value OS of Unione_SOFTWARE
+	Unione_SOFTWARE_OS E_Unione_SOFTWARE = 1
 )

@@ -16,6 +16,318 @@ import (
 	"github.com/openconfig/ygot/ytypes"
 )
 
+// Component_E1Path represents the /openconfig-unione/platform/component/state/e1 YANG schema element.
+type Component_E1Path struct {
+	*ygnmi.NodePath
+}
+
+// Component_E1PathAny represents the wildcard version of the /openconfig-unione/platform/component/state/e1 YANG schema element.
+type Component_E1PathAny struct {
+	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Component_E1Path) PathOriginName() string {
+     return ""
+}
+
+// Component_EnumeratedPath represents the /openconfig-unione/platform/component/state/enumerated YANG schema element.
+type Component_EnumeratedPath struct {
+	*ygnmi.NodePath
+}
+
+// Component_EnumeratedPathAny represents the wildcard version of the /openconfig-unione/platform/component/state/enumerated YANG schema element.
+type Component_EnumeratedPathAny struct {
+	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Component_EnumeratedPath) PathOriginName() string {
+     return ""
+}
+
+// Component_NamePath represents the /openconfig-unione/platform/component/state/name YANG schema element.
+type Component_NamePath struct {
+	*ygnmi.NodePath
+}
+
+// Component_NamePathAny represents the wildcard version of the /openconfig-unione/platform/component/state/name YANG schema element.
+type Component_NamePathAny struct {
+	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Component_NamePath) PathOriginName() string {
+     return ""
+}
+
+// Component_PowerPath represents the /openconfig-unione/platform/component/state/power YANG schema element.
+type Component_PowerPath struct {
+	*ygnmi.NodePath
+}
+
+// Component_PowerPathAny represents the wildcard version of the /openconfig-unione/platform/component/state/power YANG schema element.
+type Component_PowerPathAny struct {
+	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Component_PowerPath) PathOriginName() string {
+     return ""
+}
+
+// Component_R1Path represents the /openconfig-unione/platform/component/state/r1 YANG schema element.
+type Component_R1Path struct {
+	*ygnmi.NodePath
+}
+
+// Component_R1PathAny represents the wildcard version of the /openconfig-unione/platform/component/state/r1 YANG schema element.
+type Component_R1PathAny struct {
+	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Component_R1Path) PathOriginName() string {
+     return ""
+}
+
+// Component_TypePath represents the /openconfig-unione/platform/component/state/type YANG schema element.
+type Component_TypePath struct {
+	*ygnmi.NodePath
+}
+
+// Component_TypePathAny represents the wildcard version of the /openconfig-unione/platform/component/state/type YANG schema element.
+type Component_TypePathAny struct {
+	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *Component_TypePath) PathOriginName() string {
+     return ""
+}
+
+// ComponentPath represents the /openconfig-unione/platform/component YANG schema element.
+type ComponentPath struct {
+	*ygnmi.NodePath
+}
+
+// ComponentPathAny represents the wildcard version of the /openconfig-unione/platform/component YANG schema element.
+type ComponentPathAny struct {
+	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *ComponentPath) PathOriginName() string {
+     return "openconfig"
+}
+
+// ComponentPathMap represents the /openconfig-unione/platform/component YANG schema element.
+type ComponentPathMap struct {
+	*ygnmi.NodePath
+}
+
+// ComponentPathMapAny represents the wildcard version of the /openconfig-unione/platform/component YANG schema element.
+type ComponentPathMapAny struct {
+	*ygnmi.NodePath
+}
+
+// PathOrigin returns the name of the origin for the path object.
+func (n *ComponentPathMap) PathOriginName() string {
+     return "openconfig"
+}
+
+// E1 (leaf): 
+// 	Defining module:      "openconfig-unione"
+// 	Instantiating module: "openconfig-unione"
+// 	Path from parent:     "state/e1"
+// 	Path from root:       "/platform/component/state/e1"
+func (n *ComponentPath) E1() *Component_E1Path {
+	ps := &Component_E1Path{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "e1"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+	return ps
+}
+
+// E1 (leaf): 
+// 	Defining module:      "openconfig-unione"
+// 	Instantiating module: "openconfig-unione"
+// 	Path from parent:     "state/e1"
+// 	Path from root:       "/platform/component/state/e1"
+func (n *ComponentPathAny) E1() *Component_E1PathAny {
+	ps := &Component_E1PathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "e1"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+	return ps
+}
+
+// Enumerated (leaf): 
+// 	Defining module:      "openconfig-unione"
+// 	Instantiating module: "openconfig-unione"
+// 	Path from parent:     "state/enumerated"
+// 	Path from root:       "/platform/component/state/enumerated"
+func (n *ComponentPath) Enumerated() *Component_EnumeratedPath {
+	ps := &Component_EnumeratedPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "enumerated"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+	return ps
+}
+
+// Enumerated (leaf): 
+// 	Defining module:      "openconfig-unione"
+// 	Instantiating module: "openconfig-unione"
+// 	Path from parent:     "state/enumerated"
+// 	Path from root:       "/platform/component/state/enumerated"
+func (n *ComponentPathAny) Enumerated() *Component_EnumeratedPathAny {
+	ps := &Component_EnumeratedPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "enumerated"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+	return ps
+}
+
+// Name (leaf): 
+// 	Defining module:      "openconfig-unione"
+// 	Instantiating module: "openconfig-unione"
+// 	Path from parent:     "state/name"
+// 	Path from root:       "/platform/component/state/name"
+func (n *ComponentPath) Name() *Component_NamePath {
+	ps := &Component_NamePath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "name"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+	return ps
+}
+
+// Name (leaf): 
+// 	Defining module:      "openconfig-unione"
+// 	Instantiating module: "openconfig-unione"
+// 	Path from parent:     "state/name"
+// 	Path from root:       "/platform/component/state/name"
+func (n *ComponentPathAny) Name() *Component_NamePathAny {
+	ps := &Component_NamePathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "name"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+	return ps
+}
+
+// Power (leaf): 
+// 	Defining module:      "openconfig-unione"
+// 	Instantiating module: "openconfig-unione"
+// 	Path from parent:     "state/power"
+// 	Path from root:       "/platform/component/state/power"
+func (n *ComponentPath) Power() *Component_PowerPath {
+	ps := &Component_PowerPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "power"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+	return ps
+}
+
+// Power (leaf): 
+// 	Defining module:      "openconfig-unione"
+// 	Instantiating module: "openconfig-unione"
+// 	Path from parent:     "state/power"
+// 	Path from root:       "/platform/component/state/power"
+func (n *ComponentPathAny) Power() *Component_PowerPathAny {
+	ps := &Component_PowerPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "power"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+	return ps
+}
+
+// R1 (leaf): 
+// 	Defining module:      "openconfig-unione"
+// 	Instantiating module: "openconfig-unione"
+// 	Path from parent:     "state/r1"
+// 	Path from root:       "/platform/component/state/r1"
+func (n *ComponentPath) R1() *Component_R1Path {
+	ps := &Component_R1Path{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "r1"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+	return ps
+}
+
+// R1 (leaf): 
+// 	Defining module:      "openconfig-unione"
+// 	Instantiating module: "openconfig-unione"
+// 	Path from parent:     "state/r1"
+// 	Path from root:       "/platform/component/state/r1"
+func (n *ComponentPathAny) R1() *Component_R1PathAny {
+	ps := &Component_R1PathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "r1"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+	return ps
+}
+
+// Type (leaf): 
+// 	Defining module:      "openconfig-unione"
+// 	Instantiating module: "openconfig-unione"
+// 	Path from parent:     "state/type"
+// 	Path from root:       "/platform/component/state/type"
+func (n *ComponentPath) Type() *Component_TypePath {
+	ps := &Component_TypePath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "type"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+	return ps
+}
+
+// Type (leaf): 
+// 	Defining module:      "openconfig-unione"
+// 	Instantiating module: "openconfig-unione"
+// 	Path from parent:     "state/type"
+// 	Path from root:       "/platform/component/state/type"
+func (n *ComponentPathAny) Type() *Component_TypePathAny {
+	ps := &Component_TypePathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"state", "type"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+	return ps
+}
+
 // DevicePath represents the /device YANG schema element.
 type DevicePath struct {
 	*ygnmi.DeviceRootBase
@@ -24,6 +336,56 @@ type DevicePath struct {
 // Root returns a root path object from which YANG paths can be constructed.
 func Root() *DevicePath {
 	return &DevicePath{ygnmi.NewDeviceRootBase()}
+}
+
+// ComponentAny (list): 
+// 	Defining module:      "openconfig-unione"
+// 	Instantiating module: "openconfig-unione"
+// 	Path from parent:     "platform/component"
+// 	Path from root:       "/platform/component"
+func (n *DevicePath) ComponentAny() *ComponentPathAny {
+	ps := &ComponentPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"platform", "component"},
+			map[string]interface{}{"name": "*"},
+			n,
+		),
+	}
+	return ps
+}
+
+// Component (list): 
+// 	Defining module:      "openconfig-unione"
+// 	Instantiating module: "openconfig-unione"
+// 	Path from parent:     "platform/component"
+// 	Path from root:       "/platform/component"
+//
+// 	Name: string
+func (n *DevicePath) Component(Name string) *ComponentPath {
+	ps := &ComponentPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"platform", "component"},
+			map[string]interface{}{"name": Name},
+			n,
+		),
+	}
+	return ps
+}
+
+// ComponentMap (list): 
+// 	Defining module:      "openconfig-unione"
+// 	Instantiating module: "openconfig-unione"
+// 	Path from parent:     "platform/component"
+// 	Path from root:       "/platform/component"
+func (n *DevicePath) ComponentMap() *ComponentPathMap {
+	ps := &ComponentPathMap{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"platform"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+	return ps
 }
 
 // DupEnum (container): 
@@ -35,22 +397,6 @@ func (n *DevicePath) DupEnum() *DupEnumPath {
 	ps := &DupEnumPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"dup-enum"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-	return ps
-}
-
-// Platform (container): 
-// 	Defining module:      "openconfig-unione"
-// 	Instantiating module: "openconfig-unione"
-// 	Path from parent:     "platform"
-// 	Path from root:       "/platform"
-func (n *DevicePath) Platform() *PlatformPath {
-	ps := &PlatformPath{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"platform"},
 			map[string]interface{}{},
 			n,
 		),
@@ -160,303 +506,6 @@ func (n *DupEnumPathAny) B() *DupEnum_BPathAny {
 	ps := &DupEnum_BPathAny{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"state", "B"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-	return ps
-}
-
-// PlatformPath represents the /openconfig-unione/platform YANG schema element.
-type PlatformPath struct {
-	*ygnmi.NodePath
-}
-
-// PlatformPathAny represents the wildcard version of the /openconfig-unione/platform YANG schema element.
-type PlatformPathAny struct {
-	*ygnmi.NodePath
-}
-
-// PathOrigin returns the name of the origin for the path object.
-func (n *PlatformPath) PathOriginName() string {
-     return "openconfig"
-}
-
-// Component (container): 
-// 	Defining module:      "openconfig-unione"
-// 	Instantiating module: "openconfig-unione"
-// 	Path from parent:     "component"
-// 	Path from root:       "/platform/component"
-func (n *PlatformPath) Component() *Platform_ComponentPath {
-	ps := &Platform_ComponentPath{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"component"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-	return ps
-}
-
-// Component (container): 
-// 	Defining module:      "openconfig-unione"
-// 	Instantiating module: "openconfig-unione"
-// 	Path from parent:     "component"
-// 	Path from root:       "/platform/component"
-func (n *PlatformPathAny) Component() *Platform_ComponentPathAny {
-	ps := &Platform_ComponentPathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"component"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-	return ps
-}
-
-// Platform_Component_E1Path represents the /openconfig-unione/platform/component/state/e1 YANG schema element.
-type Platform_Component_E1Path struct {
-	*ygnmi.NodePath
-}
-
-// Platform_Component_E1PathAny represents the wildcard version of the /openconfig-unione/platform/component/state/e1 YANG schema element.
-type Platform_Component_E1PathAny struct {
-	*ygnmi.NodePath
-}
-
-// PathOrigin returns the name of the origin for the path object.
-func (n *Platform_Component_E1Path) PathOriginName() string {
-     return ""
-}
-
-// Platform_Component_EnumeratedPath represents the /openconfig-unione/platform/component/state/enumerated YANG schema element.
-type Platform_Component_EnumeratedPath struct {
-	*ygnmi.NodePath
-}
-
-// Platform_Component_EnumeratedPathAny represents the wildcard version of the /openconfig-unione/platform/component/state/enumerated YANG schema element.
-type Platform_Component_EnumeratedPathAny struct {
-	*ygnmi.NodePath
-}
-
-// PathOrigin returns the name of the origin for the path object.
-func (n *Platform_Component_EnumeratedPath) PathOriginName() string {
-     return ""
-}
-
-// Platform_Component_PowerPath represents the /openconfig-unione/platform/component/state/power YANG schema element.
-type Platform_Component_PowerPath struct {
-	*ygnmi.NodePath
-}
-
-// Platform_Component_PowerPathAny represents the wildcard version of the /openconfig-unione/platform/component/state/power YANG schema element.
-type Platform_Component_PowerPathAny struct {
-	*ygnmi.NodePath
-}
-
-// PathOrigin returns the name of the origin for the path object.
-func (n *Platform_Component_PowerPath) PathOriginName() string {
-     return ""
-}
-
-// Platform_Component_R1Path represents the /openconfig-unione/platform/component/state/r1 YANG schema element.
-type Platform_Component_R1Path struct {
-	*ygnmi.NodePath
-}
-
-// Platform_Component_R1PathAny represents the wildcard version of the /openconfig-unione/platform/component/state/r1 YANG schema element.
-type Platform_Component_R1PathAny struct {
-	*ygnmi.NodePath
-}
-
-// PathOrigin returns the name of the origin for the path object.
-func (n *Platform_Component_R1Path) PathOriginName() string {
-     return ""
-}
-
-// Platform_Component_TypePath represents the /openconfig-unione/platform/component/state/type YANG schema element.
-type Platform_Component_TypePath struct {
-	*ygnmi.NodePath
-}
-
-// Platform_Component_TypePathAny represents the wildcard version of the /openconfig-unione/platform/component/state/type YANG schema element.
-type Platform_Component_TypePathAny struct {
-	*ygnmi.NodePath
-}
-
-// PathOrigin returns the name of the origin for the path object.
-func (n *Platform_Component_TypePath) PathOriginName() string {
-     return ""
-}
-
-// Platform_ComponentPath represents the /openconfig-unione/platform/component YANG schema element.
-type Platform_ComponentPath struct {
-	*ygnmi.NodePath
-}
-
-// Platform_ComponentPathAny represents the wildcard version of the /openconfig-unione/platform/component YANG schema element.
-type Platform_ComponentPathAny struct {
-	*ygnmi.NodePath
-}
-
-// PathOrigin returns the name of the origin for the path object.
-func (n *Platform_ComponentPath) PathOriginName() string {
-     return "openconfig"
-}
-
-// E1 (leaf): 
-// 	Defining module:      "openconfig-unione"
-// 	Instantiating module: "openconfig-unione"
-// 	Path from parent:     "state/e1"
-// 	Path from root:       "/platform/component/state/e1"
-func (n *Platform_ComponentPath) E1() *Platform_Component_E1Path {
-	ps := &Platform_Component_E1Path{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"state", "e1"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-	return ps
-}
-
-// E1 (leaf): 
-// 	Defining module:      "openconfig-unione"
-// 	Instantiating module: "openconfig-unione"
-// 	Path from parent:     "state/e1"
-// 	Path from root:       "/platform/component/state/e1"
-func (n *Platform_ComponentPathAny) E1() *Platform_Component_E1PathAny {
-	ps := &Platform_Component_E1PathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"state", "e1"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-	return ps
-}
-
-// Enumerated (leaf): 
-// 	Defining module:      "openconfig-unione"
-// 	Instantiating module: "openconfig-unione"
-// 	Path from parent:     "state/enumerated"
-// 	Path from root:       "/platform/component/state/enumerated"
-func (n *Platform_ComponentPath) Enumerated() *Platform_Component_EnumeratedPath {
-	ps := &Platform_Component_EnumeratedPath{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"state", "enumerated"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-	return ps
-}
-
-// Enumerated (leaf): 
-// 	Defining module:      "openconfig-unione"
-// 	Instantiating module: "openconfig-unione"
-// 	Path from parent:     "state/enumerated"
-// 	Path from root:       "/platform/component/state/enumerated"
-func (n *Platform_ComponentPathAny) Enumerated() *Platform_Component_EnumeratedPathAny {
-	ps := &Platform_Component_EnumeratedPathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"state", "enumerated"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-	return ps
-}
-
-// Power (leaf): 
-// 	Defining module:      "openconfig-unione"
-// 	Instantiating module: "openconfig-unione"
-// 	Path from parent:     "state/power"
-// 	Path from root:       "/platform/component/state/power"
-func (n *Platform_ComponentPath) Power() *Platform_Component_PowerPath {
-	ps := &Platform_Component_PowerPath{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"state", "power"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-	return ps
-}
-
-// Power (leaf): 
-// 	Defining module:      "openconfig-unione"
-// 	Instantiating module: "openconfig-unione"
-// 	Path from parent:     "state/power"
-// 	Path from root:       "/platform/component/state/power"
-func (n *Platform_ComponentPathAny) Power() *Platform_Component_PowerPathAny {
-	ps := &Platform_Component_PowerPathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"state", "power"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-	return ps
-}
-
-// R1 (leaf): 
-// 	Defining module:      "openconfig-unione"
-// 	Instantiating module: "openconfig-unione"
-// 	Path from parent:     "state/r1"
-// 	Path from root:       "/platform/component/state/r1"
-func (n *Platform_ComponentPath) R1() *Platform_Component_R1Path {
-	ps := &Platform_Component_R1Path{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"state", "r1"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-	return ps
-}
-
-// R1 (leaf): 
-// 	Defining module:      "openconfig-unione"
-// 	Instantiating module: "openconfig-unione"
-// 	Path from parent:     "state/r1"
-// 	Path from root:       "/platform/component/state/r1"
-func (n *Platform_ComponentPathAny) R1() *Platform_Component_R1PathAny {
-	ps := &Platform_Component_R1PathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"state", "r1"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-	return ps
-}
-
-// Type (leaf): 
-// 	Defining module:      "openconfig-unione"
-// 	Instantiating module: "openconfig-unione"
-// 	Path from parent:     "state/type"
-// 	Path from root:       "/platform/component/state/type"
-func (n *Platform_ComponentPath) Type() *Platform_Component_TypePath {
-	ps := &Platform_Component_TypePath{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"state", "type"},
-			map[string]interface{}{},
-			n,
-		),
-	}
-	return ps
-}
-
-// Type (leaf): 
-// 	Defining module:      "openconfig-unione"
-// 	Instantiating module: "openconfig-unione"
-// 	Path from parent:     "state/type"
-// 	Path from root:       "/platform/component/state/type"
-func (n *Platform_ComponentPathAny) Type() *Platform_Component_TypePathAny {
-	ps := &Platform_Component_TypePathAny{
-		NodePath: ygnmi.NewNodePath(
-			[]string{"state", "type"},
 			map[string]interface{}{},
 			n,
 		),

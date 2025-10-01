@@ -32,7 +32,8 @@ go run ../../app/ygnmi generator \
   --set_path_origin=test-origin \
   ../../pathgen/testdata/yang/openconfig-simple.yang \
   ../../pathgen/testdata/yang/openconfig-withlistval.yang \
-  ../../pathgen/testdata/yang/openconfig-nested.yang
+  ../../pathgen/testdata/yang/openconfig-nested.yang \
+  ../../pathgen/testdata/yang/openconfig-unione.yang
 
 # Codes with the function PathOriginName() returning the YANG module name are generated.
 # e.g. usemodulenameaspathoriginoriginpath/usemodulenameaspathoriginpath.go
@@ -49,7 +50,8 @@ go run ../../app/ygnmi generator \
   --use_module_name_as_path_origin \
   ../../pathgen/testdata/yang/openconfig-simple.yang \
   ../../pathgen/testdata/yang/openconfig-withlistval.yang \
-  ../../pathgen/testdata/yang/openconfig-nested.yang
+  ../../pathgen/testdata/yang/openconfig-nested.yang \
+  ../../pathgen/testdata/yang/openconfig-unione.yang
 
 go install golang.org/x/tools/cmd/goimports@latest
 go install github.com/google/addlicense@latest

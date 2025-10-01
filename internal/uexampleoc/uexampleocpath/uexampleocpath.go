@@ -21,6 +21,7 @@ using the following YANG input files:
   - ../../pathgen/testdata/yang/openconfig-simple.yang
   - ../../pathgen/testdata/yang/openconfig-withlistval.yang
   - ../../pathgen/testdata/yang/openconfig-nested.yang
+  - ../../pathgen/testdata/yang/openconfig-unione.yang
 
 Imported modules were sourced from:
 */
@@ -30,6 +31,7 @@ import (
 	oc "github.com/openconfig/ygnmi/internal/uexampleoc"
 	"github.com/openconfig/ygnmi/internal/uexampleoc/nested"
 	"github.com/openconfig/ygnmi/internal/uexampleoc/simple"
+	"github.com/openconfig/ygnmi/internal/uexampleoc/unione"
 	"github.com/openconfig/ygnmi/internal/uexampleoc/withlistval"
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/ygot"
@@ -124,6 +126,45 @@ func (n *DevicePath) Container() *nested.OpenconfigNested_ContainerPath {
 	return ps
 }
 
+// DupEnum (container):
+//
+//	Defining module:      "openconfig-unione"
+//	Instantiating module: "openconfig-unione"
+//	Path from parent:     "dup-enum"
+//	Path from root:       "/dup-enum"
+func (n *DevicePath) DupEnum() *unione.OpenconfigUnione_DupEnumPath {
+	ps := &unione.OpenconfigUnione_DupEnumPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"dup-enum"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigUnione_DupEnum](
+		"OpenconfigUnione_DupEnum",
+		true,
+		false,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Device{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
+}
+
 // Model (container):
 //
 //	Defining module:      "openconfig-withlistval"
@@ -180,6 +221,45 @@ func (n *DevicePath) Parent() *simple.OpenconfigSimple_ParentPath {
 	}
 	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigSimple_Parent](
 		"OpenconfigSimple_Parent",
+		true,
+		false,
+		false,
+		false,
+		false,
+		false,
+		ps,
+		nil,
+		nil,
+		func() *ytypes.Schema {
+			return &ytypes.Schema{
+				Root:       &oc.Device{},
+				SchemaTree: oc.SchemaTree,
+				Unmarshal:  oc.Unmarshal,
+			}
+		},
+		nil,
+		nil,
+	)
+
+	return ps
+}
+
+// Platform (container):
+//
+//	Defining module:      "openconfig-unione"
+//	Instantiating module: "openconfig-unione"
+//	Path from parent:     "platform"
+//	Path from root:       "/platform"
+func (n *DevicePath) Platform() *unione.OpenconfigUnione_PlatformPath {
+	ps := &unione.OpenconfigUnione_PlatformPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"platform"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+	ps.ConfigQuery = ygnmi.NewConfigQuery[*oc.OpenconfigUnione_Platform](
+		"OpenconfigUnione_Platform",
 		true,
 		false,
 		false,
