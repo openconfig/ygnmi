@@ -416,8 +416,7 @@ var (
 	// ErrNotPresent is returned by Get when there are no a values at a path.
 	ErrNotPresent = fmt.Errorf("value not present")
 	// Continue should returned by predicates to indicate the condition is not reached.
-	//lint:ignore ST1012 this is a public API
-	Continue = fmt.Errorf("condition not true")
+	Continue = fmt.Errorf("condition not true") //nolint:staticcheck
 )
 
 // Get fetches the value of a SingletonQuery with a ONCE subscription,
@@ -988,8 +987,7 @@ func NewReconciler[T ygot.GoStruct](c *Client, q ConfigQuery[T], opts ...Option)
 }
 
 // ReconcilerAbortErr stops the reconcilation loop.
-//lint:ignore ST1012 this is a public API
-var ReconcilerAbortErr = fmt.Errorf("reconciler abort")
+var ReconcilerAbortErr = fmt.Errorf("reconciler abort") //nolint:staticcheck
 
 // Reconciler subscribes to a non-leaf config query, updates to the path invoke a callback function.
 // The callback function accepts a GoStruct for the config and state types for the root query.
