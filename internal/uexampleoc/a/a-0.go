@@ -21,6 +21,7 @@ using the following YANG input files:
   - ../../pathgen/testdata/yang/openconfig-simple.yang
   - ../../pathgen/testdata/yang/openconfig-withlistval.yang
   - ../../pathgen/testdata/yang/openconfig-nested.yang
+  - ../../pathgen/testdata/yang/openconfig-unione.yang
 
 Imported modules were sourced from:
 */

@@ -21,6 +21,7 @@ using the following YANG input files:
   - ../../pathgen/testdata/yang/openconfig-simple.yang
   - ../../pathgen/testdata/yang/openconfig-withlistval.yang
   - ../../pathgen/testdata/yang/openconfig-nested.yang
+  - ../../pathgen/testdata/yang/openconfig-unione.yang
 
 Imported modules were sourced from:
 */
@@ -30,6 +31,7 @@ import (
 	oc "github.com/openconfig/ygnmi/internal/exampleocunordered"
 	"github.com/openconfig/ygnmi/internal/exampleocunordered/nested"
 	"github.com/openconfig/ygnmi/internal/exampleocunordered/simple"
+	"github.com/openconfig/ygnmi/internal/exampleocunordered/unione"
 	"github.com/openconfig/ygnmi/internal/exampleocunordered/withlistval"
 	"github.com/openconfig/ygnmi/ygnmi"
 	"github.com/openconfig/ygot/ygot"
@@ -63,6 +65,42 @@ func (n *RootPath) A() *nested.APath {
 	return ps
 }
 
+// ComponentAny (list):
+//
+//	Defining module:      "openconfig-unione"
+//	Instantiating module: "openconfig-unione"
+//	Path from parent:     "platform/component"
+//	Path from root:       "/platform/component"
+func (n *RootPath) ComponentAny() *unione.ComponentPathAny {
+	ps := &unione.ComponentPathAny{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"platform", "component"},
+			map[string]interface{}{"name": "*"},
+			n,
+		),
+	}
+	return ps
+}
+
+// Component (list):
+//
+//	Defining module:      "openconfig-unione"
+//	Instantiating module: "openconfig-unione"
+//	Path from parent:     "platform/component"
+//	Path from root:       "/platform/component"
+//
+//	Name: string
+func (n *RootPath) Component(Name string) *unione.ComponentPath {
+	ps := &unione.ComponentPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"platform", "component"},
+			map[string]interface{}{"name": Name},
+			n,
+		),
+	}
+	return ps
+}
+
 // Container (container):
 //
 //	Defining module:      "openconfig-nested"
@@ -73,6 +111,23 @@ func (n *RootPath) Container() *nested.ContainerPath {
 	ps := &nested.ContainerPath{
 		NodePath: ygnmi.NewNodePath(
 			[]string{"container"},
+			map[string]interface{}{},
+			n,
+		),
+	}
+	return ps
+}
+
+// DupEnum (container):
+//
+//	Defining module:      "openconfig-unione"
+//	Instantiating module: "openconfig-unione"
+//	Path from parent:     "dup-enum"
+//	Path from root:       "/dup-enum"
+func (n *RootPath) DupEnum() *unione.DupEnumPath {
+	ps := &unione.DupEnumPath{
+		NodePath: ygnmi.NewNodePath(
+			[]string{"dup-enum"},
 			map[string]interface{}{},
 			n,
 		),

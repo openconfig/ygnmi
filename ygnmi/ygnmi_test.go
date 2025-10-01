@@ -3603,6 +3603,44 @@ func TestCollectAll(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("unionLeaf delete", func(t *testing.T) {
+		unionQ := exampleocpath.Root().ComponentAny().Type().State()
+		unionPath := testutil.GNMIPath(t, "/platform/component[name=test]/state/type")
+		fakeGNMI.Stub().Notification(&gpb.Notification{
+			Timestamp: startTime.Add(time.Millisecond).UnixNano(),
+			Update: []*gpb.Update{{
+				Path: unionPath,
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_StringVal{StringVal: "CARD"}},
+			}},
+		}).Sync().Notification(&gpb.Notification{
+			Timestamp: startTime.UnixNano(),
+			Delete:    []*gpb.Path{unionPath},
+		})
+		wantVals := []*ygnmi.Value[exampleoc.Component_Type_Union]{
+			(&ygnmi.Value[exampleoc.Component_Type_Union]{
+				Timestamp: startTime.Add(time.Millisecond),
+				Path:      unionPath,
+			}).SetVal(exampleoc.Unione_HARDWARE_CARD),
+			{
+				Timestamp: startTime,
+				Path:      unionPath,
+			},
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+
+		vals, err := ygnmi.CollectAll(ctx, client, unionQ).Await()
+		if !errors.Is(err, io.EOF) {
+			t.Fatalf("Await() returned unexpected err: %s", err)
+		}
+		for _, val := range vals {
+			checkJustReceived(t, val.RecvTimestamp)
+		}
+		if diff := cmp.Diff(wantVals, vals, cmpopts.IgnoreFields(ygnmi.Value[exampleoc.Component_Type_Union]{}, "RecvTimestamp"), cmp.AllowUnexported(ygnmi.Value[exampleoc.Component_Type_Union]{}), protocmp.Transform()); diff != "" {
+			t.Errorf("Await() returned unexpected value (-want,+got):\n%s", diff)
+		}
+	})
 }
 
 func TestUpdate(t *testing.T) {
