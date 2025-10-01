@@ -416,6 +416,7 @@ var (
 	// ErrNotPresent is returned by Get when there are no a values at a path.
 	ErrNotPresent = fmt.Errorf("value not present")
 	// Continue should returned by predicates to indicate the condition is not reached.
+	//lint:ignore ST1012 this is a public API
 	Continue = fmt.Errorf("condition not true")
 )
 
@@ -987,6 +988,7 @@ func NewReconciler[T ygot.GoStruct](c *Client, q ConfigQuery[T], opts ...Option)
 }
 
 // ReconcilerAbortErr stops the reconcilation loop.
+//lint:ignore ST1012 this is a public API
 var ReconcilerAbortErr = fmt.Errorf("reconciler abort")
 
 // Reconciler subscribes to a non-leaf config query, updates to the path invoke a callback function.
