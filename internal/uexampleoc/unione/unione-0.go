@@ -220,7 +220,8 @@ func (n *OpenconfigUnione_DupEnum_StatePath) A() *OpenconfigUnione_DupEnum_State
 		ps,
 		func(gs ygot.ValidatedGoStruct) (oc.E_Unione_DupEnum_State_A, bool) {
 			ret := gs.(*oc.OpenconfigUnione_DupEnum_State).A
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigUnione_DupEnum_State) },
 		func() *ytypes.Schema {
@@ -263,7 +264,8 @@ func (n *OpenconfigUnione_DupEnum_StatePathAny) A() *OpenconfigUnione_DupEnum_St
 		ps,
 		func(gs ygot.ValidatedGoStruct) (oc.E_Unione_DupEnum_State_A, bool) {
 			ret := gs.(*oc.OpenconfigUnione_DupEnum_State).A
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigUnione_DupEnum_State) },
 		func() *ytypes.Schema {
@@ -306,7 +308,8 @@ func (n *OpenconfigUnione_DupEnum_StatePath) B() *OpenconfigUnione_DupEnum_State
 		ps,
 		func(gs ygot.ValidatedGoStruct) (oc.E_Unione_DupEnum_State_B, bool) {
 			ret := gs.(*oc.OpenconfigUnione_DupEnum_State).B
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigUnione_DupEnum_State) },
 		func() *ytypes.Schema {
@@ -349,7 +352,8 @@ func (n *OpenconfigUnione_DupEnum_StatePathAny) B() *OpenconfigUnione_DupEnum_St
 		ps,
 		func(gs ygot.ValidatedGoStruct) (oc.E_Unione_DupEnum_State_B, bool) {
 			ret := gs.(*oc.OpenconfigUnione_DupEnum_State).B
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigUnione_DupEnum_State) },
 		func() *ytypes.Schema {
@@ -1217,7 +1221,8 @@ func (n *OpenconfigUnione_Platform_Component_StatePath) E1() *OpenconfigUnione_P
 		ps,
 		func(gs ygot.ValidatedGoStruct) (oc.OpenconfigUnione_Platform_Component_State_E1_Union, bool) {
 			ret := gs.(*oc.OpenconfigUnione_Platform_Component_State).E1
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigUnione_Platform_Component_State) },
 		func() *ytypes.Schema {
@@ -1260,7 +1265,8 @@ func (n *OpenconfigUnione_Platform_Component_StatePathAny) E1() *OpenconfigUnion
 		ps,
 		func(gs ygot.ValidatedGoStruct) (oc.OpenconfigUnione_Platform_Component_State_E1_Union, bool) {
 			ret := gs.(*oc.OpenconfigUnione_Platform_Component_State).E1
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigUnione_Platform_Component_State) },
 		func() *ytypes.Schema {
@@ -1303,7 +1309,8 @@ func (n *OpenconfigUnione_Platform_Component_StatePath) Enumerated() *Openconfig
 		ps,
 		func(gs ygot.ValidatedGoStruct) (oc.OpenconfigUnione_Platform_Component_State_Enumerated_Union, bool) {
 			ret := gs.(*oc.OpenconfigUnione_Platform_Component_State).Enumerated
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigUnione_Platform_Component_State) },
 		func() *ytypes.Schema {
@@ -1346,7 +1353,8 @@ func (n *OpenconfigUnione_Platform_Component_StatePathAny) Enumerated() *Opencon
 		ps,
 		func(gs ygot.ValidatedGoStruct) (oc.OpenconfigUnione_Platform_Component_State_Enumerated_Union, bool) {
 			ret := gs.(*oc.OpenconfigUnione_Platform_Component_State).Enumerated
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigUnione_Platform_Component_State) },
 		func() *ytypes.Schema {
@@ -1483,7 +1491,8 @@ func (n *OpenconfigUnione_Platform_Component_StatePath) Power() *OpenconfigUnion
 		ps,
 		func(gs ygot.ValidatedGoStruct) (oc.OpenconfigUnione_Platform_Component_State_Power_Union, bool) {
 			ret := gs.(*oc.OpenconfigUnione_Platform_Component_State).Power
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigUnione_Platform_Component_State) },
 		func() *ytypes.Schema {
@@ -1526,7 +1535,8 @@ func (n *OpenconfigUnione_Platform_Component_StatePathAny) Power() *OpenconfigUn
 		ps,
 		func(gs ygot.ValidatedGoStruct) (oc.OpenconfigUnione_Platform_Component_State_Power_Union, bool) {
 			ret := gs.(*oc.OpenconfigUnione_Platform_Component_State).Power
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigUnione_Platform_Component_State) },
 		func() *ytypes.Schema {
@@ -1569,7 +1579,8 @@ func (n *OpenconfigUnione_Platform_Component_StatePath) R1() *OpenconfigUnione_P
 		ps,
 		func(gs ygot.ValidatedGoStruct) (oc.OpenconfigUnione_Platform_Component_State_E1_Union, bool) {
 			ret := gs.(*oc.OpenconfigUnione_Platform_Component_State).R1
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigUnione_Platform_Component_State) },
 		func() *ytypes.Schema {
@@ -1612,7 +1623,8 @@ func (n *OpenconfigUnione_Platform_Component_StatePathAny) R1() *OpenconfigUnion
 		ps,
 		func(gs ygot.ValidatedGoStruct) (oc.OpenconfigUnione_Platform_Component_State_E1_Union, bool) {
 			ret := gs.(*oc.OpenconfigUnione_Platform_Component_State).R1
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigUnione_Platform_Component_State) },
 		func() *ytypes.Schema {
@@ -1655,7 +1667,8 @@ func (n *OpenconfigUnione_Platform_Component_StatePath) Type() *OpenconfigUnione
 		ps,
 		func(gs ygot.ValidatedGoStruct) (oc.OpenconfigUnione_Platform_Component_State_Type_Union, bool) {
 			ret := gs.(*oc.OpenconfigUnione_Platform_Component_State).Type
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigUnione_Platform_Component_State) },
 		func() *ytypes.Schema {
@@ -1698,7 +1711,8 @@ func (n *OpenconfigUnione_Platform_Component_StatePathAny) Type() *OpenconfigUni
 		ps,
 		func(gs ygot.ValidatedGoStruct) (oc.OpenconfigUnione_Platform_Component_State_Type_Union, bool) {
 			ret := gs.(*oc.OpenconfigUnione_Platform_Component_State).Type
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigUnione_Platform_Component_State) },
 		func() *ytypes.Schema {

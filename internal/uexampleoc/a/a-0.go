@@ -3731,7 +3731,8 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePath) Counter() *Openconfi
 		ps,
 		func(gs ygot.ValidatedGoStruct) (float32, bool) {
 			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_State).Counter
-			return ygot.BinaryToFloat32(ret), !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ygot.BinaryToFloat32(ret), v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
 		func() *ytypes.Schema {
@@ -3774,7 +3775,8 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePathAny) Counter() *Openco
 		ps,
 		func(gs ygot.ValidatedGoStruct) (float32, bool) {
 			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_State).Counter
-			return ygot.BinaryToFloat32(ret), !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ygot.BinaryToFloat32(ret), v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
 		func() *ytypes.Schema {
@@ -3817,7 +3819,8 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePath) Counters() *Openconf
 		ps,
 		func(gs ygot.ValidatedGoStruct) ([]float32, bool) {
 			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_State).Counters
-			return binarySliceToFloatSlice(ret), !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return binarySliceToFloatSlice(ret), v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
 		func() *ytypes.Schema {
@@ -3860,7 +3863,8 @@ func (n *OpenconfigWithlistval_Model_A_SingleKey_StatePathAny) Counters() *Openc
 		ps,
 		func(gs ygot.ValidatedGoStruct) ([]float32, bool) {
 			ret := gs.(*oc.OpenconfigWithlistval_Model_A_SingleKey_State).Counters
-			return binarySliceToFloatSlice(ret), !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return binarySliceToFloatSlice(ret), v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.OpenconfigWithlistval_Model_A_SingleKey_State) },
 		func() *ytypes.Schema {

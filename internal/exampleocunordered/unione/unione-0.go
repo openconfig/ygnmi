@@ -75,7 +75,8 @@ func (n *Component_E1Path) State() ygnmi.SingletonQuery[oc.Component_E1_Union] {
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.Component_E1_Union, bool) {
 			ret := gs.(*oc.Component).E1
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Component) },
 		func() *ytypes.Schema {
@@ -112,7 +113,8 @@ func (n *Component_E1PathAny) State() ygnmi.WildcardQuery[oc.Component_E1_Union]
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.Component_E1_Union, bool) {
 			ret := gs.(*oc.Component).E1
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Component) },
 		func() *ytypes.Schema {
@@ -166,7 +168,8 @@ func (n *Component_EnumeratedPath) State() ygnmi.SingletonQuery[oc.Component_Enu
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.Component_Enumerated_Union, bool) {
 			ret := gs.(*oc.Component).Enumerated
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Component) },
 		func() *ytypes.Schema {
@@ -203,7 +206,8 @@ func (n *Component_EnumeratedPathAny) State() ygnmi.WildcardQuery[oc.Component_E
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.Component_Enumerated_Union, bool) {
 			ret := gs.(*oc.Component).Enumerated
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Component) },
 		func() *ytypes.Schema {
@@ -438,7 +442,8 @@ func (n *Component_PowerPath) State() ygnmi.SingletonQuery[oc.Component_Power_Un
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.Component_Power_Union, bool) {
 			ret := gs.(*oc.Component).Power
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Component) },
 		func() *ytypes.Schema {
@@ -475,7 +480,8 @@ func (n *Component_PowerPathAny) State() ygnmi.WildcardQuery[oc.Component_Power_
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.Component_Power_Union, bool) {
 			ret := gs.(*oc.Component).Power
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Component) },
 		func() *ytypes.Schema {
@@ -529,7 +535,8 @@ func (n *Component_R1Path) State() ygnmi.SingletonQuery[oc.Component_E1_Union] {
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.Component_E1_Union, bool) {
 			ret := gs.(*oc.Component).R1
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Component) },
 		func() *ytypes.Schema {
@@ -566,7 +573,8 @@ func (n *Component_R1PathAny) State() ygnmi.WildcardQuery[oc.Component_E1_Union]
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.Component_E1_Union, bool) {
 			ret := gs.(*oc.Component).R1
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Component) },
 		func() *ytypes.Schema {
@@ -620,7 +628,8 @@ func (n *Component_TypePath) State() ygnmi.SingletonQuery[oc.Component_Type_Unio
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.Component_Type_Union, bool) {
 			ret := gs.(*oc.Component).Type
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Component) },
 		func() *ytypes.Schema {
@@ -657,7 +666,8 @@ func (n *Component_TypePathAny) State() ygnmi.WildcardQuery[oc.Component_Type_Un
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.Component_Type_Union, bool) {
 			ret := gs.(*oc.Component).Type
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.Component) },
 		func() *ytypes.Schema {
@@ -1065,7 +1075,8 @@ func (n *DupEnum_APath) State() ygnmi.SingletonQuery[oc.E_DupEnum_A] {
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.E_DupEnum_A, bool) {
 			ret := gs.(*oc.DupEnum).A
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.DupEnum) },
 		func() *ytypes.Schema {
@@ -1102,7 +1113,8 @@ func (n *DupEnum_APathAny) State() ygnmi.WildcardQuery[oc.E_DupEnum_A] {
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.E_DupEnum_A, bool) {
 			ret := gs.(*oc.DupEnum).A
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.DupEnum) },
 		func() *ytypes.Schema {
@@ -1156,7 +1168,8 @@ func (n *DupEnum_BPath) State() ygnmi.SingletonQuery[oc.E_DupEnum_B] {
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.E_DupEnum_B, bool) {
 			ret := gs.(*oc.DupEnum).B
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.DupEnum) },
 		func() *ytypes.Schema {
@@ -1193,7 +1206,8 @@ func (n *DupEnum_BPathAny) State() ygnmi.WildcardQuery[oc.E_DupEnum_B] {
 		),
 		func(gs ygot.ValidatedGoStruct) (oc.E_DupEnum_B, bool) {
 			ret := gs.(*oc.DupEnum).B
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 		},
 		func() ygot.ValidatedGoStruct { return new(oc.DupEnum) },
 		func() *ytypes.Schema {

@@ -350,9 +350,11 @@ ygnmi.New{{ .SingletonTypeName }}[{{ .GoTypeName }}](
 			return *ret, true
 			{{- else }}
 			{{- if .SpecialConvertFunc }}
-			return {{ .SpecialConvertFunc }}(ret), !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return {{ .SpecialConvertFunc }}(ret), v.IsValid() && !v.IsZero()
 			{{- else}}
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 			{{- end }}
 			{{- end}}
 		},
@@ -396,9 +398,11 @@ ygnmi.New{{ .WildcardTypeName }}[{{ .GoTypeName }}](
 			return *ret, true
 			{{- else }}
 			{{- if .SpecialConvertFunc }}
-			return {{ .SpecialConvertFunc }}(ret), !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return {{ .SpecialConvertFunc }}(ret), v.IsValid() && !v.IsZero()
 			{{- else}}
-			return ret, !reflect.ValueOf(ret).IsZero()
+			v := reflect.ValueOf(ret)
+			return ret, v.IsValid() && !v.IsZero()
 			{{- end }}
 			{{- end}}
 		},
