@@ -28,6 +28,4 @@ go run ../../app/ygnmi generator \
   ../../pathgen/testdata/yang/openconfig-nested.yang
 
 go install golang.org/x/tools/cmd/goimports@latest
-go install github.com/google/addlicense@latest
 goimports -w .
-addlicense -c "Google LLC" -y "2023" -l apache .
