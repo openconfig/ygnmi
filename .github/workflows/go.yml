@@ -9,7 +9,7 @@ permissions: {}
 
 jobs:
   go:
-    uses: openconfig/common-ci/.github/workflows/basic_go.yml@2dd20d500dc65de2927c44877398fdd141ee09ba
+    uses: openconfig/common-ci/.github/workflows/basic_go.yml@f7481cbcc8395277a2393aee3a2a0b3b7f3516a6
     with:
       static-analysis-excludes-regex: exampleoc
       skip-gofmt: true
