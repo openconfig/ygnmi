@@ -46,8 +46,22 @@ module openconfig-unione {
   }
 
   container platform {
-    container component {
+    list component {
+      key "name";
+      leaf name {
+        type leafref {
+          path "../config/name";
+        }
+      }
+      container config {
+        leaf name {
+          type string;
+        }
+      }
       container state {
+        leaf name {
+          type string;
+        }
         leaf type {
           type union {
             type identityref { base "HARDWARE"; }

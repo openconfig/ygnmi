@@ -59,9 +59,9 @@ func StartGNMI(port int) (*FakeGNMI, error) {
 }
 
 // Dial dials the fake gNMI client and returns a gNMI client stub.
-func (g *FakeGNMI) Dial(ctx context.Context, opts ...grpc.DialOption) (gpb.GNMIClient, error) {
+func (g *FakeGNMI) Dial(opts ...grpc.DialOption) (gpb.GNMIClient, error) {
 	opts = append(opts, grpc.WithTransportCredentials(local.NewCredentials()))
-	conn, err := grpc.DialContext(ctx, g.agent.Address(), opts...)
+	conn, err := grpc.NewClient(g.agent.Address(), opts...)
 	if err != nil {
 		return nil, errors.Wrapf(err, "DialContext(%s, %v)", g.agent.Address(), opts)
 	}

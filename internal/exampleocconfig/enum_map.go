@@ -23,6 +23,7 @@ using the following YANG input files:
   - ../../pathgen/testdata/yang/openconfig-simple.yang
   - ../../pathgen/testdata/yang/openconfig-withlistval.yang
   - ../../pathgen/testdata/yang/openconfig-nested.yang
+  - ../../pathgen/testdata/yang/openconfig-unione.yang
 
 Imported modules were sourced from:
 */
@@ -44,6 +45,27 @@ var ΛEnum = map[string]map[int64]ygot.EnumDefinition{
 		1: {Name: "ONE"},
 		2: {Name: "TWO"},
 	},
+	"E_Component_Power_Enum": {
+		1: {Name: "ON"},
+		2: {Name: "OFF"},
+	},
+	"E_DupEnum_A": {
+		1: {Name: "A_A"},
+		2: {Name: "A_B"},
+	},
+	"E_DupEnum_B": {
+		1: {Name: "B_A"},
+		2: {Name: "B_B"},
+	},
+	"E_Unione_EnumOne": {
+		1: {Name: "ONE"},
+	},
+	"E_Unione_HARDWARE": {
+		1: {Name: "CARD", DefiningModule: "openconfig-unione"},
+	},
+	"E_Unione_SOFTWARE": {
+		1: {Name: "OS", DefiningModule: "openconfig-unione"},
+	},
 }
 
 // ΛEnumTypes is a map, keyed by a YANG schema path, of the enumerated types that
@@ -51,11 +73,27 @@ var ΛEnum = map[string]map[int64]ygot.EnumDefinition{
 // of the map ensures that there are no clashes with valid YANG identifiers.
 func initΛEnumTypes() {
 	ΛEnumTypes = map[string][]reflect.Type{
+		"/dup-enum/state/A": []reflect.Type{
+			reflect.TypeOf((E_DupEnum_A)(0)),
+		},
+		"/dup-enum/state/B": []reflect.Type{
+			reflect.TypeOf((E_DupEnum_B)(0)),
+		},
 		"/parent/child/config/three": []reflect.Type{
 			reflect.TypeOf((E_Child_Three)(0)),
 		},
 		"/parent/child/state/three": []reflect.Type{
 			reflect.TypeOf((E_Child_Three)(0)),
+		},
+		"/platform/component/state/enumerated": []reflect.Type{
+			reflect.TypeOf((E_Unione_EnumOne)(0)),
+		},
+		"/platform/component/state/power": []reflect.Type{
+			reflect.TypeOf((E_Component_Power_Enum)(0)),
+		},
+		"/platform/component/state/type": []reflect.Type{
+			reflect.TypeOf((E_Unione_HARDWARE)(0)),
+			reflect.TypeOf((E_Unione_SOFTWARE)(0)),
 		},
 	}
 }
