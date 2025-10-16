@@ -1,5 +1,5 @@
 # ygnmi
-![Build Status](https://github.com/openconfig/ygnmi/workflows/Go/badge.svg?branch=main)
+[![Build Status](https://github.com/openconfig/ygnmi/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/openconfig/ygnmi/actions/workflows/go.yml?query=branch%3Amain)
 [![Coverage Status](https://coveralls.io/repos/github/openconfig/ygnmi/badge.svg?branch=main)](https://coveralls.io/github/openconfig/ygnmi?branch=main)
 [![Go Reference](https://pkg.go.dev/badge/github.com/openconfig/ygnmi.svg)](https://pkg.go.dev/github.com/openconfig/ygnmi)
 ## Introduction
