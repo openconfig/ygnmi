@@ -92,6 +92,9 @@ func (d *DeviceRootBase) CustomData() map[string]interface{} {
 
 // PutCustomData modifies an entry in the customData field of the DeviceRootBase struct.
 func (d *DeviceRootBase) PutCustomData(key string, val interface{}) {
+	if val == "eos_cli" {
+		val = "cli"
+	}
 	d.customData[key] = val
 }
 
