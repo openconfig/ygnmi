@@ -514,9 +514,6 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op
 		if s, ok := val.(*string); ok && path.Origin == "cli" {
 			typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: *s}}
 		} else if s, ok := val.(string); ok && strings.HasSuffix(path.Origin, "_cli") {
-			if path.Origin == "eos_cli" {
-				path.Origin = strings.TrimPrefix(path.Origin, "eos_")
-			}
 			typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: s}}
 		} else if opt.preferProto {
 			typedVal, err = ygot.EncodeTypedValue(val, gpb.Encoding_JSON_IETF, &ygot.RFC7951JSONConfig{AppendModuleName: opt.appendModuleName, PreferShadowPath: preferShadowPath})
