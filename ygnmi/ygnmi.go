@@ -835,7 +835,7 @@ func BatchUnionReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 // https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-union_replace.md
 func BatchUnionReplaceCLI(sb *SetBatch, nos, ascii string) {
 	ps := NewDeviceRootBase()
-	ps.PutCustomData(OriginOverride, nos)
+	ps.PutCustomData(OriginOverride, nos+"_cli")
 	sb.ops = append(sb.ops, &batchOp{
 		path:         ps,
 		val:          ascii,
