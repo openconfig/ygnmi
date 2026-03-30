@@ -2,20 +2,20 @@ module github.com/openconfig/ygnmi
 
 go 1.24.0
 
-toolchain go1.25.3
+toolchain go1.26.1
 
 require (
 	github.com/golang/glog v1.2.5
 	github.com/google/go-cmp v0.7.0
 	github.com/openconfig/gnmi v0.14.1
-	github.com/openconfig/gocloser v0.0.0-20251013221328-94a159b66ee9
+	github.com/openconfig/gocloser v0.0.0-20251119232641-34bca749fdb3
 	github.com/openconfig/goyang v1.6.3
 	github.com/openconfig/ygot v0.34.0
 	github.com/pkg/errors v0.9.1
-	github.com/spf13/cobra v1.10.1
+	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
 	google.golang.org/grpc v1.76.0
-	google.golang.org/protobuf v1.36.10
+	google.golang.org/protobuf v1.36.11
 )
 
 require (
