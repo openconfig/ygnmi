@@ -499,7 +499,7 @@ const (
 )
 
 // populateSetRequest fills a SetResponse for a val and operation type.
-func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op setOperation, preferShadowPath, isLeaf bool, compressInfo *CompressionInfo, opts ...Option) error {
+func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val any, op setOperation, preferShadowPath, isLeaf bool, compressInfo *CompressionInfo, opts ...Option) error {
 	if req == nil {
 		return fmt.Errorf("cannot populate a nil SetRequest")
 	}
