@@ -515,7 +515,7 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op
 	var isCLIUnionReplace bool
 	var cliUnionReplaceVal string
 
-	if s, ok := val.(string); ok {
+	if s, ok := val.(string); ok && op == unionreplacePath {
 		isCLIUnionReplace = true
 		cliUnionReplaceVal = s
 	}
