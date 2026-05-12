@@ -536,7 +536,7 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val any, op setOper
 	switch {
 	case isCLIUnionReplace:
 		typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: cliUnionReplaceVal}}
-	case path.Origin == cliOrigin:
+	case path.Origin == "cli":
 		s, ok := val.(*string)
 		if !ok {
 			return fmt.Errorf("replace/update for CLI origin must have string pointer value, got %T", val)
@@ -561,9 +561,7 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val any, op setOper
 		}
 	}
 
-	// error occurs when marshalling to rfc7951 JSON returns an error, if `opt.setFallback` is
-	// specified, we try and handle this cleanly for any origin other than "openconfig".
-	if err != nil && opt.setFallback && path.Origin != openconfigOrigin {
+	if err != nil && opt.setFallback && path.Origin != "openconfig" {
 		if m, ok := val.(proto.Message); ok {
 			any, err := anypb.New(m)
 			if err != nil {
