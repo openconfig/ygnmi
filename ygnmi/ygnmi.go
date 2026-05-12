@@ -775,6 +775,21 @@ func (sb *SetBatch) Set(ctx context.Context, c *Client, opts ...Option) (*Result
 	return responseToResult(resp), err
 }
 
+// String returns a string representation of the queued operations in the SetBatch.
+func (sb *SetBatch) String() string {
+	req := &gpb.SetRequest{}
+	for _, op := range sb.ops {
+		path, err := resolvePath(op.path)
+		if err != nil {
+			return fmt.Sprintf("error resolving path %v: %v", op.path, err)
+		}
+		if err := populateSetRequest(req, path, op.val, op.mode, op.shadowpath, op.isLeaf, op.compressInfo); err != nil {
+			return fmt.Sprintf("error populating set request for path %v: %v", op.path, err)
+		}
+	}
+	return prettySetRequest(req)
+}
+
 // BatchUpdate stores an update operation in the SetBatch.
 func BatchUpdate[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 	var setVal interface{} = val
