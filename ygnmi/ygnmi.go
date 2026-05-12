@@ -838,7 +838,7 @@ func BatchUnionReplaceCLI(sb *SetBatch, nos, ascii string) {
 	ps.PutCustomData(OriginOverride, nos)
 	sb.ops = append(sb.ops, &batchOp{
 		path:         ps,
-		val:          ascii,
+		val:          cliASCIIConfig(ascii),
 		mode:         unionreplacePath,
 		shadowpath:   false,
 		compressInfo: nil,

@@ -37,6 +37,15 @@ import (
 	closer "github.com/openconfig/gocloser"
 )
 
+const (
+	// OriginOverride is the key to custom opt that sets the path origin.
+	OriginOverride = "origin-override"
+	// cliOrigin is the  path origin string for CLI-originated payloads.
+	cliOrigin = "cli"
+	// openconfigOrigin isgNMI the gNMI path origin string for OpenConfig payloads.
+	openconfigOrigin = "openconfig"
+)
+
 // subscribe create a gNMI SubscribeClient for the given query.
 func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.SubscriptionList_Mode, o *opt) (_ gpb.GNMI_SubscribeClient, rerr error) {
 	var queryPaths []*gpb.Path
@@ -498,6 +507,8 @@ const (
 	unionreplacePath
 )
 
+type cliASCIIConfig string
+
 // populateSetRequest fills a SetResponse for a val and operation type.
 func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val any, op setOperation, preferShadowPath, isLeaf bool, compressInfo *CompressionInfo, opts ...Option) error {
 	if req == nil {
@@ -510,20 +521,22 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val any, op setOper
 		return nil
 	}
 
-	var typedVal *gpb.TypedValue
-	var err error
-	var isCLIUnionReplace bool
-	var cliUnionReplaceVal string
+	var (
+		typedVal           *gpb.TypedValue
+		err                error
+		isCLIUnionReplace  bool
+		cliUnionReplaceVal string
+	)
 
-	if s, ok := val.(string); ok && op == unionreplacePath {
+	if s, ok := val.(cliASCIIConfig); ok && op == unionreplacePath {
 		isCLIUnionReplace = true
-		cliUnionReplaceVal = s
+		cliUnionReplaceVal = string(s)
 	}
 
 	switch {
 	case isCLIUnionReplace:
 		typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: cliUnionReplaceVal}}
-	case path.Origin == "cli":
+	case path.Origin == cliOrigin:
 		s, ok := val.(*string)
 		if !ok {
 			return fmt.Errorf("replace/update for CLI origin must have string pointer value, got %T", val)
@@ -548,7 +561,9 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val any, op setOper
 		}
 	}
 
-	if err != nil && opt.setFallback && path.Origin != "openconfig" {
+	// error occurs when marshalling to rfc7951 JSON returns an error, if `opt.setFallback` is
+	// specified, we try and handle this cleanly for any origin other than "openconfig".
+	if err != nil && opt.setFallback && path.Origin != openconfigOrigin {
 		if m, ok := val.(proto.Message); ok {
 			any, err := anypb.New(m)
 			if err != nil {
@@ -566,15 +581,11 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val any, op setOper
 		return fmt.Errorf("failed to encode set request: %v", err)
 	}
 
-	var modifyTypedValueFn func(*gpb.TypedValue) error
 	if !isLeaf && compressInfo != nil && len(compressInfo.PostRelPath) > 0 && len(typedVal.GetJsonIetfVal()) > 0 {
 		// When the path struct points to a node that's compressed out,
 		// then we know that the type is a node lower than it should be
 		// as far as the JSON is concerned.
-		modifyTypedValueFn = func(tv *gpb.TypedValue) error { return wrapJSONIETF(tv, compressInfo.PostRelPath) }
-	}
-	if modifyTypedValueFn != nil {
-		if err := modifyTypedValueFn(typedVal); err != nil {
+		if err := wrapJSONIETF(typedVal, compressInfo.PostRelPath); err != nil {
 			return fmt.Errorf("failed to modify TypedValue: %v", err)
 		}
 	}
@@ -642,11 +653,6 @@ func prettySetRequest(setRequest *gpb.SetRequest) string {
 	}
 	return buf.String()
 }
-
-const (
-	// OriginOverride is the key to custom opt that sets the path origin.
-	OriginOverride = "origin-override"
-)
 
 func resolvePath(q PathStruct) (*gpb.Path, error) {
 	path, opts, err := ResolvePath(q)
