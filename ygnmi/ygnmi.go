@@ -843,7 +843,7 @@ func BatchUnionReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 // BatchUnionReplaceCLI stores a CLI union_replace operation in the SetBatch.
 //
 //   - nos is the name of the Network operating system.
-//     "_cli" should be appended to it to form the origin, see
+//     "_cli" is appended to it to form the origin, see
 //     https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-union_replace.md#24-native-cli-configuration-cli
 //   - ascii is the full CLI text.
 //
@@ -851,6 +851,7 @@ func BatchUnionReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 func BatchUnionReplaceCLI(sb *SetBatch, nos, ascii string) {
 	ps := NewDeviceRootBase()
 	ps.PutCustomData(OriginOverride, nos)
+
 	sb.ops = append(sb.ops, &batchOp{
 		path:         ps,
 		val:          cliASCIIConfig(ascii),
