@@ -71,18 +71,18 @@ func TestPopulateSetRequest(t *testing.T) {
 	}, {
 		desc:   "union-replace-leaf",
 		path:   path,
-		val:    stringVal,
+		val:    &stringVal,
 		op:     unionreplacePath,
 		isLeaf: true,
 		want: &gpb.SetRequest{
 			UnionReplace: []*gpb.Update{{
 				Path: path,
-				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: "foo"}}}},
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"foo"`)}}}},
 		},
 	}, {
 		desc:   "union-replace-cli",
 		path:   &gpb.Path{Origin: "cli"},
-		val:    "foo",
+		val:    cliASCIIConfig("foo"),
 		op:     unionreplacePath,
 		isLeaf: true,
 		want: &gpb.SetRequest{
