@@ -536,7 +536,7 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val any, op setOper
 	switch {
 	case isCLIUnionReplace:
 		typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: cliUnionReplaceVal}}
-	case path.Origin == "cli":
+	case path.Origin == cliOrigin:
 		s, ok := val.(*string)
 		if !ok {
 			return fmt.Errorf("replace/update for CLI origin must have string pointer value, got %T", val)
@@ -561,7 +561,7 @@ func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val any, op setOper
 		}
 	}
 
-	if err != nil && opt.setFallback && path.Origin != "openconfig" {
+	if err != nil && opt.setFallback && path.Origin != openconfigOrigin {
 		if m, ok := val.(proto.Message); ok {
 			any, err := anypb.New(m)
 			if err != nil {
@@ -652,6 +652,7 @@ func prettySetRequest(setRequest *gpb.SetRequest) string {
 	return buf.String()
 }
 
+
 func resolvePath(q PathStruct) (*gpb.Path, error) {
 	path, opts, err := ResolvePath(q)
 	if err != nil {
@@ -668,7 +669,7 @@ func resolvePath(q PathStruct) (*gpb.Path, error) {
 
 	// TODO: remove when fixed https://github.com/openconfig/ygot/issues/615
 	if path.Origin == "" && (len(path.Elem) == 0 || path.Elem[0].Name != "meta") {
-		path.Origin = "openconfig"
+		path.Origin = openconfigOrigin
 	}
 
 	return path, nil
