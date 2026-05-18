@@ -46,6 +46,9 @@ const (
 	openconfigOrigin = "openconfig"
 )
 
+// cliASCIIConfig contains the content of an origin CLI configuration.
+type cliASCIIConfig string
+
 // subscribe create a gNMI SubscribeClient for the given query.
 func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.SubscriptionList_Mode, o *opt) (_ gpb.GNMI_SubscribeClient, rerr error) {
 	var queryPaths []*gpb.Path
@@ -507,10 +510,6 @@ const (
 	unionreplacePath
 )
 
-// cliASCIIConfig contains the content of an origin CLI configuration.
-type cliASCIIConfig string
-
-
 // populateSetRequest fills a SetResponse for a val and operation type.
 func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val any, op setOperation, preferShadowPath, isLeaf bool, compressInfo *CompressionInfo, opts ...Option) error {
 	if req == nil {
@@ -653,7 +652,6 @@ func prettySetRequest(setRequest *gpb.SetRequest) string {
 	}
 	return buf.String()
 }
-
 
 func resolvePath(q PathStruct) (*gpb.Path, error) {
 	path, opts, err := ResolvePath(q)
