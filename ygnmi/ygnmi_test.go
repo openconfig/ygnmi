@@ -4932,7 +4932,7 @@ func TestSetBatch(t *testing.T) {
 				Path: testutil.GNMIPath(t, "parent/child/config/one"),
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte("\"baz\"")}},
 			}, {
-				Path: &gpb.Path{Origin: "openos_cli"},
+				Path: &gpb.Path{Origin: "openos"},
 				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: "open sesame"}},
 			}},
 		},

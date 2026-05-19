@@ -37,6 +37,18 @@ import (
 	closer "github.com/openconfig/gocloser"
 )
 
+const (
+	// OriginOverride is the key to custom opt that sets the path origin.
+	OriginOverride = "origin-override"
+	// cliOrigin is the  path origin string for CLI-originated payloads.
+	cliOrigin = "cli"
+	// openconfigOrigin isgNMI the gNMI path origin string for OpenConfig payloads.
+	openconfigOrigin = "openconfig"
+)
+
+// cliASCIIConfig contains the content of an origin CLI configuration.
+type cliASCIIConfig string
+
 // subscribe create a gNMI SubscribeClient for the given query.
 func subscribe[T any](ctx context.Context, c *Client, q AnyQuery[T], mode gpb.SubscriptionList_Mode, o *opt) (_ gpb.GNMI_SubscribeClient, rerr error) {
 	var queryPaths []*gpb.Path
@@ -499,84 +511,95 @@ const (
 )
 
 // populateSetRequest fills a SetResponse for a val and operation type.
-func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val interface{}, op setOperation, preferShadowPath, isLeaf bool, compressInfo *CompressionInfo, opts ...Option) error {
+func populateSetRequest(req *gpb.SetRequest, path *gpb.Path, val any, op setOperation, preferShadowPath, isLeaf bool, compressInfo *CompressionInfo, opts ...Option) error {
 	if req == nil {
 		return fmt.Errorf("cannot populate a nil SetRequest")
 	}
 	opt := resolveOpts(opts)
 
-	switch op {
-	case deletePath:
+	if op == deletePath {
 		req.Delete = append(req.Delete, path)
-	case replacePath, updatePath, unionreplacePath:
-		var typedVal *gpb.TypedValue
-		var err error
-		if s, ok := val.(*string); ok && path.Origin == "cli" {
-			typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: *s}}
-		} else if s, ok := val.(string); ok && strings.HasSuffix(path.Origin, "_cli") {
-			typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: s}}
-		} else if opt.preferProto {
-			typedVal, err = ygot.EncodeTypedValue(val, gpb.Encoding_JSON_IETF, &ygot.RFC7951JSONConfig{AppendModuleName: opt.appendModuleName, PreferShadowPath: preferShadowPath})
+		return nil
+	}
+
+	var (
+		typedVal           *gpb.TypedValue
+		err                error
+		isCLIUnionReplace  bool
+		cliUnionReplaceVal string
+	)
+
+	if s, ok := val.(cliASCIIConfig); ok && op == unionreplacePath {
+		isCLIUnionReplace = true
+		cliUnionReplaceVal = string(s)
+	}
+
+	switch {
+	case isCLIUnionReplace:
+		typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: cliUnionReplaceVal}}
+	case path.Origin == cliOrigin:
+		s, ok := val.(*string)
+		if !ok {
+			return fmt.Errorf("replace/update for CLI origin must have string pointer value, got %T", val)
+		}
+		typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: *s}}
+	case opt.preferProto:
+		typedVal, err = ygot.EncodeTypedValue(val, gpb.Encoding_JSON_IETF, &ygot.RFC7951JSONConfig{AppendModuleName: opt.appendModuleName, PreferShadowPath: preferShadowPath})
+	default:
+		// Since the GoStructs are generated using preferOperationalState, we
+		// need to turn on preferShadowPath to prefer marshalling config paths.
+		var b []byte
+		b, err = ygot.Marshal7951(val, ygot.JSONIndent("  "), &ygot.RFC7951JSONConfig{AppendModuleName: opt.appendModuleName, PreferShadowPath: preferShadowPath})
+
+		// Respect the encoding option.
+		switch opt.encoding {
+		case gpb.Encoding_JSON:
+			typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_JsonVal{JsonVal: b}}
+		case gpb.Encoding_JSON_IETF:
+			fallthrough
+		default:
+			typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: b}}
+		}
+	}
+
+	if err != nil && opt.setFallback && path.Origin != openconfigOrigin {
+		if m, ok := val.(proto.Message); ok {
+			any, err := anypb.New(m)
+			if err != nil {
+				return fmt.Errorf("failed to marshal proto: %v", err)
+			}
+			typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_AnyVal{AnyVal: any}}
 		} else {
-			// Since the GoStructs are generated using preferOperationalState, we
-			// need to turn on preferShadowPath to prefer marshalling config paths.
-			var b []byte
-			b, err = ygot.Marshal7951(val, ygot.JSONIndent("  "), &ygot.RFC7951JSONConfig{AppendModuleName: opt.appendModuleName, PreferShadowPath: preferShadowPath})
-
-			// Respect the encoding option.
-			switch opt.encoding {
-			case gpb.Encoding_JSON:
-				typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_JsonVal{JsonVal: b}}
-			case gpb.Encoding_JSON_IETF:
-				fallthrough
-			default:
-				typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: b}}
+			b, err := json.Marshal(val)
+			if err != nil {
+				return fmt.Errorf("failed to marshal json: %v", err)
 			}
+			typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_JsonVal{JsonVal: b}}
 		}
+	} else if err != nil {
+		return fmt.Errorf("failed to encode set request: %v", err)
+	}
 
-		if err != nil && opt.setFallback && path.Origin != "openconfig" {
-			if m, ok := val.(proto.Message); ok {
-				any, err := anypb.New(m)
-				if err != nil {
-					return fmt.Errorf("failed to marshal proto: %v", err)
-				}
-				typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_AnyVal{AnyVal: any}}
-			} else {
-				b, err := json.Marshal(val)
-				if err != nil {
-					return fmt.Errorf("failed to marshal json: %v", err)
-				}
-				typedVal = &gpb.TypedValue{Value: &gpb.TypedValue_JsonVal{JsonVal: b}}
-			}
-		} else if err != nil {
-			return fmt.Errorf("failed to encode set request: %v", err)
+	if !isLeaf && compressInfo != nil && len(compressInfo.PostRelPath) > 0 && len(typedVal.GetJsonIetfVal()) > 0 {
+		// When the path struct points to a node that's compressed out,
+		// then we know that the type is a node lower than it should be
+		// as far as the JSON is concerned.
+		if err := wrapJSONIETF(typedVal, compressInfo.PostRelPath); err != nil {
+			return fmt.Errorf("failed to modify TypedValue: %v", err)
 		}
+	}
+	update := &gpb.Update{
+		Path: path,
+		Val:  typedVal,
+	}
 
-		var modifyTypedValueFn func(*gpb.TypedValue) error
-		if !isLeaf && compressInfo != nil && len(compressInfo.PostRelPath) > 0 && len(typedVal.GetJsonIetfVal()) > 0 {
-			// When the path struct points to a node that's compressed out,
-			// then we know that the type is a node lower than it should be
-			// as far as the JSON is concerned.
-			modifyTypedValueFn = func(tv *gpb.TypedValue) error { return wrapJSONIETF(tv, compressInfo.PostRelPath) }
-		}
-		if modifyTypedValueFn != nil {
-			if err := modifyTypedValueFn(typedVal); err != nil {
-				return fmt.Errorf("failed to modify TypedValue: %v", err)
-			}
-		}
-		update := &gpb.Update{
-			Path: path,
-			Val:  typedVal,
-		}
-
-		switch op {
-		case replacePath:
-			req.Replace = append(req.Replace, update)
-		case updatePath:
-			req.Update = append(req.Update, update)
-		case unionreplacePath:
-			req.UnionReplace = append(req.UnionReplace, update)
-		}
+	switch op {
+	case replacePath:
+		req.Replace = append(req.Replace, update)
+	case updatePath:
+		req.Update = append(req.Update, update)
+	case unionreplacePath:
+		req.UnionReplace = append(req.UnionReplace, update)
 	default:
 		return fmt.Errorf("unknown set operation: %v", op)
 	}
@@ -622,13 +645,13 @@ func prettySetRequest(setRequest *gpb.SetRequest) string {
 		writePath(update.Path)
 		writeVal(update.Val)
 	}
+	for i, update := range setRequest.UnionReplace {
+		fmt.Fprintf(&buf, "-------union_replace path/value pair #%d------\n", i)
+		writePath(update.Path)
+		writeVal(update.Val)
+	}
 	return buf.String()
 }
-
-const (
-	// OriginOverride is the key to custom opt that sets the path origin.
-	OriginOverride = "origin-override"
-)
 
 func resolvePath(q PathStruct) (*gpb.Path, error) {
 	path, opts, err := ResolvePath(q)
@@ -646,7 +669,7 @@ func resolvePath(q PathStruct) (*gpb.Path, error) {
 
 	// TODO: remove when fixed https://github.com/openconfig/ygot/issues/615
 	if path.Origin == "" && (len(path.Elem) == 0 || path.Elem[0].Name != "meta") {
-		path.Origin = "openconfig"
+		path.Origin = openconfigOrigin
 	}
 
 	return path, nil

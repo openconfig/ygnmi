@@ -775,6 +775,21 @@ func (sb *SetBatch) Set(ctx context.Context, c *Client, opts ...Option) (*Result
 	return responseToResult(resp), err
 }
 
+// String returns a string representation of the queued operations in the SetBatch.
+func (sb *SetBatch) String() string {
+	req := &gpb.SetRequest{}
+	for _, op := range sb.ops {
+		path, err := resolvePath(op.path)
+		if err != nil {
+			return fmt.Sprintf("error resolving path %v: %v", op.path, err)
+		}
+		if err := populateSetRequest(req, path, op.val, op.mode, op.shadowpath, op.isLeaf, op.compressInfo); err != nil {
+			return fmt.Sprintf("error populating set request for path %v: %v", op.path, err)
+		}
+	}
+	return prettySetRequest(req)
+}
+
 // BatchUpdate stores an update operation in the SetBatch.
 func BatchUpdate[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 	var setVal interface{} = val
@@ -827,18 +842,18 @@ func BatchUnionReplace[T any](sb *SetBatch, q ConfigQuery[T], val T) {
 
 // BatchUnionReplaceCLI stores a CLI union_replace operation in the SetBatch.
 //
-//   - nos is the name of the Network operating system.
-//     "_cli" is appended to it to form the origin, see
+//   - origin is the name of the schema as defined in
 //     https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-union_replace.md#24-native-cli-configuration-cli
 //   - ascii is the full CLI text.
 //
 // https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-union_replace.md
-func BatchUnionReplaceCLI(sb *SetBatch, nos, ascii string) {
+func BatchUnionReplaceCLI(sb *SetBatch, origin, ascii string) {
 	ps := NewDeviceRootBase()
-	ps.PutCustomData(OriginOverride, nos+"_cli")
+	ps.PutCustomData(OriginOverride, origin)
+
 	sb.ops = append(sb.ops, &batchOp{
 		path:         ps,
-		val:          ascii,
+		val:          cliASCIIConfig(ascii),
 		mode:         unionreplacePath,
 		shadowpath:   false,
 		compressInfo: nil,

@@ -23,6 +23,112 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 )
 
+func TestPopulateSetRequest(t *testing.T) {
+	path := &gpb.Path{Elem: []*gpb.PathElem{{Name: "a"}, {Name: "b"}}}
+	stringVal := "foo"
+	tests := []struct {
+		desc             string
+		path             *gpb.Path
+		val              any
+		op               setOperation
+		preferShadowPath bool
+		isLeaf           bool
+		compressInfo     *CompressionInfo
+		opts             []Option
+		want             *gpb.SetRequest
+		wantErr          bool
+	}{{
+		desc: "delete",
+		path: path,
+		op:   deletePath,
+		want: &gpb.SetRequest{
+			Delete: []*gpb.Path{path},
+		},
+	}, {
+		desc:   "replace-leaf",
+		path:   path,
+		val:    &stringVal,
+		op:     replacePath,
+		isLeaf: true,
+		want: &gpb.SetRequest{
+			Replace: []*gpb.Update{{
+				Path: path,
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"foo"`)}},
+			}},
+		},
+	}, {
+		desc:   "update-leaf",
+		path:   path,
+		val:    &stringVal,
+		op:     updatePath,
+		isLeaf: true,
+		want: &gpb.SetRequest{
+			Update: []*gpb.Update{{
+				Path: path,
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"foo"`)}},
+			}},
+		},
+	}, {
+		desc:   "union-replace-leaf",
+		path:   path,
+		val:    &stringVal,
+		op:     unionreplacePath,
+		isLeaf: true,
+		want: &gpb.SetRequest{
+			UnionReplace: []*gpb.Update{{
+				Path: path,
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_JsonIetfVal{JsonIetfVal: []byte(`"foo"`)}}}},
+		},
+	}, {
+		desc:   "union-replace-cli",
+		path:   &gpb.Path{Origin: "cli"},
+		val:    cliASCIIConfig("foo"),
+		op:     unionreplacePath,
+		isLeaf: true,
+		want: &gpb.SetRequest{
+			UnionReplace: []*gpb.Update{{
+				Path: &gpb.Path{Origin: "cli"},
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: "foo"}},
+			}},
+		},
+	}, {
+		desc:   "cli-origin-replace",
+		path:   &gpb.Path{Origin: "cli", Elem: []*gpb.PathElem{{Name: "a"}}},
+		val:    &stringVal,
+		op:     replacePath,
+		isLeaf: true,
+		want: &gpb.SetRequest{
+			Replace: []*gpb.Update{{
+				Path: &gpb.Path{Origin: "cli", Elem: []*gpb.PathElem{{Name: "a"}}},
+				Val:  &gpb.TypedValue{Value: &gpb.TypedValue_AsciiVal{AsciiVal: "foo"}},
+			}},
+		},
+	}, {
+		desc:    "cli-origin-replace-wrong-type",
+		path:    &gpb.Path{Origin: "cli", Elem: []*gpb.PathElem{{Name: "a"}}},
+		val:     stringVal,
+		op:      replacePath,
+		isLeaf:  true,
+		wantErr: true,
+	}}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			req := &gpb.SetRequest{}
+			err := populateSetRequest(req, tt.path, tt.val, tt.op, tt.preferShadowPath, tt.isLeaf, tt.compressInfo, tt.opts...)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("populateSetRequest() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if err != nil {
+				return
+			}
+			if diff := cmp.Diff(tt.want, req, protocmp.Transform()); diff != "" {
+				t.Errorf("populateSetRequest() returned diff (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
 func TestWrapJSONIETF(t *testing.T) {
 	tests := []struct {
 		desc               string
@@ -188,11 +294,11 @@ func (m *MockPathStructWithOrigin) schemaPath() []string {
 	return nil
 }
 
-func (m *MockPathStructWithOrigin) getKeys() map[string]interface{} {
+func (m *MockPathStructWithOrigin) getKeys() map[string]any {
 	return nil
 }
 
-func (m *MockPathStructWithOrigin) CustomData() map[string]interface{} {
+func (m *MockPathStructWithOrigin) CustomData() map[string]any {
 	return nil
 }
 
@@ -244,11 +350,11 @@ func (m *MockPathStructWithoutOrigin) schemaPath() []string {
 	return nil
 }
 
-func (m *MockPathStructWithoutOrigin) getKeys() map[string]interface{} {
+func (m *MockPathStructWithoutOrigin) getKeys() map[string]any {
 	return nil
 }
 
-func (m *MockPathStructWithoutOrigin) CustomData() map[string]interface{} {
+func (m *MockPathStructWithoutOrigin) CustomData() map[string]any {
 	return nil
 }
 
