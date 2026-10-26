@@ -5318,3 +5318,78 @@ func TestPreferConfigReconcile(t *testing.T) {
 		})
 	}
 }
+
+// TestReconcileSubscribeError checks that Reconciler.Start does not deadlock
+// when subscribe fails synchronously before the caller calls Reconciler.Await.
+func TestPreferConfigReconcileSubscribeError(t *testing.T) {
+	fakeGNMI, c := newClient(t)
+	// Configure a functional translator so subscribe rejects the non-leaf query.
+	ft := &fakeFT{
+		inPath:  testutil.GNMIPath(t, "/parent/child/state/one"),
+		outPath: testutil.GNMIPath(t, "/parent/child/state/two"),
+	}
+
+	tests := []struct {
+		// desc describes the test case.
+		desc string
+		// inSubscribeErr is the error that fakeGNMI returns from Subscribe.
+		inSubscribeErr error
+		// inOpts contains the options passed to NewReconciler.
+		inOpts []ygnmi.Option
+		// wantCode is the gRPC status code that Reconciler.Await should return.
+		wantCode codes.Code
+		// wantErrSubstring is the error substring that Reconciler.Await should return.
+		wantErrSubstring string
+	}{{
+		desc:             "subscribe RPC unavailable",
+		inSubscribeErr:   status.Error(codes.Unavailable, "target unavailable"),
+		wantCode:         codes.Unavailable,
+		wantErrSubstring: "gNMI failed to Subscribe",
+	}, {
+		desc:             "unsupported use get option",
+		inOpts:           []ygnmi.Option{ygnmi.WithUseGet()},
+		wantCode:         codes.Unknown,
+		wantErrSubstring: "using gnmi.Get is only valid for ONCE subscriptions",
+	}, {
+		desc:             "unsupported functional translator on non-leaf query",
+		inOpts:           []ygnmi.Option{ygnmi.WithFT(ft)},
+		wantCode:         codes.Unknown,
+		wantErrSubstring: "functional translators only support leaf queries",
+	}}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			fakeGNMI.Stub().SubscribeError(tt.inSubscribeErr)
+
+			r, err := ygnmi.NewReconciler(c, exampleocconfigpath.Root().Parent().Child().Config(), tt.inOpts...)
+			if err != nil {
+				t.Fatalf("NewReconciler(...): did not get expected error, got: %v, want: nil", err)
+			}
+
+			// Run Start and Await in a goroutine so the test fails after 1 second
+			// if Start blocks on errCh.
+			errCh := make(chan error, 1)
+			ctx := t.Context()
+			go func() {
+				r.Start(ctx, func(cfg, state *ygnmi.Value[*exampleocconfig.Parent_Child]) error {
+					return nil
+				})
+				errCh <- r.Await()
+			}()
+
+			var gotErr error
+			select {
+			case gotErr = <-errCh:
+			case <-time.After(time.Second):
+				t.Fatalf("Reconciler.Start(...): did not complete within 1s before Reconciler.Await()")
+			}
+
+			if gotCode := status.Code(gotErr); gotCode != tt.wantCode {
+				t.Errorf("Reconciler.Await(): did not get expected status code, got: %v, want: %v (err: %v)", gotCode, tt.wantCode, gotErr)
+			}
+			if diff := errdiff.Substring(gotErr, tt.wantErrSubstring); diff != "" {
+				t.Errorf("Reconciler.Await(): did not get expected error, %s", diff)
+			}
+		})
+	}
+}
