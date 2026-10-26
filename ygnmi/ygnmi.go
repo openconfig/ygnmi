@@ -997,7 +997,9 @@ func NewReconciler[T ygot.GoStruct](c *Client, q ConfigQuery[T], opts ...Option)
 		rootState: state,
 		c:         c,
 		opts:      opts,
-		errCh:     make(chan error),
+		// errCh has a buffer size of 1 so Start can send a subscribe error
+		// before the caller calls Await.
+		errCh: make(chan error, 1),
 	}, nil
 }
 
@@ -1063,6 +1065,8 @@ func (r *Reconciler[T]) Start(ctx context.Context, fn func(cfg *Value[T], state 
 	sub, err := subscribe(ctx, r.c, r.rootCfg, gpb.SubscriptionList_STREAM, resolvedOpts)
 	if err != nil {
 		cancel()
+		// Because errCh has a buffer size of 1, Start can send err here before
+		// the caller calls Await.
 		r.errCh <- err
 		return
 	}
